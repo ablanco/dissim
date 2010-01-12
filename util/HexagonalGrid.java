@@ -21,9 +21,13 @@ import java.util.ArrayList;
 public class HexagonalGrid {
 
 	private int[][] grid;
+	private int dimX;
+	private int dimY;
 
 	public HexagonalGrid(int x, int y) {
 		grid = new int[x][y];
+		dimX = x;
+		dimY = y;
 	}
 
 	public int setValue(int x, int y, int value) {
@@ -32,13 +36,41 @@ public class HexagonalGrid {
 		return old;
 	}
 
+	public void increaseValue(int x, int y, int increment) {
+		grid[x][y] += increment;
+	}
+
 	public int getValue(int x, int y) {
 		return grid[x][y];
 	}
 
+	/**
+	 * Devuelve los hexágonos adyacentes al pedido (6 como máximo)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return Una lista de arrays, cada array representa a un hexágono
+	 *         adyacente y sus elementos son: columna, fila y valor.
+	 */
 	public ArrayList<int[]> getAdjacents(int x, int y) {
-		//TODO
-		return null;
+		ArrayList<int[]> result = new ArrayList<int[]>(6);
+		int[] adjacent;
+		for (int fila = y - 1; fila <= y + 1; fila++) {
+			for (int col = x - 1; col <= x; col++) {
+				if (fila == y && col == x)
+					col = x + 1;
+				// Comprobamos que el hexágono adyacente no está fuera de la
+				// rejilla
+				if (col >= 0 && col < dimX && fila >= 0 && fila < dimY) {
+					adjacent = new int[3];
+					adjacent[0] = col;
+					adjacent[1] = fila;
+					adjacent[2] = grid[col][fila];
+					result.add(adjacent);
+				}
+			}
+		}
+		return result;
 	}
-	
+
 }
