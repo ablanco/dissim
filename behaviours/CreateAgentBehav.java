@@ -16,6 +16,7 @@
 
 package behaviours;
 
+import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
@@ -25,13 +26,18 @@ public class CreateAgentBehav extends OneShotBehaviour {
 
 	private static final long serialVersionUID = 1700469108759727145L;
 
+	public CreateAgentBehav(Agent a) {
+		super(a);
+	}
+
 	@Override
 	public void action() {
-		Object[] arguments = new Object[]{"",""}; // TODO
+		Object[] arguments = new Object[] { "", "" }; // TODO
 		PlatformController plataforma = myAgent.getContainerController();
 		AgentController agtctrl;
 		try {
-			agtctrl = plataforma.createNewAgent("B", "agents.Bernardo", arguments); // TODO
+			agtctrl = plataforma.createNewAgent("B", "agents.Bernardo",
+					arguments); // TODO
 			agtctrl.start();
 		} catch (ControllerException e) {
 			e.printStackTrace();

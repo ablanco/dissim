@@ -17,30 +17,49 @@
 package agents;
 
 import util.HexagonalGrid;
-import behaviours.FloodTileBehav;
 import jade.core.Agent;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 
-public class WaterAgent extends Agent {
+public class EnviromentAgent extends Agent {
 
-	private static final long serialVersionUID = -8213275953034715877L;
+	private static final long serialVersionUID = 9023113144679741543L;
+
+	private HexagonalGrid grid;
 
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		int x; // Posición inicial en la rejilla
-		int y;
 		if (args != null && args.length >= 2) {
-			x = Integer.parseInt((String) args[0]);
-			y = Integer.parseInt((String) args[1]);
+			int x = Integer.parseInt((String) args[0]);
+			int y = Integer.parseInt((String) args[1]);
+			grid = new HexagonalGrid(x, y);
 		} else {
 			throw new IllegalArgumentException("Wrong arguments.");
 		}
 
 		// Añadir comportamientos
-		addBehaviour(new FloodTileBehav(this, x, y));
-
 		// TODO
+
+		// Registrarse con el agente DF
+		DFAgentDescription dfd = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType(""); // TODO
+		sd.setName(getName());
+		sd.setOwnership("DCCIA"); // ?
+		dfd.setName(getAID());
+		dfd.addServices(sd);
+		try {
+			DFService.register(this, dfd);
+		} catch (FIPAException e) {
+			System.err.println(getLocalName()
+					+ " registration with DF unsucceeded. Reason: "
+					+ e.getMessage());
+			doDelete();
+		}
 	}
 
 }

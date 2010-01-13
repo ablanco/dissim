@@ -14,33 +14,45 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package agents;
+package behaviours;
 
-import util.HexagonalGrid;
-import behaviours.FloodTileBehav;
 import jade.core.Agent;
+import jade.core.behaviours.SimpleBehaviour;
 
-public class WaterAgent extends Agent {
+public class FloodTileBehav extends SimpleBehaviour {
 
-	private static final long serialVersionUID = -8213275953034715877L;
+	private static final long serialVersionUID = -7362590926527253261L;
+
+	protected int x;
+	protected int y;
+	protected boolean stopped = false;
+
+	public FloodTileBehav(Agent a, int x, int y) {
+		super(a);
+		this.x = x;
+		this.y = y;
+	}
 
 	@Override
-	protected void setup() {
-		// Obtener argumentos
-		Object[] args = getArguments();
-		int x; // Posición inicial en la rejilla
-		int y;
-		if (args != null && args.length >= 2) {
-			x = Integer.parseInt((String) args[0]);
-			y = Integer.parseInt((String) args[1]);
-		} else {
-			throw new IllegalArgumentException("Wrong arguments.");
-		}
-
-		// Añadir comportamientos
-		addBehaviour(new FloodTileBehav(this, x, y));
-
+	public void action() {
+		// Obtener agente entorno
 		// TODO
+
+		// Solicitar casillas adyacentes
+		// TODO
+
+		// Escoger casilla a la que moverse
+		// TODO
+
+		// ¿Inundar casilla?
+		// TODO
+
+		// Volver a empezar el action
+	}
+
+	@Override
+	public boolean done() {
+		return stopped;
 	}
 
 }

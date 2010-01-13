@@ -22,10 +22,10 @@ import jade.core.Agent;
 public class CreatorAgent extends Agent {
 
 	private static final long serialVersionUID = 1808039536880287251L;
-	
+
 	@Override
 	protected void setup() {
-		addBehaviour(new CreateAgentBehav());
+		addBehaviour(new CreateAgentBehav(this));
 		// TODO
 	}
 
