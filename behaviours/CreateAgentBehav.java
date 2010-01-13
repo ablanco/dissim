@@ -14,17 +14,28 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package agents;
+package behaviours;
 
-import jade.core.Agent;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.wrapper.AgentController;
+import jade.wrapper.ControllerException;
+import jade.wrapper.PlatformController;
 
-public class Creator extends Agent {
+public class CreateAgentBehav extends OneShotBehaviour {
 
-	private static final long serialVersionUID = 1808039536880287251L;
-	
+	private static final long serialVersionUID = 1700469108759727145L;
+
 	@Override
-	protected void setup() {
-		// TODO
+	public void action() {
+		Object[] arguments = new Object[]{"",""}; // TODO
+		PlatformController plataforma = myAgent.getContainerController();
+		AgentController agtctrl;
+		try {
+			agtctrl = plataforma.createNewAgent("B", "agents.Bernardo", arguments); // TODO
+			agtctrl.start();
+		} catch (ControllerException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -18,7 +18,7 @@ package agents;
 
 import jade.core.Agent;
 
-public class Water extends Agent {
+public class WaterAgent extends Agent {
 
 	private static final long serialVersionUID = -8213275953034715877L;
 	
