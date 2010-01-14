@@ -17,9 +17,9 @@
 package behaviours;
 
 import jade.core.Agent;
-import jade.core.behaviours.SimpleBehaviour;
+import jade.core.behaviours.CyclicBehaviour;
 
-public class FloodTileBehav extends SimpleBehaviour {
+public class FloodTileBehav extends CyclicBehaviour {
 
 	private static final long serialVersionUID = -7362590926527253261L;
 
@@ -46,13 +46,6 @@ public class FloodTileBehav extends SimpleBehaviour {
 
 		// ¿Inundar casilla?
 		// TODO
-
-		// Volver a empezar el action
-	}
-
-	@Override
-	public boolean done() {
-		return stopped;
 	}
 
 }

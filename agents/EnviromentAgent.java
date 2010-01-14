@@ -18,6 +18,8 @@ package agents;
 
 import util.HexagonalGrid;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -46,11 +48,14 @@ public class EnviromentAgent extends Agent {
 
 		// Registrarse con el agente DF
 		DFAgentDescription dfd = new DFAgentDescription();
-		ServiceDescription sd = new ServiceDescription();
-		sd.setType(""); // TODO
-		sd.setName(getName());
-		sd.setOwnership("DCCIA"); // ?
 		dfd.setName(getAID());
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("flood-registering");
+		sd.setName(getName());
+		dfd.addServices(sd);
+		sd = new ServiceDescription();
+		sd.setType("grid-querying");
+		sd.setName(getName());
 		dfd.addServices(sd);
 		try {
 			DFService.register(this, dfd);
@@ -58,8 +63,20 @@ public class EnviromentAgent extends Agent {
 			System.err.println(getLocalName()
 					+ " registration with DF unsucceeded. Reason: "
 					+ e.getMessage());
-			doDelete();
+			e.printStackTrace();
+			//doDelete();
 		}
 	}
+	
+	protected class RegisterFloodTileBehav extends CyclicBehaviour {
 
+		private static final long serialVersionUID = -3677388777435949196L;
+
+		@Override
+		public void action() {
+			// TODO
+			
+		}
+		
+	}
 }
