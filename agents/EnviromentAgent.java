@@ -16,14 +16,18 @@
 
 package agents;
 
-import util.HexagonalGrid;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
+import util.HexagonalGrid;
 
 public class EnviromentAgent extends Agent {
 
@@ -39,12 +43,15 @@ public class EnviromentAgent extends Agent {
 			int x = Integer.parseInt((String) args[0]);
 			int y = Integer.parseInt((String) args[1]);
 			grid = new HexagonalGrid(x, y);
+			// TODO introducir las alturas en grid
 		} else {
-			throw new IllegalArgumentException("Wrong arguments.");
+			System.err.println(getLocalName() + " wrong arguments.");
+			doDelete();
 		}
 
 		// Añadir comportamientos
-		// TODO
+		addBehaviour(new RegisterFloodTileBehav());
+		addBehaviour(new QueryGridBehav());
 
 		// Registrarse con el agente DF
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -64,19 +71,72 @@ public class EnviromentAgent extends Agent {
 					+ " registration with DF unsucceeded. Reason: "
 					+ e.getMessage());
 			e.printStackTrace();
-			//doDelete();
+			doDelete();
 		}
 	}
-	
+
+	@Override
+	protected void takeDown() {
+		// Desregistrarse de las páginas amarillas
+		try {
+			DFService.deregister(this);
+		} catch (FIPAException fe) {
+			fe.printStackTrace();
+		}
+		System.out.println("Enviroment-agent " + getAID().getName()
+				+ " terminating.");
+	}
+
 	protected class RegisterFloodTileBehav extends CyclicBehaviour {
 
 		private static final long serialVersionUID = -3677388777435949196L;
 
 		@Override
 		public void action() {
-			// TODO
-			
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate
+					.MatchConversationId("register-flood"), MessageTemplate
+					.MatchPerformative(ACLMessage.CFP));
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				// CFP Message received. Process it
+				String pos = msg.getContent();
+				String[] coord = pos.split(" ");
+				grid.increaseValue(Integer.parseInt(coord[0]), Integer
+						.parseInt(coord[1]), 1); // TODO 1?
+			} else {
+				block();
+			}
 		}
-		
+	}
+
+	protected class QueryGridBehav extends CyclicBehaviour {
+
+		private static final long serialVersionUID = 1045845004140195390L;
+
+		@Override
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate
+					.MatchConversationId("query-grid"), MessageTemplate
+					.MatchPerformative(ACLMessage.CFP));
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				// CFP Message received. Process it
+				String pos = msg.getContent();
+				String[] coord = pos.split(" ");
+				ArrayList<int[]> adjacents = grid.getAdjacents(Integer
+						.parseInt(coord[0]), Integer.parseInt(coord[1]));
+
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(ACLMessage.INFORM);
+				try {
+					reply.setContentObject(adjacents);
+					myAgent.send(reply);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				block();
+			}
+		}
 	}
 }

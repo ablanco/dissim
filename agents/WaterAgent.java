@@ -16,19 +16,12 @@
 
 package agents;
 
-import jade.core.AID;
 import jade.core.Agent;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import behaviours.FloodTileBehav;
 
 public class WaterAgent extends Agent {
 
 	private static final long serialVersionUID = -8213275953034715877L;
-	
-	protected AID envAID;
 
 	@Override
 	protected void setup() {
@@ -36,37 +29,16 @@ public class WaterAgent extends Agent {
 		Object[] args = getArguments();
 		int x; // Posición inicial en la rejilla
 		int y;
-		if (args != null && args.length >= 2) {
+		int value;
+		if (args != null && args.length >= 3) {
 			x = Integer.parseInt((String) args[0]);
 			y = Integer.parseInt((String) args[1]);
+			value = Integer.parseInt((String) args[2]);
 		} else {
 			throw new IllegalArgumentException("Wrong arguments.");
 		}
-		
-		// Obtener agente entorno
-		DFAgentDescription template = new DFAgentDescription();
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType("flood-registering");
-        template.addServices(sd);
-        sd = new ServiceDescription();
-        sd.setType("grid-querying");
-        template.addServices(sd);
-        try {
-        	DFAgentDescription[] result = DFService.search(this, template);
-        	if (result.length != 1)
-        		throw new Exception("Error searching for the enviroment agent. Found " + result.length + " agents.");
-        	envAID = result[0].getName();
-        }
-        catch (FIPAException fe) {
-        	fe.printStackTrace();
-        } catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		// Añadir comportamientos
-		addBehaviour(new FloodTileBehav(this, x, y));
-
-		// TODO
+		addBehaviour(new FloodTileBehav(this, x, y, value));
 	}
-
 }

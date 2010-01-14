@@ -16,36 +16,129 @@
 
 package behaviours;
 
+import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.Behaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
-public class FloodTileBehav extends CyclicBehaviour {
+import java.util.ArrayList;
+
+public class FloodTileBehav extends Behaviour {
 
 	private static final long serialVersionUID = -7362590926527253261L;
 
 	protected int x;
 	protected int y;
-	protected boolean stopped = false;
+	protected int value;
+	protected AID envAID;
+	private boolean stopped = false;
+	private int step = 0;
+	private MessageTemplate mt;
 
-	public FloodTileBehav(Agent a, int x, int y) {
+	public FloodTileBehav(Agent a, int x, int y, int value) {
 		super(a);
-		this.x = x;
+		this.x = x; // Posición inicial
 		this.y = y;
+		this.value = value;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void action() {
+		switch (step) {
+		case 0:
+			// Obtener agente entorno
+			DFAgentDescription template = new DFAgentDescription();
+			ServiceDescription sd = new ServiceDescription();
+			sd.setType("flood-registering");
+			template.addServices(sd);
+			sd = new ServiceDescription();
+			sd.setType("grid-querying");
+			template.addServices(sd);
+			try {
+				DFAgentDescription[] result = DFService.search(myAgent,
+						template);
+				if (result.length != 1)
+					throw new Exception(
+							"Error searching for the enviroment agent. Found "
+									+ result.length + " agents.");
+				envAID = result[0].getName();
+			} catch (FIPAException fe) {
+				fe.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			step = 1;
+			break;
+		case 1:
+			// Solicitar casillas adyacentes
+			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
+			cfp.addReceiver(envAID);
+			cfp.setContent(Integer.toString(x) + " " + Integer.toString(y));
+			cfp.setConversationId("query-grid");
+			cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Valor único
+			myAgent.send(cfp);
+			// Prepara la plantilla para recibir la respuesta
+			mt = MessageTemplate.and(MessageTemplate
+					.MatchConversationId("query-grid"), MessageTemplate
+					.MatchInReplyTo(cfp.getReplyWith()));
+			step = 2;
+			break;
+		case 2:
+			// Recibir la información de la rejilla
+			ACLMessage reply = myAgent.receive(mt);
+			ArrayList<int[]> adjacents = null;
+			if (reply != null) {
+				if (reply.getPerformative() == ACLMessage.INFORM) {
+					// Es la buscada
+					try {
+						adjacents = (ArrayList<int[]>) reply.getContentObject();
+					} catch (UnreadableException e) {
+						e.printStackTrace();
+					}
+				}
+				int index = -1;
+				int i = 0;
+				// Escoger casilla a la que moverse si es que aún debe moverse
+				// Buscamos la casilla adyacente de menor potencial
+				for (int[] tile : adjacents) {
+					if (tile[2] < value)
+						index = i;
+				}
+				// Si se ha encontrado una significa que se debe mover
+				if (index != -1) {
+					int[] tile = adjacents.get(index);
+					x = tile[0];
+					y = tile[1];
+					value = tile[2];
+					step = 1;
+				}
+				// Sino significa que ya ha llegado a su casilla definitiva
+				else {
+					// Inundar casilla
+					ACLMessage cfp2 = new ACLMessage(ACLMessage.CFP);
+					cfp2.addReceiver(envAID);
+					cfp2.setContent(Integer.toString(x) + " "
+							+ Integer.toString(y));
+					cfp2.setConversationId("register-flood");
+					myAgent.send(cfp2);
+					stopped = true;
+				}
+			} else {
+				block();
+			}
+			break;
+		}
 	}
 
 	@Override
-	public void action() {
-		// Obtener agente entorno
-		// TODO
-
-		// Solicitar casillas adyacentes
-		// TODO
-
-		// Escoger casilla a la que moverse
-		// TODO
-
-		// ¿Inundar casilla?
-		// TODO
+	public boolean done() {
+		return stopped;
 	}
-
 }

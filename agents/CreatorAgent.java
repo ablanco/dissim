@@ -25,7 +25,6 @@ public class CreatorAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		addBehaviour(new CreateAgentBehav());
 		// TODO
 	}
 
