@@ -39,11 +39,20 @@ public class EnviromentAgent extends Agent {
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args != null && args.length >= 2) {
+		if (args != null && args.length == 2) {
 			int x = Integer.parseInt((String) args[0]);
 			int y = Integer.parseInt((String) args[1]);
 			grid = new HexagonalGrid(x, y);
 			// TODO introducir las alturas en grid
+			grid.setValue(0, 0, 12); //DEBUG
+			grid.setValue(0, 1, 12);
+			grid.setValue(0, 2, 10);
+			grid.setValue(1, 0, 10);
+			grid.setValue(1, 1, 9);
+			grid.setValue(1, 2, 10);
+			grid.setValue(2, 0, 8);
+			grid.setValue(2, 1, 8);
+			grid.setValue(2, 2, 6); //FIN DEBUG
 		} else {
 			System.err.println(getLocalName() + " wrong arguments.");
 			doDelete();
@@ -51,6 +60,7 @@ public class EnviromentAgent extends Agent {
 
 		// Añadir comportamientos
 		addBehaviour(new RegisterFloodTileBehav());
+		addBehaviour(new AdjacentsGridBehav());
 		addBehaviour(new QueryGridBehav());
 
 		// Registrarse con el agente DF
@@ -98,11 +108,42 @@ public class EnviromentAgent extends Agent {
 					.MatchPerformative(ACLMessage.CFP));
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
-				// CFP Message received. Process it
+				// Mensaje CFP recibido, hay que procesarlo
 				String pos = msg.getContent();
 				String[] coord = pos.split(" ");
 				grid.increaseValue(Integer.parseInt(coord[0]), Integer
-						.parseInt(coord[1]), 1); // TODO 1?
+						.parseInt(coord[1]), Integer.parseInt(coord[2]));
+			} else {
+				block();
+			}
+		}
+	}
+
+	protected class AdjacentsGridBehav extends CyclicBehaviour {
+
+		private static final long serialVersionUID = 1045845004140195390L;
+
+		@Override
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate
+					.MatchConversationId("adjacents-grid"), MessageTemplate
+					.MatchPerformative(ACLMessage.CFP));
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				// Mensaje CFP recibido, hay que procesarlo
+				String pos = msg.getContent();
+				String[] coord = pos.split(" ");
+				ArrayList<int[]> adjacents = grid.getAdjacents(Integer
+						.parseInt(coord[0]), Integer.parseInt(coord[1]));
+
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(ACLMessage.INFORM);
+				try {
+					reply.setContentObject(adjacents);
+					myAgent.send(reply);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			} else {
 				block();
 			}
@@ -120,20 +161,16 @@ public class EnviromentAgent extends Agent {
 					.MatchPerformative(ACLMessage.CFP));
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
-				// CFP Message received. Process it
+				// Mensaje CFP recibido, hay que procesarlo
 				String pos = msg.getContent();
 				String[] coord = pos.split(" ");
-				ArrayList<int[]> adjacents = grid.getAdjacents(Integer
-						.parseInt(coord[0]), Integer.parseInt(coord[1]));
+				int value = grid.getValue(Integer.parseInt(coord[0]), Integer
+						.parseInt(coord[1]));
 
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
-				try {
-					reply.setContentObject(adjacents);
-					myAgent.send(reply);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				reply.setContent(Integer.toString(value));
+				myAgent.send(reply);
 			} else {
 				block();
 			}

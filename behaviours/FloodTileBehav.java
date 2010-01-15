@@ -28,24 +28,29 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class FloodTileBehav extends Behaviour {
 
 	private static final long serialVersionUID = -7362590926527253261L;
 
-	protected int x;
+	protected int x; // Posición de la unidad de agua
 	protected int y;
-	protected int value;
-	protected AID envAID;
-	private boolean stopped = false;
+	protected int value; // Potencial de la casilla actual
+	protected int water; // Cantidad de agua
+	protected AID envAID; // Identificador del agente entorno
+	protected Random rnd;
+	private boolean stopped = false; // Comportamiento terminado?
 	private int step = 0;
 	private MessageTemplate mt;
 
-	public FloodTileBehav(Agent a, int x, int y, int value) {
+	public FloodTileBehav(Agent a, int x, int y, int value, int water) {
 		super(a);
 		this.x = x; // Posición inicial
 		this.y = y;
 		this.value = value;
+		this.water = water;
+		rnd = new Random(System.currentTimeMillis());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -81,12 +86,12 @@ public class FloodTileBehav extends Behaviour {
 			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
 			cfp.addReceiver(envAID);
 			cfp.setContent(Integer.toString(x) + " " + Integer.toString(y));
-			cfp.setConversationId("query-grid");
+			cfp.setConversationId("adjacents-grid");
 			cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Valor único
 			myAgent.send(cfp);
 			// Prepara la plantilla para recibir la respuesta
 			mt = MessageTemplate.and(MessageTemplate
-					.MatchConversationId("query-grid"), MessageTemplate
+					.MatchConversationId("adjacents-grid"), MessageTemplate
 					.MatchInReplyTo(cfp.getReplyWith()));
 			step = 2;
 			break;
@@ -103,29 +108,45 @@ public class FloodTileBehav extends Behaviour {
 						e.printStackTrace();
 					}
 				}
-				int index = -1;
-				int i = 0;
-				// Escoger casilla a la que moverse si es que aún debe moverse
-				// Buscamos la casilla adyacente de menor potencial
+				// Lista con los índices de las casillas adyacentes de menor
+				// potencial
+				ArrayList<Integer> tilesIdx = new ArrayList<Integer>(adjacents
+						.size());
+				int i = 0; // Índice en adjacents
+				int oldValue = value;
+				// Buscamos las casillas adyacentes de menor potencial
 				for (int[] tile : adjacents) {
-					if (tile[2] < value)
-						index = i;
+					if (tile[2] == value) { // Si es del mismo potencial
+						tilesIdx.add(new Integer(i));
+					} else if (tile[2] < value) { // Un nuevo menor potencial
+						// Reiniciamos la lista de índices
+						tilesIdx = new ArrayList<Integer>(adjacents.size());
+						tilesIdx.add(new Integer(i));
+						value = tile[2];
+					}
+					i++;
 				}
-				// Si se ha encontrado una significa que se debe mover
-				if (index != -1) {
+				// Si se ha encontrado una casilla de menor potencial que la
+				// casilla actual significa que se debe mover
+				if (value < oldValue) {
+					int index = tilesIdx.get(rnd.nextInt(tilesIdx.size()))
+							.intValue();
+					// Escogemos una casilla al azar entre las de menor
+					// potencial
 					int[] tile = adjacents.get(index);
 					x = tile[0];
 					y = tile[1];
-					value = tile[2];
+					// value = tile[2];
 					step = 1;
 				}
-				// Sino significa que ya ha llegado a su casilla definitiva
+				// Sino significa que ya había llegado a su casilla definitiva
 				else {
 					// Inundar casilla
 					ACLMessage cfp2 = new ACLMessage(ACLMessage.CFP);
 					cfp2.addReceiver(envAID);
 					cfp2.setContent(Integer.toString(x) + " "
-							+ Integer.toString(y));
+							+ Integer.toString(y) + " "
+							+ Integer.toString(water));
 					cfp2.setConversationId("register-flood");
 					myAgent.send(cfp2);
 					stopped = true;

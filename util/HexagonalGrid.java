@@ -38,6 +38,7 @@ public class HexagonalGrid {
 
 	public void increaseValue(int x, int y, int increment) {
 		grid[x][y] += increment;
+		printGrid(); // TODO Debug
 	}
 
 	public int getValue(int x, int y) {
@@ -56,9 +57,9 @@ public class HexagonalGrid {
 		ArrayList<int[]> result = new ArrayList<int[]>(6);
 		int[] adjacent;
 		for (int fila = y - 1; fila <= y + 1; fila++) {
-			for (int col = x - 1; col <= x; col++) {
+			for (int col = x; col <= x + 1; col++) {
 				if (fila == y && col == x)
-					col = x + 1;
+					col = x - 1;
 				// Comprobamos que el hexágono adyacente no está fuera de la
 				// rejilla
 				if (col >= 0 && col < dimX && fila >= 0 && fila < dimY) {
@@ -68,9 +69,23 @@ public class HexagonalGrid {
 					adjacent[2] = grid[col][fila];
 					result.add(adjacent);
 				}
+				if (fila == y && col == x - 1)
+					col++;
 			}
 		}
 		return result;
 	}
 
+	private void printGrid() {
+		for (int i = 0; i < dimX; i++) {
+			for (int j = 0; j < dimY; j++) {
+				if (j % 2 != 0) {
+					System.out.print(" ");
+				}
+				System.out.print(grid[i][j] + "  ");
+			}
+			System.out.print("\n");
+		}
+		System.out.println("\n");
+	}
 }
