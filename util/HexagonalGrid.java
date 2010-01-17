@@ -78,14 +78,14 @@ public class HexagonalGrid {
 
 	private void printGrid() {
 		for (int i = 0; i < dimX; i++) {
+			if (i % 2 != 0) {
+				System.out.print(" ");
+			}
 			for (int j = 0; j < dimY; j++) {
-				if (j % 2 != 0) {
-					System.out.print(" ");
-				}
 				System.out.print(grid[i][j] + "  ");
 			}
 			System.out.print("\n");
 		}
-		System.out.println("\n");
+		System.out.print("\n");
 	}
 }

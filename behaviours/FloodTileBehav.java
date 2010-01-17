@@ -28,6 +28,7 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 public class FloodTileBehav extends Behaviour {
@@ -56,6 +57,9 @@ public class FloodTileBehav extends Behaviour {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
+		@SuppressWarnings("unused")
+		String agent = myAgent.getLocalName();
+		ACLMessage msg;
 		switch (step) {
 		case 0:
 			// Obtener agente entorno
@@ -83,31 +87,35 @@ public class FloodTileBehav extends Behaviour {
 			break;
 		case 1:
 			// Solicitar casillas adyacentes
-			ACLMessage cfp = new ACLMessage(ACLMessage.CFP);
-			cfp.addReceiver(envAID);
-			cfp.setContent(Integer.toString(x) + " " + Integer.toString(y));
-			cfp.setConversationId("adjacents-grid");
-			cfp.setReplyWith("cfp" + System.currentTimeMillis()); // Valor único
-			myAgent.send(cfp);
+			msg = new ACLMessage(ACLMessage.CFP);
+			msg.addReceiver(envAID);
+			msg.setContent(Integer.toString(x) + " " + Integer.toString(y));
+			msg.setConversationId("adjacents-grid");
+			msg.setReplyWith("cfp" + System.currentTimeMillis()); // Valor único
+			myAgent.send(msg);
 			// Prepara la plantilla para recibir la respuesta
 			mt = MessageTemplate.and(MessageTemplate
 					.MatchConversationId("adjacents-grid"), MessageTemplate
-					.MatchInReplyTo(cfp.getReplyWith()));
+					.MatchInReplyTo(msg.getReplyWith()));
 			step = 2;
 			break;
 		case 2:
 			// Recibir la información de la rejilla
-			ACLMessage reply = myAgent.receive(mt);
+			msg = myAgent.receive(mt);
 			ArrayList<int[]> adjacents = null;
-			if (reply != null) {
-				if (reply.getPerformative() == ACLMessage.INFORM) {
+			if (msg != null) {
+				if (msg.getPerformative() == ACLMessage.INFORM) {
 					// Es la buscada
 					try {
-						adjacents = (ArrayList<int[]>) reply.getContentObject();
+						adjacents = (ArrayList<int[]>) msg.getContentObject();
 					} catch (UnreadableException e) {
 						e.printStackTrace();
 					}
 				}
+				/*
+				 * System.out.println(agent + " -> Adjacents tiles: " +
+				 * adjacentsToString(adjacents));
+				 */
 				// Lista con los índices de las casillas adyacentes de menor
 				// potencial
 				ArrayList<Integer> tilesIdx = new ArrayList<Integer>(adjacents
@@ -134,6 +142,10 @@ public class FloodTileBehav extends Behaviour {
 					// Escogemos una casilla al azar entre las de menor
 					// potencial
 					int[] tile = adjacents.get(index);
+					/*
+					 * System.out.println(agent + " -> Moving to tile: " +
+					 * tile[0] + " " + tile[1] + " " + tile[2]);
+					 */
 					x = tile[0];
 					y = tile[1];
 					// value = tile[2];
@@ -141,18 +153,48 @@ public class FloodTileBehav extends Behaviour {
 				}
 				// Sino significa que ya había llegado a su casilla definitiva
 				else {
-					// Inundar casilla
-					ACLMessage cfp2 = new ACLMessage(ACLMessage.CFP);
-					cfp2.addReceiver(envAID);
-					cfp2.setContent(Integer.toString(x) + " "
+					// Intentar inundar casilla
+					msg = new ACLMessage(ACLMessage.CFP);
+					msg.addReceiver(envAID);
+					String tile = Integer.toString(x) + " "
 							+ Integer.toString(y) + " "
-							+ Integer.toString(water));
-					cfp2.setConversationId("register-flood");
-					myAgent.send(cfp2);
-					stopped = true;
+							+ Integer.toString(water) + " " + value;
+					/*
+					 * System.out.println(agent + " -> Trying to flood tile: " +
+					 * tile);
+					 */
+					msg.setContent(tile);
+					msg.setConversationId("register-flood");
+					msg.setReplyWith("cfp" + System.currentTimeMillis()); // Valor
+					// único
+					myAgent.send(msg);
+					// Prepara la plantilla para recibir la respuesta
+					mt = MessageTemplate.and(MessageTemplate
+							.MatchConversationId("register-flood"),
+							MessageTemplate.MatchInReplyTo(msg.getReplyWith()));
+					step = 3;
 				}
 			} else {
 				block();
+			}
+			break;
+		case 3:
+			// Recibir la información de la rejilla
+			msg = myAgent.receive(mt);
+			if (msg != null) {
+				if (msg.getPerformative() == ACLMessage.CONFIRM) {
+					// Se inunda la casilla
+					stopped = true;
+					/*
+					 * System.out.println(agent + " -> Trying to flood tile: " +
+					 * Integer.toString(x) + " " + Integer.toString(y) + " " +
+					 * Integer.toString(water) + " " + value);
+					 */
+				} else {
+					// No se inunda
+					value = Integer.parseInt(msg.getContent());
+					step = 1; // Vuele a buscar una casilla que inundar
+				}
 			}
 			break;
 		}
@@ -161,5 +203,19 @@ public class FloodTileBehav extends Behaviour {
 	@Override
 	public boolean done() {
 		return stopped;
+	}
+
+	@SuppressWarnings("unused")
+	private String adjacentsToString(ArrayList<int[]> adjacents) {
+		String result = "";
+		Iterator<int[]> it = adjacents.iterator();
+		while (it.hasNext()) {
+			int[] tile = it.next();
+			for (int i = 0; i < tile.length; i++) {
+				result += tile[i] + " ";
+			}
+			result += " - ";
+		}
+		return result;
 	}
 }
