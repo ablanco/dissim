@@ -16,8 +16,8 @@
 
 package agents;
 
-import behaviours.CreateAgentBehav;
 import jade.core.Agent;
+import behaviours.CreateAgentBehav;
 
 public class CreatorAgent extends Agent {
 
@@ -25,7 +25,24 @@ public class CreatorAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		// TODO
+		// TODO Coger los datos que hay que pasarle a cada agente de la GUI
+		Object[] arguments;
+
+		// Enviroment
+		arguments = new Object[] { "3", "3" };
+		addBehaviour(new CreateAgentBehav(this, "Enviroment",
+				"agents.EnviromentAgent", arguments));
+
+		// TODO Esperar a que el entorno esté listo
+
+		// Agentes Water
+		for (int i = 0; i < 25; i++) {
+			arguments = new Object[] { "0", "0", "9", "1" };
+			addBehaviour(new CreateAgentBehav(this, "Water " + i,
+					"agents.WaterAgent", arguments));
+		}
+
+		System.out.println("Agents created");
 	}
 
 }

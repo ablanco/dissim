@@ -16,27 +16,51 @@
 
 package behaviours;
 
+import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
-import jade.wrapper.PlatformController;
 
 public class CreateAgentBehav extends OneShotBehaviour {
 
-	private static final long serialVersionUID = 1700469108759727145L;
+	private static final long serialVersionUID = -1618019490277716693L;
+
+	protected Object[] arguments;
+	protected String name;
+	protected String agtClass;
+
+	/**
+	 * 
+	 * @param agt
+	 *            Agente que llama a este constructor
+	 * @param name
+	 *            Nombre del agente a crear
+	 * @param agtClass
+	 *            Clase del agente a crear
+	 * @param arguments
+	 *            Argumentos a pasar al agente a crear
+	 */
+	public CreateAgentBehav(Agent agt, String name, String agtClass,
+			Object[] arguments) {
+		super(agt);
+		this.name = name;
+		this.agtClass = agtClass;
+		this.arguments = arguments;
+	}
 
 	@Override
 	public void action() {
-		Object[] arguments = new Object[] { "", "" }; // TODO
-		PlatformController plataforma = myAgent.getContainerController();
+		AgentContainer container = myAgent.getContainerController();
 		AgentController agtctrl;
 		try {
-			agtctrl = plataforma.createNewAgent("B", "agents.Bernardo",
-					arguments); // TODO
+			agtctrl = container.createNewAgent(name, agtClass, arguments);
 			agtctrl.start();
 		} catch (ControllerException e) {
+			System.err.println(myAgent.getLocalName()
+					+ " -> Error creating an agent of type " + agtClass
+					+ " with name " + name);
 			e.printStackTrace();
 		}
 	}
-
 }
