@@ -17,7 +17,9 @@
 package agents;
 
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import behaviours.CreateAgentBehav;
+import behaviours.CreateAgentTickerBehav;
 
 public class CreatorAgent extends Agent {
 
@@ -36,13 +38,11 @@ public class CreatorAgent extends Agent {
 		// TODO Esperar a que el entorno esté listo
 
 		// Agentes Water
-		for (int i = 0; i < 25; i++) {
-			arguments = new Object[] { "0", "0", "9", "1" };
-			addBehaviour(new CreateAgentBehav(this, "Water " + i,
-					"agents.WaterAgent", arguments));
-		}
-
-		System.out.println("Agents created");
+		arguments = new Object[] { "0", "0", "9", "1" };
+		Behaviour waterAgents = new CreateAgentTickerBehav(this, 100L, "Water",
+				"agents.WaterAgent", arguments);
+		addBehaviour(waterAgents);
+		
+		// TODO Stop waterAgents
 	}
-
 }

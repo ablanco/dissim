@@ -19,7 +19,7 @@ package util;
 import java.util.ArrayList;
 
 public class HexagonalGrid {
-
+	// TODO Guardar por un lado nivel del terreno y por otro nivel de agua
 	private int[][] grid;
 	private int dimX;
 	private int dimY;

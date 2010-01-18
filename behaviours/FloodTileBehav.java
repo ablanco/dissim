@@ -142,6 +142,7 @@ public class FloodTileBehav extends Behaviour {
 					// Escogemos una casilla al azar entre las de menor
 					// potencial
 					int[] tile = adjacents.get(index);
+					// TODO Escoger casilla en vez de al azar según un vector??
 					/*
 					 * System.out.println(agent + " -> Moving to tile: " +
 					 * tile[0] + " " + tile[1] + " " + tile[2]);
