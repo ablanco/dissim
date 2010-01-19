@@ -1,4 +1,4 @@
-package Pruebas;
+package pruebas;
 
 
 
