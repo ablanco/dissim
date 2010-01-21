@@ -44,15 +44,12 @@ public class EnviromentAgent extends Agent {
 			int y = Integer.parseInt((String) args[1]);
 			grid = new HexagonalGrid(x, y);
 			// TODO introducir las alturas en grid
-			grid.setValue(0, 0, 9); // DEBUG
-			grid.setValue(0, 1, 9);
-			grid.setValue(0, 2, 8);
-			grid.setValue(1, 0, 7);
-			grid.setValue(1, 1, 6);
-			grid.setValue(1, 2, 8);
-			grid.setValue(2, 0, 5);
-			grid.setValue(2, 1, 5);
-			grid.setValue(2, 2, 3); // FIN DEBUG
+			/*
+			 * grid.setValue(0, 0, 9); // DEBUG grid.setValue(0, 1, 9);
+			 * grid.setValue(0, 2, 8); grid.setValue(1, 0, 7); grid.setValue(1,
+			 * 1, 6); grid.setValue(1, 2, 8); grid.setValue(2, 0, 5);
+			 * grid.setValue(2, 1, 5); grid.setValue(2, 2, 3); // FIN DEBUG
+			 */
 		} else {
 			System.err.println(getLocalName() + " wrong arguments.");
 			doDelete();
@@ -72,6 +69,10 @@ public class EnviromentAgent extends Agent {
 		dfd.addServices(sd);
 		sd = new ServiceDescription();
 		sd.setType("grid-querying");
+		sd.setName(getName());
+		dfd.addServices(sd);
+		sd = new ServiceDescription();
+		sd.setType("adjacents-grid");
 		sd.setName(getName());
 		dfd.addServices(sd);
 		try {
@@ -113,9 +114,9 @@ public class EnviromentAgent extends Agent {
 				String[] data = pos.split(" ");
 				int x = Integer.parseInt(data[0]);
 				int y = Integer.parseInt(data[1]);
-				int water = Integer.parseInt(data[2]);
-				int value = Integer.parseInt(data[3]);
-				int gridValue = grid.getValue(x, y);
+				double water = Double.parseDouble(data[2]);
+				double value = Double.parseDouble(data[3]);
+				double gridValue = grid.getValue(x, y);
 
 				ACLMessage reply = msg.createReply();
 				if (value == gridValue) {
@@ -123,7 +124,7 @@ public class EnviromentAgent extends Agent {
 					reply.setPerformative(ACLMessage.CONFIRM);
 				} else {
 					reply.setPerformative(ACLMessage.DISCONFIRM);
-					reply.setContent(Integer.toString(gridValue));
+					reply.setContent(Double.toString(gridValue));
 				}
 				myAgent.send(reply);
 			} else {
@@ -146,7 +147,7 @@ public class EnviromentAgent extends Agent {
 				// Mensaje CFP recibido, hay que procesarlo
 				String pos = msg.getContent();
 				String[] coord = pos.split(" ");
-				ArrayList<int[]> adjacents = grid.getAdjacents(Integer
+				ArrayList<double[]> adjacents = grid.getAdjacents(Integer
 						.parseInt(coord[0]), Integer.parseInt(coord[1]));
 
 				ACLMessage reply = msg.createReply();
@@ -177,12 +178,12 @@ public class EnviromentAgent extends Agent {
 				// Mensaje CFP recibido, hay que procesarlo
 				String pos = msg.getContent();
 				String[] coord = pos.split(" ");
-				int value = grid.getValue(Integer.parseInt(coord[0]), Integer
-						.parseInt(coord[1]));
+				double value = grid.getValue(Integer.parseInt(coord[0]),
+						Integer.parseInt(coord[1]));
 
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
-				reply.setContent(Integer.toString(value));
+				reply.setContent(Double.toString(value));
 				myAgent.send(reply);
 			} else {
 				block();

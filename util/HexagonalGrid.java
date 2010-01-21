@@ -20,29 +20,45 @@ import java.util.ArrayList;
 
 public class HexagonalGrid {
 	// TODO Guardar por un lado nivel del terreno y por otro nivel de agua
-	private int[][] grid;
+	private double[][] gridTerrain;
+	private double[][] gridWater;
 	private int dimX;
 	private int dimY;
 
 	public HexagonalGrid(int x, int y) {
-		grid = new int[x][y];
+		gridTerrain = new double[x][y];
+		gridWater = new double[x][y];
 		dimX = x;
 		dimY = y;
 	}
 
-	public int setValue(int x, int y, int value) {
-		int old = grid[x][y];
-		grid[x][y] = value;
+	public double setTerrainValue(int x, int y, int value) {
+		double old = gridTerrain[x][y];
+		gridTerrain[x][y] = value;
+		return old;
+	}
+	
+	public double setWaterValue(int x, int y, int value) {
+		double old = gridWater[x][y];
+		gridWater[x][y] = value;
 		return old;
 	}
 
-	public void increaseValue(int x, int y, int increment) {
-		grid[x][y] += increment;
+	public void increaseValue(int x, int y, double increment) {
+		gridWater[x][y] += increment;
 		printGrid(); // TODO Debug
 	}
 
-	public int getValue(int x, int y) {
-		return grid[x][y];
+	public double getValue(int x, int y) {
+		return gridTerrain[x][y] + gridWater[x][y];
+	}
+	
+	public double getTerrainValue(int x, int y) {
+		return gridTerrain[x][y];
+	}
+	
+	public double getWaterValue(int x, int y) {
+		return gridWater[x][y];
 	}
 
 	/**
@@ -53,9 +69,9 @@ public class HexagonalGrid {
 	 * @return Una lista de arrays, cada array representa a un hexágono
 	 *         adyacente y sus elementos son: columna, fila y valor.
 	 */
-	public ArrayList<int[]> getAdjacents(int x, int y) {
-		ArrayList<int[]> result = new ArrayList<int[]>(6);
-		int[] adjacent;
+	public ArrayList<double[]> getAdjacents(int x, int y) {
+		ArrayList<double[]> result = new ArrayList<double[]>(6);
+		double[] adjacent;
 		for (int fila = y - 1; fila <= y + 1; fila++) {
 			for (int col = x; col <= x + 1; col++) {
 				if (fila == y && col == x)
@@ -63,10 +79,10 @@ public class HexagonalGrid {
 				// Comprobamos que el hexágono adyacente no está fuera de la
 				// rejilla
 				if (col >= 0 && col < dimX && fila >= 0 && fila < dimY) {
-					adjacent = new int[3];
+					adjacent = new double[3];
 					adjacent[0] = col;
 					adjacent[1] = fila;
-					adjacent[2] = grid[col][fila];
+					adjacent[2] = getValue(col,fila);
 					result.add(adjacent);
 				}
 				if (fila == y && col == x - 1)
@@ -82,7 +98,7 @@ public class HexagonalGrid {
 				System.out.print(" ");
 			}
 			for (int j = 0; j < dimY; j++) {
-				System.out.print(grid[i][j] + "  ");
+				System.out.print(getValue(i, j) + "  ");
 			}
 			System.out.print("\n");
 		}
