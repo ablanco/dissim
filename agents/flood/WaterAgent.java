@@ -14,10 +14,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package agents;
+package agents.flood;
 
 import jade.core.Agent;
-import behaviours.FloodTileBehav;
+import behaviours.flood.FloodTileBehav;
 
 public class WaterAgent extends Agent {
 

@@ -51,4 +51,8 @@ public class Scenario implements Serializable {
 	public boolean isComplete() {
 		return complete;
 	}
+
+	public void complete() {
+		complete = true;
+	}
 }
