@@ -28,6 +28,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import util.HexagonalGrid;
+import util.flood.FloodHexagonalGrid;
 
 public class EnviromentAgent extends Agent {
 
@@ -42,7 +43,8 @@ public class EnviromentAgent extends Agent {
 		if (args != null && args.length == 2) {
 			int x = Integer.parseInt((String) args[0]);
 			int y = Integer.parseInt((String) args[1]);
-			grid = new HexagonalGrid(x, y);
+			// TODO qué tipo de grid usar debería salir del scenario
+			grid = new FloodHexagonalGrid(x, y);
 			// TODO introducir las alturas en grid
 			grid.setTerrainValue(0, 0, 9); // DEBUG grid.setValue(0, 1, 9);
 			grid.setTerrainValue(0, 2, 8);

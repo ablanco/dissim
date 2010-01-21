@@ -37,13 +37,14 @@ public class FloodTileBehav extends Behaviour {
 
 	protected int x; // Posición de la unidad de agua
 	protected int y;
-	protected double value; // Potencial de la casilla actual
 	protected double water; // Cantidad de agua
 	protected AID envAID; // Identificador del agente entorno
 	protected Random rnd;
 	private boolean stopped = false; // Comportamiento terminado?
-	private int step = 0;
-	private MessageTemplate mt;
+
+	protected double value; // Potencial de la casilla actual
+	protected int step = 0;
+	protected MessageTemplate mt;
 
 	public FloodTileBehav(Agent a, int x, int y, double water) {
 		super(a);
@@ -57,8 +58,9 @@ public class FloodTileBehav extends Behaviour {
 	@Override
 	public void action() {
 		@SuppressWarnings("unused")
-		String agent = myAgent.getLocalName();
+		String agent = myAgent.getLocalName(); // TODO DEBUG variable
 		ACLMessage msg;
+
 		switch (step) {
 		case 0:
 			// Obtener agente entorno
@@ -85,11 +87,34 @@ public class FloodTileBehav extends Behaviour {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			// TODO Obtener valor de la casilla inicial
-			value = 9;
+
+			// Solicitar valor de la casilla inicial
+			msg = new ACLMessage(ACLMessage.CFP);
+			msg.addReceiver(envAID);
+			msg.setContent(Integer.toString(x) + " " + Integer.toString(y));
+			msg.setConversationId("query-grid");
+			msg.setReplyWith("cfp" + System.currentTimeMillis()); // Valor único
+			myAgent.send(msg);
+			// Prepara la plantilla para recibir la respuesta
+			mt = MessageTemplate.and(MessageTemplate
+					.MatchConversationId("query-grid"), MessageTemplate
+					.MatchInReplyTo(msg.getReplyWith()));
 			step = 1;
 			break;
 		case 1:
+			// Recibir la información de la rejilla
+			msg = myAgent.receive(mt);
+			if (msg != null) {
+				if (msg.getPerformative() == ACLMessage.INFORM) {
+					// Es la buscada
+					value = Double.parseDouble(msg.getContent());
+					step = 2;
+				}
+			} else {
+				block();
+			}
+			break;
+		case 2:
 			// Solicitar casillas adyacentes
 			msg = new ACLMessage(ACLMessage.CFP);
 			msg.addReceiver(envAID);
@@ -101,9 +126,9 @@ public class FloodTileBehav extends Behaviour {
 			mt = MessageTemplate.and(MessageTemplate
 					.MatchConversationId("adjacents-grid"), MessageTemplate
 					.MatchInReplyTo(msg.getReplyWith()));
-			step = 2;
+			step = 3;
 			break;
-		case 2:
+		case 3:
 			// Recibir la información de la rejilla
 			msg = myAgent.receive(mt);
 			ArrayList<double[]> adjacents = null;
@@ -155,7 +180,7 @@ public class FloodTileBehav extends Behaviour {
 					x = (int) tile[0];
 					y = (int) tile[1];
 					// value = tile[2];
-					step = 1;
+					step = 2;
 				}
 				// Sino significa que ya había llegado a su casilla definitiva
 				else {
@@ -172,20 +197,20 @@ public class FloodTileBehav extends Behaviour {
 					 */
 					msg.setContent(tile);
 					msg.setConversationId("register-flood");
-					msg.setReplyWith("cfp" + System.currentTimeMillis()); // Valor
-					// único
+					// Valor único
+					msg.setReplyWith("cfp" + System.currentTimeMillis());
 					myAgent.send(msg);
 					// Prepara la plantilla para recibir la respuesta
 					mt = MessageTemplate.and(MessageTemplate
 							.MatchConversationId("register-flood"),
 							MessageTemplate.MatchInReplyTo(msg.getReplyWith()));
-					step = 3;
+					step = 4;
 				}
 			} else {
 				block();
 			}
 			break;
-		case 3:
+		case 4:
 			// Recibir la información de la rejilla
 			msg = myAgent.receive(mt);
 			if (msg != null) {
@@ -200,8 +225,10 @@ public class FloodTileBehav extends Behaviour {
 				} else {
 					// No se inunda
 					value = Double.parseDouble(msg.getContent());
-					step = 1; // Vuele a buscar una casilla que inundar
+					step = 2; // Vuelve a buscar una casilla que inundar
 				}
+			} else {
+				block();
 			}
 			break;
 		}
@@ -212,6 +239,7 @@ public class FloodTileBehav extends Behaviour {
 		return stopped;
 	}
 
+	// TODO DEBUG function
 	@SuppressWarnings("unused")
 	private String adjacentsToString(ArrayList<int[]> adjacents) {
 		String result = "";
