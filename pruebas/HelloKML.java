@@ -35,7 +35,7 @@ public class HelloKML {
 		Kml kml = new Kml();
 		kml.createAndSetPlacemark().withName("Nueva Orleans, LA, USA")
 				.withOpen(Boolean.TRUE).createAndSetPoint().addToCoordinates(
-						-90.07507200013812, 29.95464801161122);
+						-90.07507200013812, 29.95464801161122, 0);
 		// marshals to console
 		kml.marshal();
 		// marshals into file

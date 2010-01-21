@@ -1,0 +1,140 @@
+package webservice;
+
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPElement;
+import javax.xml.soap.SOAPEnvelope;
+import javax.xml.soap.SOAPException;
+import javax.xml.soap.SOAPFactory;
+import javax.xml.soap.SOAPHeader;
+import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.SOAPPart;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPHandler;
+import javax.xml.ws.handler.soap.SOAPMessageContext;
+
+public class GetAltitude implements SOAPHandler<SOAPMessageContext> {
+
+	private String X_Value,Y_Value,Source_Layer, Elevation_Only;
+	private String WSDL = "http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL";
+	private String IP_ORIGEN = "192.168.2.1";
+	private String DIR_WEB = "http://gisdata.usgs.gov/XMLWebServices2/";
+	
+	public GetAltitude(){
+	}
+	@Override
+	public Set<QName> getHeaders() {
+		return null;
+	}
+
+	@Override
+	public void close(MessageContext arg0) {
+
+	}
+
+	@Override
+	public boolean handleFault(SOAPMessageContext arg0) {
+		return false;
+	}
+
+	@Override
+	public boolean handleMessage(SOAPMessageContext messageContext) {
+		SOAPMessage msg = messageContext.getMessage();
+		boolean bolMsgSalida = (Boolean) messageContext
+				.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+
+		boolean noProblem = true;
+
+		// Obtenemos el contenedor del mensaje SOAP
+		SOAPPart sp = msg.getSOAPPart();
+
+		// A partir del contendor, obtenemos el nodo "Envelope"
+		SOAPEnvelope env = null;
+		try {
+			env = sp.getEnvelope();
+		} catch (SOAPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			noProblem = false;
+		}
+
+		// Instanciamos un objeto SOAPFactory para crear cualquier elemento
+		// perteneciente a un mensaje SOAP, en nuestro caso, los nodos que
+		// formarán la cabecera
+		SOAPFactory soapFactory = null;
+		try {
+			soapFactory = SOAPFactory.newInstance();
+		} catch (SOAPException e) {
+			e.printStackTrace();
+			noProblem = false;
+		}
+
+		// Definimos los elementos a incluir en el mensaje		
+		SOAPElement soapElementoCabecera = null;
+		try {
+			soapElementoCabecera = soapFactory.createElement("cabeceraSOAP",
+					"", WSDL);
+		} catch (SOAPException e) {
+			e.printStackTrace();
+			noProblem = false;
+		}
+
+		SOAPElement soapIpOrigen = null;
+		try {
+			soapIpOrigen = soapFactory.createElement(IP_ORIGEN, "",
+					"http://gisdata.usgs.gov/XMLWebServices2/");
+		} catch (SOAPException e) {
+			e.printStackTrace();
+			noProblem = false;
+		}
+
+		// Rellenamos la información del nodo ipOrigen
+		try {
+			soapIpOrigen.addTextNode(IP_ORIGEN);
+		} catch (SOAPException e) {
+			e.printStackTrace();
+			noProblem = false;
+		}
+
+		// Incluimos los elementos dentro de los objetos correspondientes
+		try {
+			soapElementoCabecera.addChildElement(soapIpOrigen);
+		} catch (SOAPException e) {
+			e.printStackTrace();
+			noProblem = false;
+		}
+
+		SOAPHeader soapHeader = null;
+		try {
+			soapHeader = env.addHeader();
+		} catch (SOAPException e) {
+			e.printStackTrace();
+			noProblem = false;
+		} // Crea un elemento cabecera
+		// SOAP
+
+		try {
+			soapHeader.addChildElement(soapElementoCabecera);
+		} catch (SOAPException e) {
+			e.printStackTrace();
+			noProblem = false;
+		}
+		return noProblem;
+	}
+	
+	/* <X_Value>string</X_Value>
+    <Y_Value>string</Y_Value>
+    <Elevation_Units>string</Elevation_Units>
+    <Source_Layer>string</Source_Layer>
+    <Elevation_Only>string</Elevation_Only>
+    */
+	public double getAltitude(String X_Value, String Y_Value, String Source_Layer, String Elevation_Only){
+		double altitude = 0;
+		
+		
+		return altitude;
+		
+	}
+
+}

@@ -51,6 +51,10 @@ public class HexagonalGrid {
 	public void decreaseValue(int x, int y, double decrement) {
 		gridWater[x][y] -= decrement;
 	}
+	
+	public int[][] getGrid(){
+		return grid;
+	}
 
 	public double getValue(int x, int y) {
 		return gridTerrain[x][y] + gridWater[x][y];
