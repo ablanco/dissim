@@ -16,7 +16,10 @@
 
 package agents;
 
+import java.util.Iterator;
+
 import util.Scenario;
+import util.flood.FloodScenario;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import behaviours.CreateAgentBehav;
@@ -28,24 +31,51 @@ public class CreatorAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		// TODO Coger los datos que hay que pasarle a cada agente de la GUI
 		Scenario scen = Scenario.getCurrentScenario();
-		
-		Object[] arguments;
+		if (scen != null) {
+			Object[] arguments;
 
-		// Enviroment
-		arguments = new Object[] { "3", "3" };
-		addBehaviour(new CreateAgentBehav(this, "Enviroment",
-				"agents.EnviromentAgent", arguments));
+			// Enviroment
+			int[] grid = scen.getGridSize();
+			arguments = new Object[] { new Integer(grid[0]),
+					new Integer(grid[1]) };
+			addBehaviour(new CreateAgentBehav(this, "Enviroment",
+					"agents.EnviromentAgent", arguments));
 
-		// TODO Esperar a que el entorno esté listo
+			// Si es una inundación
+			if (scen instanceof FloodScenario) {
+				FloodScenario fscen = (FloodScenario) scen;
+				Iterator<double[]> it = fscen.getWaterSourcesIterator();
+				while (it.hasNext()) {
+					double[] waterSource = it.next();
+					// Agentes Water
+					grid = scen.coordToTile(waterSource[0], waterSource[1]);
+					arguments = new Object[] { Integer.toString(grid[0]),
+							Integer.toString(grid[1]),
+							Double.toString(waterSource[2]) };
+					Behaviour waterAgents = new CreateAgentTickerBehav(this,
+							(long) waterSource[3], "Water",
+							"agents.flood.WaterAgent", arguments);
+					addBehaviour(waterAgents);
+				}
+			}
+		} else { // TODO Borrar este código
+			Object[] arguments;
 
-		// Agentes Water
-		arguments = new Object[] { "0", "0", "9", "1" };
-		Behaviour waterAgents = new CreateAgentTickerBehav(this, 100L, "Water",
-				"agents.WaterAgent", arguments);
-		addBehaviour(waterAgents);
-		
-		// TODO Stop waterAgents
+			// Enviroment
+			arguments = new Object[] { "3", "3" };
+			addBehaviour(new CreateAgentBehav(this, "Enviroment",
+					"agents.EnviromentAgent", arguments));
+
+			// TODO Esperar a que el entorno esté listo
+
+			// Agentes Water
+			arguments = new Object[] { "0", "0", "1" };
+			Behaviour waterAgents = new CreateAgentTickerBehav(this, 100L,
+					"Water", "agents.flood.WaterAgent", arguments);
+			addBehaviour(waterAgents);
+
+			// TODO Stop waterAgents
+		}
 	}
 }

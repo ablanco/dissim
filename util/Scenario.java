@@ -22,6 +22,8 @@ public class Scenario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	// The GUI is the one that should care that the Scenario is completed before
+	// simulating it
 	protected boolean complete;
 	// Coordinates of simulation area (rectangle)
 	// NW means North West point
@@ -30,22 +32,52 @@ public class Scenario implements Serializable {
 	protected double NWlong;
 	protected double SElat;
 	protected double SElong;
+	protected int gridX;
+	protected int gridY;
 
 	// Current Scenario showed on GUI
 	// If a Scenario is loaded (from a file), or a new one is created, this
 	// reference MUST change
 	protected static Scenario current = null;
 
-	public Scenario() {
+	// This class shouldn't be used directly
+	protected Scenario() {
 		complete = false;
 		current = this;
 	}
 
 	public static Scenario getCurrentScenario() {
-		if (current.isComplete())
-			return current;
-		else
-			return null;
+		Scenario instance = null;
+		if (current != null) {
+			if (current.isComplete())
+				instance = current;
+		}
+		return instance;
+	}
+
+	public void setArea(double NWlat, double NWlong, double SElat, double SElong) {
+		this.NWlat = NWlat;
+		this.NWlong = NWlong;
+		this.SElat = SElat;
+		this.SElong = SElong;
+	}
+
+	public double[] getAreat() {
+		return new double[] { NWlat, NWlong, SElat, SElong };
+	}
+
+	public void setGridSize(int x, int y) {
+		gridX = x;
+		gridY = y;
+	}
+
+	public int[] getGridSize() {
+		return new int[] { gridX, gridY };
+	}
+
+	public int[] coordToTile(double latitude, double longitude) {
+		// TODO
+		return new int[2];
 	}
 
 	public boolean isComplete() {

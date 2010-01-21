@@ -45,11 +45,10 @@ public class FloodTileBehav extends Behaviour {
 	private int step = 0;
 	private MessageTemplate mt;
 
-	public FloodTileBehav(Agent a, int x, int y, double value, double water) {
+	public FloodTileBehav(Agent a, int x, int y, double water) {
 		super(a);
 		this.x = x; // Posición inicial
 		this.y = y;
-		this.value = value;
 		this.water = water;
 		rnd = new Random(System.currentTimeMillis());
 	}
@@ -86,6 +85,8 @@ public class FloodTileBehav extends Behaviour {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			// TODO Obtener valor de la casilla inicial
+			value = 9;
 			step = 1;
 			break;
 		case 1:

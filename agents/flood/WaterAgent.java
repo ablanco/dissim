@@ -29,18 +29,17 @@ public class WaterAgent extends Agent {
 		Object[] args = getArguments();
 		int x; // Posición inicial en la rejilla
 		int y;
-		double value; // Potencial de la casilla inicial
+		//double value; // Potencial de la casilla inicial
 		double water; // Cantidad de agua del agente
-		if (args != null && args.length == 4) {
+		if (args != null && args.length == 3) {
 			x = Integer.parseInt((String) args[0]);
 			y = Integer.parseInt((String) args[1]);
-			value = Double.parseDouble((String) args[2]);
-			water = Double.parseDouble((String) args[3]);
+			water = Double.parseDouble((String) args[2]);
 		} else {
 			throw new IllegalArgumentException("Wrong arguments.");
 		}
 
 		// Añadir comportamientos
-		addBehaviour(new FloodTileBehav(this, x, y, value, water));
+		addBehaviour(new FloodTileBehav(this, x, y, water));
 	}
 }

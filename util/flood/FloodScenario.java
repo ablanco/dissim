@@ -33,12 +33,15 @@ public class FloodScenario extends Scenario {
 		current = this;
 	}
 
-	public boolean addWaterSource(double latitude, double longitude, double rythm) {
+	public boolean addWaterSource(double latitude, double longitude,
+			double amount, long rythm) {
 		boolean result = false;
 		// TODO las latitudes y longitudes se pueden comparar directamente?
 		if (NWlat >= latitude && NWlong >= longitude && SElat <= latitude
-				&& SElong <= longitude)
-			result = waterSources.add(new double[] { latitude, longitude, rythm });
+				&& SElong <= longitude) {
+			result = waterSources.add(new double[] { latitude, longitude,
+					amount, rythm });
+		}
 		return result;
 	}
 
