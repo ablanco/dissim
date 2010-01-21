@@ -19,7 +19,6 @@ package util;
 import java.util.ArrayList;
 
 public class HexagonalGrid {
-	// TODO Guardar por un lado nivel del terreno y por otro nivel de agua
 	private double[][] gridTerrain;
 	private double[][] gridWater;
 	private int dimX;
@@ -32,13 +31,13 @@ public class HexagonalGrid {
 		dimY = y;
 	}
 
-	public double setTerrainValue(int x, int y, int value) {
+	public double setTerrainValue(int x, int y, double value) {
 		double old = gridTerrain[x][y];
 		gridTerrain[x][y] = value;
 		return old;
 	}
-	
-	public double setWaterValue(int x, int y, int value) {
+
+	public double setWaterValue(int x, int y, double value) {
 		double old = gridWater[x][y];
 		gridWater[x][y] = value;
 		return old;
@@ -49,14 +48,18 @@ public class HexagonalGrid {
 		printGrid(); // TODO Debug
 	}
 
+	public void decreaseValue(int x, int y, double decrement) {
+		gridWater[x][y] -= decrement;
+	}
+
 	public double getValue(int x, int y) {
 		return gridTerrain[x][y] + gridWater[x][y];
 	}
-	
+
 	public double getTerrainValue(int x, int y) {
 		return gridTerrain[x][y];
 	}
-	
+
 	public double getWaterValue(int x, int y) {
 		return gridWater[x][y];
 	}
@@ -82,7 +85,7 @@ public class HexagonalGrid {
 					adjacent = new double[3];
 					adjacent[0] = col;
 					adjacent[1] = fila;
-					adjacent[2] = getValue(col,fila);
+					adjacent[2] = getValue(col, fila);
 					result.add(adjacent);
 				}
 				if (fila == y && col == x - 1)
@@ -95,7 +98,7 @@ public class HexagonalGrid {
 	private void printGrid() {
 		for (int i = 0; i < dimX; i++) {
 			if (i % 2 != 0) {
-				System.out.print(" ");
+				System.out.print("   ");
 			}
 			for (int j = 0; j < dimY; j++) {
 				System.out.print(getValue(i, j) + "  ");

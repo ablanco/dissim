@@ -44,12 +44,14 @@ public class EnviromentAgent extends Agent {
 			int y = Integer.parseInt((String) args[1]);
 			grid = new HexagonalGrid(x, y);
 			// TODO introducir las alturas en grid
-			/*
-			 * grid.setValue(0, 0, 9); // DEBUG grid.setValue(0, 1, 9);
-			 * grid.setValue(0, 2, 8); grid.setValue(1, 0, 7); grid.setValue(1,
-			 * 1, 6); grid.setValue(1, 2, 8); grid.setValue(2, 0, 5);
-			 * grid.setValue(2, 1, 5); grid.setValue(2, 2, 3); // FIN DEBUG
-			 */
+			grid.setTerrainValue(0, 0, 9); // DEBUG grid.setValue(0, 1, 9);
+			grid.setTerrainValue(0, 2, 8);
+			grid.setTerrainValue(1, 0, 7.3);
+			grid.setTerrainValue(1, 1, 6.2);
+			grid.setTerrainValue(1, 2, 8);
+			grid.setTerrainValue(2, 0, 5.6);
+			grid.setTerrainValue(2, 1, 5);
+			grid.setTerrainValue(2, 2, 3); // FIN DEBUG
 		} else {
 			System.err.println(getLocalName() + " wrong arguments.");
 			doDelete();
