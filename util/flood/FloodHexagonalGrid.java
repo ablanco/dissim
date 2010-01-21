@@ -14,41 +14,43 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package util;
+package util.flood;
 
-import java.io.Serializable;
+import util.HexagonalGrid;
 
-public class Scenario implements Serializable {
+public class FloodHexagonalGrid extends HexagonalGrid {
 
-	private static final long serialVersionUID = 1L;
+	protected double[][] gridWater;
 
-	protected boolean complete;
-	// Coordinates of simulation area (rectangle)
-	// NW means North West point
-	// SE means South East point
-	protected double NWlat;
-	protected double NWlong;
-	protected double SElat;
-	protected double SElong;
-
-	// Current Scenario showed on GUI
-	// If a Scenario is loaded (from a file), or a new one is created, this
-	// reference MUST change
-	protected static Scenario current = null;
-
-	public Scenario() {
-		complete = false;
-		current = this;
+	public FloodHexagonalGrid(int x, int y) {
+		super(x, y);
+		gridWater = new double[x][y];
 	}
 
-	public static Scenario getCurrentScenario() {
-		if (current.isComplete())
-			return current;
-		else
-			return null;
+	public double setWaterValue(int x, int y, double value) {
+		double old = gridWater[x][y];
+		gridWater[x][y] = value;
+		return old;
 	}
 
-	public boolean isComplete() {
-		return complete;
+	@Override
+	public void increaseValue(int x, int y, double increment) {
+		gridWater[x][y] += increment;
+		printGrid(); // TODO Debug
 	}
+
+	@Override
+	public void decreaseValue(int x, int y, double decrement) {
+		gridWater[x][y] -= decrement;
+	}
+
+	@Override
+	public double getValue(int x, int y) {
+		return gridTerrain[x][y] + gridWater[x][y];
+	}
+
+	public double getWaterValue(int x, int y) {
+		return gridWater[x][y];
+	}
+
 }

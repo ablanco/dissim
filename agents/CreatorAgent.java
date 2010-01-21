@@ -16,6 +16,7 @@
 
 package agents;
 
+import util.Scenario;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import behaviours.CreateAgentBehav;
@@ -28,6 +29,8 @@ public class CreatorAgent extends Agent {
 	@Override
 	protected void setup() {
 		// TODO Coger los datos que hay que pasarle a cada agente de la GUI
+		Scenario scen = Scenario.getCurrentScenario();
+		
 		Object[] arguments;
 
 		// Enviroment

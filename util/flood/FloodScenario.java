@@ -14,41 +14,36 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package util;
+package util.flood;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Scenario implements Serializable {
+import util.Scenario;
+
+public class FloodScenario extends Scenario {
 
 	private static final long serialVersionUID = 1L;
 
-	protected boolean complete;
-	// Coordinates of simulation area (rectangle)
-	// NW means North West point
-	// SE means South East point
-	protected double NWlat;
-	protected double NWlong;
-	protected double SElat;
-	protected double SElong;
+	protected ArrayList<double[]> waterSources; // TODO Array o Linked??
 
-	// Current Scenario showed on GUI
-	// If a Scenario is loaded (from a file), or a new one is created, this
-	// reference MUST change
-	protected static Scenario current = null;
-
-	public Scenario() {
+	public FloodScenario() {
 		complete = false;
+		waterSources = new ArrayList<double[]>();
 		current = this;
 	}
 
-	public static Scenario getCurrentScenario() {
-		if (current.isComplete())
-			return current;
-		else
-			return null;
+	public boolean addWaterSource(double latitude, double longitude, double rythm) {
+		boolean result = false;
+		// TODO las latitudes y longitudes se pueden comparar directamente?
+		if (NWlat >= latitude && NWlong >= longitude && SElat <= latitude
+				&& SElong <= longitude)
+			result = waterSources.add(new double[] { latitude, longitude, rythm });
+		return result;
 	}
 
-	public boolean isComplete() {
-		return complete;
+	public Iterator<double[]> getWaterSourcesIterator() {
+		return waterSources.iterator();
 	}
+
 }

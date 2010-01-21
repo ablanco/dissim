@@ -19,14 +19,12 @@ package util;
 import java.util.ArrayList;
 
 public class HexagonalGrid {
-	private double[][] gridTerrain;
-	private double[][] gridWater;
-	private int dimX;
-	private int dimY;
+	protected double[][] gridTerrain;
+	protected int dimX;
+	protected int dimY;
 
 	public HexagonalGrid(int x, int y) {
 		gridTerrain = new double[x][y];
-		gridWater = new double[x][y];
 		dimX = x;
 		dimY = y;
 	}
@@ -37,35 +35,21 @@ public class HexagonalGrid {
 		return old;
 	}
 
-	public double setWaterValue(int x, int y, double value) {
-		double old = gridWater[x][y];
-		gridWater[x][y] = value;
-		return old;
-	}
-
 	public void increaseValue(int x, int y, double increment) {
-		gridWater[x][y] += increment;
+		gridTerrain[x][y] += increment;
 		printGrid(); // TODO Debug
 	}
 
 	public void decreaseValue(int x, int y, double decrement) {
-		gridWater[x][y] -= decrement;
-	}
-	
-	public int[][] getGrid(){
-		return grid;
+		gridTerrain[x][y] -= decrement;
 	}
 
 	public double getValue(int x, int y) {
-		return gridTerrain[x][y] + gridWater[x][y];
+		return gridTerrain[x][y];
 	}
 
 	public double getTerrainValue(int x, int y) {
 		return gridTerrain[x][y];
-	}
-
-	public double getWaterValue(int x, int y) {
-		return gridWater[x][y];
 	}
 
 	/**
@@ -99,7 +83,7 @@ public class HexagonalGrid {
 		return result;
 	}
 
-	private void printGrid() {
+	protected void printGrid() {
 		for (int i = 0; i < dimX; i++) {
 			if (i % 2 != 0) {
 				System.out.print("   ");
