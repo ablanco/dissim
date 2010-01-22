@@ -34,6 +34,7 @@ public class Scenario implements Serializable {
 	protected double SElong;
 	protected int gridX;
 	protected int gridY;
+	protected String description;
 
 	// Current Scenario showed on GUI
 	// If a Scenario is loaded (from a file), or a new one is created, this
@@ -78,6 +79,10 @@ public class Scenario implements Serializable {
 	public int[] coordToTile(double latitude, double longitude) {
 		// TODO
 		return new int[2];
+	}
+	
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public boolean isComplete() {

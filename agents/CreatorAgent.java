@@ -49,23 +49,25 @@ public class CreatorAgent extends Agent {
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {
 				FloodScenario fscen = (FloodScenario) scen;
-				ListIterator<double[]> it = fscen.waterSourcesIterator();
-				ArrayList<Behaviour> waterAgents = new ArrayList<Behaviour>(
-						fscen.waterSourcesSize());
-				while (it.hasNext()) {
-					double[] waterSource = it.next();
-					// Agentes Water
-					grid = scen.coordToTile(waterSource[0], waterSource[1]);
-					arguments = new Object[] { Integer.toString(grid[0]),
-							Integer.toString(grid[1]),
-							Double.toString(waterSource[2]) };
-					Behaviour wa = new CreateAgentTickerBehav(this,
-							(long) waterSource[3], "Water",
-							"agents.flood.WaterAgent", arguments);
-					addBehaviour(wa);
-					waterAgents.add(wa);
+				if (fscen.useWaterAgents()) {
+					ListIterator<double[]> it = fscen.waterSourcesIterator();
+					ArrayList<Behaviour> waterAgents = new ArrayList<Behaviour>(
+							fscen.waterSourcesSize());
+					while (it.hasNext()) {
+						double[] waterSource = it.next();
+						// Agentes Water
+						grid = scen.coordToTile(waterSource[0], waterSource[1]);
+						arguments = new Object[] { Integer.toString(grid[0]),
+								Integer.toString(grid[1]),
+								Double.toString(waterSource[2]) };
+						Behaviour wa = new CreateAgentTickerBehav(this,
+								(long) waterSource[3], "Water",
+								"agents.flood.WaterAgent", arguments);
+						addBehaviour(wa);
+						waterAgents.add(wa);
+					}
+					// TODO parar de crear WaterAgent (usando waterAgents)
 				}
-				// TODO parar waterAgents behaviours
 			}
 		} else { // TODO Borrar este código (DEBUG)
 			scen = new FloodScenario();
