@@ -17,7 +17,7 @@
 package util.flood;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.ListIterator;
 
 import util.Scenario;
 
@@ -25,18 +25,27 @@ public class FloodScenario extends Scenario {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Entradas de agua, constan de latitud, longitud, cantidad y ritmo de
+	 * entrada de agua
+	 */
 	protected ArrayList<double[]> waterSources; // TODO Array o Linked??
+	/**
+	 * Determina si se representa el agua como agentes o no
+	 */
+	protected boolean waterAgents = true;
 
 	public FloodScenario() {
-		complete = false;
+		super();
 		waterSources = new ArrayList<double[]>();
-		current = this;
+		Scenario.current = this;
 	}
 
 	public boolean addWaterSource(double latitude, double longitude,
 			double amount, long rythm) {
 		boolean result = false;
 		// TODO las latitudes y longitudes se pueden comparar directamente?
+		// Comprobamos que esté dentro del área de simulación
 		if (NWlat >= latitude && NWlong >= longitude && SElat <= latitude
 				&& SElong <= longitude) {
 			result = waterSources.add(new double[] { latitude, longitude,
@@ -45,8 +54,25 @@ public class FloodScenario extends Scenario {
 		return result;
 	}
 
-	public Iterator<double[]> getWaterSourcesIterator() {
-		return waterSources.iterator();
+	public ListIterator<double[]> waterSourcesIterator() {
+		return waterSources.listIterator();
+	}
+
+	public int waterSourcesSize() {
+		return waterSources.size();
+	}
+
+	public void setWaterAgents(boolean waterAgents) {
+		this.waterAgents = waterAgents;
+	}
+
+	/**
+	 * Devuelve un booleano indicando si se representa el agua como agentes o no
+	 * 
+	 * @return boolean waterAgents
+	 */
+	public boolean useWaterAgents() {
+		return waterAgents;
 	}
 
 }

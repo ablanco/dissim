@@ -66,14 +66,15 @@ public class FloodTileBehav extends Behaviour {
 			// Obtener agente entorno
 			DFAgentDescription template = new DFAgentDescription();
 			ServiceDescription sd = new ServiceDescription();
-			sd.setType("flood-registering");
-			template.addServices(sd);
-			sd = new ServiceDescription();
 			sd.setType("grid-querying");
 			template.addServices(sd);
 			sd = new ServiceDescription();
 			sd.setType("adjacents-grid");
 			template.addServices(sd);
+			sd = new ServiceDescription();
+			sd.setType("flood-registering");
+			template.addServices(sd);
+
 			try {
 				DFAgentDescription[] result = DFService.search(myAgent,
 						template);

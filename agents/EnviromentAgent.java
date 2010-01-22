@@ -19,6 +19,8 @@ package agents;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import behaviours.flood.RegisterFloodTileBehav;
+
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -28,7 +30,9 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import util.HexagonalGrid;
+import util.Scenario;
 import util.flood.FloodHexagonalGrid;
+import util.flood.FloodScenario;
 
 public class EnviromentAgent extends Agent {
 
@@ -38,20 +42,24 @@ public class EnviromentAgent extends Agent {
 
 	@Override
 	protected void setup() {
+		Scenario scen = Scenario.getCurrentScenario();
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args != null && args.length == 2) {
 			int x = Integer.parseInt((String) args[0]);
 			int y = Integer.parseInt((String) args[1]);
-			// TODO qué tipo de grid usar debería salir del scenario
-			grid = new FloodHexagonalGrid(x, y);
+			// Si es una inundación
+			if (scen instanceof FloodScenario)
+				grid = new FloodHexagonalGrid(x, y);
+			else
+				grid = new HexagonalGrid(x, y);
 			// TODO introducir las alturas en grid
 			grid.setTerrainValue(0, 0, 9); // DEBUG grid.setValue(0, 1, 9);
 			grid.setTerrainValue(0, 2, 8);
-			grid.setTerrainValue(1, 0, 7.3);
-			grid.setTerrainValue(1, 1, 6.2);
+			grid.setTerrainValue(1, 0, 7);
+			grid.setTerrainValue(1, 1, 6);
 			grid.setTerrainValue(1, 2, 8);
-			grid.setTerrainValue(2, 0, 5.6);
+			grid.setTerrainValue(2, 0, 5);
 			grid.setTerrainValue(2, 1, 5);
 			grid.setTerrainValue(2, 2, 3); // FIN DEBUG
 		} else {
@@ -59,18 +67,14 @@ public class EnviromentAgent extends Agent {
 			doDelete();
 		}
 
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(getAID());
+		ServiceDescription sd;
+
 		// Añadir comportamientos
-		addBehaviour(new RegisterFloodTileBehav());
 		addBehaviour(new AdjacentsGridBehav());
 		addBehaviour(new QueryGridBehav());
 
-		// Registrarse con el agente DF
-		DFAgentDescription dfd = new DFAgentDescription();
-		dfd.setName(getAID());
-		ServiceDescription sd = new ServiceDescription();
-		sd.setType("flood-registering");
-		sd.setName(getName());
-		dfd.addServices(sd);
 		sd = new ServiceDescription();
 		sd.setType("grid-querying");
 		sd.setName(getName());
@@ -79,6 +83,21 @@ public class EnviromentAgent extends Agent {
 		sd.setType("adjacents-grid");
 		sd.setName(getName());
 		dfd.addServices(sd);
+
+		// Si es una inundación
+		if (scen instanceof FloodScenario) {
+			FloodScenario fscen = (FloodScenario) scen;
+			if (fscen.useWaterAgents()) {
+				addBehaviour(new RegisterFloodTileBehav(grid));
+
+				sd = new ServiceDescription();
+				sd.setType("flood-registering");
+				sd.setName(getName());
+				dfd.addServices(sd);
+			}
+		}
+
+		// Registrarse con el agente DF
 		try {
 			DFService.register(this, dfd);
 		} catch (FIPAException e) {
@@ -100,41 +119,6 @@ public class EnviromentAgent extends Agent {
 		}
 		System.out.println("Enviroment-agent " + getAID().getName()
 				+ " terminating.");
-	}
-
-	protected class RegisterFloodTileBehav extends CyclicBehaviour {
-
-		private static final long serialVersionUID = -3677388777435949196L;
-
-		@Override
-		public void action() {
-			MessageTemplate mt = MessageTemplate.and(MessageTemplate
-					.MatchConversationId("register-flood"), MessageTemplate
-					.MatchPerformative(ACLMessage.CFP));
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) {
-				// Mensaje CFP recibido, hay que procesarlo
-				String pos = msg.getContent();
-				String[] data = pos.split(" ");
-				int x = Integer.parseInt(data[0]);
-				int y = Integer.parseInt(data[1]);
-				double water = Double.parseDouble(data[2]);
-				double value = Double.parseDouble(data[3]);
-				double gridValue = grid.getValue(x, y);
-
-				ACLMessage reply = msg.createReply();
-				if (value == gridValue) {
-					grid.increaseValue(x, y, water);
-					reply.setPerformative(ACLMessage.CONFIRM);
-				} else {
-					reply.setPerformative(ACLMessage.DISCONFIRM);
-					reply.setContent(Double.toString(gridValue));
-				}
-				myAgent.send(reply);
-			} else {
-				block();
-			}
-		}
 	}
 
 	protected class AdjacentsGridBehav extends CyclicBehaviour {

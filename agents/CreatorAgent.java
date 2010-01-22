@@ -16,12 +16,14 @@
 
 package agents;
 
-import java.util.Iterator;
+import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
+
+import java.util.ArrayList;
+import java.util.ListIterator;
 
 import util.Scenario;
 import util.flood.FloodScenario;
-import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import behaviours.CreateAgentBehav;
 import behaviours.CreateAgentTickerBehav;
 
@@ -42,10 +44,14 @@ public class CreatorAgent extends Agent {
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
 					"agents.EnviromentAgent", arguments));
 
+			// TODO Esperar a que el entorno esté inicializado
+
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {
 				FloodScenario fscen = (FloodScenario) scen;
-				Iterator<double[]> it = fscen.getWaterSourcesIterator();
+				ListIterator<double[]> it = fscen.waterSourcesIterator();
+				ArrayList<Behaviour> waterAgents = new ArrayList<Behaviour>(
+						fscen.waterSourcesSize());
 				while (it.hasNext()) {
 					double[] waterSource = it.next();
 					// Agentes Water
@@ -53,13 +59,17 @@ public class CreatorAgent extends Agent {
 					arguments = new Object[] { Integer.toString(grid[0]),
 							Integer.toString(grid[1]),
 							Double.toString(waterSource[2]) };
-					Behaviour waterAgents = new CreateAgentTickerBehav(this,
+					Behaviour wa = new CreateAgentTickerBehav(this,
 							(long) waterSource[3], "Water",
 							"agents.flood.WaterAgent", arguments);
-					addBehaviour(waterAgents);
+					addBehaviour(wa);
+					waterAgents.add(wa);
 				}
+				// TODO parar waterAgents behaviours
 			}
-		} else { // TODO Borrar este código
+		} else { // TODO Borrar este código (DEBUG)
+			scen = new FloodScenario();
+			scen.complete();
 			Object[] arguments;
 
 			// Enviroment
@@ -67,15 +77,11 @@ public class CreatorAgent extends Agent {
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
 					"agents.EnviromentAgent", arguments));
 
-			// TODO Esperar a que el entorno esté listo
-
 			// Agentes Water
 			arguments = new Object[] { "0", "0", "1" };
 			Behaviour waterAgents = new CreateAgentTickerBehav(this, 100L,
 					"Water", "agents.flood.WaterAgent", arguments);
 			addBehaviour(waterAgents);
-
-			// TODO Stop waterAgents
-		}
+		} // FIN DEBUG
 	}
 }

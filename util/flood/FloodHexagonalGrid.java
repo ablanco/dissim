@@ -20,7 +20,7 @@ import util.HexagonalGrid;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
 
-	protected double[][] gridWater;
+	protected double[][] gridWater; // Nivel de agua en la casilla 
 
 	public FloodHexagonalGrid(int x, int y) {
 		super(x, y);
