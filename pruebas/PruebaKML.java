@@ -16,8 +16,7 @@
 
 package pruebas;
 
-import kml.KmlExtractor;
-import kml.KmlUtil;
+import kml.KmlReader;
 
 public class PruebaKML {
 
@@ -25,7 +24,7 @@ public class PruebaKML {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		KmlUtil kml = new KmlUtil();
+		KmlReader kml = new KmlReader();
 		// 29.964722 , -90.070556
 		/*
 		 * <longitude>-90,0750720001457</longitude>
@@ -39,7 +38,7 @@ public class PruebaKML {
 		kml.setPlacemark("n1", 29.95463, -90.07504);
 		kml.setPlacemark("n1", 29.95465, -90.07501);
 		kml.setPlacemark("n1", 29.95464, -90.07504);
-		kml.writeFile("Prueba");
+		//kml.writeFile("Prueba");
 		kml.showCoordinates();
 
 

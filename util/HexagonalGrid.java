@@ -22,6 +22,7 @@ public class HexagonalGrid {
 	protected double[][] gridTerrain;
 	protected int dimX;
 	protected int dimY;
+	
 
 	public HexagonalGrid(int x, int y) {
 		gridTerrain = new double[x][y];
@@ -50,6 +51,14 @@ public class HexagonalGrid {
 
 	public double getTerrainValue(int x, int y) {
 		return gridTerrain[x][y];
+	}
+	
+	public int getDimX(){
+		return dimX;
+	}
+	
+	public int getDimY(){
+		return dimY;
 	}
 
 	/**

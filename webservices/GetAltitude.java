@@ -146,7 +146,7 @@ public class GetAltitude implements SOAPHandler<SOAPMessageContext> {
     <Elevation_Only>string</Elevation_Only>
     */
 	public double getAltitude(String X_Value, String Y_Value, String Source_Layer, String Elevation_Only){
-		double altitude = 0;
+		double altitude =0;
 		
 		
 		return altitude;
