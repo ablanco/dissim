@@ -53,6 +53,40 @@ public class HexagonalGrid {
 	}
 
 	/**
+	 * Devuelve los índices de los hexágonos adyacentes al pedido (6 como
+	 * máximo)
+	 * 
+	 * @param x
+	 * @param y
+	 * @return Una matriz cuyas filas representan las coordenadas de un hexágono
+	 *         adyacente (si valen -1 es que había menos de 6 adyacentes)
+	 */
+	public int[][] getAdjacentsIndexes(int x, int y) {
+		int[][] adjacents = new int[6][2];
+		int cont = 0;
+		for (int fila = y - 1; fila <= y + 1; fila++) {
+			for (int col = x; col <= x + 1; col++) {
+				if (fila == y && col == x)
+					col = x - 1;
+				// Comprobamos que el hexágono adyacente no está fuera de la
+				// rejilla
+				if (col >= 0 && col < dimX && fila >= 0 && fila < dimY) {
+					adjacents[cont][0] = col;
+					adjacents[cont][1] = fila;
+					cont++;
+				}
+				if (fila == y && col == x - 1)
+					col++;
+			}
+		}
+		for (int i = cont + 1; i < 6; i++) {
+			adjacents[i][0] = -1;
+			adjacents[i][1] = -1;
+		}
+		return adjacents;
+	}
+
+	/**
 	 * Devuelve los hexágonos adyacentes al pedido (6 como máximo)
 	 * 
 	 * @param x
@@ -63,21 +97,14 @@ public class HexagonalGrid {
 	public ArrayList<double[]> getAdjacents(int x, int y) {
 		ArrayList<double[]> result = new ArrayList<double[]>(6);
 		double[] adjacent;
-		for (int fila = y - 1; fila <= y + 1; fila++) {
-			for (int col = x; col <= x + 1; col++) {
-				if (fila == y && col == x)
-					col = x - 1;
-				// Comprobamos que el hexágono adyacente no está fuera de la
-				// rejilla
-				if (col >= 0 && col < dimX && fila >= 0 && fila < dimY) {
-					adjacent = new double[3];
-					adjacent[0] = col;
-					adjacent[1] = fila;
-					adjacent[2] = getValue(col, fila);
-					result.add(adjacent);
-				}
-				if (fila == y && col == x - 1)
-					col++;
+		int[][] indexes = getAdjacentsIndexes(x, y);
+		for (int i = 0; i < 6; i++) {
+			if (indexes[i][0] >= 0) {
+				adjacent = new double[3];
+				adjacent[0] = indexes[i][0];
+				adjacent[1] = indexes[i][1];
+				adjacent[2] = getValue(indexes[i][0], indexes[i][1]);
+				result.add(adjacent);
 			}
 		}
 		return result;

@@ -20,11 +20,16 @@ import util.HexagonalGrid;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
 
-	protected double[][] gridWater; // Nivel de agua en la casilla 
+	protected double[][] gridWater; // Nivel de agua en la casilla
+	protected boolean useGridMod;
+	protected boolean[][] gridMod;
 
-	public FloodHexagonalGrid(int x, int y) {
+	public FloodHexagonalGrid(int x, int y, boolean useAgents) {
 		super(x, y);
 		gridWater = new double[x][y];
+		useGridMod = !useAgents;
+		if (useGridMod)
+			gridMod = new boolean[x][y];
 	}
 
 	public double setWaterValue(int x, int y, double value) {
@@ -35,13 +40,29 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	@Override
 	public void increaseValue(int x, int y, double increment) {
-		gridWater[x][y] += increment;
+		double offset = 0;
+		// La primera capa de agua se pone al nivel del resto, hay pues que
+		// restar la parte no entera de la altura de terreno
+		if (gridWater[x][y] == 0)
+			offset = gridTerrain[x][y] - ((int) gridTerrain[x][y]);
+		gridWater[x][y] += increment - offset;
+
+		if (useGridMod)
+			gridMod[x][y] = true;
+
 		printGrid(); // TODO Debug
 	}
 
 	@Override
 	public void decreaseValue(int x, int y, double decrement) {
-		gridWater[x][y] -= decrement;
+		// El nivel de agua no puede ser menor que cero
+		if (gridWater[x][y] >= decrement)
+			gridWater[x][y] -= decrement;
+		else
+			gridWater[x][y] = 0;
+
+		if (useGridMod)
+			gridMod[x][y] = true;
 	}
 
 	@Override
