@@ -37,12 +37,12 @@ public class FloodScenario extends Scenario {
 	/**
 	 * Representa los ms entre cada actualización de la posición del agua
 	 */
-	protected long floodUpdateTime; // TODO mejorar esta idea
+	protected long floodUpdateTime = 1000; // TODO mejorar esta idea
 	/**
 	 * Representa la cantidad de agua que tiene cada agente, o que se mueve
 	 * entre casillas en caso de que no se agentifique el agua
 	 */
-	protected double water;
+	protected double water = 1;
 
 	public FloodScenario() {
 		super();
@@ -53,7 +53,6 @@ public class FloodScenario extends Scenario {
 	public boolean addWaterSource(double latitude, double longitude,
 			double water, long rythm) {
 		boolean result = false;
-		// TODO las latitudes y longitudes se pueden comparar directamente?
 		// Comprobamos que esté dentro del área de simulación
 		if (NWlat >= latitude && NWlong >= longitude && SElat <= latitude
 				&& SElong <= longitude) {

@@ -42,7 +42,7 @@ public class AddWaterGridBehav extends TickerBehaviour {
 	protected void onTick() {
 		double spare = grid.increaseValue(x, y, water);
 		if (spare > 0) {
-			grid.increaseValue(x, y, spare); // TODO
+			// TODO Agua sobrante
 		}
 	}
 

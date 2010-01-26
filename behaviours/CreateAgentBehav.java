@@ -29,6 +29,7 @@ public class CreateAgentBehav extends OneShotBehaviour {
 	protected Object[] arguments;
 	protected String name;
 	protected String agtClass;
+	protected int clones;
 
 	/**
 	 * 
@@ -42,25 +43,32 @@ public class CreateAgentBehav extends OneShotBehaviour {
 	 *            Argumentos a pasar al agente a crear
 	 */
 	public CreateAgentBehav(Agent agt, String name, String agtClass,
-			Object[] arguments) {
+			int clones, Object[] arguments) {
 		super(agt);
+		if (clones <= 0)
+			throw new IllegalArgumentException(
+					"Error: At least there must be 1 clone.");
 		this.name = name;
 		this.agtClass = agtClass;
+		this.clones = clones;
 		this.arguments = arguments;
 	}
 
 	@Override
 	public void action() {
-		AgentContainer container = myAgent.getContainerController();
-		AgentController agtctrl;
-		try {
-			agtctrl = container.createNewAgent(name, agtClass, arguments);
-			agtctrl.start();
-		} catch (ControllerException e) {
-			System.err.println(myAgent.getLocalName()
-					+ " -> Error creating an agent of type " + agtClass
-					+ " with name " + name);
-			e.printStackTrace();
+		for (int i = 1; i <= clones; i++) {
+			AgentContainer container = myAgent.getContainerController();
+			AgentController agtctrl;
+			try {
+				agtctrl = container.createNewAgent(name + "-"
+						+ Integer.toString(i), agtClass, arguments);
+				agtctrl.start();
+			} catch (ControllerException e) {
+				System.err.println(myAgent.getLocalName()
+						+ " -> Error creating an agent of type " + agtClass
+						+ " with name " + name);
+				e.printStackTrace();
+			}
 		}
 	}
 }

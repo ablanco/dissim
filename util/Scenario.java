@@ -77,10 +77,10 @@ public class Scenario implements Serializable {
 	}
 
 	public int[] coordToTile(double latitude, double longitude) {
-		// TODO
-		return new int[2];
+		// TODO coord to tile
+		return new int[] { 0, 0 };
 	}
-	
+
 	public void setDescription(String description) {
 		this.description = description;
 	}

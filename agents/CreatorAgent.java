@@ -42,7 +42,7 @@ public class CreatorAgent extends Agent {
 			arguments = new Object[] { new Integer(grid[0]),
 					new Integer(grid[1]) };
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
-					"agents.EnviromentAgent", arguments));
+					"agents.EnviromentAgent", 1, arguments));
 
 			// TODO Esperar a que el entorno esté inicializado
 
@@ -56,20 +56,25 @@ public class CreatorAgent extends Agent {
 							fscen.waterSourcesSize());
 					while (it.hasNext()) {
 						double[] waterSource = it.next();
-						// Agentes Water
 						grid = scen.coordToTile(waterSource[0], waterSource[1]);
+						// Calcular cuántos agentes hacen falta para representar
+						// esa cantidad de agua
+						double water = waterSource[2];
+						double scenWater = fscen.getWater();
+						int clones = (int) (water / scenWater); // Nº de agentes
+						double spare = water - (scenWater * clones);
 						arguments = new Object[] { Integer.toString(grid[0]),
-								Integer.toString(grid[1]),
-								Double.toString(waterSource[2]) };
-						// TODO Cada agente agua debería llevar la misma
-						// cantidad de agua
+								Integer.toString(grid[1]) };
+						// Agentes Water
 						Behaviour wa = new CreateAgentTickerBehav(this,
 								(long) waterSource[3], "Water",
-								"agents.flood.WaterAgent", arguments);
+								"agents.flood.WaterAgent", clones, arguments);
 						addBehaviour(wa);
 						waterAgents.add(wa);
+						// TODO spare, agua sobrante...
 					}
-					// TODO parar de crear WaterAgent (usando waterAgents)
+					// TODO cuando parar de crear WaterAgent (usando
+					// waterAgents)
 				}
 			}
 		} else { // TODO Borrar este código (DEBUG)
@@ -80,12 +85,12 @@ public class CreatorAgent extends Agent {
 			// Enviroment
 			arguments = new Object[] { "3", "3" };
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
-					"agents.EnviromentAgent", arguments));
+					"agents.EnviromentAgent", 1, arguments));
 
 			// Agentes Water
-			arguments = new Object[] { "0", "0", "1" };
+			arguments = new Object[] { "0", "0" };
 			Behaviour waterAgents = new CreateAgentTickerBehav(this, 100L,
-					"Water", "agents.flood.WaterAgent", arguments);
+					"Water", "agents.flood.WaterAgent", 1, arguments);
 			addBehaviour(waterAgents);
 		} // FIN DEBUG
 	}

@@ -94,7 +94,8 @@ public class EnviromentAgent extends Agent {
 			FloodScenario fscen = (FloodScenario) scen;
 			// En el caso de que el agua se agentifique
 			if (fscen.useWaterAgents()) {
-				addBehaviour(new RegisterFloodTileBehav(grid));
+				addBehaviour(new RegisterFloodTileBehav(
+						(FloodHexagonalGrid) grid));
 
 				sd = new ServiceDescription();
 				sd.setType("flood-registering");

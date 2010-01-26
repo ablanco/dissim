@@ -16,18 +16,18 @@
 
 package behaviours.flood;
 
-import util.HexagonalGrid;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import util.flood.FloodHexagonalGrid;
 
 public class RegisterFloodTileBehav extends CyclicBehaviour {
 
 	private static final long serialVersionUID = 5939510314795911200L;
 
-	private HexagonalGrid grid;
+	private FloodHexagonalGrid grid;
 
-	public RegisterFloodTileBehav(HexagonalGrid grid) {
+	public RegisterFloodTileBehav(FloodHexagonalGrid grid) {
 		this.grid = grid;
 	}
 
@@ -49,7 +49,10 @@ public class RegisterFloodTileBehav extends CyclicBehaviour {
 
 			ACLMessage reply = msg.createReply();
 			if (value == gridValue) {
-				grid.increaseValue(x, y, water);
+				double spare = grid.increaseValue(x, y, water);
+				if (spare > 0) {
+					// TODO Agua sobrante
+				}
 				reply.setPerformative(ACLMessage.CONFIRM);
 			} else {
 				reply.setPerformative(ACLMessage.DISCONFIRM);

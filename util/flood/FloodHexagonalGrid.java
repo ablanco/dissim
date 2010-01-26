@@ -42,11 +42,14 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	@Override
 	public double increaseValue(int x, int y, double increment) {
+		// A la hora de inundar el agua se pone al nivel del resto, de manera
+		// que la capa superior sea uniforme
 		double offset = 0;
-		// La primera capa de agua se pone al nivel del resto, hay pues que
-		// restar la parte no entera de la altura de terreno
-		if (gridWater[x][y] == 0) // TODO not general
-			offset = gridTerrain[x][y] - ((int) gridTerrain[x][y]);
+		double value = getValue(x, y);
+		int aux = (int) value;
+		if (aux != 0)
+			offset = value - aux;
+
 		gridWater[x][y] += increment - offset;
 
 		if (useGridMod)

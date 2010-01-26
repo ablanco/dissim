@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
+import util.Scenario;
+import util.flood.FloodScenario;
+
 public class FloodTileBehav extends Behaviour {
 
 	private static final long serialVersionUID = -7362590926527253261L;
@@ -46,11 +49,12 @@ public class FloodTileBehav extends Behaviour {
 	protected int step = 0;
 	protected MessageTemplate mt;
 
-	public FloodTileBehav(Agent a, int x, int y, double water) {
+	public FloodTileBehav(Agent a, int x, int y) {
 		super(a);
 		this.x = x; // Posición inicial
 		this.y = y;
-		this.water = water;
+		FloodScenario scen = (FloodScenario) Scenario.getCurrentScenario();
+		this.water = scen.getWater();
 		rnd = new Random(System.currentTimeMillis());
 	}
 

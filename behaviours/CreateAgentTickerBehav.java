@@ -25,6 +25,7 @@ public class CreateAgentTickerBehav extends TickerBehaviour {
 
 	protected String name;
 	protected String agtClass;
+	protected int clones;
 	protected Object[] arguments;
 	protected int count = 0;
 
@@ -42,20 +43,24 @@ public class CreateAgentTickerBehav extends TickerBehaviour {
 	 *            Argumentos a pasar al agente a crear
 	 */
 	public CreateAgentTickerBehav(Agent agt, long period, String name,
-			String agtClass, Object[] arguments) {
+			String agtClass, int clones, Object[] arguments) {
 		super(agt, period);
+		if (clones <= 0)
+			throw new IllegalArgumentException(
+					"Error: At least there must be 1 clone.");
 		this.name = name;
 		this.agtClass = agtClass;
+		this.clones = clones;
 		this.arguments = arguments;
 	}
 
 	@Override
 	protected void onTick() {
 		myAgent.addBehaviour(new CreateAgentBehav(myAgent, name + " " + count,
-				agtClass, arguments));
+				agtClass, clones, arguments));
 		count++;
 	}
-	
+
 	public int getCount() {
 		return count;
 	}
