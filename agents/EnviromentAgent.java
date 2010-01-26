@@ -18,8 +18,11 @@ package agents;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import behaviours.flood.AddWaterGridBehav;
 import behaviours.flood.RegisterFloodTileBehav;
+import behaviours.flood.UpdateFloodGridBehav;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -97,8 +100,22 @@ public class EnviromentAgent extends Agent {
 				sd.setType("flood-registering");
 				sd.setName(getName());
 				dfd.addServices(sd);
-			} else {
-				
+			}
+			// Si no se agentifica
+			else {
+				Iterator<double[]> it = fscen.waterSourcesIterator();
+				while (it.hasNext()) {
+					double[] waterSource = it.next();
+					int[] coord = scen.coordToTile(waterSource[0],
+							waterSource[1]);
+					addBehaviour(new AddWaterGridBehav(this,
+							(long) waterSource[3], (FloodHexagonalGrid) grid,
+							coord[0], coord[1], waterSource[2]));
+				}
+
+				addBehaviour(new UpdateFloodGridBehav(this, fscen
+						.getFloodUpdateTime(), (FloodHexagonalGrid) grid, fscen
+						.getWater()));
 			}
 		}
 

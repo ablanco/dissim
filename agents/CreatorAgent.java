@@ -49,6 +49,7 @@ public class CreatorAgent extends Agent {
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {
 				FloodScenario fscen = (FloodScenario) scen;
+				// Si el agua se agentifica
 				if (fscen.useWaterAgents()) {
 					ListIterator<double[]> it = fscen.waterSourcesIterator();
 					ArrayList<Behaviour> waterAgents = new ArrayList<Behaviour>(
@@ -60,6 +61,8 @@ public class CreatorAgent extends Agent {
 						arguments = new Object[] { Integer.toString(grid[0]),
 								Integer.toString(grid[1]),
 								Double.toString(waterSource[2]) };
+						// TODO Cada agente agua debería llevar la misma
+						// cantidad de agua
 						Behaviour wa = new CreateAgentTickerBehav(this,
 								(long) waterSource[3], "Water",
 								"agents.flood.WaterAgent", arguments);

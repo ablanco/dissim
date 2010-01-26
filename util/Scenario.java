@@ -63,7 +63,7 @@ public class Scenario implements Serializable {
 		this.SElong = SElong;
 	}
 
-	public double[] getAreat() {
+	public double[] getArea() {
 		return new double[] { NWlat, NWlong, SElat, SElong };
 	}
 

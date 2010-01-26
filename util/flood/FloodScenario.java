@@ -34,6 +34,15 @@ public class FloodScenario extends Scenario {
 	 * Determina si se representa el agua como agentes o no
 	 */
 	protected boolean waterAgents = true;
+	/**
+	 * Representa los ms entre cada actualización de la posición del agua
+	 */
+	protected long floodUpdateTime; // TODO mejorar esta idea
+	/**
+	 * Representa la cantidad de agua que tiene cada agente, o que se mueve
+	 * entre casillas en caso de que no se agentifique el agua
+	 */
+	protected double water;
 
 	public FloodScenario() {
 		super();
@@ -42,14 +51,14 @@ public class FloodScenario extends Scenario {
 	}
 
 	public boolean addWaterSource(double latitude, double longitude,
-			double amount, long rythm) {
+			double water, long rythm) {
 		boolean result = false;
 		// TODO las latitudes y longitudes se pueden comparar directamente?
 		// Comprobamos que esté dentro del área de simulación
 		if (NWlat >= latitude && NWlong >= longitude && SElat <= latitude
 				&& SElong <= longitude) {
 			result = waterSources.add(new double[] { latitude, longitude,
-					amount, rythm });
+					water, rythm });
 		}
 		return result;
 	}
@@ -73,6 +82,25 @@ public class FloodScenario extends Scenario {
 	 */
 	public boolean useWaterAgents() {
 		return waterAgents;
+	}
+
+	public void setFloodUpdateTime(long floodUpdateTime) {
+		this.floodUpdateTime = floodUpdateTime;
+	}
+
+	public long getFloodUpdateTime() {
+		if (!waterAgents)
+			return floodUpdateTime;
+		else
+			return -1;
+	}
+	
+	public void setWater(double water) {
+		this.water = water;
+	}
+	
+	public double getWater() {
+		return water;
 	}
 
 }

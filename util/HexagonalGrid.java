@@ -22,7 +22,6 @@ public class HexagonalGrid {
 	protected double[][] gridTerrain;
 	protected int dimX;
 	protected int dimY;
-	
 
 	public HexagonalGrid(int x, int y) {
 		gridTerrain = new double[x][y];
@@ -36,13 +35,14 @@ public class HexagonalGrid {
 		return old;
 	}
 
-	public void increaseValue(int x, int y, double increment) {
+	public double increaseValue(int x, int y, double increment) {
 		gridTerrain[x][y] += increment;
-		printGrid(); // TODO Debug
+		return 0;
 	}
 
-	public void decreaseValue(int x, int y, double decrement) {
+	public double decreaseValue(int x, int y, double decrement) {
 		gridTerrain[x][y] -= decrement;
+		return decrement;
 	}
 
 	public double getValue(int x, int y) {
@@ -52,12 +52,12 @@ public class HexagonalGrid {
 	public double getTerrainValue(int x, int y) {
 		return gridTerrain[x][y];
 	}
-	
-	public int getDimX(){
+
+	public int getDimX() {
 		return dimX;
 	}
-	
-	public int getDimY(){
+
+	public int getDimY() {
 		return dimY;
 	}
 

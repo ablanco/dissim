@@ -16,6 +16,8 @@
 
 package util.flood;
 
+import java.util.ArrayList;
+
 import util.HexagonalGrid;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
@@ -39,11 +41,11 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
-	public void increaseValue(int x, int y, double increment) {
+	public double increaseValue(int x, int y, double increment) {
 		double offset = 0;
 		// La primera capa de agua se pone al nivel del resto, hay pues que
 		// restar la parte no entera de la altura de terreno
-		if (gridWater[x][y] == 0)
+		if (gridWater[x][y] == 0) // TODO not general
 			offset = gridTerrain[x][y] - ((int) gridTerrain[x][y]);
 		gridWater[x][y] += increment - offset;
 
@@ -51,18 +53,24 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 			gridMod[x][y] = true;
 
 		printGrid(); // TODO Debug
+		return offset;
 	}
 
 	@Override
-	public void decreaseValue(int x, int y, double decrement) {
+	public double decreaseValue(int x, int y, double decrement) {
+		double result;
 		// El nivel de agua no puede ser menor que cero
-		if (gridWater[x][y] >= decrement)
+		if (gridWater[x][y] >= decrement) {
 			gridWater[x][y] -= decrement;
-		else
+			result = decrement;
+		} else {
+			result = gridWater[x][y];
 			gridWater[x][y] = 0;
+		}
 
 		if (useGridMod)
 			gridMod[x][y] = true;
+		return result;
 	}
 
 	@Override
@@ -72,6 +80,22 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	public double getWaterValue(int x, int y) {
 		return gridWater[x][y];
+	}
+
+	public ArrayList<int[]> getModCoordAndReset() {
+		if (!useGridMod)
+			return null;
+
+		ArrayList<int[]> result = new ArrayList<int[]>();
+		for (int i = 0; i < gridMod.length; i++) {
+			for (int j = 0; j < gridMod[i].length; j++) {
+				if (gridMod[i][j]) {
+					result.add(new int[] { i, j });
+					gridMod[i][j] = false;
+				}
+			}
+		}
+		return result;
 	}
 
 }
