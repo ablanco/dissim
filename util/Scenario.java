@@ -78,6 +78,7 @@ public class Scenario implements Serializable {
 
 	public int[] coordToTile(double latitude, double longitude) {
 		// TODO coord to tile
+		
 		return new int[] { 0, 0 };
 	}
 
