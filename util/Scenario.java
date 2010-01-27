@@ -18,23 +18,23 @@ package util;
 
 import java.io.Serializable;
 
+import util.jcoord.LatLng;
+
 public class Scenario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	// The GUI is the one that should care that the Scenario is completed before
 	// simulating it
-	protected boolean complete;
+	private boolean complete;
 	// Coordinates of simulation area (rectangle)
 	// NW means North West point
+	protected LatLng NW;
 	// SE means South East point
-	protected double NWlat;
-	protected double NWlong;
-	protected double SElat;
-	protected double SElong;
-	protected int gridX;
-	protected int gridY;
-	protected String description;
+	protected LatLng SE;
+	private int gridX;
+	private int gridY;
+	private String description;
 
 	// Current Scenario showed on GUI
 	// If a Scenario is loaded (from a file), or a new one is created, this
@@ -56,15 +56,13 @@ public class Scenario implements Serializable {
 		return instance;
 	}
 
-	public void setArea(double NWlat, double NWlong, double SElat, double SElong) {
-		this.NWlat = NWlat;
-		this.NWlong = NWlong;
-		this.SElat = SElat;
-		this.SElong = SElong;
+	public void setArea(LatLng NW, LatLng SE) {
+		this.NW = NW;
+		this.SE = SE;
 	}
 
-	public double[] getArea() {
-		return new double[] { NWlat, NWlong, SElat, SElong };
+	public LatLng[] getArea() {
+		return new LatLng[] { NW, SE };
 	}
 
 	public void setGridSize(int x, int y) {
@@ -76,14 +74,17 @@ public class Scenario implements Serializable {
 		return new int[] { gridX, gridY };
 	}
 
-	public int[] coordToTile(double latitude, double longitude) {
+	public int[] coordToTile(LatLng coord) {
 		// TODO coord to tile
-		
 		return new int[] { 0, 0 };
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	public boolean isComplete() {

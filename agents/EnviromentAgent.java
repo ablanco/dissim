@@ -36,6 +36,7 @@ import util.HexagonalGrid;
 import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
+import util.flood.WaterSource;
 
 public class EnviromentAgent extends Agent {
 
@@ -104,14 +105,13 @@ public class EnviromentAgent extends Agent {
 			}
 			// Si no se agentifica
 			else {
-				Iterator<double[]> it = fscen.waterSourcesIterator();
+				Iterator<WaterSource> it = fscen.waterSourcesIterator();
 				while (it.hasNext()) {
-					double[] waterSource = it.next();
-					int[] coord = scen.coordToTile(waterSource[0],
-							waterSource[1]);
-					addBehaviour(new AddWaterGridBehav(this,
-							(long) waterSource[3], (FloodHexagonalGrid) grid,
-							coord[0], coord[1], waterSource[2]));
+					WaterSource ws = it.next();
+					int[] coord = scen.coordToTile(ws.getCoord());
+					addBehaviour(new AddWaterGridBehav(this, ws.getRythm(),
+							(FloodHexagonalGrid) grid, coord[0], coord[1], ws
+									.getWater()));
 				}
 
 				addBehaviour(new UpdateFloodGridBehav(this, fscen

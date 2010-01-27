@@ -30,15 +30,24 @@ import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
+import util.jcoord.LatLng;
+
 public class GetAltitude implements SOAPHandler<SOAPMessageContext> {
 
-	private String X_Value,Y_Value,Source_Layer, Elevation_Only;
+	public static final String BEST_AVAIBLE = "-1";
+	public static final String METERS = "METERS";
+	public static final String FEET = "FEET";
+
+	private String X_Value, Y_Value, Source_Layer, Elevation_Only,
+			Elevation_Units;
 	private String WSDL = "http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL";
 	private String IP_ORIGEN = "192.168.2.1";
-	private String DIR_WEB = "http://gisdata.usgs.gov/XMLWebServices2/";
-	
-	public GetAltitude(){
+
+	// private String DIR_WEB = "http://gisdata.usgs.gov/XMLWebServices2/";
+
+	public GetAltitude() {
 	}
+
 	@Override
 	public Set<QName> getHeaders() {
 		return null;
@@ -86,7 +95,7 @@ public class GetAltitude implements SOAPHandler<SOAPMessageContext> {
 			noProblem = false;
 		}
 
-		// Definimos los elementos a incluir en el mensaje		
+		// Definimos los elementos a incluir en el mensaje
 		SOAPElement soapElementoCabecera = null;
 		try {
 			soapElementoCabecera = soapFactory.createElement("cabeceraSOAP",
@@ -138,19 +147,27 @@ public class GetAltitude implements SOAPHandler<SOAPMessageContext> {
 		}
 		return noProblem;
 	}
-	
-	/* <X_Value>string</X_Value>
-    <Y_Value>string</Y_Value>
-    <Elevation_Units>string</Elevation_Units>
-    <Source_Layer>string</Source_Layer>
-    <Elevation_Only>string</Elevation_Only>
-    */
-	public double getAltitude(String X_Value, String Y_Value, String Source_Layer, String Elevation_Only){
-		double altitude =0;
-		
-		
+
+	/*
+	 * <X_Value>string</X_Value> <Y_Value>string</Y_Value>
+	 * <Elevation_Units>string</Elevation_Units>
+	 * <Source_Layer>string</Source_Layer>
+	 * <Elevation_Only>string</Elevation_Only>
+	 */
+	public double getAltitude(LatLng coord, String sourceLayer,
+			String elevationUnits, boolean elevationOnly) {
+		double altitude = 0;
+
+		if (elevationOnly)
+			Elevation_Only = "TRUE";
+		else
+			Elevation_Only = "FALSE";
+		Elevation_Units = elevationUnits;
+		Source_Layer = sourceLayer;
+		X_Value = Double.toString(coord.getLat());
+		Y_Value = Double.toString(coord.getLng());
+
 		return altitude;
-		
 	}
 
 }

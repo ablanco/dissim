@@ -24,6 +24,7 @@ import java.util.ListIterator;
 
 import util.Scenario;
 import util.flood.FloodScenario;
+import util.flood.WaterSource;
 import behaviours.CreateAgentBehav;
 import behaviours.CreateAgentTickerBehav;
 
@@ -51,23 +52,23 @@ public class CreatorAgent extends Agent {
 				FloodScenario fscen = (FloodScenario) scen;
 				// Si el agua se agentifica
 				if (fscen.useWaterAgents()) {
-					ListIterator<double[]> it = fscen.waterSourcesIterator();
+					ListIterator<WaterSource> it = fscen.waterSourcesIterator();
 					ArrayList<Behaviour> waterAgents = new ArrayList<Behaviour>(
 							fscen.waterSourcesSize());
 					while (it.hasNext()) {
-						double[] waterSource = it.next();
-						grid = scen.coordToTile(waterSource[0], waterSource[1]);
+						WaterSource ws = it.next();
+						grid = scen.coordToTile(ws.getCoord());
 						// Calcular cuántos agentes hacen falta para representar
 						// esa cantidad de agua
-						double water = waterSource[2];
+						double water = ws.getWater();
 						double scenWater = fscen.getWater();
 						int clones = (int) (water / scenWater); // Nº de agentes
 						double spare = water - (scenWater * clones);
 						arguments = new Object[] { Integer.toString(grid[0]),
 								Integer.toString(grid[1]) };
 						// Agentes Water
-						Behaviour wa = new CreateAgentTickerBehav(this,
-								(long) waterSource[3], "Water",
+						Behaviour wa = new CreateAgentTickerBehav(this, ws
+								.getRythm(), "Water",
 								"agents.flood.WaterAgent", clones, arguments);
 						addBehaviour(wa);
 						waterAgents.add(wa);

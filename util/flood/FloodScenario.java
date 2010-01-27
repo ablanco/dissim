@@ -16,53 +16,53 @@
 
 package util.flood;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.ListIterator;
 
 import util.Scenario;
+import util.jcoord.LatLng;
 
 public class FloodScenario extends Scenario {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Entradas de agua, constan de latitud, longitud, cantidad y ritmo de
-	 * entrada de agua
+	 * Entradas de agua
 	 */
-	protected ArrayList<double[]> waterSources; // TODO Array o Linked??
+	private LinkedList<WaterSource> waterSources; // TODO Array o Linked??
 	/**
 	 * Determina si se representa el agua como agentes o no
 	 */
-	protected boolean waterAgents = true;
+	private boolean waterAgents = true;
 	/**
 	 * Representa los ms entre cada actualización de la posición del agua
 	 */
-	protected long floodUpdateTime = 1000; // TODO mejorar esta idea
+	private long floodUpdateTime = 1000; // TODO mejorar esta idea
 	/**
 	 * Representa la cantidad de agua que tiene cada agente, o que se mueve
 	 * entre casillas en caso de que no se agentifique el agua
 	 */
-	protected double water = 1;
+	private double water = 1;
 
 	public FloodScenario() {
 		super();
-		waterSources = new ArrayList<double[]>();
+		waterSources = new LinkedList<WaterSource>();
 		Scenario.current = this;
 	}
 
-	public boolean addWaterSource(double latitude, double longitude,
-			double water, long rythm) {
+	public boolean addWaterSource(WaterSource ws) {
 		boolean result = false;
 		// Comprobamos que esté dentro del área de simulación
-		if (NWlat >= latitude && NWlong >= longitude && SElat <= latitude
-				&& SElong <= longitude) {
-			result = waterSources.add(new double[] { latitude, longitude,
-					water, rythm });
+		LatLng coord = ws.getCoord();
+		if (NW.getLat() >= coord.getLat() && NW.getLng() >= coord.getLng()
+				&& SE.getLat() <= coord.getLat()
+				&& SE.getLng() <= coord.getLng()) {
+			result = waterSources.add(ws);
 		}
 		return result;
 	}
 
-	public ListIterator<double[]> waterSourcesIterator() {
+	public ListIterator<WaterSource> waterSourcesIterator() {
 		return waterSources.listIterator();
 	}
 
@@ -93,11 +93,11 @@ public class FloodScenario extends Scenario {
 		else
 			return -1;
 	}
-	
+
 	public void setWater(double water) {
 		this.water = water;
 	}
-	
+
 	public double getWater() {
 		return water;
 	}

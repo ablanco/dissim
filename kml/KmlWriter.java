@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.jcoord.LatLng;
 import webservices.GetAltitude;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Boundary;
@@ -103,21 +104,24 @@ public class KmlWriter {
 		GetAltitude altitude = new GetAltitude();
 		int ilongitude = (int) (izqSupLon / precision);
 		int ilatitude = (int) (izqSupLat / precision);
-		int cont =0;
-		for (int i = 0; i < dimX; i++) {			
+		int cont = 0;
+		for (int i = 0; i < dimX; i++) {
 			for (int j = 0; j < dimY; j++) {
 				double dlongitude = ilongitude * precision;
 				double dlatitude = ilatitude * precision;
 				// Aqui es donde se llama al metodo del Webservice
-				double alt = altitude.getAltitude(String.valueOf(dlatitude),
-						String.valueOf(dlongitude), "*", "TRUE");
+				// double alt = altitude.getAltitude(String.valueOf(dlatitude),
+				// String.valueOf(dlongitude), "*", "TRUE");
+				double alt = altitude.getAltitude(new LatLng(dlatitude,
+						dlongitude), GetAltitude.BEST_AVAIBLE,
+						GetAltitude.METERS, true);
 				System.out.println("Creando punto (" + cont + "):\t"
 						+ dlatitude + "," + dlongitude + "," + alt);
 				outercoord.add(new Coordinate(dlatitude, dlongitude, alt));
 				cont++;
-				ilongitude ++;
+				ilongitude++;
 			}
-			ilatitude --;
+			ilatitude--;
 		}
 	}
 
