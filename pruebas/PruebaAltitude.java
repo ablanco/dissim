@@ -16,6 +16,8 @@
 
 package pruebas;
 
+import org.apache.crimson.tree.ElementNode2;
+
 import util.jcoord.LatLng;
 import webservices.Altitude;
 
@@ -38,6 +40,9 @@ public class PruebaAltitude {
 		altitude = Altitude.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
+		ElementNode2 elem = Altitude.getAllElevations(coord);
+		System.out.println("\nTodas las altitudes para " + coord.toString()
+				+ " -> " + elem.getFirstChild().toString());
 	}
 
 }

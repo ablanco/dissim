@@ -25,6 +25,7 @@ import org.apache.crimson.tree.ElementNode2;
 import util.jcoord.LatLng;
 import webservices.gov.usgs.gisdata.xmlwebservices2.ElevationService;
 import webservices.gov.usgs.gisdata.xmlwebservices2.ElevationServiceSoap;
+import webservices.gov.usgs.gisdata.xmlwebservices2.GetAllElevationsResponse.GetAllElevationsResult;
 import webservices.gov.usgs.gisdata.xmlwebservices2.GetElevationResponse.GetElevationResult;
 
 //http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL
@@ -61,7 +62,7 @@ public class Altitude {
 
 		if (results.size() != 1)
 			throw new WebServiceException("Wrong results obtained -> "
-					+ results.toArray().toString());
+					+ results.toString());
 
 		return (ElementNode2) results.get(0);
 	}
@@ -74,5 +75,27 @@ public class Altitude {
 		altitude = Double.parseDouble(result.getFirstChild().toString());
 
 		return altitude;
+	}
+
+	public static ElementNode2 getAllElevations(LatLng coord,
+			String elevationUnits) throws WebServiceException {
+		if (service == null)
+			init();
+
+		GetAllElevationsResult res = service.getAllElevations(Double
+				.toString(coord.getLat()), Double.toString(coord.getLng()),
+				elevationUnits);
+		List<Object> results = res.getContent();
+
+		if (results.size() != 1)
+			throw new WebServiceException("Wrong results obtained -> "
+					+ results.toString());
+
+		return (ElementNode2) results.get(0);
+	}
+
+	public static ElementNode2 getAllElevations(LatLng coord)
+			throws WebServiceException {
+		return getAllElevations(coord, "METERS");
 	}
 }
