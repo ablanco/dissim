@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import util.jcoord.LatLng;
-import webservices.GetAltitude;
+import webservices.Altitude;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Boundary;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
@@ -100,8 +100,6 @@ public class KmlWriter {
 		List<Coordinate> outercoord = new ArrayList<Coordinate>();
 		outerlinearring.setCoordinates(outercoord);
 
-		// Creamos el servicio web
-		GetAltitude altitude = new GetAltitude();
 		int ilongitude = (int) (izqSupLon / precision);
 		int ilatitude = (int) (izqSupLat / precision);
 		int cont = 0;
@@ -110,11 +108,8 @@ public class KmlWriter {
 				double dlongitude = ilongitude * precision;
 				double dlatitude = ilatitude * precision;
 				// Aqui es donde se llama al metodo del Webservice
-				// double alt = altitude.getAltitude(String.valueOf(dlatitude),
-				// String.valueOf(dlongitude), "*", "TRUE");
-				double alt = altitude.getAltitude(new LatLng(dlatitude,
-						dlongitude), GetAltitude.BEST_AVAIBLE,
-						GetAltitude.METERS, true);
+				double alt = Altitude.getElevation(new LatLng(dlatitude,
+						dlongitude));
 				System.out.println("Creando punto (" + cont + "):\t"
 						+ dlatitude + "," + dlongitude + "," + alt);
 				outercoord.add(new Coordinate(dlatitude, dlongitude, alt));
