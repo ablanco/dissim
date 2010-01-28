@@ -19,28 +19,28 @@ package pruebas;
 import org.apache.crimson.tree.ElementNode2;
 
 import util.jcoord.LatLng;
-import webservices.Altitude;
+import webservices.AltitudeWS;
 
 public class PruebaAltitude {
 
 	public static void main(String[] args) {
 		LatLng coord = new LatLng(-90.060425, 29.959545);
-		double altitude = Altitude.getElevation(coord);
+		double altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
 		coord = new LatLng(-90.160425, 29.959545);
-		altitude = Altitude.getElevation(coord);
+		altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
 		coord = new LatLng(-90.260425, 29.959545);
-		altitude = Altitude.getElevation(coord);
+		altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
 		coord = new LatLng(-90.260425, 29.859545);
-		altitude = Altitude.getElevation(coord);
+		altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
-		ElementNode2 elem = Altitude.getAllElevations(coord);
+		ElementNode2 elem = AltitudeWS.getAllElevations(coord);
 		System.out.println("\nTodas las altitudes para " + coord.toString()
 				+ " -> " + elem.getFirstChild().toString());
 	}

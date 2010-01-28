@@ -30,11 +30,11 @@ import webservices.gov.usgs.gisdata.xmlwebservices2.GetElevationResponse.GetElev
 
 //http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL
 
-public class Altitude {
+public class AltitudeWS {
 
 	private static ElevationServiceSoap service = null;
 
-	private Altitude() {
+	private AltitudeWS() {
 		// Inaccesible
 	}
 
