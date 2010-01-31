@@ -16,48 +16,45 @@
 
 package kml;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import util.HexagonalGrid;
+import util.Scenario;
+import util.jcoord.LatLng;
+import de.micromata.opengis.kml.v_2_2_0.Boundary;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
+import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
+import de.micromata.opengis.kml.v_2_2_0.LinearRing;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Point;
+import de.micromata.opengis.kml.v_2_2_0.Polygon;
 
 public class KmlReader extends Kml {
 
-	public Kml kml;
-
-	public KmlReader() {
-		kml = new Kml();
-	}
+	private Kml kml;
+	private Scenario scene;
 
 	/**
-	 * Crea un lugar señalado en el mapa dandole un nombre y unas coordenadas
+	 * Opens a kml file for data extraction
 	 * 
-	 * @param nombreCiudad
-	 * @param latitud
-	 * @param longitud
+	 * @param fileName
+	 * @throws FileNotFoundException
 	 */
-	public void setPlacemark(String nombreCiudad, double latitud,
-			double longitud) {
-		kml.createAndSetPlacemark().withName(nombreCiudad).withOpen(
-				Boolean.TRUE).createAndSetPoint().addToCoordinates(latitud,
-				longitud);
-	}
-
-	/**
-	 * Crea un lugar señalado en el mapa dandole un nombre, unas coordenadas y
-	 * una altura
-	 * 
-	 * @param nombreCiudad
-	 * @param latitud
-	 * @param longitud
-	 */
-	public void setPlacemark(String nombreCiudad, double latitud,
-			double longitud, int altitude) {
-		kml.createAndSetPlacemark().withName(nombreCiudad).withOpen(
-				Boolean.TRUE).createAndSetPoint().addToCoordinates(latitud,
-				longitud, altitude);
+	public KmlReader(String fileName) {
+		kml = Kml.unmarshal(new File(fileName));
+		scene = Scenario.getCurrentScenario();
+		if (kml == null) {
+			try {
+				throw new FileNotFoundException();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				System.err.println("No se puede encontrar " + fileName);
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -67,6 +64,59 @@ public class KmlReader extends Kml {
 		kml.marshal();
 	}
 
+	/**
+	 * Returns the grid size is in description
+	 * 
+	 * @return
+	 */
+	public void getSceneInfo() {
+		// Geting Document
+		Document doc = (Document) kml.getFeature();
+		// Getin description Info
+		String s = doc.getDescription();
+		String info[] = s.split(",");
+		// Setting Scenario Atributes
+		scene.setDescription(s);
+		scene.setArea(new LatLng(Double.parseDouble(info[1]), Double
+				.parseDouble(info[2])), new LatLng(Double.parseDouble(info[3]),
+				Double.parseDouble(info[4])));
+		scene.setTileSize(Integer.parseInt(info[0]));
+
+		// DEBUG
+		System.out.println(scene.toString());
+
+	}
+
+	/**
+	 * Retuns hexGrid form the kmlFile
+	 * @return
+	 */
+	public HexagonalGrid getHexagonalGrid() {
+		int gridSize[] = scene.getGridSize();
+
+		HexagonalGrid hexGrid = new HexagonalGrid(gridSize[0], gridSize[1]);
+
+		// Begins the extraction of points
+		Document doc = (Document) kml.getFeature();
+		// Placemark placemark = (Placemark) doc.getFeature();
+		Placemark place = (Placemark) (doc.getFeature()).get(0);
+		Polygon pol = (Polygon) place.getGeometry();
+		Boundary bound = pol.getOuterBoundaryIs();
+		LinearRing lr = bound.getLinearRing();
+		for (Coordinate coordinate : lr.getCoordinates()) {
+			LatLng coord = new LatLng(coordinate.getLatitude(), coordinate
+					.getLongitude());
+			int pos[] = scene.coordToTile(coord);
+			// System.out.println(pos[0]+","+pos[1]+" ("+coordinate.getLatitude()+", "+coordinate.getLongitude()+") "+coordinate.getAltitude()+"m");
+			hexGrid.setTerrainValue(pos[0], pos[1], coordinate.getAltitude());
+		}
+		return hexGrid;
+
+	}
+
+	/**
+	 * 
+	 */
 	public void showCoordinates() {
 		Placemark placemark = (Placemark) kml.getFeature();
 		Point point = (Point) placemark.getGeometry();

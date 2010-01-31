@@ -17,30 +17,17 @@
 package pruebas;
 
 import kml.KmlReader;
+import util.HexagonalGrid;
 
-public class PruebaKML {
+public class KmlReaderTest {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		KmlReader kml = new KmlReader();
-		// 29.964722 , -90.070556
-		/*
-		 * <longitude>-90,0750720001457</longitude>
-		 * <latitude>29,95464802061058</latitude> 29,95464802061058 ,
-		 * -90,0750720001457
-		 */
-		double latitud = 29.95468;
-		double longitud = -90.07507;
-		kml.setPlacemark("Nueva Orleans", latitud, longitud);
-		kml.setPlacemark("n1", 29.95461, -90.07502);
-		kml.setPlacemark("n1", 29.95463, -90.07504);
-		kml.setPlacemark("n1", 29.95465, -90.07501);
-		kml.setPlacemark("n1", 29.95464, -90.07504);
-		//kml.writeFile("Prueba");
-		kml.showCoordinates();
-
+		KmlReader k = new KmlReader("Nueva Orleans - Escenario.kml");
+		k.getSceneInfo();
+		HexagonalGrid hexGrid = k.getHexagonalGrid();
 
 	}
 

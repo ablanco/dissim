@@ -88,10 +88,11 @@ public class KmlWriter {
 		Document document = new Document();
 		kml.setFeature(document);
 		document.setName("Land Elevation Info");
+		document.setDescription(scene.getDescription());
 		document.setOpen(false);
 		Placemark placemark = new Placemark();
 		document.getFeature().add(placemark);
-		placemark.setName(scene.getDescription());
+		placemark.setName("Coordinates");
 		Polygon polygon = new Polygon();
 		placemark.setGeometry(polygon);
 
@@ -109,10 +110,9 @@ public class KmlWriter {
 		for (int i=0;i<scene.getGridSize()[0];i++){
 			for (int j=0;j<scene.getGridSize()[1];j++){
 				LatLng aux = scene.tileToCoord(i, j);
-				//TODO llamada a webservice
-				//double alt = AltitudeWS.getElevation(aux);
-				double alt = 0;
-				outercoord.add(new Coordinate(aux.getLat(), aux.getLng(), alt));
+				double alt = AltitudeWS.getElevation(aux);				
+				//System.out.println(aux.toString()+" Altitude :"+alt);
+				outercoord.add(new Coordinate(aux.getLng(), aux.getLat(), alt));
 			}
 		}
 		

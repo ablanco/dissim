@@ -21,7 +21,7 @@ import org.apache.crimson.tree.ElementNode2;
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
 
-public class PruebaAltitude {
+public class AltitudeTest {
 
 	public static void main(String[] args) {
 		LatLng coord = new LatLng(-90.060425, 29.959545);
