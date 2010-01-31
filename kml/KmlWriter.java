@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.Scenario;
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
@@ -68,6 +69,61 @@ public class KmlWriter {
 		createKmlFile(nombreFichero);
 	}
 
+	public KmlWriter(String fileName, Scenario scene) {
+		kml = new Kml();
+		// Creamos una rejilla del tamaño adeacuado
+		buildKmlMap(scene);
+		// Creamos el fichero kml con las coordenadas y las alturas
+		createKmlFile(fileName);
+	}
+	
+	
+/**
+ * Build a KML file with all the coords altitude info from a scene
+ * @param scene
+ */
+	private void buildKmlMap(Scenario scene) {
+		
+		//All the steps needed to build a Polygon on KML
+		Document document = new Document();
+		kml.setFeature(document);
+		document.setName("Land Elevation Info");
+		document.setOpen(false);
+		Placemark placemark = new Placemark();
+		document.getFeature().add(placemark);
+		placemark.setName(scene.getDescription());
+		Polygon polygon = new Polygon();
+		placemark.setGeometry(polygon);
+
+		polygon.setExtrude(true);
+		polygon.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+		Boundary outerboundary = new Boundary();
+		polygon.setOuterBoundaryIs(outerboundary);
+
+		LinearRing outerlinearring = new LinearRing();
+		outerboundary.setLinearRing(outerlinearring);
+
+		List<Coordinate> outercoord = new ArrayList<Coordinate>();
+		outerlinearring.setCoordinates(outercoord);
+		//Now iterate on the coords and get altitudes
+		for (int i=0;i<scene.getGridSize()[0];i++){
+			for (int j=0;j<scene.getGridSize()[1];j++){
+				LatLng aux = scene.tileToCoord(i, j);
+				//TODO llamada a webservice
+				//double alt = AltitudeWS.getElevation(aux);
+				double alt = 0;
+				outercoord.add(new Coordinate(aux.getLat(), aux.getLng(), alt));
+			}
+		}
+		
+	}
+/**
+ * Deprecated
+ * @param izqSupLat
+ * @param izqSupLon
+ * @param derInfLat
+ * @param derInfLon
+ */
 	public void buildKmlMap(double izqSupLat, double izqSupLon,
 			double derInfLat, double derInfLon) {
 		// Tenemos que averiguar el tamaño de la rejilla

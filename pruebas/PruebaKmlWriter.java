@@ -1,6 +1,8 @@
 package pruebas;
 
 import kml.KmlWriter;
+import util.Scenario;
+import util.jcoord.LatLng;
 
 public class PruebaKmlWriter {
 
@@ -9,7 +11,19 @@ public class PruebaKmlWriter {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		KmlWriter kmle = new KmlWriter("Nueva Orleans - Mapa", 30.05, -90.27, 30.04, -90.26);
+		/*Nueva Orleans
+		 * NW:  29.953260, -90.088238
+		 * SE:  29.918075, -90.053707
+		 * UTM
+		 */
+		
+		Scenario newOrleans = Scenario.getCurrentScenario();
+		
+		newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(29.918075, -90.053707));
+		newOrleans.setTileSize(50);
+		
+		System.out.println(newOrleans.toString());
+		KmlWriter kmle = new KmlWriter("Nueva Orleans - Escenario", newOrleans);
 	}
 
 }

@@ -19,6 +19,7 @@ package util;
 import java.io.Serializable;
 
 import util.jcoord.LatLng;
+import util.jcoord.UTMRef;
 
 public class Scenario implements Serializable {
 
@@ -41,6 +42,9 @@ public class Scenario implements Serializable {
 	// reference MUST change
 	protected static Scenario current = null;
 
+	// Tile size in m^2
+	private int tileSize;
+
 	// This class shouldn't be used directly
 	protected Scenario() {
 		complete = false;
@@ -52,6 +56,8 @@ public class Scenario implements Serializable {
 		if (current != null) {
 			if (current.isComplete())
 				instance = current;
+		} else {
+			return new Scenario();
 		}
 		return instance;
 	}
@@ -65,7 +71,7 @@ public class Scenario implements Serializable {
 		return new LatLng[] { NW, SE };
 	}
 
-	public void setGridSize(int x, int y) {
+	private void setGridSize(int x, int y) {
 		gridX = x;
 		gridY = y;
 	}
@@ -74,9 +80,38 @@ public class Scenario implements Serializable {
 		return new int[] { gridX, gridY };
 	}
 
+	/**
+	 * Convert from a coordinate to the position in the grid
+	 * 
+	 * @param coord
+	 * @return
+	 */
 	public int[] coordToTile(LatLng coord) {
-		// TODO coord to tile
-		return new int[] { 0, 0 };
+		// Obtain the opposite sides
+		LatLng xCoord = new LatLng(NW.getLat(), coord.getLng());
+		LatLng yCoord = new LatLng(coord.getLat(), NW.getLng());
+		// Obtain the distances from the sides to NW(0,0)
+		int x = (int) (NW.distance(xCoord)) * 1000 / tileSize;
+		int y = (int) (NW.distance(yCoord)) * 1000 / tileSize;
+
+		return new int[] { x, y };
+	}
+
+	/**
+	 * Convert form the grid to coordinate
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public LatLng tileToCoord(int x, int y) {
+		// Convert to UTM, cause is in meters
+		UTMRef coordUTM = NW.toUTMRef();
+		// Just add the distance (x * tileSize) and get the new coordinate
+		UTMRef coordAUX = new UTMRef(coordUTM.getEasting() + (x * tileSize),
+				coordUTM.getNorthing() + (y * tileSize), coordUTM.getLatZone(),
+				coordUTM.getLngZone());
+		return coordAUX.toLatLng();
 	}
 
 	public void setDescription(String description) {
@@ -93,5 +128,34 @@ public class Scenario implements Serializable {
 
 	public void complete() {
 		complete = true;
+	}
+
+	/**
+	 * Now we can set the precision of the grid
+	 * 
+	 * @param tileSize
+	 */
+	public void setTileSize(int tileSize) {
+		this.tileSize = tileSize;
+		// Obtain the opposite of the square
+		LatLng NE = new LatLng(NW.getLat(), SE.getLng());
+		LatLng SW = new LatLng(SE.getLat(), NW.getLng());
+		// Obtain the distance from the square and fix with precision
+		int x = (int) (NW.distance(NE) * 1000 / tileSize);
+		int y = (int) (SE.distance(SW) * 1000 / tileSize);
+		// Set grid size +1 because the dimension thing
+		setGridSize(x + 1, y + 1);
+		setDescription(gridX + "," + gridY + "," + NW.toString() + ","
+				+ SE.toString());
+	}
+
+	public int getTileSize() {
+		return tileSize;
+	}
+
+	public String toString() {
+		return "\nSize [" + gridX + "," + gridY + "] NW coord :"
+				+ NW.toString() + ", SE Coord: " + SE.toString()
+				+ " Tile size :" + NW.distance(tileToCoord(0, 1)) + "kms";
 	}
 }
