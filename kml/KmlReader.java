@@ -18,7 +18,6 @@ package kml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 
 import util.HexagonalGrid;
 import util.Scenario;
@@ -29,7 +28,6 @@ import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.LinearRing;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
-import de.micromata.opengis.kml.v_2_2_0.Point;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
 
 public class KmlReader extends Kml {
@@ -57,12 +55,7 @@ public class KmlReader extends Kml {
 		}
 	}
 
-	/**
-	 * Muestra el archivo kml hasta el momento por consola
-	 */
-	public void showFile() {
-		kml.marshal();
-	}
+
 
 	/**
 	 * Returns the grid size is in description
@@ -89,6 +82,7 @@ public class KmlReader extends Kml {
 
 	/**
 	 * Retuns hexGrid form the kmlFile
+	 * 
 	 * @return
 	 */
 	public HexagonalGrid getHexagonalGrid() {
@@ -113,20 +107,11 @@ public class KmlReader extends Kml {
 		return hexGrid;
 
 	}
-
 	/**
-	 * 
+	 * Muestra el archivo kml hasta el momento por consola
 	 */
-	public void showCoordinates() {
-		Placemark placemark = (Placemark) kml.getFeature();
-		Point point = (Point) placemark.getGeometry();
-		ArrayList<Coordinate> coordinates = (ArrayList<Coordinate>) point
-				.getCoordinates();
-		for (Coordinate coordinate : coordinates) {
-			System.out.println(coordinate.getLatitude());
-			System.out.println(coordinate.getLongitude());
-			System.out.println(coordinate.getAltitude());
-		}
+	public void showFile() {
+		kml.marshal();
 	}
 
 }
