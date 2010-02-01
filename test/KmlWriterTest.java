@@ -29,18 +29,26 @@ public class KmlWriterTest {
 	public static void main(String[] args) {
 		/*
 		 * Nueva Orleans NW: 29.953260, -90.088238 SE: 29.918075, -90.053707 UTM
+		 * NW:  29.952869, -90.063764  SE:  29.952158, -90.062461
 		 */
 
 		Scenario newOrleans = new FloodScenario();
 
+		//newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
+		//		29.918075, -90.053707));
+		newOrleans.setArea(new LatLng(29.952869, -90.063764), new LatLng(29.952158, -90.062461));
+
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), 150);
+
+		
+		newOrleans.setTileSize(5);
 		
 		newOrleans.complete();
 
 		System.out.println(newOrleans.toString());
 		KmlWriter kmle = new KmlWriter();
-		kmle.buildKmlAltitudesMap("New Orleans - Altitudes");
+		kmle.buildKmlAltitudesMap("New Orleans - Altitudes Small");
 	}
 
 }
