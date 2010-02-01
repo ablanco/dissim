@@ -33,15 +33,15 @@ import de.micromata.opengis.kml.v_2_2_0.Polygon;
 public class KmlReader extends Kml {
 
 	private Kml kml;
-	private Scenario scene;
 
 	/**
 	 * Opens a kml file for data extraction
 	 * 
 	 * @param fileName
+	 * @param scene 
 	 * @throws FileNotFoundException
 	 */
-	public KmlReader(String fileName) {
+	public KmlReader(String fileName, Scenario scene) {
 		kml = Kml.unmarshal(new File(fileName));
 		scene = Scenario.getCurrentScenario();
 		if (kml == null) {
@@ -52,17 +52,16 @@ public class KmlReader extends Kml {
 				System.err.println("No se puede encontrar " + fileName);
 				e.printStackTrace();
 			}
+		}else{
+			getSceneInfo(scene);
 		}
 	}
 
-
-
 	/**
-	 * Returns the grid size is in description
-	 * 
-	 * @return
+	 * Get the scene infro from the kml File
+	 * @param scene 
 	 */
-	public void getSceneInfo() {
+	private void getSceneInfo(Scenario scene) {
 		// Geting Document
 		Document doc = (Document) kml.getFeature();
 		// Getin description Info
@@ -74,18 +73,15 @@ public class KmlReader extends Kml {
 				.parseDouble(info[2])), new LatLng(Double.parseDouble(info[3]),
 				Double.parseDouble(info[4])));
 		scene.setTileSize(Integer.parseInt(info[0]));
-
-		// DEBUG
-		System.out.println(scene.toString());
-
 	}
 
 	/**
 	 * Retuns hexGrid form the kmlFile
+	 * @param scene 
 	 * 
 	 * @return
 	 */
-	public HexagonalGrid getHexagonalGrid() {
+	public HexagonalGrid getHexagonalGrid(Scenario scene) {
 		int gridSize[] = scene.getGridSize();
 
 		HexagonalGrid hexGrid = new HexagonalGrid(gridSize[0], gridSize[1]);

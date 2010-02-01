@@ -37,27 +37,17 @@ public class KmlWriter {
 
 	private Kml kml;
 
-	/***
-	 * Buil kml File from the scene
-	 * @param izqSupLat
-	 * @param izqSupLon
-	 * @param derInfLat
-	 * @param derInfLon
-	 */
-	public KmlWriter(String fileName, Scenario scene) {
+	public KmlWriter() {
 		kml = new Kml();
-		// Creamos una rejilla del tamaño adeacuado
-		buildKmlMap(scene);
-		// Creamos el fichero kml con las coordenadas y las alturas
-		createKmlFile(fileName);
 	}
 	
 	
 /**
- * Build a KML file with all the coords altitude info from a scene
+ * Buil Kml File from Scene
+ * @param fileName
  * @param scene
  */
-	private void buildKmlMap(Scenario scene) {
+	public void buildKmlAltitudesMap(String fileName, Scenario scene) {
 		
 		//All the steps needed to build a Polygon on KML
 		Document document = new Document();
@@ -81,6 +71,7 @@ public class KmlWriter {
 
 		List<Coordinate> outercoord = new ArrayList<Coordinate>();
 		outerlinearring.setCoordinates(outercoord);
+		
 		//Now iterate on the coords and get altitudes
 		for (int i=0;i<scene.getGridSize()[0];i++){
 			for (int j=0;j<scene.getGridSize()[1];j++){
@@ -90,6 +81,8 @@ public class KmlWriter {
 				outercoord.add(new Coordinate(aux.getLng(), aux.getLat(), alt));
 			}
 		}
+		//Now creates the kml File
+		createKmlFile(fileName);
 		
 	}
 
@@ -98,9 +91,9 @@ public class KmlWriter {
 	 * 
 	 * @param nombreFichero
 	 */
-	private void createKmlFile(String nombreFichero) {
+	private void createKmlFile(String fileName) {
 		try {
-			kml.marshal(new File(nombreFichero + ".kml"));
+			kml.marshal(new File(fileName + ".kml"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

@@ -37,7 +37,8 @@ public class KmlWriterTest {
 		newOrleans.setTileSize(150);
 
 		System.out.println(newOrleans.toString());
-		KmlWriter kmle = new KmlWriter("Nueva Orleans - Escenario", newOrleans);
+		KmlWriter kmle = new KmlWriter();
+		kmle.buildKmlAltitudesMap("New Orleans - Altitudes", newOrleans);
 	}
 
 }
