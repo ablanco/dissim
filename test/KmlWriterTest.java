@@ -36,13 +36,10 @@ public class KmlWriterTest {
 
 		//newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
 		//		29.918075, -90.053707));
-		newOrleans.setArea(new LatLng(29.952869, -90.063764), new LatLng(29.952158, -90.062461));
 
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), 150);
 
-		
-		newOrleans.setTileSize(5);
 		
 		newOrleans.complete();
 
