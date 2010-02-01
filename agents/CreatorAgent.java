@@ -22,6 +22,7 @@ import jade.core.behaviours.Behaviour;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import test.Sim1Test;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
@@ -34,12 +35,13 @@ public class CreatorAgent extends Agent {
 
 	@Override
 	protected void setup() {
+		Sim1Test.generateScenario(0); // TODO Debug
+		
 		Scenario scen = Scenario.getCurrentScenario();
 		if (scen != null) {
 			Object[] arguments;
 
 			// Enviroment
-			int[] grid = scen.getGridSize();
 			arguments = new Object[0];
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
 					"agents.EnviromentAgent", 1, arguments));
@@ -56,15 +58,15 @@ public class CreatorAgent extends Agent {
 							fscen.waterSourcesSize());
 					while (it.hasNext()) {
 						WaterSource ws = it.next();
-						grid = scen.coordToTile(ws.getCoord());
+						int[] tileIdx = scen.coordToTile(ws.getCoord());
 						// Calcular cuántos agentes hacen falta para representar
 						// esa cantidad de agua
 						double water = ws.getWater();
 						double scenWater = fscen.getWater();
 						int clones = (int) (water / scenWater); // Nº de agentes
 						double spare = water - (scenWater * clones);
-						arguments = new Object[] { Integer.toString(grid[0]),
-								Integer.toString(grid[1]) };
+						arguments = new Object[] { Integer.toString(tileIdx[0]),
+								Integer.toString(tileIdx[1]) };
 						// Agentes Water
 						Behaviour wa = new CreateAgentTickerBehav(this, ws
 								.getRythm(), "Water",
@@ -77,21 +79,6 @@ public class CreatorAgent extends Agent {
 					// waterAgents)
 				}
 			}
-		} else { // TODO Borrar este código (DEBUG)
-			scen = new FloodScenario();
-			scen.complete();
-			Object[] arguments;
-
-			// Enviroment
-			arguments = new Object[0];
-			addBehaviour(new CreateAgentBehav(this, "Enviroment",
-					"agents.EnviromentAgent", 1, arguments));
-
-			// Agentes Water
-			arguments = new Object[] { "0", "0" };
-			Behaviour waterAgents = new CreateAgentTickerBehav(this, 100L,
-					"Water", "agents.flood.WaterAgent", 1, arguments);
-			addBehaviour(waterAgents);
-		} // FIN DEBUG
+		}
 	}
 }

@@ -16,8 +16,11 @@
 
 package test;
 
+import util.HexagonalGrid;
 import util.flood.FloodScenario;
+import util.flood.WaterSource;
 import util.jcoord.LatLng;
+import webservices.AltitudeWS;
 
 public class Sim1Test {
 
@@ -32,15 +35,22 @@ public class Sim1Test {
 
 	private static void smallGrid() {
 		FloodScenario scen = new FloodScenario();
+		scen.setWaterAgents(false);
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
-				29.918075, -90.053707), 150);
-
-		/*
-		 * grid.setTerrainValue(0, 0, 9); grid.setTerrainValue(0, 2, 8);
-		 * grid.setTerrainValue(1, 0, 7.8); grid.setTerrainValue(1, 1, 6);
-		 * grid.setTerrainValue(1, 2, 8); grid.setTerrainValue(2, 0, 5);
-		 * grid.setTerrainValue(2, 1, 5.3); grid.setTerrainValue(2, 2, 3);
-		 */
+				29.918075, -90.053707), 800);
+		// 5 x 5
+		HexagonalGrid grid = scen.getGrid();
+		for (int i = 0; i < grid.getDimX(); i++) {
+			for (int j = 0; j < grid.getDimY(); j++) {
+				LatLng coord = scen.tileToCoord(i, j);
+				double value = AltitudeWS.getElevation(coord);
+				grid.setTerrainValue(i, j, value);
+			}
+		}
+		System.out.println("Obtenidas todas las alturas.");
+		scen.addWaterSource(new WaterSource(new LatLng(29.9532, -90.0882), 1,
+				150L));
+		scen.complete();
 	}
 
 }

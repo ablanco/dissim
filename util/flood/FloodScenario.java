@@ -29,7 +29,7 @@ public class FloodScenario extends Scenario {
 	/**
 	 * Entradas de agua
 	 */
-	private LinkedList<WaterSource> waterSources; // TODO Array o Linked??
+	private LinkedList<WaterSource> waterSources;
 	/**
 	 * Determina si se representa el agua como agentes o no
 	 */
@@ -43,15 +43,13 @@ public class FloodScenario extends Scenario {
 	 * entre casillas en caso de que no se agentifique el agua
 	 */
 	private double water = 1;
-	
-	protected FloodHexagonalGrid grid = null;
 
 	public FloodScenario() {
 		super();
 		waterSources = new LinkedList<WaterSource>();
 		Scenario.current = this;
 	}
-	
+
 	@Override
 	protected void createGrid(int x, int y) {
 		gridX = x;
@@ -63,9 +61,11 @@ public class FloodScenario extends Scenario {
 		boolean result = false;
 		// Comprobamos que esté dentro del área de simulación
 		LatLng coord = ws.getCoord();
-		if (NW.getLat() >= coord.getLat() && NW.getLng() >= coord.getLng()
-				&& SE.getLat() <= coord.getLat()
-				&& SE.getLng() <= coord.getLng()) {
+		// TODO la comparación es correcta?
+		// if (NW.getLat() >= coord.getLat() && NW.getLng() >= coord.getLng()
+		// && SE.getLat() <= coord.getLat()
+		// && SE.getLng() <= coord.getLng()) {
+		if (true) {
 			result = waterSources.add(ws);
 		}
 		return result;
