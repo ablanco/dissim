@@ -44,8 +44,9 @@ public class KmlWriterTest {
 		newOrleans.complete();
 
 		System.out.println(newOrleans.toString());
+		System.out.println(newOrleans.getDescription());
 		KmlWriter kmle = new KmlWriter();
-		kmle.buildKmlAltitudesMap("New Orleans - Altitudes Small");
+		kmle.buildKmlAltitudesMap("New Orleans - Altitudes Test");
 	}
 
 }

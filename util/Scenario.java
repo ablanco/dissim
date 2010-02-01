@@ -74,8 +74,8 @@ public class Scenario implements Serializable {
 		int y = (int) (SE.distance(SW) * 1000 / tileSize);
 		// Set grid size +1 because the dimension thing
 		createGrid(x + 1, y + 1);
-		// setDescription(tileSize + "," + NW.getLat() + "," + NW.getLng() + ","
-		// + SE.getLat() + "," + SE.getLng());
+		setDescription(tileSize + "," + NW.getLat() + "," + NW.getLng() + ","
+		 + SE.getLat() + "," + SE.getLng());
 	}
 
 	public LatLng[] getArea() {

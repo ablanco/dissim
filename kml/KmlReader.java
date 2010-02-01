@@ -18,6 +18,7 @@ package kml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 import util.HexagonalGrid;
 import util.Scenario;
@@ -43,14 +44,24 @@ public class KmlReader extends Kml {
 	 * @throws FileNotFoundException
 	 */
 	public KmlReader(String fileName) {
-		kml = Kml.unmarshal(new File(fileName));
+		if (fileName.contains(".kmz")){
+			try {
+				kml = Kml.unmarshalFromKmz(new File(fileName))[0];
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else{
+			kml = Kml.unmarshal(new File(fileName));	
+		}
+		
+
 		Scenario scene = Scenario.getCurrentScenario();
 		if (scene != null) {
 			if (kml == null) {
 				try {
 					throw new FileNotFoundException();
 				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
 					System.err.println("No se puede encontrar " + fileName);
 					e.printStackTrace();
 				}
@@ -111,7 +122,7 @@ public class KmlReader extends Kml {
 				LatLng coord = new LatLng(coordinate.getLatitude(), coordinate
 						.getLongitude());
 				int pos[] = scene.coordToTile(coord);
-				// System.out.println(pos[0]+","+pos[1]+" ("+coordinate.getLatitude()+", "+coordinate.getLongitude()+") "+coordinate.getAltitude()+"m");
+				System.out.println(pos[0]+","+pos[1]+" ("+coordinate.getLatitude()+", "+coordinate.getLongitude()+") "+coordinate.getAltitude()+"m");
 				hexGrid.setTerrainValue(pos[0], pos[1], coordinate
 						.getAltitude());
 			}

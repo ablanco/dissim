@@ -29,8 +29,10 @@ public class KmlReaderTest {
 	public static void main(String[] args) {
 		Scenario scene = new FloodScenario();
 		scene.complete();		
-		KmlReader k = new KmlReader("New Orleans - Altitudes");
+		KmlReader k = new KmlReader("New Orleans - Altitudes Test.kmz");
 		HexagonalGrid hexGrid = k.getHexagonalGrid();
+		
+		
 	}
 
 }

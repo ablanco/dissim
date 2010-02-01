@@ -18,6 +18,7 @@ package kml;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,9 +37,11 @@ import de.micromata.opengis.kml.v_2_2_0.Polygon;
 public class KmlWriter {
 
 	private Kml kml;
+	private Document document;
 
 	public KmlWriter() {
 		kml = new Kml();
+
 	}
 
 	/**
@@ -46,48 +49,31 @@ public class KmlWriter {
 	 * 
 	 * @param fileName
 	 */
+
 	public void buildKmlAltitudesMap(String fileName) {
 		Scenario scene = Scenario.getCurrentScenario();
 
 		if (scene != null) {
-			// All the steps needed to build a Polygon on KML
-			Document document = new Document();
-			kml.setFeature(document);
-			document.setName("Land Elevation Info");
-			document.setDescription(scene.getDescription());
-			document.setOpen(false);
-			Placemark placemark = new Placemark();
-			document.getFeature().add(placemark);
-			placemark.setName("Coordinates");
-			Polygon polygon = new Polygon();
-			placemark.setGeometry(polygon);
-
-			polygon.setExtrude(true);
-			polygon.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-			Boundary outerboundary = new Boundary();
-			polygon.setOuterBoundaryIs(outerboundary);
-
-			LinearRing outerlinearring = new LinearRing();
-			outerboundary.setLinearRing(outerlinearring);
-
-			List<Coordinate> outercoord = new ArrayList<Coordinate>();
-			outerlinearring.setCoordinates(outercoord);
-
-			// Now iterate on the coords and get altitudes
-			int cont=0;
+			//Creation of the document
+			createDocument("Land Elevation Info", scene.getDescription());
+			//Creation of the Polygon
+			List<Coordinate>[] polygon = createPolygon("Land Map",
+					"Land Map Elevations");
+			//Adding coordinates and elevation
 			for (int i = 0; i < scene.getGridSize()[0]; i++) {
 				for (int j = 0; j < scene.getGridSize()[1]; j++) {
 					LatLng aux = scene.tileToCoord(i, j);
-					double alt = AltitudeWS.getElevation(aux);
-					System.out.println(cont+") "+aux.toString()+" Altitude :"+alt);
-					outercoord.add(new Coordinate(aux.getLng(), aux.getLat(),
-							alt));
-					cont++;
+					//double alt = AltitudeWS.getElevation(aux);
+					// System.out.println(cont+") "+aux.toString()+" Altitude :"+alt);
+					addCoordinateToPolygon(polygon, aux, 15.5, true);
 				}
 			}
 			// Now creates the kml File
-			createKmlFile(fileName);
+			createKmzFile(fileName);
+		} else {
+			System.err.println("No se ha inicializado la escena");
 		}
+
 	}
 
 	/**
@@ -101,6 +87,87 @@ public class KmlWriter {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void createKmzFile(String fileName){
+		try {
+			kml.marshalAsKmz(fileName+".kmz");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	public void createDocument(String name, String description) {
+		document = new Document();
+		kml.setFeature(document);
+		document.setName(name);
+		document.setDescription(description);
+		document.setOpen(false);
+	}
+
+	/**
+	 * Return polygon for adding coordinates [0] Outerlinnerar [1] innerLinear,
+	 * default Relative_to_ground
+	 * 
+	 * @param name
+	 * @param description
+	 * @return
+	 */
+	public List<Coordinate>[] createPolygon(String name, String description) {
+		// All the steps needed to build a Polygon on KML
+		List<Coordinate>[] p = new List[2];
+		Placemark placemark = new Placemark();
+		document.getFeature().add(placemark);
+		placemark.setName(name);
+		placemark.setDescription(description);
+		Polygon polygon = new Polygon();
+		placemark.setGeometry(polygon);
+
+		polygon.setExtrude(true);
+		polygon.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+		Boundary outerboundary = new Boundary();
+		polygon.setOuterBoundaryIs(outerboundary);
+
+		LinearRing outerlinearring = new LinearRing();
+		outerboundary.setLinearRing(outerlinearring);
+
+		List<Coordinate> outercoord = new ArrayList<Coordinate>();
+		outerlinearring.setCoordinates(outercoord);
+		p[0] = outercoord;
+		Boundary innerboundary = new Boundary();
+		polygon.getInnerBoundaryIs().add(innerboundary);
+
+		LinearRing innerlinearring = new LinearRing();
+		innerboundary.setLinearRing(innerlinearring);
+
+		List<Coordinate> innercoord = new ArrayList<Coordinate>();
+		innerlinearring.setCoordinates(innercoord);
+		p[1] = innercoord;
+
+		return p;
+	}
+
+	/**
+	 * Adds coordinate to polygon, True if outer coord, False is inner coord
+	 * 
+	 * @param polygon
+	 * @param coord
+	 * @param outer
+	 */
+	public void addCoordinateToPolygon(List<Coordinate>[] polygon,
+			LatLng coord, double altitude, boolean outer) {
+		if (outer) {
+			polygon[0].add(new Coordinate(coord.getLng(), coord.getLat(),
+					altitude));
+		} else {
+			polygon[1].add(new Coordinate(coord.getLng(), coord.getLat(),
+					altitude));
+		}
+	}
+	
+	public void createTimeLine(){
+		
 	}
 
 }
