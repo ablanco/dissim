@@ -18,6 +18,7 @@ package test;
 
 import kml.KmlWriter;
 import util.Scenario;
+import util.flood.FloodScenario;
 import util.jcoord.LatLng;
 
 public class KmlWriterTest {
@@ -30,15 +31,17 @@ public class KmlWriterTest {
 		 * Nueva Orleans NW: 29.953260, -90.088238 SE: 29.918075, -90.053707 UTM
 		 */
 
-		Scenario newOrleans = Scenario.getCurrentScenario();
+		Scenario newOrleans = new FloodScenario();
 
 		newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707));
 		newOrleans.setTileSize(150);
+		
+		newOrleans.complete();
 
 		System.out.println(newOrleans.toString());
 		KmlWriter kmle = new KmlWriter();
-		kmle.buildKmlAltitudesMap("New Orleans - Altitudes", newOrleans);
+		kmle.buildKmlAltitudesMap("New Orleans - Altitudes");
 	}
 
 }

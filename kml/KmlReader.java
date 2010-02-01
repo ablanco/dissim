@@ -21,6 +21,8 @@ import java.io.FileNotFoundException;
 
 import util.HexagonalGrid;
 import util.Scenario;
+import util.flood.FloodHexagonalGrid;
+import util.flood.FloodScenario;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.Boundary;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
@@ -38,29 +40,33 @@ public class KmlReader extends Kml {
 	 * Opens a kml file for data extraction
 	 * 
 	 * @param fileName
-	 * @param scene 
 	 * @throws FileNotFoundException
 	 */
-	public KmlReader(String fileName, Scenario scene) {
+	public KmlReader(String fileName) {
 		kml = Kml.unmarshal(new File(fileName));
-		scene = Scenario.getCurrentScenario();
-		if (kml == null) {
-			try {
-				throw new FileNotFoundException();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				System.err.println("No se puede encontrar " + fileName);
-				e.printStackTrace();
+		Scenario scene = Scenario.getCurrentScenario();
+		if (scene != null) {
+			if (kml == null) {
+				try {
+					throw new FileNotFoundException();
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					System.err.println("No se puede encontrar " + fileName);
+					e.printStackTrace();
+				}
+			} else {
+				getSceneInfo(scene);
 			}
-		}else{
-			getSceneInfo(scene);
 		}
 	}
 
 	/**
-	 * Get the scene infro from the kml File
-	 * @param scene 
+	 * Get the scene info from the kml File
+	 * 
+	 * @param scene
 	 */
+	// Nota: Al ser un método privado no importa que el Scenario se le pase como
+	// parámetro
 	private void getSceneInfo(Scenario scene) {
 		// Geting Document
 		Document doc = (Document) kml.getFeature();
@@ -77,32 +83,43 @@ public class KmlReader extends Kml {
 
 	/**
 	 * Retuns hexGrid form the kmlFile
-	 * @param scene 
+	 * 
+	 * @param scene
 	 * 
 	 * @return
 	 */
-	public HexagonalGrid getHexagonalGrid(Scenario scene) {
-		int gridSize[] = scene.getGridSize();
+	public HexagonalGrid getHexagonalGrid() {
+		Scenario scene = Scenario.getCurrentScenario();
+		HexagonalGrid hexGrid = null;
+		if (scene != null) {
+			int gridSize[] = scene.getGridSize();
 
-		HexagonalGrid hexGrid = new HexagonalGrid(gridSize[0], gridSize[1]);
+			if (scene instanceof FloodScenario) {
+				hexGrid = new FloodHexagonalGrid(gridSize[0], gridSize[1], true);
+				// TODO - Leer boolean del kml
+			} else {
+				hexGrid = new HexagonalGrid(gridSize[0], gridSize[1]);
+			}
 
-		// Begins the extraction of points
-		Document doc = (Document) kml.getFeature();
-		// Placemark placemark = (Placemark) doc.getFeature();
-		Placemark place = (Placemark) (doc.getFeature()).get(0);
-		Polygon pol = (Polygon) place.getGeometry();
-		Boundary bound = pol.getOuterBoundaryIs();
-		LinearRing lr = bound.getLinearRing();
-		for (Coordinate coordinate : lr.getCoordinates()) {
-			LatLng coord = new LatLng(coordinate.getLatitude(), coordinate
-					.getLongitude());
-			int pos[] = scene.coordToTile(coord);
-			// System.out.println(pos[0]+","+pos[1]+" ("+coordinate.getLatitude()+", "+coordinate.getLongitude()+") "+coordinate.getAltitude()+"m");
-			hexGrid.setTerrainValue(pos[0], pos[1], coordinate.getAltitude());
+			// Begins the extraction of points
+			Document doc = (Document) kml.getFeature();
+			// Placemark placemark = (Placemark) doc.getFeature();
+			Placemark place = (Placemark) (doc.getFeature()).get(0);
+			Polygon pol = (Polygon) place.getGeometry();
+			Boundary bound = pol.getOuterBoundaryIs();
+			LinearRing lr = bound.getLinearRing();
+			for (Coordinate coordinate : lr.getCoordinates()) {
+				LatLng coord = new LatLng(coordinate.getLatitude(), coordinate
+						.getLongitude());
+				int pos[] = scene.coordToTile(coord);
+				// System.out.println(pos[0]+","+pos[1]+" ("+coordinate.getLatitude()+", "+coordinate.getLongitude()+") "+coordinate.getAltitude()+"m");
+				hexGrid.setTerrainValue(pos[0], pos[1], coordinate
+						.getAltitude());
+			}
 		}
 		return hexGrid;
-
 	}
+
 	/**
 	 * Muestra el archivo kml hasta el momento por consola
 	 */

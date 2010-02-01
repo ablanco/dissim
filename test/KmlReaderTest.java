@@ -19,6 +19,7 @@ package test;
 import kml.KmlReader;
 import util.HexagonalGrid;
 import util.Scenario;
+import util.flood.FloodScenario;
 
 public class KmlReaderTest {
 
@@ -26,9 +27,10 @@ public class KmlReaderTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Scenario scene = Scenario.getCurrentScenario();
-		KmlReader k = new KmlReader("New Orleans - Altitudes", scene);
-		HexagonalGrid hexGrid = k.getHexagonalGrid(scene);
+		Scenario scene = new FloodScenario();
+		scene.complete();		
+		KmlReader k = new KmlReader("New Orleans - Altitudes");
+		HexagonalGrid hexGrid = k.getHexagonalGrid();
 	}
 
 }

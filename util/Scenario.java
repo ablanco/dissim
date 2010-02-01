@@ -56,8 +56,6 @@ public class Scenario implements Serializable {
 		if (current != null) {
 			if (current.isComplete())
 				instance = current;
-		} else {
-			return new Scenario();
 		}
 		return instance;
 	}
@@ -93,9 +91,10 @@ public class Scenario implements Serializable {
 		// Obtain the distances from the sides to NW(0,0)
 		int x = (int) ((NW.distance(xCoord)) * 1000 / tileSize);
 		int y = (int) ((NW.distance(yCoord)) * 1000 / tileSize);
-		//DEBUG
-		//System.out.println(coord.toString()+ "x("+NW.distance(xCoord)+"):"+x+", y("+NW.distance(yCoord)+"):"+y);
-		
+		// DEBUG
+		// System.out.println(coord.toString()+
+		// "x("+NW.distance(xCoord)+"):"+x+", y("+NW.distance(yCoord)+"):"+y);
+
 		return new int[] { x, y };
 	}
 
@@ -147,8 +146,8 @@ public class Scenario implements Serializable {
 		int y = (int) (SE.distance(SW) * 1000 / tileSize);
 		// Set grid size +1 because the dimension thing
 		setGridSize(x + 1, y + 1);
-		setDescription(tileSize + "," + NW.getLat()
-				+ "," + NW.getLng() + "," + SE.getLat() + "," + SE.getLng());
+		// setDescription(tileSize + "," + NW.getLat() + "," + NW.getLng() + ","
+		// + SE.getLat() + "," + SE.getLng());
 	}
 
 	public int getTileSize() {

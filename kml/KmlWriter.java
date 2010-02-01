@@ -40,50 +40,52 @@ public class KmlWriter {
 	public KmlWriter() {
 		kml = new Kml();
 	}
-	
-	
-/**
- * Buil Kml File from Scene
- * @param fileName
- * @param scene
- */
-	public void buildKmlAltitudesMap(String fileName, Scenario scene) {
-		
-		//All the steps needed to build a Polygon on KML
-		Document document = new Document();
-		kml.setFeature(document);
-		document.setName("Land Elevation Info");
-		document.setDescription(scene.getDescription());
-		document.setOpen(false);
-		Placemark placemark = new Placemark();
-		document.getFeature().add(placemark);
-		placemark.setName("Coordinates");
-		Polygon polygon = new Polygon();
-		placemark.setGeometry(polygon);
 
-		polygon.setExtrude(true);
-		polygon.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-		Boundary outerboundary = new Boundary();
-		polygon.setOuterBoundaryIs(outerboundary);
+	/**
+	 * Buil Kml File from Scene
+	 * 
+	 * @param fileName
+	 */
+	public void buildKmlAltitudesMap(String fileName) {
+		Scenario scene = Scenario.getCurrentScenario();
 
-		LinearRing outerlinearring = new LinearRing();
-		outerboundary.setLinearRing(outerlinearring);
+		if (scene != null) {
+			// All the steps needed to build a Polygon on KML
+			Document document = new Document();
+			kml.setFeature(document);
+			document.setName("Land Elevation Info");
+			document.setDescription(scene.getDescription());
+			document.setOpen(false);
+			Placemark placemark = new Placemark();
+			document.getFeature().add(placemark);
+			placemark.setName("Coordinates");
+			Polygon polygon = new Polygon();
+			placemark.setGeometry(polygon);
 
-		List<Coordinate> outercoord = new ArrayList<Coordinate>();
-		outerlinearring.setCoordinates(outercoord);
-		
-		//Now iterate on the coords and get altitudes
-		for (int i=0;i<scene.getGridSize()[0];i++){
-			for (int j=0;j<scene.getGridSize()[1];j++){
-				LatLng aux = scene.tileToCoord(i, j);
-				double alt = AltitudeWS.getElevation(aux);				
-				//System.out.println(aux.toString()+" Altitude :"+alt);
-				outercoord.add(new Coordinate(aux.getLng(), aux.getLat(), alt));
+			polygon.setExtrude(true);
+			polygon.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+			Boundary outerboundary = new Boundary();
+			polygon.setOuterBoundaryIs(outerboundary);
+
+			LinearRing outerlinearring = new LinearRing();
+			outerboundary.setLinearRing(outerlinearring);
+
+			List<Coordinate> outercoord = new ArrayList<Coordinate>();
+			outerlinearring.setCoordinates(outercoord);
+
+			// Now iterate on the coords and get altitudes
+			for (int i = 0; i < scene.getGridSize()[0]; i++) {
+				for (int j = 0; j < scene.getGridSize()[1]; j++) {
+					LatLng aux = scene.tileToCoord(i, j);
+					double alt = AltitudeWS.getElevation(aux);
+					// System.out.println(aux.toString()+" Altitude :"+alt);
+					outercoord.add(new Coordinate(aux.getLng(), aux.getLat(),
+							alt));
+				}
 			}
+			// Now creates the kml File
+			createKmlFile(fileName);
 		}
-		//Now creates the kml File
-		createKmlFile(fileName);
-		
 	}
 
 	/**
