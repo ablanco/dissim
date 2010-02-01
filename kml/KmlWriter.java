@@ -74,13 +74,15 @@ public class KmlWriter {
 			outerlinearring.setCoordinates(outercoord);
 
 			// Now iterate on the coords and get altitudes
+			int cont=0;
 			for (int i = 0; i < scene.getGridSize()[0]; i++) {
 				for (int j = 0; j < scene.getGridSize()[1]; j++) {
 					LatLng aux = scene.tileToCoord(i, j);
 					double alt = AltitudeWS.getElevation(aux);
-					// System.out.println(aux.toString()+" Altitude :"+alt);
+					System.out.println(cont+") "+aux.toString()+" Altitude :"+alt);
 					outercoord.add(new Coordinate(aux.getLng(), aux.getLat(),
 							alt));
+					cont++;
 				}
 			}
 			// Now creates the kml File

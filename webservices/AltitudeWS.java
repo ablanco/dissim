@@ -54,9 +54,9 @@ public class AltitudeWS {
 			elevationOnlyStr = "TRUE";
 		else
 			elevationOnlyStr = "FALSE";
-
+		//Appears none has a standart, so, patch lat lng to lng lat 
 		GetElevationResult res = service.getElevation(Double.toString(coord
-				.getLat()), Double.toString(coord.getLng()), elevationUnits,
+				.getLng()), Double.toString(coord.getLat()), elevationUnits,
 				sourceLayer, elevationOnlyStr);
 		List<Object> results = res.getContent();
 
