@@ -75,10 +75,9 @@ public class KmlReader extends Kml {
 		String info[] = s.split(",");
 		// Setting Scenario Atributes
 		scene.setDescription(s);
-		scene.setArea(new LatLng(Double.parseDouble(info[1]), Double
+		scene.setGeoData(new LatLng(Double.parseDouble(info[1]), Double
 				.parseDouble(info[2])), new LatLng(Double.parseDouble(info[3]),
-				Double.parseDouble(info[4])));
-		scene.setTileSize(Integer.parseInt(info[0]));
+				Double.parseDouble(info[4])), Integer.parseInt(info[0]));
 	}
 
 	/**

@@ -33,8 +33,9 @@ public class Scenario implements Serializable {
 	protected LatLng NW;
 	// SE means South East point
 	protected LatLng SE;
-	private int gridX;
-	private int gridY;
+	protected int gridX = -1;
+	protected int gridY = -1;
+	protected HexagonalGrid grid = null;
 	private String description;
 
 	// Current Scenario showed on GUI
@@ -60,22 +61,39 @@ public class Scenario implements Serializable {
 		return instance;
 	}
 
-	public void setArea(LatLng NW, LatLng SE) {
+	public void setGeoData(LatLng NW, LatLng SE, int tileSize) {
 		this.NW = NW;
 		this.SE = SE;
+		
+		this.tileSize = tileSize;
+		// Obtain the opposite of the square
+		LatLng NE = new LatLng(NW.getLat(), SE.getLng());
+		LatLng SW = new LatLng(SE.getLat(), NW.getLng());
+		// Obtain the distance from the square and fix with precision
+		int x = (int) (NW.distance(NE) * 1000 / tileSize);
+		int y = (int) (SE.distance(SW) * 1000 / tileSize);
+		// Set grid size +1 because the dimension thing
+		createGrid(x + 1, y + 1);
+		// setDescription(tileSize + "," + NW.getLat() + "," + NW.getLng() + ","
+		// + SE.getLat() + "," + SE.getLng());
 	}
 
 	public LatLng[] getArea() {
 		return new LatLng[] { NW, SE };
 	}
 
-	private void setGridSize(int x, int y) {
+	protected void createGrid(int x, int y) {
 		gridX = x;
 		gridY = y;
+		grid = new HexagonalGrid(x, y);
 	}
 
 	public int[] getGridSize() {
 		return new int[] { gridX, gridY };
+	}
+
+	public HexagonalGrid getGrid() {
+		return grid;
 	}
 
 	/**
@@ -129,25 +147,6 @@ public class Scenario implements Serializable {
 
 	public void complete() {
 		complete = true;
-	}
-
-	/**
-	 * Now we can set the precision of the grid
-	 * 
-	 * @param tileSize
-	 */
-	public void setTileSize(int tileSize) {
-		this.tileSize = tileSize;
-		// Obtain the opposite of the square
-		LatLng NE = new LatLng(NW.getLat(), SE.getLng());
-		LatLng SW = new LatLng(SE.getLat(), NW.getLng());
-		// Obtain the distance from the square and fix with precision
-		int x = (int) (NW.distance(NE) * 1000 / tileSize);
-		int y = (int) (SE.distance(SW) * 1000 / tileSize);
-		// Set grid size +1 because the dimension thing
-		setGridSize(x + 1, y + 1);
-		// setDescription(tileSize + "," + NW.getLat() + "," + NW.getLng() + ","
-		// + SE.getLat() + "," + SE.getLng());
 	}
 
 	public int getTileSize() {

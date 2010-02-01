@@ -57,7 +57,7 @@ public class LatLng {
    * @return the converted OSGB grid reference
    * @since 1.0
    */
-  public OSRef toOSRef() {
+/*  public OSRef toOSRef() {
     RefEll airy1830 = new RefEll(6377563.396, 6356256.909);
     double OSGB_F0 = 0.9996012717;
     double N0 = -100000.0;
@@ -118,7 +118,7 @@ public class LatLng {
             + (VI * Math.pow(lambda - lambda0, 5.0));
 
     return new OSRef(E, N);
-  }
+  }*/
 
 
   /**

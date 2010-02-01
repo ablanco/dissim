@@ -29,7 +29,7 @@ public class WaterAgent extends Agent {
 		Object[] args = getArguments();
 		int x; // Posición inicial en la rejilla
 		int y;
-		if (args != null && args.length == 2) {
+		if (args.length == 2) {
 			x = Integer.parseInt((String) args[0]);
 			y = Integer.parseInt((String) args[1]);
 		} else {

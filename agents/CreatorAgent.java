@@ -40,8 +40,7 @@ public class CreatorAgent extends Agent {
 
 			// Enviroment
 			int[] grid = scen.getGridSize();
-			arguments = new Object[] { new Integer(grid[0]),
-					new Integer(grid[1]) };
+			arguments = new Object[0];
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
 					"agents.EnviromentAgent", 1, arguments));
 
@@ -84,7 +83,7 @@ public class CreatorAgent extends Agent {
 			Object[] arguments;
 
 			// Enviroment
-			arguments = new Object[] { "3", "3" };
+			arguments = new Object[0];
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
 					"agents.EnviromentAgent", 1, arguments));
 

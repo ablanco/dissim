@@ -49,25 +49,8 @@ public class EnviromentAgent extends Agent {
 		Scenario scen = Scenario.getCurrentScenario();
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args != null && args.length == 2) {
-			int x = Integer.parseInt((String) args[0]);
-			int y = Integer.parseInt((String) args[1]);
-			// Si es una inundación
-			if (scen instanceof FloodScenario) {
-				FloodScenario fscen = (FloodScenario) scen;
-				grid = new FloodHexagonalGrid(x, y, fscen.useWaterAgents());
-			} else {
-				grid = new HexagonalGrid(x, y);
-			}
-			// TODO introducir las alturas en grid
-			grid.setTerrainValue(0, 0, 9); // DEBUG grid.setValue(0, 1, 9);
-			grid.setTerrainValue(0, 2, 8);
-			grid.setTerrainValue(1, 0, 7.8);
-			grid.setTerrainValue(1, 1, 6);
-			grid.setTerrainValue(1, 2, 8);
-			grid.setTerrainValue(2, 0, 5);
-			grid.setTerrainValue(2, 1, 5.3);
-			grid.setTerrainValue(2, 2, 3); // FIN DEBUG
+		if (args.length == 0) {
+			grid = scen.getGrid();
 		} else {
 			System.err.println(getLocalName() + " wrong arguments.");
 			doDelete();

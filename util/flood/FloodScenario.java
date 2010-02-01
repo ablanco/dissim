@@ -43,11 +43,20 @@ public class FloodScenario extends Scenario {
 	 * entre casillas en caso de que no se agentifique el agua
 	 */
 	private double water = 1;
+	
+	protected FloodHexagonalGrid grid = null;
 
 	public FloodScenario() {
 		super();
 		waterSources = new LinkedList<WaterSource>();
 		Scenario.current = this;
+	}
+	
+	@Override
+	protected void createGrid(int x, int y) {
+		gridX = x;
+		gridY = y;
+		grid = new FloodHexagonalGrid(x, y, waterAgents);
 	}
 
 	public boolean addWaterSource(WaterSource ws) {

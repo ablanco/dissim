@@ -16,31 +16,31 @@
 
 package test;
 
-import kml.KmlWriter;
-import util.Scenario;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
 
-public class KmlWriterTest {
+public class Sim1Test {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		/*
-		 * Nueva Orleans NW: 29.953260, -90.088238 SE: 29.918075, -90.053707 UTM
-		 */
+	public static void generateScenario(int option) {
+		switch (option) {
+		case 0:
+			smallGrid();
+			break;
+		}
 
-		Scenario newOrleans = new FloodScenario();
+	}
 
-		newOrleans.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
+	private static void smallGrid() {
+		FloodScenario scen = new FloodScenario();
+		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), 150);
-		
-		newOrleans.complete();
 
-		System.out.println(newOrleans.toString());
-		KmlWriter kmle = new KmlWriter();
-		kmle.buildKmlAltitudesMap("New Orleans - Altitudes");
+		/*
+		 * grid.setTerrainValue(0, 0, 9); grid.setTerrainValue(0, 2, 8);
+		 * grid.setTerrainValue(1, 0, 7.8); grid.setTerrainValue(1, 1, 6);
+		 * grid.setTerrainValue(1, 2, 8); grid.setTerrainValue(2, 0, 5);
+		 * grid.setTerrainValue(2, 1, 5.3); grid.setTerrainValue(2, 2, 3);
+		 */
 	}
 
 }
