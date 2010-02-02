@@ -45,10 +45,11 @@ public class Sim1Test {
 				LatLng coord = scen.tileToCoord(i, j);
 				double value = AltitudeWS.getElevation(coord);
 				grid.setTerrainValue(i, j, value);
+				System.out.print("*");
 			}
 		}
-		System.out.println("Obtenidas todas las alturas.");
-		scen.addWaterSource(new WaterSource(new LatLng(29.9532, -90.0882), 1,
+		System.out.println(" Obtenidas todas las alturas.");
+		scen.addWaterSource(new WaterSource(new LatLng(29.9532, -90.0882), 2,
 				1600L));
 		scen.complete();
 	}
