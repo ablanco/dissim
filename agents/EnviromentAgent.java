@@ -76,6 +76,7 @@ public class EnviromentAgent extends Agent {
 		// Si es una inundación
 		if (scen instanceof FloodScenario) {
 			FloodScenario fscen = (FloodScenario) scen;
+			
 			// En el caso de que el agua se agentifique
 			if (fscen.useWaterAgents()) {
 				addBehaviour(new RegisterFloodTileBehav(

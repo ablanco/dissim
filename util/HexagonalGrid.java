@@ -73,10 +73,25 @@ public class HexagonalGrid {
 	public int[][] getAdjacentsIndexes(int x, int y) {
 		int[][] adjacents = new int[6][2];
 		int cont = 0;
+
+		boolean par = ((y % 2) == 0);
+		// Caso fila impar
+		int colIni = x;
+		int colFin = x + 1;
+		// Caso fila par
+		if (par) {
+			colIni = x - 1;
+			colFin = x;
+		}
+
 		for (int fila = y - 1; fila <= y + 1; fila++) {
-			for (int col = x; col <= x + 1; col++) {
-				if (fila == y && col == x)
-					col = x - 1;
+			for (int col = colIni; col <= colFin; col++) {
+				if (fila == y && col == x) {
+					if (par)
+						col = x + 1;
+					else
+						col = x - 1;
+				}
 				// Comprobamos que el hexágono adyacente no está fuera de la
 				// rejilla
 				if (col >= 0 && col < dimX && fila >= 0 && fila < dimY) {
@@ -84,11 +99,12 @@ public class HexagonalGrid {
 					adjacents[cont][1] = fila;
 					cont++;
 				}
-				if (fila == y && col == x - 1)
+				if (fila == y && col == x - 1 && !par)
 					col++;
 			}
 		}
-		for (int i = cont + 1; i < 6; i++) {
+
+		for (int i = cont; i < 6; i++) {
 			adjacents[i][0] = -1;
 			adjacents[i][1] = -1;
 		}

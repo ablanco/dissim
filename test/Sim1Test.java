@@ -49,7 +49,7 @@ public class Sim1Test {
 		}
 		System.out.println("Obtenidas todas las alturas.");
 		scen.addWaterSource(new WaterSource(new LatLng(29.9532, -90.0882), 1,
-				150L));
+				1600L));
 		scen.complete();
 	}
 

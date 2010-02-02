@@ -47,8 +47,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		double offset = 0;
 		double value = getValue(x, y);
 		int aux = (int) value;
-		if (aux != 0)
-			offset = value - aux;
+		offset = value - ((double) aux);
 
 		gridWater[x][y] += increment - offset;
 
