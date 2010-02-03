@@ -16,11 +16,9 @@
 
 package test;
 
-import util.HexagonalGrid;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
 import util.jcoord.LatLng;
-import webservices.AltitudeWS;
 
 public class Sim1Test {
 
@@ -39,16 +37,8 @@ public class Sim1Test {
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), 800);
 		// 5 x 5
-		HexagonalGrid grid = scen.getGrid();
-		for (int i = 0; i < grid.getDimX(); i++) {
-			for (int j = 0; j < grid.getDimY(); j++) {
-				LatLng coord = scen.tileToCoord(i, j);
-				double value = AltitudeWS.getElevation(coord);
-				grid.setTerrainValue(i, j, value);
-				System.out.print("*");
-			}
-		}
-		System.out.println(" Obtenidas todas las alturas.");
+		scen.obtainTerrainElevation();
+		System.out.println("Obtenidas todas las alturas.");
 		scen.addWaterSource(new WaterSource(new LatLng(29.9532, -90.0882), 2,
 				1600L));
 		scen.complete();

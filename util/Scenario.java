@@ -18,8 +18,11 @@ package util;
 
 import java.io.Serializable;
 
+import com.sun.xml.txw2.IllegalSignatureException;
+
 import util.jcoord.LatLng;
 import util.jcoord.UTMRef;
+import webservices.AltitudeWS;
 
 public class Scenario implements Serializable {
 
@@ -27,28 +30,26 @@ public class Scenario implements Serializable {
 
 	// The GUI is the one that should care that the Scenario is completed before
 	// simulating it
-	private boolean complete;
+	private boolean complete = false;
 	// Coordinates of simulation area (rectangle)
 	// NW means North West point
-	protected LatLng NW;
+	protected LatLng NW = null;
 	// SE means South East point
-	protected LatLng SE;
+	protected LatLng SE = null;
 	protected int gridX = -1;
 	protected int gridY = -1;
 	protected HexagonalGrid grid = null;
-	private String description;
-
+	private String description = "";
+	// Tile size in m^2
+	private int tileSize = -1;
 	// Current Scenario showed on GUI
 	// If a Scenario is loaded (from a file), or a new one is created, this
 	// reference MUST change
 	protected static Scenario current = null;
 
-	// Tile size in m^2
-	private int tileSize;
-
-	// This class shouldn't be used directly
+	// This class shouldn't be used directly, that's why the constructor is
+	// protected
 	protected Scenario() {
-		complete = false;
 		current = this;
 	}
 
@@ -64,8 +65,8 @@ public class Scenario implements Serializable {
 	public void setGeoData(LatLng NW, LatLng SE, int tileSize) {
 		this.NW = NW;
 		this.SE = SE;
-		
 		this.tileSize = tileSize;
+
 		// Obtain the opposite of the square
 		LatLng NE = new LatLng(NW.getLat(), SE.getLng());
 		LatLng SW = new LatLng(SE.getLat(), NW.getLng());
@@ -75,7 +76,7 @@ public class Scenario implements Serializable {
 		// Set grid size +1 because the dimension thing
 		createGrid(x + 1, y + 1);
 		setDescription(tileSize + "," + NW.getLat() + "," + NW.getLng() + ","
-		 + SE.getLat() + "," + SE.getLng());
+				+ SE.getLat() + "," + SE.getLng());
 	}
 
 	public LatLng[] getArea() {
@@ -103,6 +104,10 @@ public class Scenario implements Serializable {
 	 * @return
 	 */
 	public int[] coordToTile(LatLng coord) {
+		if (tileSize < 0)
+			throw new IllegalStateException(
+					"The size of the tiles hasn't been defined yet.");
+
 		// Obtain the opposite sides
 		LatLng xCoord = new LatLng(NW.getLat(), coord.getLng());
 		LatLng yCoord = new LatLng(coord.getLat(), NW.getLng());
@@ -124,6 +129,10 @@ public class Scenario implements Serializable {
 	 * @return
 	 */
 	public LatLng tileToCoord(int x, int y) {
+		if (NW == null || SE == null)
+			throw new IllegalStateException(
+					"Simulation area hasn't been defined yet.");
+
 		// Convert to UTM, cause is in meters
 		UTMRef coordUTM = NW.toUTMRef();
 		// Just add the distance (x * tileSize) and get the new coordinate
@@ -146,6 +155,10 @@ public class Scenario implements Serializable {
 	}
 
 	public void complete() {
+		if (NW == null || SE == null || grid == null || tileSize < 0)
+			throw new IllegalSignatureException(
+					"There are mandatory parameters that hasn't been defined yet.");
+
 		complete = true;
 	}
 
@@ -153,9 +166,26 @@ public class Scenario implements Serializable {
 		return tileSize;
 	}
 
+	@Override
 	public String toString() {
-		return "\nSize [" + gridX + "," + gridY + "] NW coord :"
-				+ NW.toString() + ", SE Coord: " + SE.toString()
-				+ " Tile size :" + NW.distance(tileToCoord(0, 1)) + "kms";
+		if (complete)
+			return "\nSize [" + gridX + "," + gridY + "] NW coord :"
+					+ NW.toString() + ", SE Coord: " + SE.toString()
+					+ " Tile size :" + NW.distance(tileToCoord(0, 1)) + "kms";
+		else
+			return "Incomplete scenario description: " + super.toString();
+	}
+
+	public void obtainTerrainElevation() {
+		if (grid == null)
+			throw new IllegalStateException("The grid hasn't been created yet.");
+
+		for (int i = 0; i < gridX; i++) {
+			for (int j = 0; j < gridY; j++) {
+				LatLng coord = tileToCoord(i, j);
+				double value = AltitudeWS.getElevation(coord);
+				grid.setTerrainValue(i, j, value);
+			}
+		}
 	}
 }

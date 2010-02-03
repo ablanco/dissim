@@ -24,19 +24,19 @@ import webservices.AltitudeWS;
 public class AltitudeTest {
 
 	public static void main(String[] args) {
-		LatLng coord = new LatLng(-90.060425, 29.959545);
+		LatLng coord = new LatLng(29.959545, -90.060425);
 		double altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
-		coord = new LatLng(-90.160425, 29.959545);
+		coord = new LatLng(29.959545, -90.160425);
 		altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
-		coord = new LatLng(-90.260425, 29.959545);
+		coord = new LatLng(29.959545, -90.260425);
 		altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
-		coord = new LatLng(-90.260425, 29.859545);
+		coord = new LatLng(29.859545, -90.260425);
 		altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
