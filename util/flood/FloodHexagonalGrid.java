@@ -22,45 +22,45 @@ import util.HexagonalGrid;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
 
-	protected double[][] gridWater; // Nivel de agua en la casilla
+	protected short[][] gridWater; // Nivel de agua en la casilla
 	protected boolean useGridMod;
 	protected boolean[][] gridMod;
 
 	public FloodHexagonalGrid(int x, int y, boolean useAgents) {
 		super(x, y);
-		gridWater = new double[x][y];
+		gridWater = new short[x][y];
 		useGridMod = !useAgents;
 		if (useGridMod)
 			gridMod = new boolean[x][y];
 	}
 
-	public double setWaterValue(int x, int y, double value) {
-		double old = gridWater[x][y];
+	public short setWaterValue(int x, int y, short value) {
+		short old = gridWater[x][y];
 		gridWater[x][y] = value;
 		return old;
 	}
 
 	@Override
-	public double increaseValue(int x, int y, double increment) {
-		// A la hora de inundar el agua se pone al nivel del resto, de manera
-		// que la capa superior sea uniforme
-		double offset = 0;
-		double value = getValue(x, y);
-		int aux = (int) value;
-		offset = value - ((double) aux);
+	public short increaseValue(int x, int y, short increment) {
+		// TODO A la hora de inundar el agua se pone al nivel del resto, de
+		// manera que la capa superior sea uniforme
+		// double offset = 0;
+		// double value = getValue(x, y);
+		// int aux = (int) value;
+		// offset = value - ((double) aux);
 
-		gridWater[x][y] += increment - offset;
+		gridWater[x][y] += increment;
 
 		if (useGridMod)
 			gridMod[x][y] = true;
 
 		printGrid(); // TODO Debug
-		return offset;
+		return 0;
 	}
 
 	@Override
-	public double decreaseValue(int x, int y, double decrement) {
-		double result;
+	public short decreaseValue(int x, int y, short decrement) {
+		short result;
 		// El nivel de agua no puede ser menor que cero
 		if (gridWater[x][y] >= decrement) {
 			gridWater[x][y] -= decrement;
@@ -76,11 +76,11 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
-	public double getValue(int x, int y) {
-		return gridTerrain[x][y] + gridWater[x][y];
+	public short getValue(int x, int y) {
+		return (short) (gridTerrain[x][y] + gridWater[x][y]);
 	}
 
-	public double getWaterValue(int x, int y) {
+	public short getWaterValue(int x, int y) {
 		return gridWater[x][y];
 	}
 

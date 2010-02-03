@@ -43,20 +43,20 @@ public class RegisterFloodTileBehav extends CyclicBehaviour {
 			String[] data = pos.split(" ");
 			int x = Integer.parseInt(data[0]);
 			int y = Integer.parseInt(data[1]);
-			double water = Double.parseDouble(data[2]);
-			double value = Double.parseDouble(data[3]);
-			double gridValue = grid.getValue(x, y);
+			short water = Short.parseShort(data[2]);
+			short value = Short.parseShort(data[3]);
+			short gridValue = grid.getValue(x, y);
 
 			ACLMessage reply = msg.createReply();
 			if (value == gridValue) {
-				double spare = grid.increaseValue(x, y, water);
+				short spare = grid.increaseValue(x, y, water);
 				if (spare > 0) {
 					// TODO Agua sobrante
 				}
 				reply.setPerformative(ACLMessage.CONFIRM);
 			} else {
 				reply.setPerformative(ACLMessage.DISCONFIRM);
-				reply.setContent(Double.toString(gridValue));
+				reply.setContent(Short.toString(gridValue));
 			}
 			myAgent.send(reply);
 		} else {

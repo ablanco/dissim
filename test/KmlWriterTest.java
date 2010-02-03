@@ -38,7 +38,7 @@ public class KmlWriterTest {
 		//		29.918075, -90.053707));
 
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
-				29.918075, -90.053707), 150);
+				29.918075, -90.053707), (short) 150);
 
 		
 		newOrleans.complete();

@@ -25,14 +25,15 @@ public class GridTest {
 
 	public static void main(String[] args) {
 		HexagonalGrid grid = new HexagonalGrid(4, 4);
+		System.out.println("4 x 4 GRID\n");
 
 		System.out.println("(0,0) Expected: (1,0) (0,1)");
 		System.out.print("     Generated: ");
-		ArrayList<double[]> adjacents = grid.getAdjacents(0, 0);
-		Iterator<double[]> it = adjacents.iterator();
+		ArrayList<int[]> adjacents = grid.getAdjacents(0, 0);
+		Iterator<int[]> it = adjacents.iterator();
 		while (it.hasNext()) {
-			double[] tile = it.next();
-			System.out.print("(" + (int) tile[0] + "," + (int) tile[1] + ") ");
+			int[] tile = it.next();
+			System.out.print("(" + tile[0] + "," + tile[1] + ") ");
 		}
 		System.out.println("\n");
 
@@ -41,8 +42,8 @@ public class GridTest {
 		adjacents = grid.getAdjacents(0, 3);
 		it = adjacents.iterator();
 		while (it.hasNext()) {
-			double[] tile = it.next();
-			System.out.print("(" + (int) tile[0] + "," + (int) tile[1] + ") ");
+			int[] tile = it.next();
+			System.out.print("(" + tile[0] + "," + tile[1] + ") ");
 		}
 		System.out.println("\n");
 
@@ -51,8 +52,8 @@ public class GridTest {
 		adjacents = grid.getAdjacents(3, 0);
 		it = adjacents.iterator();
 		while (it.hasNext()) {
-			double[] tile = it.next();
-			System.out.print("(" + (int) tile[0] + "," + (int) tile[1] + ") ");
+			int[] tile = it.next();
+			System.out.print("(" + tile[0] + "," + tile[1] + ") ");
 		}
 		System.out.println("\n");
 
@@ -61,8 +62,8 @@ public class GridTest {
 		adjacents = grid.getAdjacents(3, 3);
 		it = adjacents.iterator();
 		while (it.hasNext()) {
-			double[] tile = it.next();
-			System.out.print("(" + (int) tile[0] + "," + (int) tile[1] + ") ");
+			int[] tile = it.next();
+			System.out.print("(" + tile[0] + "," + tile[1] + ") ");
 		}
 		System.out.println("\n");
 
@@ -72,8 +73,8 @@ public class GridTest {
 		adjacents = grid.getAdjacents(2, 1);
 		it = adjacents.iterator();
 		while (it.hasNext()) {
-			double[] tile = it.next();
-			System.out.print("(" + (int) tile[0] + "," + (int) tile[1] + ") ");
+			int[] tile = it.next();
+			System.out.print("(" + tile[0] + "," + tile[1] + ") ");
 		}
 		System.out.println("\n");
 
@@ -83,8 +84,8 @@ public class GridTest {
 		adjacents = grid.getAdjacents(2, 2);
 		it = adjacents.iterator();
 		while (it.hasNext()) {
-			double[] tile = it.next();
-			System.out.print("(" + (int) tile[0] + "," + (int) tile[1] + ") ");
+			int[] tile = it.next();
+			System.out.print("(" + tile[0] + "," + tile[1] + ") ");
 		}
 		System.out.println("\n");
 
@@ -93,8 +94,8 @@ public class GridTest {
 		adjacents = grid.getAdjacents(0, 2);
 		it = adjacents.iterator();
 		while (it.hasNext()) {
-			double[] tile = it.next();
-			System.out.print("(" + (int) tile[0] + "," + (int) tile[1] + ") ");
+			int[] tile = it.next();
+			System.out.print("(" + tile[0] + "," + tile[1] + ") ");
 		}
 		System.out.println("\n");
 
@@ -103,8 +104,8 @@ public class GridTest {
 		adjacents = grid.getAdjacents(0, 1);
 		it = adjacents.iterator();
 		while (it.hasNext()) {
-			double[] tile = it.next();
-			System.out.print("(" + (int) tile[0] + "," + (int) tile[1] + ") ");
+			int[] tile = it.next();
+			System.out.print("(" + tile[0] + "," + tile[1] + ") ");
 		}
 		System.out.println("\n");
 

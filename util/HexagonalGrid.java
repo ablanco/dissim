@@ -19,37 +19,37 @@ package util;
 import java.util.ArrayList;
 
 public class HexagonalGrid {
-	protected double[][] gridTerrain;
+	protected short[][] gridTerrain;
 	protected int dimX;
 	protected int dimY;
 
 	public HexagonalGrid(int x, int y) {
-		gridTerrain = new double[x][y];
+		gridTerrain = new short[x][y];
 		dimX = x;
 		dimY = y;
 	}
 
-	public double setTerrainValue(int x, int y, double value) {
-		double old = gridTerrain[x][y];
+	public short setTerrainValue(int x, int y, short value) {
+		short old = gridTerrain[x][y];
 		gridTerrain[x][y] = value;
 		return old;
 	}
 
-	public double increaseValue(int x, int y, double increment) {
+	public short increaseValue(int x, int y, short increment) {
 		gridTerrain[x][y] += increment;
 		return 0;
 	}
 
-	public double decreaseValue(int x, int y, double decrement) {
+	public short decreaseValue(int x, int y, short decrement) {
 		gridTerrain[x][y] -= decrement;
 		return decrement;
 	}
 
-	public double getValue(int x, int y) {
+	public short getValue(int x, int y) {
 		return gridTerrain[x][y];
 	}
 
-	public double getTerrainValue(int x, int y) {
+	public short getTerrainValue(int x, int y) {
 		return gridTerrain[x][y];
 	}
 
@@ -119,13 +119,13 @@ public class HexagonalGrid {
 	 * @return Una lista de arrays, cada array representa a un hexágono
 	 *         adyacente y sus elementos son: columna, fila y valor.
 	 */
-	public ArrayList<double[]> getAdjacents(int x, int y) {
-		ArrayList<double[]> result = new ArrayList<double[]>(6);
-		double[] adjacent;
+	public ArrayList<int[]> getAdjacents(int x, int y) {
+		ArrayList<int[]> result = new ArrayList<int[]>(6);
+		int[] adjacent;
 		int[][] indexes = getAdjacentsIndexes(x, y);
 		for (int i = 0; i < 6; i++) {
 			if (indexes[i][0] >= 0) {
-				adjacent = new double[3];
+				adjacent = new int[3];
 				adjacent[0] = indexes[i][0];
 				adjacent[1] = indexes[i][1];
 				adjacent[2] = getValue(indexes[i][0], indexes[i][1]);

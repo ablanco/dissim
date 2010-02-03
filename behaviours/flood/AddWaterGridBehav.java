@@ -27,10 +27,10 @@ public class AddWaterGridBehav extends TickerBehaviour {
 	protected FloodHexagonalGrid grid;
 	protected int x;
 	protected int y;
-	protected double water;
+	protected short water;
 
 	public AddWaterGridBehav(Agent a, long period, FloodHexagonalGrid grid,
-			int x, int y, double water) {
+			int x, int y, short water) {
 		super(a, period);
 		this.grid = grid;
 		this.x = x;
@@ -40,7 +40,7 @@ public class AddWaterGridBehav extends TickerBehaviour {
 
 	@Override
 	protected void onTick() {
-		double spare = grid.increaseValue(x, y, water);
+		short spare = grid.increaseValue(x, y, water);
 		if (spare > 0) {
 			// TODO Agua sobrante
 		}

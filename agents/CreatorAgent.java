@@ -35,8 +35,9 @@ public class CreatorAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		Sim1Test.generateScenario(0); // TODO Debug
-		
+		// TODO DEBUG
+		Sim1Test.generateScenario(0);
+
 		Scenario scen = Scenario.getCurrentScenario();
 		if (scen != null) {
 			Object[] arguments;
@@ -61,11 +62,12 @@ public class CreatorAgent extends Agent {
 						int[] tileIdx = scen.coordToTile(ws.getCoord());
 						// Calcular cuántos agentes hacen falta para representar
 						// esa cantidad de agua
-						double water = ws.getWater();
-						double scenWater = fscen.getWater();
-						int clones = (int) (water / scenWater); // Nº de agentes
-						double spare = water - (scenWater * clones);
-						arguments = new Object[] { Integer.toString(tileIdx[0]),
+						short water = ws.getWater();
+						short scenWater = fscen.getWater();
+						int clones = water / scenWater; // Nº de agentes
+						int spare = water - (scenWater * clones);
+						arguments = new Object[] {
+								Integer.toString(tileIdx[0]),
 								Integer.toString(tileIdx[1]) };
 						// Agentes Water
 						Behaviour wa = new CreateAgentTickerBehav(this, ws

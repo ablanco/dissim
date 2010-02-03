@@ -24,8 +24,6 @@ import util.jcoord.LatLng;
 
 public class FloodScenario extends Scenario {
 
-	private static final long serialVersionUID = 1L;
-
 	/**
 	 * Entradas de agua
 	 */
@@ -42,7 +40,7 @@ public class FloodScenario extends Scenario {
 	 * Representa la cantidad de agua que tiene cada agente, o que se mueve
 	 * entre casillas en caso de que no se agentifique el agua
 	 */
-	private double water = 1;
+	private short water = 1;
 
 	public FloodScenario() {
 		super();
@@ -103,11 +101,11 @@ public class FloodScenario extends Scenario {
 			return -1;
 	}
 
-	public void setWater(double water) {
+	public void setWater(short water) {
 		this.water = water;
 	}
 
-	public double getWater() {
+	public short getWater() {
 		return water;
 	}
 

@@ -40,13 +40,13 @@ public class FloodTileBehav extends Behaviour {
 
 	protected int x; // Posición de la unidad de agua
 	protected int y;
-	protected double water; // Cantidad de agua
+	protected short water; // Cantidad de agua
 	protected AID envAID; // Identificador del agente entorno
 	protected Random rnd;
 	private boolean stopped = false; // Comportamiento terminado?
 
-	protected double value; // Potencial de la casilla actual
-	protected int step = 0;
+	protected short value; // Potencial de la casilla actual
+	protected short step = 0;
 	protected MessageTemplate mt;
 
 	public FloodTileBehav(Agent a, int x, int y) {
@@ -112,7 +112,7 @@ public class FloodTileBehav extends Behaviour {
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
 					// Es la buscada
-					value = Double.parseDouble(msg.getContent());
+					value = Short.parseShort(msg.getContent());
 					step = 2;
 				}
 			} else {
@@ -136,13 +136,12 @@ public class FloodTileBehav extends Behaviour {
 		case 3:
 			// Recibir la información de la rejilla
 			msg = myAgent.receive(mt);
-			ArrayList<double[]> adjacents = null;
+			ArrayList<int[]> adjacents = null;
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {
 					// Es la buscada
 					try {
-						adjacents = (ArrayList<double[]>) msg
-								.getContentObject();
+						adjacents = (ArrayList<int[]>) msg.getContentObject();
 					} catch (UnreadableException e) {
 						e.printStackTrace();
 					}
@@ -156,16 +155,18 @@ public class FloodTileBehav extends Behaviour {
 				ArrayList<Integer> tilesIdx = new ArrayList<Integer>(adjacents
 						.size());
 				int i = 0; // Índice en adjacents
-				double oldValue = value;
+				short oldValue = value;
 				// Buscamos las casillas adyacentes de menor potencial
-				for (double[] tile : adjacents) {
-					if (tile[2] == value) { // Si es del mismo potencial
+				for (int[] tile : adjacents) {
+					// Si es del mismo potencial
+					if (((short) tile[2]) == value) {
 						tilesIdx.add(new Integer(i));
-					} else if (tile[2] < value) { // Un nuevo menor potencial
+					}// Un nuevo menor potencial
+					else if (((short) tile[2]) < value) {
 						// Reiniciamos la lista de índices
 						tilesIdx = new ArrayList<Integer>(adjacents.size());
 						tilesIdx.add(new Integer(i));
-						value = tile[2];
+						value = (short) tile[2];
 					}
 					i++;
 				}
@@ -176,14 +177,14 @@ public class FloodTileBehav extends Behaviour {
 							.intValue();
 					// Escogemos una casilla al azar entre las de menor
 					// potencial
-					double[] tile = adjacents.get(index);
+					int[] tile = adjacents.get(index);
 					// TODO Escoger casilla en vez de al azar según un vector??
 					/*
 					 * System.out.println(agent + " -> Moving to tile: " +
 					 * tile[0] + " " + tile[1] + " " + tile[2]);
 					 */
-					x = (int) tile[0];
-					y = (int) tile[1];
+					x = tile[0];
+					y = tile[1];
 					// value = tile[2];
 					step = 2;
 				}
@@ -193,9 +194,8 @@ public class FloodTileBehav extends Behaviour {
 					msg = new ACLMessage(ACLMessage.CFP);
 					msg.addReceiver(envAID);
 					String tile = Integer.toString(x) + " "
-							+ Integer.toString(y) + " "
-							+ Double.toString(water) + " "
-							+ Double.toString(value);
+							+ Integer.toString(y) + " " + Short.toString(water)
+							+ " " + Short.toString(value);
 					/*
 					 * System.out.println(agent + " -> Trying to flood tile: " +
 					 * tile);
@@ -229,7 +229,7 @@ public class FloodTileBehav extends Behaviour {
 					 */
 				} else {
 					// No se inunda
-					value = Double.parseDouble(msg.getContent());
+					value = Short.parseShort(msg.getContent());
 					step = 2; // Vuelve a buscar una casilla que inundar
 				}
 			} else {

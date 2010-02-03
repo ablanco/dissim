@@ -29,10 +29,10 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private static final long serialVersionUID = 8964259995058162322L;
 
 	protected FloodHexagonalGrid grid;
-	protected double water;
+	protected short water;
 
 	public UpdateFloodGridBehav(Agent a, long period, FloodHexagonalGrid grid,
-			double water) {
+			short water) {
 		super(a, period);
 		this.grid = grid;
 		this.water = water;
@@ -44,19 +44,18 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		// Por cada casilla modificada
 		while (it.hasNext()) {
 			int[] coord = it.next();
-			ArrayList<double[]> adjacents = grid.getAdjacents(coord[0],
-					coord[1]);
-			double value = grid.getValue(coord[0], coord[1]);
-			
+			ArrayList<int[]> adjacents = grid.getAdjacents(coord[0], coord[1]);
+			short value = grid.getValue(coord[0], coord[1]);
+
 			int[] adjCoord = coord;
-			double adjValue = value;
-			Iterator<double[]> itadj = adjacents.iterator();
+			short adjValue = value;
+			Iterator<int[]> itadj = adjacents.iterator();
 			// Buscamos un casilla más baja que la modificada
 			while (itadj.hasNext()) {
-				double[] tile = itadj.next();
-				if (tile[2] < adjValue) {
-					adjValue = tile[2];
-					adjCoord = new int[] { (int) tile[0], (int) tile[1] };
+				int[] tile = itadj.next();
+				if (((short) tile[2]) < adjValue) {
+					adjValue = (short) tile[2];
+					adjCoord = new int[] { tile[0], tile[1] };
 				}
 			}
 			// Si no la hay es que la modificada es más baja o igual
@@ -64,25 +63,29 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				itadj = adjacents.iterator();
 				// Buscamos una casilla más alta que la modificada
 				while (itadj.hasNext()) {
-					double[] tile = itadj.next();
-					if (tile[2] > adjValue) {
-						adjValue = tile[2];
-						adjCoord = new int[] { (int) tile[0], (int) tile[1] };
+					int[] tile = itadj.next();
+					if (((short) tile[2]) > adjValue) {
+						adjValue = (short) tile[2];
+						adjCoord = new int[] { tile[0], tile[1] };
 					}
 				}
-				// Hay una adyacente más alta, hay que mover agua desde la adyacente a la modificada
+				// Hay una adyacente más alta, hay que mover agua desde la
+				// adyacente a la modificada
 				if (adjValue != value) {
-					double volume = grid.decreaseValue(adjCoord[0], adjCoord[1], water);
+					short volume = grid.decreaseValue(adjCoord[0], adjCoord[1],
+							water);
 					volume = grid.increaseValue(coord[0], coord[1], volume);
 					if (volume > 0) {
 						// TODO Agua sobrante
 					}
 				}
-				// ELSE Si no la hay es que no hay que hacer nada pues las alturas son las mismas
+				// ELSE Si no la hay es que no hay que hacer nada pues las
+				// alturas son las mismas
 			}
-			// Hay una adyacente más baja, hay que mover agua desde la modificada a la más baja
+			// Hay una adyacente más baja, hay que mover agua desde la
+			// modificada a la más baja
 			else {
-				double volume = grid.decreaseValue(coord[0], coord[1], water);
+				short volume = grid.decreaseValue(coord[0], coord[1], water);
 				volume = grid.increaseValue(adjCoord[0], adjCoord[1], volume);
 				if (volume > 0) {
 					// TODO Agua sobrante

@@ -44,17 +44,16 @@ public class KmlReader extends Kml {
 	 * @throws FileNotFoundException
 	 */
 	public KmlReader(String fileName) {
-		if (fileName.contains(".kmz")){
+		if (fileName.contains(".kmz")) {
 			try {
 				kml = Kml.unmarshalFromKmz(new File(fileName))[0];
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else{
-			kml = Kml.unmarshal(new File(fileName));	
+		} else {
+			kml = Kml.unmarshal(new File(fileName));
 		}
-		
 
 		Scenario scene = Scenario.getCurrentScenario();
 		if (scene != null) {
@@ -88,7 +87,7 @@ public class KmlReader extends Kml {
 		scene.setDescription(s);
 		scene.setGeoData(new LatLng(Double.parseDouble(info[1]), Double
 				.parseDouble(info[2])), new LatLng(Double.parseDouble(info[3]),
-				Double.parseDouble(info[4])), Integer.parseInt(info[0]));
+				Double.parseDouble(info[4])), Short.parseShort(info[0]));
 	}
 
 	/**
@@ -122,9 +121,12 @@ public class KmlReader extends Kml {
 				LatLng coord = new LatLng(coordinate.getLatitude(), coordinate
 						.getLongitude());
 				int pos[] = scene.coordToTile(coord);
-				System.out.println(pos[0]+","+pos[1]+" ("+coordinate.getLatitude()+", "+coordinate.getLongitude()+") "+coordinate.getAltitude()+"m");
-				hexGrid.setTerrainValue(pos[0], pos[1], coordinate
-						.getAltitude());
+				System.out.println(pos[0] + "," + pos[1] + " ("
+						+ coordinate.getLatitude() + ", "
+						+ coordinate.getLongitude() + ") "
+						+ coordinate.getAltitude() + "m");
+				hexGrid.setTerrainValue(pos[0], pos[1], scene
+						.doubleToInner(coordinate.getAltitude()));
 			}
 		}
 		return hexGrid;

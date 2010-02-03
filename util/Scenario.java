@@ -26,8 +26,6 @@ import webservices.AltitudeWS;
 
 public class Scenario implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
 	// The GUI is the one that should care that the Scenario is completed before
 	// simulating it
 	private boolean complete = false;
@@ -41,7 +39,8 @@ public class Scenario implements Serializable {
 	protected HexagonalGrid grid = null;
 	private String description = "";
 	// Tile size in m^2
-	private int tileSize = -1;
+	private short tileSize = -1;
+	private short precision = 10; // 1 unit means 1/precision meters
 	// Current Scenario showed on GUI
 	// If a Scenario is loaded (from a file), or a new one is created, this
 	// reference MUST change
@@ -62,7 +61,7 @@ public class Scenario implements Serializable {
 		return instance;
 	}
 
-	public void setGeoData(LatLng NW, LatLng SE, int tileSize) {
+	public void setGeoData(LatLng NW, LatLng SE, short tileSize) {
 		this.NW = NW;
 		this.SE = SE;
 		this.tileSize = tileSize;
@@ -162,7 +161,7 @@ public class Scenario implements Serializable {
 		complete = true;
 	}
 
-	public int getTileSize() {
+	public short getTileSize() {
 		return tileSize;
 	}
 
@@ -184,8 +183,24 @@ public class Scenario implements Serializable {
 			for (int j = 0; j < gridY; j++) {
 				LatLng coord = tileToCoord(i, j);
 				double value = AltitudeWS.getElevation(coord);
-				grid.setTerrainValue(i, j, value);
+				grid.setTerrainValue(i, j, doubleToInner(value));
 			}
 		}
+	}
+
+	public void setPrecision(short precision) {
+		this.precision = precision;
+	}
+
+	public short getPrecision() {
+		return precision;
+	}
+
+	public short doubleToInner(double d) {
+		return (short) (d * precision);
+	}
+
+	public double innerToDouble(short s) {
+		return ((double) s) / precision;
 	}
 }

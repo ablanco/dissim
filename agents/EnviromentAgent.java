@@ -76,7 +76,7 @@ public class EnviromentAgent extends Agent {
 		// Si es una inundación
 		if (scen instanceof FloodScenario) {
 			FloodScenario fscen = (FloodScenario) scen;
-			
+
 			// En el caso de que el agua se agentifique
 			if (fscen.useWaterAgents()) {
 				addBehaviour(new RegisterFloodTileBehav(
@@ -142,7 +142,7 @@ public class EnviromentAgent extends Agent {
 				// Mensaje CFP recibido, hay que procesarlo
 				String pos = msg.getContent();
 				String[] coord = pos.split(" ");
-				ArrayList<double[]> adjacents = grid.getAdjacents(Integer
+				ArrayList<int[]> adjacents = grid.getAdjacents(Integer
 						.parseInt(coord[0]), Integer.parseInt(coord[1]));
 
 				ACLMessage reply = msg.createReply();
@@ -173,12 +173,12 @@ public class EnviromentAgent extends Agent {
 				// Mensaje CFP recibido, hay que procesarlo
 				String pos = msg.getContent();
 				String[] coord = pos.split(" ");
-				double value = grid.getValue(Integer.parseInt(coord[0]),
-						Integer.parseInt(coord[1]));
+				short value = grid.getValue(Integer.parseInt(coord[0]), Integer
+						.parseInt(coord[1]));
 
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
-				reply.setContent(Double.toString(value));
+				reply.setContent(Short.toString(value));
 				myAgent.send(reply);
 			} else {
 				block();

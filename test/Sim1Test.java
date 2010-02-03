@@ -25,22 +25,24 @@ public class Sim1Test {
 	public static void generateScenario(int option) {
 		switch (option) {
 		case 0:
-			smallGrid();
+			smallGrid(true);
+			break;
+		case 1:
+			smallGrid(false);
 			break;
 		}
-
 	}
 
-	private static void smallGrid() {
+	private static void smallGrid(boolean waterAgents) {
 		FloodScenario scen = new FloodScenario();
-		scen.setWaterAgents(false);
+		scen.setWaterAgents(waterAgents);
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
-				29.918075, -90.053707), 800);
+				29.918075, -90.053707), (short) 800);
 		// 5 x 5
 		scen.obtainTerrainElevation();
 		System.out.println("Obtenidas todas las alturas.");
-		scen.addWaterSource(new WaterSource(new LatLng(29.9532, -90.0882), 2,
-				1600L));
+		scen.addWaterSource(new WaterSource(new LatLng(29.9532, -90.0882),
+				(short) 2, 1600L));
 		scen.complete();
 	}
 
