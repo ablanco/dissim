@@ -38,16 +38,16 @@ public class FloodTileBehav extends Behaviour {
 
 	private static final long serialVersionUID = -7362590926527253261L;
 
-	protected int x; // Posición de la unidad de agua
-	protected int y;
-	protected short water; // Cantidad de agua
-	protected AID envAID; // Identificador del agente entorno
-	protected Random rnd;
+	private int x; // Posición de la unidad de agua
+	private int y;
+	private short water; // Cantidad de agua
+	private AID envAID; // Identificador del agente entorno
+	private Random rnd;
 	private boolean stopped = false; // Comportamiento terminado?
 
-	protected short value; // Potencial de la casilla actual
-	protected short step = 0;
-	protected MessageTemplate mt;
+	private short value; // Potencial de la casilla actual
+	private short step = 0;
+	private MessageTemplate mt;
 
 	public FloodTileBehav(Agent a, int x, int y) {
 		super(a);

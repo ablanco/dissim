@@ -28,12 +28,12 @@ public class WaterSource {
 	/**
 	 * Periodo en milisegundos entre cada entrada de agua
 	 */
-	private long rythm;
+	private long rhythm;
 
-	public WaterSource(LatLng coord, short water, long rythm) {
+	public WaterSource(LatLng coord, short water, long rhythm) {
 		this.coord = coord;
 		this.water = water;
-		this.rythm = rythm;
+		this.rhythm = rhythm;
 	}
 
 	public LatLng getCoord() {
@@ -44,8 +44,8 @@ public class WaterSource {
 		return water;
 	}
 
-	public long getRythm() {
-		return rythm;
+	public long getRhythm() {
+		return rhythm;
 	}
 
 }

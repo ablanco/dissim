@@ -49,12 +49,13 @@ public class AltitudeWS {
 		if (service == null)
 			init();
 
+		coord.toWGS84();
+		
 		String elevationOnlyStr;
 		if (elevationOnly)
 			elevationOnlyStr = "TRUE";
 		else
 			elevationOnlyStr = "FALSE";
-		//Appears none has a standart, so, patch lat lng to lng lat 
 		GetElevationResult res = service.getElevation(Double.toString(coord
 				.getLng()), Double.toString(coord.getLat()), elevationUnits,
 				sourceLayer, elevationOnlyStr);
@@ -81,9 +82,11 @@ public class AltitudeWS {
 			String elevationUnits) throws WebServiceException {
 		if (service == null)
 			init();
+		
+		coord.toWGS84();
 
 		GetAllElevationsResult res = service.getAllElevations(Double
-				.toString(coord.getLat()), Double.toString(coord.getLng()),
+				.toString(coord.getLng()), Double.toString(coord.getLat()),
 				elevationUnits);
 		List<Object> results = res.getContent();
 

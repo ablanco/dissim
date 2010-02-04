@@ -71,7 +71,7 @@ public class CreatorAgent extends Agent {
 								Integer.toString(tileIdx[1]) };
 						// Agentes Water
 						Behaviour wa = new CreateAgentTickerBehav(this, ws
-								.getRythm(), "Water",
+								.getRhythm(), "Water",
 								"agents.flood.WaterAgent", clones, arguments);
 						addBehaviour(wa);
 						waterAgents.add(wa);
@@ -89,7 +89,7 @@ public class CreatorAgent extends Agent {
 								Integer.toString(tileIdx[0]),
 								Integer.toString(tileIdx[1]),
 								Short.toString(ws.getWater()),
-								Long.toString(ws.getRythm()) };
+								Long.toString(ws.getRhythm()) };
 						addBehaviour(new CreateAgentBehav(this, "WaterSource",
 								"agents.flood.WaterSourceAgent", 1, arguments));
 					}

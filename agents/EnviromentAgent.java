@@ -16,14 +16,6 @@
 
 package agents;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import behaviours.flood.WaterSourceBehav;
-import behaviours.flood.RegisterFloodTileBehav;
-import behaviours.flood.UpdateFloodGridBehav;
-
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -32,11 +24,16 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
 import util.HexagonalGrid;
 import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
-import util.flood.WaterSource;
+import behaviours.flood.RegisterFloodTileBehav;
+import behaviours.flood.UpdateFloodGridBehav;
 
 public class EnviromentAgent extends Agent {
 
