@@ -18,14 +18,14 @@ package util;
 
 import java.io.Serializable;
 
-import com.sun.xml.txw2.IllegalSignatureException;
-
 import util.jcoord.LatLng;
 import util.jcoord.UTMRef;
 import webservices.AltitudeWS;
 
 public class Scenario implements Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	// The GUI is the one that should care that the Scenario is completed before
 	// simulating it
 	private boolean complete = false;
@@ -155,7 +155,7 @@ public class Scenario implements Serializable {
 
 	public void complete() {
 		if (NW == null || SE == null || grid == null || tileSize < 0)
-			throw new IllegalSignatureException(
+			throw new IllegalStateException(
 					"There are mandatory parameters that hasn't been defined yet.");
 
 		complete = true;

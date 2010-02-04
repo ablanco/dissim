@@ -42,7 +42,7 @@ public class Sim1Test {
 		scen.obtainTerrainElevation();
 		System.out.println("Obtenidas todas las alturas.");
 		scen.addWaterSource(new WaterSource(new LatLng(29.9532, -90.0882),
-				(short) 2, 1600L));
+				(short) 2, 1000L));
 		scen.complete();
 	}
 

@@ -24,6 +24,8 @@ import util.jcoord.LatLng;
 
 public class FloodScenario extends Scenario {
 
+	private static final long serialVersionUID = 1L;
+	
 	/**
 	 * Entradas de agua
 	 */
@@ -35,7 +37,7 @@ public class FloodScenario extends Scenario {
 	/**
 	 * Representa los ms entre cada actualización de la posición del agua
 	 */
-	private long floodUpdateTime = 1000; // TODO mejorar esta idea
+	private long floodUpdateTime = 100; // TODO mejorar esta idea
 	/**
 	 * Representa la cantidad de agua que tiene cada agente, o que se mueve
 	 * entre casillas en caso de que no se agentifique el agua
