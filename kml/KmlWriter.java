@@ -45,7 +45,7 @@ public class KmlWriter {
 	public KmlWriter() {
 		kml = new Kml();
 		scene = Scenario.getCurrentScenario();
-		cont=0;
+		cont = 0;
 	}
 
 	/**
@@ -177,42 +177,60 @@ public class KmlWriter {
 	 * @param alt
 	 */
 	public void createHexagon(LatLng coord, short alt) {
-		Polygon polygon = document.createAndAddPlacemark().withName("tile"+cont)
-				.createAndSetPolygon().withExtrude(true).withAltitudeMode(
-						AltitudeMode.RELATIVE_TO_GROUND);
-		//Now we found the coords of the Hexagram sides
-		UTMRef centre = coord.toUTMRef();
-		UTMRef NN = new UTMRef(centre.getEasting(), centre.getNorthing()
-				+ scene.getTileSize() / 2, centre.getLatZone(), centre
-				.getLatZone());
-		UTMRef NE = new UTMRef(centre.getEasting() + scene.getTileSize() / 2,
-				centre.getNorthing() + scene.getTileSize() / 4, centre
-						.getLatZone(), centre.getLatZone());
-		UTMRef SE = new UTMRef(centre.getEasting() + scene.getTileSize() / 2,
-				centre.getNorthing() - scene.getTileSize() / 4, centre
-						.getLatZone(), centre.getLatZone());
-		UTMRef SS = new UTMRef(centre.getEasting(), centre.getNorthing()
-				- scene.getTileSize() / 2, centre.getLatZone(), centre
-				.getLatZone());
-		UTMRef SW = new UTMRef(centre.getEasting() - scene.getTileSize() / 2,
-				centre.getNorthing() - scene.getTileSize() / 4, centre
-						.getLatZone(), centre.getLatZone());
-		UTMRef NW = new UTMRef(centre.getEasting() - scene.getTileSize() / 2,
-				centre.getNorthing() + scene.getTileSize() / 4, centre
-						.getLatZone(), centre.getLatZone());
-		//Now write the hexagram
+		Polygon polygon = document.createAndAddPlacemark().withName(
+				"tile" + cont).createAndSetPolygon().withExtrude(true)
+				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+		// Now we found the coords of the Hexagram sides
+		/*
+		 * UTMRef centre = coord.toUTMRef(); double rad = scene.getTileSize() /
+		 * 2; double mrad = scene.getTileSize() / 4;
+		 * 
+		 * UTMRef NN = new UTMRef(centre.getEasting(), centre.getNorthing() +
+		 * rad, centre.getLatZone(), centre.getLatZone()); UTMRef NE = new
+		 * UTMRef(centre.getEasting() + rad, centre.getNorthing() + mrad,
+		 * centre.getLatZone(), centre.getLatZone()); UTMRef SE = new
+		 * UTMRef(centre.getEasting() + rad, centre.getNorthing() - mrad,
+		 * centre.getLatZone(), centre.getLatZone()); UTMRef SS = new
+		 * UTMRef(centre.getEasting(), centre.getNorthing() - rad,
+		 * centre.getLatZone(), centre.getLatZone()); UTMRef SW = new
+		 * UTMRef(centre.getEasting() - rad, centre.getNorthing() - mrad,
+		 * centre.getLatZone(), centre.getLatZone()); UTMRef NW = new
+		 * UTMRef(centre.getEasting() - rad, centre.getNorthing() + mrad,
+		 * centre.getLatZone(), centre.getLatZone());
+		 * 
+		 * // Now write the hexagram
+		 * polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing()
+		 * .addToCoordinates(NN.toLatLng().toGoogleString() + "," + alt)
+		 * .addToCoordinates(NE.toLatLng().toGoogleString() + "," + alt)
+		 * .addToCoordinates(SE.toLatLng().toGoogleString() + "," + alt)
+		 * .addToCoordinates(SS.toLatLng().toGoogleString() + "," + alt)
+		 * .addToCoordinates(SW.toLatLng().toGoogleString() + "," + alt)
+		 * .addToCoordinates(NW.toLatLng().toGoogleString() + "," + alt);
+		 * System.out.println("Centre :" + centre + ", NE: " + NE + ", SW: " +
+		 * SW);
+		 */
+		double ilat = scene.getLatInc();
+		double ilng = scene.getLngInc();
+
+		LatLng NN = new LatLng(coord.getLat() + ilat, coord.getLng());
+		LatLng NE = new LatLng(coord.getLat() + ilat, coord.getLng() - ilng);
+		LatLng SE = new LatLng(coord.getLat() - ilat, coord.getLng() - ilng);
+		LatLng SS = new LatLng(coord.getLat() - ilat, coord.getLng());
+		LatLng SW = new LatLng(coord.getLat() - ilat, coord.getLng() + ilng);
+		LatLng NW = new LatLng(coord.getLat() + ilat, coord.getLng() + ilng);
+
 		polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing()
-				.addToCoordinates(NN.toLatLng().toGoogleString() + "," + alt)
-				.addToCoordinates(NE.toLatLng().toGoogleString() + "," + alt)
-				.addToCoordinates(SE.toLatLng().toGoogleString() + "," + alt)
-				.addToCoordinates(SS.toLatLng().toGoogleString() + "," + alt)
-				.addToCoordinates(SW.toLatLng().toGoogleString() + "," + alt)
-				.addToCoordinates(NW.toLatLng().toGoogleString() + "," + alt);
-		
+				.addToCoordinates(NN.toGoogleString() + "," + alt)
+				.addToCoordinates(NE.toGoogleString() + "," + alt)
+				.addToCoordinates(SE.toGoogleString() + "," + alt)
+				.addToCoordinates(SS.toGoogleString() + "," + alt)
+				.addToCoordinates(SW.toGoogleString() + "," + alt)
+				.addToCoordinates(NW.toGoogleString() + "," + alt);
+		System.out.println("Centre :" + coord + ", NE: " + NE + ", SW: " +SW);
 		cont++;
 
 	}
-	
+
 	public void createTimeLine() {
 
 	}

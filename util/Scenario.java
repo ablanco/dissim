@@ -40,8 +40,13 @@ public class Scenario implements Serializable {
 	protected HexagonalGrid grid = null;
 	private String description = "";
 	// Diameter of the circle circunflex of the hexagon in meters
-	private short tileSize = 1;
-	private short precision = 10; // 1 unit means 1/precision meters
+	protected short tileSize = 1;
+	//Increment in degrees (depends on tileSize)
+	
+	protected double latInc; // 1 unit means 1/precision meters
+	protected double lngInc;
+
+	private short precision =100;
 	// Current Scenario showed on GUI
 	// If a Scenario is loaded (from a file), or a new one is created, this
 	// reference MUST change
@@ -75,6 +80,9 @@ public class Scenario implements Serializable {
 		int y = (int) (SE.distance(SW) * 1000 / tileSize);
 		// Set grid size +1 because the dimension thing
 		createGrid(x + 1, y + 1);
+		// Set offset in degrees between two hexagramas
+		latInc = Math.abs((Math.abs(tileToCoord(0, 0).getLat()) - Math.abs(tileToCoord(0, 1).getLat()))/2);
+		lngInc = Math.abs((Math.abs(tileToCoord(0, 0).getLng()) - Math.abs(tileToCoord(2, 0).getLng()))/4);
 	}
 
 	public LatLng[] getArea() {
@@ -207,7 +215,7 @@ public class Scenario implements Serializable {
 	}
 
 	public void setPrecision(short precision) {
-		this.precision = precision;
+		this.precision  = precision;
 	}
 
 	public short getPrecision() {
@@ -220,5 +228,12 @@ public class Scenario implements Serializable {
 
 	public double innerToDouble(short s) {
 		return ((double) s) / precision;
+	}
+	
+	public double getLatInc(){
+		return latInc;
+	}
+	public double getLngInc(){
+		return lngInc;
 	}
 }
