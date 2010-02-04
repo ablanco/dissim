@@ -25,7 +25,7 @@ import util.jcoord.LatLng;
 public class FloodScenario extends Scenario {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	/**
 	 * Entradas de agua
 	 */
@@ -99,8 +99,7 @@ public class FloodScenario extends Scenario {
 	public long getFloodUpdateTime() {
 		if (!waterAgents)
 			return floodUpdateTime;
-		else
-			return -1;
+		return -1;
 	}
 
 	public void setWater(short water) {
@@ -108,6 +107,8 @@ public class FloodScenario extends Scenario {
 	}
 
 	public short getWater() {
+		if (!waterAgents)
+			return -1;
 		return water;
 	}
 

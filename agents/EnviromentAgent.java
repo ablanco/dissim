@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import behaviours.flood.AddWaterGridBehav;
+import behaviours.flood.WaterSourceBehav;
 import behaviours.flood.RegisterFloodTileBehav;
 import behaviours.flood.UpdateFloodGridBehav;
 
@@ -89,18 +89,15 @@ public class EnviromentAgent extends Agent {
 			}
 			// Si no se agentifica
 			else {
-				Iterator<WaterSource> it = fscen.waterSourcesIterator();
-				while (it.hasNext()) {
-					WaterSource ws = it.next();
-					int[] coord = scen.coordToTile(ws.getCoord());
-					addBehaviour(new AddWaterGridBehav(this, ws.getRythm(),
-							(FloodHexagonalGrid) grid, coord[0], coord[1], ws
-									.getWater()));
-				}
+				addBehaviour(new AddWaterBehav());
+
+				sd = new ServiceDescription();
+				sd.setType("add-water");
+				sd.setName(getName());
+				dfd.addServices(sd);
 
 				addBehaviour(new UpdateFloodGridBehav(this, fscen
-						.getFloodUpdateTime(), (FloodHexagonalGrid) grid, fscen
-						.getWater()));
+						.getFloodUpdateTime(), (FloodHexagonalGrid) grid));
 			}
 		}
 
@@ -180,6 +177,28 @@ public class EnviromentAgent extends Agent {
 				reply.setPerformative(ACLMessage.INFORM);
 				reply.setContent(Short.toString(value));
 				myAgent.send(reply);
+			} else {
+				block();
+			}
+		}
+	}
+
+	protected class AddWaterBehav extends CyclicBehaviour {
+
+		private static final long serialVersionUID = -1011734094435184626L;
+
+		@Override
+		public void action() {
+			MessageTemplate mt = MessageTemplate.and(MessageTemplate
+					.MatchConversationId("add-water"), MessageTemplate
+					.MatchPerformative(ACLMessage.PROPOSE));
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				// Mensaje CFP recibido, hay que procesarlo
+				String pos = msg.getContent();
+				String[] data = pos.split(" ");
+				grid.increaseValue(Integer.parseInt(data[0]), Integer
+						.parseInt(data[1]), Short.parseShort(data[2]));
 			} else {
 				block();
 			}

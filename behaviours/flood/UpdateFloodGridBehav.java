@@ -28,14 +28,11 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 
 	private static final long serialVersionUID = 8964259995058162322L;
 
-	protected FloodHexagonalGrid grid;
-	protected short water;
+	private FloodHexagonalGrid grid;
 
-	public UpdateFloodGridBehav(Agent a, long period, FloodHexagonalGrid grid,
-			short water) {
+	public UpdateFloodGridBehav(Agent a, long period, FloodHexagonalGrid grid) {
 		super(a, period);
 		this.grid = grid;
-		this.water = water;
 	}
 
 	@Override
@@ -72,10 +69,10 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				// Hay una adyacente más alta, hay que mover agua desde la
 				// adyacente a la modificada
 				if (adjValue != value) {
-					short volume = grid.decreaseValue(adjCoord[0], adjCoord[1],
-							water);
-					volume = grid.increaseValue(coord[0], coord[1], volume);
-					if (volume > 0) {
+					short water = (short) ((adjValue - value) / 2);
+					water = grid.decreaseValue(adjCoord[0], adjCoord[1], water);
+					water = grid.increaseValue(coord[0], coord[1], water);
+					if (water > 0) {
 						// TODO Agua sobrante
 					}
 				}
@@ -85,9 +82,10 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 			// Hay una adyacente más baja, hay que mover agua desde la
 			// modificada a la más baja
 			else {
-				short volume = grid.decreaseValue(coord[0], coord[1], water);
-				volume = grid.increaseValue(adjCoord[0], adjCoord[1], volume);
-				if (volume > 0) {
+				short water = (short) ((value - adjValue) / 2);
+				water = grid.decreaseValue(coord[0], coord[1], water);
+				water = grid.increaseValue(adjCoord[0], adjCoord[1], water);
+				if (water > 0) {
 					// TODO Agua sobrante
 				}
 			}

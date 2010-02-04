@@ -138,7 +138,7 @@ public class HexagonalGrid {
 	protected void printGrid() {
 		for (int i = 0; i < dimX; i++) {
 			if (i % 2 != 0) {
-				System.out.print(" ");
+				System.out.print("  ");
 			}
 			for (int j = 0; j < dimY; j++) {
 				System.out.print(getValue(i, j) + "  ");

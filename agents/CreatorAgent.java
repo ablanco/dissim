@@ -36,7 +36,7 @@ public class CreatorAgent extends Agent {
 	@Override
 	protected void setup() {
 		// TODO DEBUG
-		Sim1Test.generateScenario(0);
+		Sim1Test.generateScenario(1);
 
 		Scenario scen = Scenario.getCurrentScenario();
 		if (scen != null) {
@@ -52,9 +52,9 @@ public class CreatorAgent extends Agent {
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {
 				FloodScenario fscen = (FloodScenario) scen;
+				ListIterator<WaterSource> it = fscen.waterSourcesIterator();
 				// Si el agua se agentifica
 				if (fscen.useWaterAgents()) {
-					ListIterator<WaterSource> it = fscen.waterSourcesIterator();
 					ArrayList<Behaviour> waterAgents = new ArrayList<Behaviour>(
 							fscen.waterSourcesSize());
 					while (it.hasNext()) {
@@ -79,6 +79,20 @@ public class CreatorAgent extends Agent {
 					}
 					// TODO cuando parar de crear WaterAgent (usando
 					// waterAgents)
+				}
+				// Si no se agentifica el agua
+				else {
+					while (it.hasNext()) {
+						WaterSource ws = it.next();
+						int[] tileIdx = scen.coordToTile(ws.getCoord());
+						arguments = new Object[] {
+								Integer.toString(tileIdx[0]),
+								Integer.toString(tileIdx[1]),
+								Short.toString(ws.getWater()),
+								Long.toString(ws.getRythm()) };
+						addBehaviour(new CreateAgentBehav(this, "WaterSource",
+								"agents.flood.WaterSourceAgent", 1, arguments));
+					}
 				}
 			}
 		}

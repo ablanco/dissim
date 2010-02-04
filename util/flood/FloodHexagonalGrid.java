@@ -16,22 +16,22 @@
 
 package util.flood;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import util.HexagonalGrid;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
 
-	protected short[][] gridWater; // Nivel de agua en la casilla
-	protected boolean useGridMod;
-	protected boolean[][] gridMod;
+	private short[][] gridWater; // Nivel de agua en la casilla
+	private boolean useModifications;
+	private HashSet<int[]> modTiles = null;
 
 	public FloodHexagonalGrid(int x, int y, boolean useAgents) {
 		super(x, y);
 		gridWater = new short[x][y];
-		useGridMod = !useAgents;
-		if (useGridMod)
-			gridMod = new boolean[x][y];
+		useModifications = !useAgents;
+		if (useModifications)
+			modTiles = new HashSet<int[]>();
 	}
 
 	public short setWaterValue(int x, int y, short value) {
@@ -51,8 +51,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 		gridWater[x][y] += increment;
 
-		if (useGridMod)
-			gridMod[x][y] = true;
+		if (useModifications)
+			modTiles.add(new int[] { x, y });
 
 		printGrid(); // TODO Debug
 		return 0;
@@ -70,8 +70,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 			gridWater[x][y] = 0;
 		}
 
-		if (useGridMod)
-			gridMod[x][y] = true;
+		if (useModifications)
+			modTiles.add(new int[] { x, y });
 		return result;
 	}
 
@@ -84,19 +84,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		return gridWater[x][y];
 	}
 
-	public ArrayList<int[]> getModCoordAndReset() {
-		if (!useGridMod)
-			return null;
-
-		ArrayList<int[]> result = new ArrayList<int[]>();
-		for (int i = 0; i < gridMod.length; i++) {
-			for (int j = 0; j < gridMod[i].length; j++) {
-				if (gridMod[i][j]) {
-					result.add(new int[] { i, j });
-					gridMod[i][j] = false;
-				}
-			}
-		}
+	public HashSet<int[]> getModCoordAndReset() {
+		HashSet<int[]> result = modTiles;
+		modTiles = new HashSet<int[]>();
 		return result;
 	}
 

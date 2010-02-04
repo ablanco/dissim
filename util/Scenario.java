@@ -23,12 +23,10 @@ import util.jcoord.LatLng;
 import util.jcoord.UTMRef;
 import webservices.AltitudeWS;
 
-import com.sun.xml.txw2.IllegalSignatureException;
-
 public class Scenario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	// The GUI is the one that should care that the Scenario is completed before
 	// simulating it
 	private boolean complete = false;
@@ -114,19 +112,19 @@ public class Scenario implements Serializable {
 		// Obtain the distances from the sides to NW(0,0)
 		int x = (int) ((NW.distance(xCoord)) * 1000 / tileSize);
 		int y = (int) ((NW.distance(yCoord)) * 1000 / tileSize);
-		//Obtain adyacents and looks for closer.
+		// Obtain adyacents and looks for closer.
 		ArrayList<int[]> adyacents = grid.getAdjacents(x, y);
 		double distance = coord.distance(tileToCoord(x, y));
-		for (int[] a : adyacents){
-			if (distance > coord.distance(tileToCoord(a[0], a[1]))){
-				x=a[0];
-				y=a[1];	
-			}			
+		for (int[] a : adyacents) {
+			if (distance > coord.distance(tileToCoord(a[0], a[1]))) {
+				x = a[0];
+				y = a[1];
+			}
 		}
 		return new int[] { x, y };
 	}
-	
-	public LatLng coordToTileCentrum(LatLng coord){
+
+	public LatLng coordToTileCentrum(LatLng coord) {
 		int c[] = coordToTile(coord);
 		return tileToCoord(c[0], c[1]);
 	}
@@ -145,18 +143,19 @@ public class Scenario implements Serializable {
 		// Convert to UTM, cause is in meters
 		UTMRef coordUTM = NW.toUTMRef();
 		UTMRef coordAUX;
-		//Odd Rows has offset.
-		if (x%2==0){
+		// Odd Rows has offset.
+		if (x % 2 == 0) {
 			// Just add the distance (x * tileSize) and get the new coordinate
 			coordAUX = new UTMRef(coordUTM.getEasting() + (x * tileSize),
-					coordUTM.getNorthing() + (y * tileSize), coordUTM.getLatZone(),
-					coordUTM.getLngZone());
-		}else{
-			// Just add the distance (x * tileSize) and get the new coordinate plus offset
+					coordUTM.getNorthing() + (y * tileSize), coordUTM
+							.getLatZone(), coordUTM.getLngZone());
+		} else {
+			// Just add the distance (x * tileSize) and get the new coordinate
+			// plus offset
 			coordAUX = new UTMRef(coordUTM.getEasting() + (x * tileSize),
-					coordUTM.getNorthing() + (y * tileSize) + tileSize/2, coordUTM.getLatZone(),
-					coordUTM.getLngZone());
-		}		
+					coordUTM.getNorthing() + (y * tileSize) + tileSize / 2,
+					coordUTM.getLatZone(), coordUTM.getLngZone());
+		}
 		return coordAUX.toLatLng();
 	}
 

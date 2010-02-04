@@ -14,36 +14,33 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.flood;
+package agents.flood;
 
-import util.flood.FloodHexagonalGrid;
+import behaviours.flood.WaterSourceBehav;
 import jade.core.Agent;
-import jade.core.behaviours.TickerBehaviour;
 
-public class AddWaterGridBehav extends TickerBehaviour {
+public class WaterSourceAgent extends Agent {
 
-	private static final long serialVersionUID = 8455503506160028404L;
-
-	protected FloodHexagonalGrid grid;
-	protected int x;
-	protected int y;
-	protected short water;
-
-	public AddWaterGridBehav(Agent a, long period, FloodHexagonalGrid grid,
-			int x, int y, short water) {
-		super(a, period);
-		this.grid = grid;
-		this.x = x;
-		this.y = y;
-		this.water = water;
-	}
-
+	private static final long serialVersionUID = -901992561566307027L;
+	
 	@Override
-	protected void onTick() {
-		short spare = grid.increaseValue(x, y, water);
-		if (spare > 0) {
-			// TODO Agua sobrante
+	protected void setup() {
+		// Obtener argumentos
+		Object[] args = getArguments();
+		int x; // Posición en la rejilla
+		int y;
+		short water;
+		long rhythm;
+		if (args.length == 4) {
+			x = Integer.parseInt((String) args[0]);
+			y = Integer.parseInt((String) args[1]);
+			water = Short.parseShort((String) args[2]);
+			rhythm = Long.parseLong((String) args[3]); 
+		} else {
+			throw new IllegalArgumentException("Wrong arguments.");
 		}
+		
+		addBehaviour(new WaterSourceBehav(this, rhythm, x, y, water));
 	}
 
 }
