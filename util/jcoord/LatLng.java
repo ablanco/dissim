@@ -48,6 +48,10 @@ public class LatLng {
   public String toString() {
     return "(" + this.lat + ", " + this.lng + ")";
   }
+  
+  public String toGoogleString(){
+	  return this.lng + ", " + this.lat;
+  }
 
 
   /**

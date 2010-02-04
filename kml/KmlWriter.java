@@ -24,6 +24,7 @@ import java.util.List;
 
 import util.Scenario;
 import util.jcoord.LatLng;
+import util.jcoord.UTMRef;
 import webservices.AltitudeWS;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Boundary;
@@ -38,10 +39,13 @@ public class KmlWriter {
 
 	private Kml kml;
 	private Document document;
+	private Scenario scene;
+	private long cont;
 
 	public KmlWriter() {
 		kml = new Kml();
-
+		scene = Scenario.getCurrentScenario();
+		cont=0;
 	}
 
 	/**
@@ -51,21 +55,20 @@ public class KmlWriter {
 	 */
 
 	public void buildKmlAltitudesMap(String fileName) {
-		Scenario scene = Scenario.getCurrentScenario();
 
 		if (scene != null) {
-			//Creation of the document
+			// Creation of the document
 			createDocument("Land Elevation Info", scene.getDescription());
-			//Creation of the Polygon
+			// Creation of the Polygon
 			List<Coordinate>[] polygon = createPolygon("Land Map",
 					"Land Map Elevations");
-			//Adding coordinates and elevation
+			// Adding coordinates and elevation
 			for (int i = 0; i < scene.getGridSize()[0]; i++) {
 				for (int j = 0; j < scene.getGridSize()[1]; j++) {
 					LatLng aux = scene.tileToCoord(i, j);
-					//double alt = AltitudeWS.getElevation(aux);
+					double alt = AltitudeWS.getElevation(aux);
 					// System.out.println(cont+") "+aux.toString()+" Altitude :"+alt);
-					addCoordinateToPolygon(polygon, aux, 15.5, true);
+					addCoordinateToPolygon(polygon, aux, alt, true);
 				}
 			}
 			// Now creates the kml File
@@ -81,7 +84,7 @@ public class KmlWriter {
 	 * 
 	 * @param nombreFichero
 	 */
-	private void createKmlFile(String fileName) {
+	public void createKmlFile(String fileName) {
 		try {
 			kml.marshal(new File(fileName + ".kml"));
 		} catch (FileNotFoundException e) {
@@ -89,15 +92,16 @@ public class KmlWriter {
 		}
 	}
 
-	private void createKmzFile(String fileName){
+	public void createKmzFile(String fileName) {
 		try {
-			kml.marshalAsKmz(fileName+".kmz");
+			kml.marshalAsKmz(fileName + ".kmz");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
+
 	public void createDocument(String name, String description) {
 		document = new Document();
 		kml.setFeature(document);
@@ -165,9 +169,52 @@ public class KmlWriter {
 					altitude));
 		}
 	}
-	
-	public void createTimeLine(){
+
+	/**
+	 * Create an hexagon with centrum in the coords
+	 * 
+	 * @param coord
+	 * @param alt
+	 */
+	public void createHexagon(LatLng coord, short alt) {
+		Polygon polygon = document.createAndAddPlacemark().withName("tile"+cont)
+				.createAndSetPolygon().withExtrude(true).withAltitudeMode(
+						AltitudeMode.RELATIVE_TO_GROUND);
+		//Now we found the coords of the Hexagram sides
+		UTMRef centre = coord.toUTMRef();
+		UTMRef NN = new UTMRef(centre.getEasting(), centre.getNorthing()
+				+ scene.getTileSize() / 2, centre.getLatZone(), centre
+				.getLatZone());
+		UTMRef NE = new UTMRef(centre.getEasting() + scene.getTileSize() / 2,
+				centre.getNorthing() + scene.getTileSize() / 4, centre
+						.getLatZone(), centre.getLatZone());
+		UTMRef SE = new UTMRef(centre.getEasting() + scene.getTileSize() / 2,
+				centre.getNorthing() - scene.getTileSize() / 4, centre
+						.getLatZone(), centre.getLatZone());
+		UTMRef SS = new UTMRef(centre.getEasting(), centre.getNorthing()
+				- scene.getTileSize() / 2, centre.getLatZone(), centre
+				.getLatZone());
+		UTMRef SW = new UTMRef(centre.getEasting() - scene.getTileSize() / 2,
+				centre.getNorthing() - scene.getTileSize() / 4, centre
+						.getLatZone(), centre.getLatZone());
+		UTMRef NW = new UTMRef(centre.getEasting() - scene.getTileSize() / 2,
+				centre.getNorthing() + scene.getTileSize() / 4, centre
+						.getLatZone(), centre.getLatZone());
+		//Now write the hexagram
+		polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing()
+				.addToCoordinates(NN.toLatLng().toGoogleString() + "," + alt)
+				.addToCoordinates(NE.toLatLng().toGoogleString() + "," + alt)
+				.addToCoordinates(SE.toLatLng().toGoogleString() + "," + alt)
+				.addToCoordinates(SS.toLatLng().toGoogleString() + "," + alt)
+				.addToCoordinates(SW.toLatLng().toGoogleString() + "," + alt)
+				.addToCoordinates(NW.toLatLng().toGoogleString() + "," + alt);
 		
+		cont++;
+
+	}
+	
+	public void createTimeLine() {
+
 	}
 
 }

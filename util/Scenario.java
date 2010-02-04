@@ -17,10 +17,13 @@
 package util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import util.jcoord.LatLng;
 import util.jcoord.UTMRef;
 import webservices.AltitudeWS;
+
+import com.sun.xml.txw2.IllegalSignatureException;
 
 public class Scenario implements Serializable {
 
@@ -38,8 +41,8 @@ public class Scenario implements Serializable {
 	protected int gridY = -1;
 	protected HexagonalGrid grid = null;
 	private String description = "";
-	// Tile size in m^2
-	private short tileSize = -1;
+	// Diameter of the circle circunflex of the hexagon in meters
+	private short tileSize = 1;
 	private short precision = 10; // 1 unit means 1/precision meters
 	// Current Scenario showed on GUI
 	// If a Scenario is loaded (from a file), or a new one is created, this
@@ -74,8 +77,6 @@ public class Scenario implements Serializable {
 		int y = (int) (SE.distance(SW) * 1000 / tileSize);
 		// Set grid size +1 because the dimension thing
 		createGrid(x + 1, y + 1);
-		setDescription(tileSize + "," + NW.getLat() + "," + NW.getLng() + ","
-				+ SE.getLat() + "," + SE.getLng());
 	}
 
 	public LatLng[] getArea() {
@@ -113,15 +114,25 @@ public class Scenario implements Serializable {
 		// Obtain the distances from the sides to NW(0,0)
 		int x = (int) ((NW.distance(xCoord)) * 1000 / tileSize);
 		int y = (int) ((NW.distance(yCoord)) * 1000 / tileSize);
-		// DEBUG
-		// System.out.println(coord.toString()+
-		// "x("+NW.distance(xCoord)+"):"+x+", y("+NW.distance(yCoord)+"):"+y);
-
+		//Obtain adyacents and looks for closer.
+		ArrayList<int[]> adyacents = grid.getAdjacents(x, y);
+		double distance = coord.distance(tileToCoord(x, y));
+		for (int[] a : adyacents){
+			if (distance > coord.distance(tileToCoord(a[0], a[1]))){
+				x=a[0];
+				y=a[1];	
+			}			
+		}
 		return new int[] { x, y };
+	}
+	
+	public LatLng coordToTileCentrum(LatLng coord){
+		int c[] = coordToTile(coord);
+		return tileToCoord(c[0], c[1]);
 	}
 
 	/**
-	 * Convert form the grid to coordinate
+	 * Convert form the grid to hexagram coordinate
 	 * 
 	 * @param x
 	 * @param y
@@ -131,13 +142,21 @@ public class Scenario implements Serializable {
 		if (NW == null || SE == null)
 			throw new IllegalStateException(
 					"Simulation area hasn't been defined yet.");
-
 		// Convert to UTM, cause is in meters
 		UTMRef coordUTM = NW.toUTMRef();
-		// Just add the distance (x * tileSize) and get the new coordinate
-		UTMRef coordAUX = new UTMRef(coordUTM.getEasting() + (x * tileSize),
-				coordUTM.getNorthing() + (y * tileSize), coordUTM.getLatZone(),
-				coordUTM.getLngZone());
+		UTMRef coordAUX;
+		//Odd Rows has offset.
+		if (x%2==0){
+			// Just add the distance (x * tileSize) and get the new coordinate
+			coordAUX = new UTMRef(coordUTM.getEasting() + (x * tileSize),
+					coordUTM.getNorthing() + (y * tileSize), coordUTM.getLatZone(),
+					coordUTM.getLngZone());
+		}else{
+			// Just add the distance (x * tileSize) and get the new coordinate plus offset
+			coordAUX = new UTMRef(coordUTM.getEasting() + (x * tileSize),
+					coordUTM.getNorthing() + (y * tileSize) + tileSize/2, coordUTM.getLatZone(),
+					coordUTM.getLngZone());
+		}		
 		return coordAUX.toLatLng();
 	}
 
