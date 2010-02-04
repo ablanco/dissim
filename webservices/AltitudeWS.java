@@ -49,7 +49,7 @@ public class AltitudeWS {
 		if (service == null)
 			init();
 
-		coord.toWGS84();
+		//coord.toWGS84(); // WGS 1984 projection
 		
 		String elevationOnlyStr;
 		if (elevationOnly)
@@ -83,7 +83,7 @@ public class AltitudeWS {
 		if (service == null)
 			init();
 		
-		coord.toWGS84();
+		//coord.toWGS84(); // WGS 1984 projection
 
 		GetAllElevationsResult res = service.getAllElevations(Double
 				.toString(coord.getLng()), Double.toString(coord.getLat()),
