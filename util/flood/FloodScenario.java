@@ -37,7 +37,7 @@ public class FloodScenario extends Scenario {
 	/**
 	 * Representa los ms entre cada actualización de la posición del agua
 	 */
-	private long floodUpdateTime = 100;
+	private long floodUpdateTime = 400L;
 	/**
 	 * Representa la cantidad de agua que tiene cada agente, o que se mueve
 	 * entre casillas en caso de que no se agentifique el agua
