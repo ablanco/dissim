@@ -10,6 +10,7 @@ package util.jcoord;
  * @author Jonathan Stott
  * @version 1.0
  * @since 1.0
+ * @license GPL
  */
 public class LatLng {
 
@@ -49,10 +50,17 @@ public class LatLng {
     return "(" + this.lat + ", " + this.lng + ")";
   }
   
+  
+  /**
+   * Get a String KML friendly representation of this LatLng object
+   * 
+   * @author Manuel Gomar Acosta
+   * @return a String KML friendly representation of this LatLng object
+   */
   public String toGoogleString(){
-	  return this.lng + ", " + this.lat;
+	return this.lng + ", " + this.lat;
   }
-
+  
 
   /**
    * Convert this latitude and longitude into an OSGB (Ordnance Survey of Great

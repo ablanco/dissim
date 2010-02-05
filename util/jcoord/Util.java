@@ -10,6 +10,7 @@ package util.jcoord;
  * @author Jonathan Stott
  * @version 1.0
  * @since 1.0
+ * @license GPL
  */
 class Util {
 

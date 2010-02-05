@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import util.Scenario;
-import util.jcoord.LatLng;
+import util.jcoord.UTMRef;
 
 public class FloodScenario extends Scenario {
 
@@ -37,10 +37,9 @@ public class FloodScenario extends Scenario {
 	/**
 	 * Representa los ms entre cada actualización de la posición del agua
 	 */
-	private long floodUpdateTime = 400L;
+	private long floodUpdateTime = 500L;
 	/**
-	 * Representa la cantidad de agua que tiene cada agente, o que se mueve
-	 * entre casillas en caso de que no se agentifique el agua
+	 * Representa la cantidad de agua que tiene cada agente
 	 */
 	private short water = 1;
 
@@ -59,15 +58,18 @@ public class FloodScenario extends Scenario {
 
 	public boolean addWaterSource(WaterSource ws) {
 		boolean result = false;
+
+		UTMRef utmWS = ws.getCoord().toUTMRef();
+		UTMRef utmNW = NW.toUTMRef();
+		UTMRef utmSE = SE.toUTMRef();
 		// Comprobamos que esté dentro del área de simulación
-		LatLng coord = ws.getCoord();
-		// TODO la comparación es correcta?
-		// if (NW.getLat() >= coord.getLat() && NW.getLng() >= coord.getLng()
-		// && SE.getLat() <= coord.getLat()
-		// && SE.getLng() <= coord.getLng()) {
-		if (true) {
+		if (utmNW.getNorthing() >= utmWS.getNorthing()
+				&& utmNW.getEasting() <= utmWS.getEasting()
+				&& utmSE.getNorthing() <= utmWS.getNorthing()
+				&& utmSE.getEasting() >= utmWS.getEasting()) {
 			result = waterSources.add(ws);
 		}
+
 		return result;
 	}
 
