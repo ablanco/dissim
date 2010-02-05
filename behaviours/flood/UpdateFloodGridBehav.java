@@ -71,10 +71,7 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				if (adjValue != value) {
 					short water = (short) ((adjValue - value) / 2);
 					water = grid.decreaseValue(adjCoord[0], adjCoord[1], water);
-					water = grid.increaseValue(coord[0], coord[1], water);
-					if (water > 0) {
-						// TODO Agua sobrante
-					}
+					grid.increaseValue(coord[0], coord[1], water);
 				}
 				// ELSE Si no la hay es que no hay que hacer nada pues las
 				// alturas son las mismas
@@ -84,10 +81,7 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 			else {
 				short water = (short) ((value - adjValue) / 2);
 				water = grid.decreaseValue(coord[0], coord[1], water);
-				water = grid.increaseValue(adjCoord[0], adjCoord[1], water);
-				if (water > 0) {
-					// TODO Agua sobrante
-				}
+				grid.increaseValue(adjCoord[0], adjCoord[1], water);
 			}
 		}
 	}

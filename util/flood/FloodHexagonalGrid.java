@@ -41,21 +41,13 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
-	public short increaseValue(int x, int y, short increment) {
-		// TODO A la hora de inundar el agua se pone al nivel del resto, de
-		// manera que la capa superior sea uniforme
-		// double offset = 0;
-		// double value = getValue(x, y);
-		// int aux = (int) value;
-		// offset = value - ((double) aux);
-
+	public void increaseValue(int x, int y, short increment) {
 		gridWater[x][y] += increment;
 
 		if (useModifications)
 			modTiles.add(new int[] { x, y });
 
 		printGrid(); // TODO Debug
-		return 0;
 	}
 
 	@Override

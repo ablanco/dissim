@@ -61,8 +61,6 @@ public class FloodTileBehav extends Behaviour {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
-		@SuppressWarnings("unused")
-		String agent = myAgent.getLocalName(); // TODO DEBUG variable
 		ACLMessage msg;
 
 		switch (step) {
@@ -146,10 +144,6 @@ public class FloodTileBehav extends Behaviour {
 						e.printStackTrace();
 					}
 				}
-				/*
-				 * System.out.println(agent + " -> Adjacents tiles: " +
-				 * adjacentsToString(adjacents));
-				 */
 				// Lista con los índices de las casillas adyacentes de menor
 				// potencial
 				ArrayList<Integer> tilesIdx = new ArrayList<Integer>(adjacents
@@ -178,14 +172,8 @@ public class FloodTileBehav extends Behaviour {
 					// Escogemos una casilla al azar entre las de menor
 					// potencial
 					int[] tile = adjacents.get(index);
-					// TODO Escoger casilla en vez de al azar según un vector??
-					/*
-					 * System.out.println(agent + " -> Moving to tile: " +
-					 * tile[0] + " " + tile[1] + " " + tile[2]);
-					 */
 					x = tile[0];
 					y = tile[1];
-					// value = tile[2];
 					step = 2;
 				}
 				// Sino significa que ya había llegado a su casilla definitiva
@@ -196,10 +184,6 @@ public class FloodTileBehav extends Behaviour {
 					String tile = Integer.toString(x) + " "
 							+ Integer.toString(y) + " " + Short.toString(water)
 							+ " " + Short.toString(value);
-					/*
-					 * System.out.println(agent + " -> Trying to flood tile: " +
-					 * tile);
-					 */
 					msg.setContent(tile);
 					msg.setConversationId("register-flood");
 					// Valor único
@@ -222,11 +206,6 @@ public class FloodTileBehav extends Behaviour {
 				if (msg.getPerformative() == ACLMessage.CONFIRM) {
 					// Se inunda la casilla
 					stopped = true;
-					/*
-					 * System.out.println(agent + " -> Trying to flood tile: " +
-					 * Integer.toString(x) + " " + Integer.toString(y) + " " +
-					 * Integer.toString(water) + " " + value);
-					 */
 				} else {
 					// No se inunda
 					value = Short.parseShort(msg.getContent());
@@ -244,7 +223,7 @@ public class FloodTileBehav extends Behaviour {
 		return stopped;
 	}
 
-	// TODO DEBUG function
+	// DEBUG method
 	@SuppressWarnings("unused")
 	private String adjacentsToString(ArrayList<int[]> adjacents) {
 		String result = "";

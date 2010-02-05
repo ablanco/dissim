@@ -65,7 +65,7 @@ public class CreatorAgent extends Agent {
 						short water = ws.getWater();
 						short scenWater = fscen.getWater();
 						int clones = water / scenWater; // Nº de agentes
-						int spare = water - (scenWater * clones);
+						// int spare = water - (scenWater * clones); // Resto
 						arguments = new Object[] {
 								Integer.toString(tileIdx[0]),
 								Integer.toString(tileIdx[1]) };
@@ -75,7 +75,6 @@ public class CreatorAgent extends Agent {
 								"agents.flood.WaterAgent", clones, arguments);
 						addBehaviour(wa);
 						waterAgents.add(wa);
-						// TODO spare, agua sobrante...
 					}
 					// TODO cuando parar de crear WaterAgent (usando
 					// waterAgents)

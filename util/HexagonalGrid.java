@@ -35,9 +35,8 @@ public class HexagonalGrid {
 		return old;
 	}
 
-	public short increaseValue(int x, int y, short increment) {
+	public void increaseValue(int x, int y, short increment) {
 		gridTerrain[x][y] += increment;
-		return 0;
 	}
 
 	public short decreaseValue(int x, int y, short decrement) {

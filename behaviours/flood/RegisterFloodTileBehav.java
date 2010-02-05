@@ -49,10 +49,7 @@ public class RegisterFloodTileBehav extends CyclicBehaviour {
 
 			ACLMessage reply = msg.createReply();
 			if (value == gridValue) {
-				short spare = grid.increaseValue(x, y, water);
-				if (spare > 0) {
-					// TODO Agua sobrante
-				}
+				grid.increaseValue(x, y, water);
 				reply.setPerformative(ACLMessage.CONFIRM);
 			} else {
 				reply.setPerformative(ACLMessage.DISCONFIRM);
