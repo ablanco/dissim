@@ -135,6 +135,7 @@ public class HexagonalGrid {
 		return result;
 	}
 
+	// DEBUG method
 	protected void printGrid() {
 		for (int i = 0; i < dimX; i++) {
 			if (i % 2 != 0) {

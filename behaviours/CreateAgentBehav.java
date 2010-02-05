@@ -26,10 +26,10 @@ public class CreateAgentBehav extends OneShotBehaviour {
 
 	private static final long serialVersionUID = -1618019490277716693L;
 
-	protected Object[] arguments;
-	protected String name;
-	protected String agtClass;
-	protected int clones;
+	private Object[] arguments;
+	private String name;
+	private String agtClass;
+	private int clones;
 
 	/**
 	 * 

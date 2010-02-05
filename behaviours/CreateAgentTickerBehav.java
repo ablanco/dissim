@@ -23,11 +23,11 @@ public class CreateAgentTickerBehav extends TickerBehaviour {
 
 	private static final long serialVersionUID = 171695826446378597L;
 
-	protected String name;
-	protected String agtClass;
-	protected int clones;
-	protected Object[] arguments;
-	protected int count = 0;
+	private String name;
+	private String agtClass;
+	private int clones;
+	private Object[] arguments;
+	private int count = 0;
 
 	/**
 	 * 

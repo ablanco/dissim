@@ -35,7 +35,7 @@ public class AltitudeWS {
 	private static ElevationServiceSoap service = null;
 
 	private AltitudeWS() {
-		// Inaccesible
+		// Inaccesible - Clase no instanciable
 	}
 
 	private static void init() {
@@ -49,8 +49,8 @@ public class AltitudeWS {
 		if (service == null)
 			init();
 
-		//coord.toWGS84(); // WGS 1984 projection
-		
+		// coord.toWGS84(); // WGS 1984 projection
+
 		String elevationOnlyStr;
 		if (elevationOnly)
 			elevationOnlyStr = "TRUE";
@@ -82,8 +82,8 @@ public class AltitudeWS {
 			String elevationUnits) throws WebServiceException {
 		if (service == null)
 			init();
-		
-		//coord.toWGS84(); // WGS 1984 projection
+
+		// coord.toWGS84(); // WGS 1984 projection
 
 		GetAllElevationsResult res = service.getAllElevations(Double
 				.toString(coord.getLng()), Double.toString(coord.getLat()),
