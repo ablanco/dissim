@@ -17,21 +17,17 @@
 package agents;
 
 import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
 import util.HexagonalGrid;
 import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
+import behaviours.AdjacentsGridBehav;
+import behaviours.QueryGridBehav;
+import behaviours.flood.AddWaterBehav;
 import behaviours.flood.RegisterFloodTileBehav;
 import behaviours.flood.UpdateFloodGridBehav;
 
@@ -58,8 +54,8 @@ public class EnviromentAgent extends Agent {
 		ServiceDescription sd;
 
 		// Añadir comportamientos
-		addBehaviour(new AdjacentsGridBehav());
-		addBehaviour(new QueryGridBehav());
+		addBehaviour(new AdjacentsGridBehav(grid));
+		addBehaviour(new QueryGridBehav(grid));
 
 		sd = new ServiceDescription();
 		sd.setType("grid-querying");
@@ -86,7 +82,7 @@ public class EnviromentAgent extends Agent {
 			}
 			// Si no se agentifica
 			else {
-				addBehaviour(new AddWaterBehav());
+				addBehaviour(new AddWaterBehav(grid));
 
 				sd = new ServiceDescription();
 				sd.setType("add-water");
@@ -120,85 +116,5 @@ public class EnviromentAgent extends Agent {
 		}
 		System.out.println("Enviroment-agent " + getAID().getName()
 				+ " terminating.");
-	}
-
-	protected class AdjacentsGridBehav extends CyclicBehaviour {
-
-		private static final long serialVersionUID = 1045845004140195390L;
-
-		@Override
-		public void action() {
-			MessageTemplate mt = MessageTemplate.and(MessageTemplate
-					.MatchConversationId("adjacents-grid"), MessageTemplate
-					.MatchPerformative(ACLMessage.CFP));
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) {
-				// Mensaje CFP recibido, hay que procesarlo
-				String pos = msg.getContent();
-				String[] coord = pos.split(" ");
-				ArrayList<int[]> adjacents = grid.getAdjacents(Integer
-						.parseInt(coord[0]), Integer.parseInt(coord[1]));
-
-				ACLMessage reply = msg.createReply();
-				reply.setPerformative(ACLMessage.INFORM);
-				try {
-					reply.setContentObject(adjacents);
-					myAgent.send(reply);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			} else {
-				block();
-			}
-		}
-	}
-
-	protected class QueryGridBehav extends CyclicBehaviour {
-
-		private static final long serialVersionUID = 1045845004140195390L;
-
-		@Override
-		public void action() {
-			MessageTemplate mt = MessageTemplate.and(MessageTemplate
-					.MatchConversationId("query-grid"), MessageTemplate
-					.MatchPerformative(ACLMessage.CFP));
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) {
-				// Mensaje CFP recibido, hay que procesarlo
-				String pos = msg.getContent();
-				String[] coord = pos.split(" ");
-				short value = grid.getValue(Integer.parseInt(coord[0]), Integer
-						.parseInt(coord[1]));
-
-				ACLMessage reply = msg.createReply();
-				reply.setPerformative(ACLMessage.INFORM);
-				reply.setContent(Short.toString(value));
-				myAgent.send(reply);
-			} else {
-				block();
-			}
-		}
-	}
-
-	protected class AddWaterBehav extends CyclicBehaviour {
-
-		private static final long serialVersionUID = -1011734094435184626L;
-
-		@Override
-		public void action() {
-			MessageTemplate mt = MessageTemplate.and(MessageTemplate
-					.MatchConversationId("add-water"), MessageTemplate
-					.MatchPerformative(ACLMessage.PROPOSE));
-			ACLMessage msg = myAgent.receive(mt);
-			if (msg != null) {
-				// Mensaje CFP recibido, hay que procesarlo
-				String pos = msg.getContent();
-				String[] data = pos.split(" ");
-				grid.increaseValue(Integer.parseInt(data[0]), Integer
-						.parseInt(data[1]), Short.parseShort(data[2]));
-			} else {
-				block();
-			}
-		}
 	}
 }
