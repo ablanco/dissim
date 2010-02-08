@@ -20,21 +20,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 import util.Scenario;
-import util.flood.FloodHexagonalGrid;
-import util.flood.FloodScenario;
 import util.jcoord.LatLng;
-import webservices.AltitudeWS;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
-import de.micromata.opengis.kml.v_2_2_0.Boundary;
-import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.LinearRing;
-import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
 
 public class KmlWriter {
@@ -49,7 +41,6 @@ public class KmlWriter {
 		scene = Scenario.getCurrentScenario();
 		cont = 0;
 	}
-
 
 	/**
 	 * Crea el Fichero kml de nombre nombreFichero
@@ -90,23 +81,17 @@ public class KmlWriter {
 	 * @param description
 	 * @return
 	 */
-	public LinearRing createPolygon(String name, String description) {
+	public void createPolygon(String name, String description,
+			ArrayList<LatLng> borderLine) {
 		Polygon polygon = document.createAndAddPlacemark().withName(
 				"tile" + cont).createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-		return polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing();
-	}
 
-	/**
-	 * Adds coordinate to polygon, True if outer coord, False is inner coord
-	 * 
-	 * @param polygon
-	 * @param coord
-	 * @param outer
-	 */
-	public void addCoordinateToPolygon(LinearRing polygon,
-			LatLng coord) {
-			polygon.addToCoordinates(coord.toGoogleString());		
+		LinearRing l = polygon.createAndSetOuterBoundaryIs()
+				.createAndSetLinearRing();
+		for (LatLng c : borderLine) {
+			l.addToCoordinates(c.toGoogleString());
+		}
 	}
 
 	/**
@@ -115,50 +100,56 @@ public class KmlWriter {
 	 * @param coord
 	 * @param alt
 	 */
-	public void createHexagon(LatLng coord) {
-		Polygon polygon = document.createAndAddPlacemark().withName(
-				"tile" + cont).createAndSetPolygon().withExtrude(true)
-				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-
+	/*
+	 * public void createHexagon(LatLng coord) { Polygon polygon =
+	 * document.createAndAddPlacemark().withName( "tile" +
+	 * cont).createAndSetPolygon().withExtrude(true)
+	 * .withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+	 * 
+	 * double ilat = scene.getLatInc(); double ilng = scene.getLngInc();
+	 * 
+	 * LatLng WW = new LatLng(coord.getLat(), coord.getLng() + ilng, coord
+	 * .getAltitude()); LatLng WN = new LatLng(coord.getLat() + ilat,
+	 * coord.getLng() + ilng / 2, coord.getAltitude()); LatLng EN = new
+	 * LatLng(coord.getLat() + ilat, coord.getLng() - ilng / 2,
+	 * coord.getAltitude()); LatLng EE = new LatLng(coord.getLat(),
+	 * coord.getLng() - ilng, coord .getAltitude()); LatLng ES = new
+	 * LatLng(coord.getLat() - ilat, coord.getLng() - ilng / 2,
+	 * coord.getAltitude()); LatLng WS = new LatLng(coord.getLat() - ilat,
+	 * coord.getLng() + ilng / 2, coord.getAltitude());
+	 * 
+	 * polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing()
+	 * .addToCoordinates(WW.toGoogleString()).addToCoordinates(
+	 * WN.toGoogleString()).addToCoordinates(
+	 * EN.toGoogleString()).addToCoordinates(
+	 * EE.toGoogleString()).addToCoordinates(
+	 * ES.toGoogleString()).addToCoordinates( WS.toGoogleString());
+	 * //System.out.println("Centre :" + coord + ", WN: " + WN + ", ES: " + ES);
+	 * cont++;
+	 * 
+	 * }
+	 */
+	/**
+	 * 
+	 */
+	public ArrayList<LatLng> createHexagon(LatLng coord) {
+		ArrayList<LatLng> border = new ArrayList<LatLng>();
 		double ilat = scene.getLatInc();
 		double ilng = scene.getLngInc();
 
-		LatLng WW = new LatLng(coord.getLat(), coord.getLng() + ilng, coord
-				.getAltitude());
-		LatLng WN = new LatLng(coord.getLat() + ilat,
-				coord.getLng() + ilng / 2, coord.getAltitude());
-		LatLng EN = new LatLng(coord.getLat() + ilat,
-				coord.getLng() - ilng / 2, coord.getAltitude());
-		LatLng EE = new LatLng(coord.getLat(), coord.getLng() - ilng, coord
-				.getAltitude());
-		LatLng ES = new LatLng(coord.getLat() - ilat,
-				coord.getLng() - ilng / 2, coord.getAltitude());
-		LatLng WS = new LatLng(coord.getLat() - ilat,
-				coord.getLng() + ilng / 2, coord.getAltitude());
-
-		polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing()
-				.addToCoordinates(WW.toGoogleString()).addToCoordinates(
-						WN.toGoogleString()).addToCoordinates(
-						EN.toGoogleString()).addToCoordinates(
-						EE.toGoogleString()).addToCoordinates(
-						ES.toGoogleString()).addToCoordinates(
-						WS.toGoogleString());
-		//System.out.println("Centre :" + coord + ", WN: " + WN + ", ES: " + ES);
-		cont++;
-
-	}
-
-	public void createTimeLine() {
-		if (scene instanceof FloodScenario) {
-			createDocument("Flooding State Level", "RainFalling Motherfuckers");
-			FloodScenario flood = (FloodScenario) scene;
-			HashSet<int[]> tiles = ((FloodHexagonalGrid)flood.getGrid()).getModCoordAndReset();
-			for (int[] tile : tiles){
-				LatLng coord = scene.tileToCoord(tile[0], tile[1]);
-				createHexagon(new LatLng(coord.getLat(),coord.getLng(),(short)tile[2]));
-			}
-			createKmlFile(scene.getName());
-		}
+		border.add(new LatLng(coord.getLat(), coord.getLng() + ilng, coord
+				.getAltitude()));
+		border.add(new LatLng(coord.getLat() + ilat, coord.getLng() + ilng / 2,
+				coord.getAltitude()));
+		border.add(new LatLng(coord.getLat() + ilat, coord.getLng() - ilng / 2,
+				coord.getAltitude()));
+		border.add(new LatLng(coord.getLat(), coord.getLng() - ilng, coord
+				.getAltitude()));
+		border.add(new LatLng(coord.getLat() - ilat, coord.getLng() - ilng / 2,
+				coord.getAltitude()));
+		border.add(new LatLng(coord.getLat() - ilat, coord.getLng() + ilng / 2,
+				coord.getAltitude()));
+		return border;
 	}
 
 }

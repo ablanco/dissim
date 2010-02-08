@@ -171,6 +171,15 @@ public class Scenario implements Serializable {
 		return aux;
 	}
 
+	public ArrayList<LatLng> getAdyacents(LatLng c){
+		ArrayList<LatLng> coordsAdyacents = new ArrayList<LatLng>();
+		int ind[] = coordToTile(c);
+		ArrayList<int[]> tileAdyacens = grid.getAdjacents(ind[0], ind[1]);
+		for (int[] adyacents : tileAdyacens){
+			coordsAdyacents.add(tileToCoord(adyacents[0], adyacents[1]));
+		}		
+		return coordsAdyacents;
+	}
 	public void setDescription(String description) {
 		this.description = description;
 	}
