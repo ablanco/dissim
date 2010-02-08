@@ -129,9 +129,7 @@ public class KmlWriter {
 	 * 
 	 * }
 	 */
-	/**
-	 * 
-	 */
+
 	public ArrayList<LatLng> createHexagon(LatLng coord) {
 		ArrayList<LatLng> border = new ArrayList<LatLng>();
 		double ilat = scene.getLatInc();
