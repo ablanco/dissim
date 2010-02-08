@@ -39,7 +39,7 @@ public class Scenario implements Serializable {
 	protected int gridY = -1;
 	protected HexagonalGrid grid = null;
 	private String description = "";
-	private String name ="";
+	private String name = "";
 	// Diameter of the circle circunflex of the hexagon in meters
 	private short tileSize = 1;
 	// Increment in degrees (depends on tileSize)
@@ -166,7 +166,7 @@ public class Scenario implements Serializable {
 					coordUTM.getNorthing() + (y * tileSize) + tileSize / 2,
 					coordUTM.getLatZone(), coordUTM.getLngZone());
 		}
-		LatLng aux =coordAUX.toLatLng();
+		LatLng aux = coordAUX.toLatLng();
 		aux.setAltitude(grid.getTerrainValue(x, y));
 		return aux;
 	}
@@ -200,7 +200,8 @@ public class Scenario implements Serializable {
 		if (complete)
 			return "\nSize [" + gridX + "," + gridY + "] NW coord :"
 					+ NW.toString() + ", SE Coord: " + SE.toString()
-					+ " Tile size :" + NW.distance(tileToCoord(0, 1)) + "kms" +", Diagonal ="+NW.distance(SE)+"kms";
+					+ " Tile size :" + NW.distance(tileToCoord(0, 1)) + "kms"
+					+ ", Diagonal =" + NW.distance(SE) + "kms";
 		else
 			return "Incomplete scenario description: " + super.toString();
 	}
