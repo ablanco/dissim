@@ -46,7 +46,7 @@ public class Scenario implements Serializable {
 	private double latInc;
 	private double lngInc;
 	// 1 unit means 1/precision meters
-	private short precision = 100;
+	private short precision = 10;
 	// Current Scenario showed on GUI
 	// If a Scenario is loaded (from a file), or a new one is created, this
 	// reference MUST change

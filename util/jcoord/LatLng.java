@@ -24,7 +24,7 @@ public class LatLng {
    */
   private double lng;
 
-  private short altitude;
+  private short altitude = 0;
 
   /**
    * Create a new LatLng object to represent a latitude/longitude pair.
@@ -38,7 +38,6 @@ public class LatLng {
   public LatLng(double lat, double lng) {
     this.lat = lat;
     this.lng = lng;
-    this.altitude = 0;
   }
   /**
    * Create a new LatLng object to represent a latitude/longitude pair.
@@ -53,10 +52,10 @@ public class LatLng {
    * @author Manuel Gomar Acosta
    */
   public LatLng(double lat, double lng, short altitude) {
-	    this.lat = lat;
-	    this.lng = lng;
-	    this.altitude=altitude;
-	  }
+	  this.lat = lat;
+	  this.lng = lng;
+	  this.altitude = altitude;
+  }
 
   /**
    * Get a String representation of this LatLng object.
@@ -65,7 +64,7 @@ public class LatLng {
    * @since 1.0
    */
   public String toString() {
-    return "(" + this.lat + ", " + this.lng + ", "+ this.altitude +")";
+    return "(" + this.lat + ", " + this.lng + ", " + this.altitude + ")";
   }
   
   
@@ -76,7 +75,7 @@ public class LatLng {
    * @return a String KML friendly representation of this LatLng object
    */
   public String toGoogleString(){
-	return this.lng + ", " + this.lat +", "+this.altitude;
+	return this.lng + ", " + this.lat + ", " + this.altitude;
   }
   
 
@@ -388,7 +387,7 @@ public class LatLng {
    * @author Manuel Gomar Acosta
    */
   public short getAltitude(){
-	  return altitude;
+	return altitude;
   }
   /**
    * Set altitude
@@ -396,6 +395,6 @@ public class LatLng {
    * @author Manuel Gomar Acosta
    */
   public void setAltitude(short altitude){
-	  this.altitude = altitude;
+	this.altitude = altitude;
   }
 }
