@@ -44,11 +44,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	public void increaseValue(int x, int y, short increment) {
 		gridWater[x][y] += increment;
 
-		if (useModifications){
-			short altitude = gridWater[x][y];
-			modTiles.add(new int[] { x, y , altitude});
-		}
-			
+		if (useModifications)
+			modTiles.add(new int[] { x, y, getValue(x, y) });
 
 		printGrid(); // TODO Debug
 	}
@@ -65,10 +62,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 			gridWater[x][y] = 0;
 		}
 
-		if (useModifications){
-			short altitude = gridWater[x][y];
-			modTiles.add(new int[] { x, y , altitude});
-		}
+		if (useModifications)
+			modTiles.add(new int[] { x, y, getValue(x, y) });
+
 		return result;
 	}
 
