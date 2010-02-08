@@ -51,17 +51,19 @@ public class VisorFrame extends JFrame {
 		rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 
 		// Estilo de pincel
-		Stroke stroke = new BasicStroke(3, BasicStroke.CAP_ROUND,
+		Stroke stroke = new BasicStroke(1, BasicStroke.CAP_ROUND,
 				BasicStroke.JOIN_ROUND);
 		g2.setStroke(stroke);
 
 		// Dibujar formas
 		Polygon p = new Hexagon2D(50, 50, 20);
+		int x = p.xpoints[5] - 50;
+		int y = 50 - p.ypoints[1];
 		g2.drawPolygon(p);
 		g2.fillPolygon(p);
-		p = new Hexagon2D(90, 50, 20);
+		p = new Hexagon2D(50 + 2 * x, 50, 20);
 		g2.drawPolygon(p);
-		p = new Hexagon2D(70, 90, 20);
+		p = new Hexagon2D(50 + x, 50 + 40 + y, 20);
 		g2.drawPolygon(p);
 
 		// Colorear formas
