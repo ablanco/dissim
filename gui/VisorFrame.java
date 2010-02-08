@@ -16,11 +16,15 @@
 
 package gui;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
 
 import javax.swing.JFrame;
 
@@ -39,12 +43,30 @@ public class VisorFrame extends JFrame {
 	@Override
 	public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
+
+		// Preferencias para el renderizado, puede que en algunas plataformas se
+		// ignoren
+		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_OFF);
+		rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+
+		// Estilo de pincel
+		Stroke stroke = new BasicStroke(3, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND);
+		g2.setStroke(stroke);
+
+		// Dibujar formas
 		Polygon p = new Hexagon2D(50, 50, 20);
-		g2.draw(p);
+		g2.drawPolygon(p);
+		g2.fillPolygon(p);
 		p = new Hexagon2D(90, 50, 20);
-		g2.draw(p);
+		g2.drawPolygon(p);
 		p = new Hexagon2D(70, 90, 20);
-		g2.draw(p);
+		g2.drawPolygon(p);
+
+		// Colorear formas
+		g2.setPaint(new Color(150, 30, 60));
+		g2.fillPolygon(p);
 	}
 
 }
