@@ -19,6 +19,7 @@ package util.flood;
 import java.util.HashSet;
 
 import util.HexagonalGrid;
+import util.jcoord.LatLng;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
 
@@ -44,8 +45,11 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	public void increaseValue(int x, int y, short increment) {
 		gridWater[x][y] += increment;
 
-		if (useModifications)
+		if (useModifications){
 			modTiles.add(new int[] { x, y });
+		}
+			
+
 
 		printGrid(); // TODO Debug
 	}
@@ -65,6 +69,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		if (useModifications)
 			modTiles.add(new int[] { x, y });
 
+
 		return result;
 	}
 
@@ -81,6 +86,12 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		HashSet<int[]> result = modTiles;
 		modTiles = new HashSet<int[]>();
 		return result;
+	}
+	
+	public HashSet<LatLng> getModCoord() {
+		HashSet modTiles = new HashSet<LatLng>();
+		
+		return modTiles;
 	}
 
 }

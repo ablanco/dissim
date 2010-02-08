@@ -18,7 +18,9 @@ public class hexagramTest {
 		//		29.918075, -90.053707));
 
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short)10), new LatLng(
-				29.918075, -90.053707, (short)10), (short) 150);
+				29.918075, -90.053707, (short)10), (short) 10);
+		newOrleans.setName("New Orleans Hexagrams");
+		newOrleans.setDescription("NW SE 1m");
 		newOrleans.complete();
 		
 		System.out.println(newOrleans.toString());
@@ -39,7 +41,7 @@ public class hexagramTest {
 				k.createHexagon(newOrleans.tileToCoord(i, j));				
 			}
 		}
-		k.createKmlFile("New Orleans Hexagram");
+		k.createKmzFile("New Orleans Hexagram");
 
 	}
 

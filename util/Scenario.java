@@ -200,7 +200,7 @@ public class Scenario implements Serializable {
 		if (complete)
 			return "\nSize [" + gridX + "," + gridY + "] NW coord :"
 					+ NW.toString() + ", SE Coord: " + SE.toString()
-					+ " Tile size :" + NW.distance(tileToCoord(0, 1)) + "kms";
+					+ " Tile size :" + NW.distance(tileToCoord(0, 1)) + "kms" +", Diagonal ="+NW.distance(SE)+"kms";
 		else
 			return "Incomplete scenario description: " + super.toString();
 	}
