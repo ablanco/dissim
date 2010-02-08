@@ -14,37 +14,39 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package gui;
+package util;
 
-import java.awt.Container;
-import java.awt.FlowLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Polygon;
 
-import javax.swing.JFrame;
-
-import util.Hexagon2D;
-
 @SuppressWarnings("serial")
-public class VisorFrame extends JFrame {
+public class Hexagon2D extends Polygon {
 
-	public VisorFrame() {
-		Container c = getContentPane();
-		c.setLayout(new FlowLayout());
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setSize(150, 150);
+	public Hexagon2D(int x, int y, int r) {
+		this(x, y, r, Math.PI / 2);
 	}
 
-	@Override
-	public void paint(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
-		Polygon p = new Hexagon2D(50, 50, 20);
-		g2.draw(p);
-		p = new Hexagon2D(90, 50, 20);
-		g2.draw(p);
-		p = new Hexagon2D(70, 90, 20);
-		g2.draw(p);
+	public Hexagon2D(int x, int y, int r, double a) {
+		super(getXCoord(x, r, a), getYCoord(y, r, a), 6);
+
 	}
 
+	private static int[] getXCoord(int x, int r, double a) {
+		int xcoord[] = new int[6];
+		double aux = a;
+		for (int i = 0; i < 6; i++) {
+			xcoord[i] = (int) Math.round(r * Math.cos(aux)) + x;
+			aux += Math.PI / 3;
+		}
+		return xcoord;
+	}
+
+	private static int[] getYCoord(int y, int r, double a) {
+		int ycoord[] = new int[6];
+		double aux = a;
+		for (int i = 0; i < 6; i++) {
+			ycoord[i] = (int) Math.round(r * Math.sin(aux)) + y;
+			aux += Math.PI / 3;
+		}
+		return ycoord;
+	}
 }
