@@ -20,11 +20,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import util.Scenario;
+import util.flood.FloodHexagonalGrid;
+import util.flood.FloodScenario;
 import util.jcoord.LatLng;
-import util.jcoord.UTMRef;
 import webservices.AltitudeWS;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Boundary;
@@ -176,63 +178,50 @@ public class KmlWriter {
 	 * @param coord
 	 * @param alt
 	 */
-	public void createHexagon(LatLng coord, short alt) {
+	public void createHexagon(LatLng coord) {
 		Polygon polygon = document.createAndAddPlacemark().withName(
 				"tile" + cont).createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-		// Now we found the coords of the Hexagram sides
-		/*
-		 * UTMRef centre = coord.toUTMRef(); double rad = scene.getTileSize() /
-		 * 2; double mrad = scene.getTileSize() / 4;
-		 * 
-		 * UTMRef NN = new UTMRef(centre.getEasting(), centre.getNorthing() +
-		 * rad, centre.getLatZone(), centre.getLatZone()); UTMRef NE = new
-		 * UTMRef(centre.getEasting() + rad, centre.getNorthing() + mrad,
-		 * centre.getLatZone(), centre.getLatZone()); UTMRef SE = new
-		 * UTMRef(centre.getEasting() + rad, centre.getNorthing() - mrad,
-		 * centre.getLatZone(), centre.getLatZone()); UTMRef SS = new
-		 * UTMRef(centre.getEasting(), centre.getNorthing() - rad,
-		 * centre.getLatZone(), centre.getLatZone()); UTMRef SW = new
-		 * UTMRef(centre.getEasting() - rad, centre.getNorthing() - mrad,
-		 * centre.getLatZone(), centre.getLatZone()); UTMRef NW = new
-		 * UTMRef(centre.getEasting() - rad, centre.getNorthing() + mrad,
-		 * centre.getLatZone(), centre.getLatZone());
-		 * 
-		 * // Now write the hexagram
-		 * polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing()
-		 * .addToCoordinates(NN.toLatLng().toGoogleString() + "," + alt)
-		 * .addToCoordinates(NE.toLatLng().toGoogleString() + "," + alt)
-		 * .addToCoordinates(SE.toLatLng().toGoogleString() + "," + alt)
-		 * .addToCoordinates(SS.toLatLng().toGoogleString() + "," + alt)
-		 * .addToCoordinates(SW.toLatLng().toGoogleString() + "," + alt)
-		 * .addToCoordinates(NW.toLatLng().toGoogleString() + "," + alt);
-		 * System.out.println("Centre :" + centre + ", NE: " + NE + ", SW: " +
-		 * SW);
-		 */
+
 		double ilat = scene.getLatInc();
 		double ilng = scene.getLngInc();
 
-		LatLng NN = new LatLng(coord.getLat() + ilat, coord.getLng());
-		LatLng NE = new LatLng(coord.getLat() + ilat, coord.getLng() - ilng);
-		LatLng SE = new LatLng(coord.getLat() - ilat, coord.getLng() - ilng);
-		LatLng SS = new LatLng(coord.getLat() - ilat, coord.getLng());
-		LatLng SW = new LatLng(coord.getLat() - ilat, coord.getLng() + ilng);
-		LatLng NW = new LatLng(coord.getLat() + ilat, coord.getLng() + ilng);
+		LatLng WW = new LatLng(coord.getLat(), coord.getLng() + ilng, coord
+				.getAltitude());
+		LatLng WN = new LatLng(coord.getLat() + ilat,
+				coord.getLng() + ilng / 2, coord.getAltitude());
+		LatLng EN = new LatLng(coord.getLat() + ilat,
+				coord.getLng() - ilng / 2, coord.getAltitude());
+		LatLng EE = new LatLng(coord.getLat(), coord.getLng() - ilng, coord
+				.getAltitude());
+		LatLng ES = new LatLng(coord.getLat() - ilat,
+				coord.getLng() - ilng / 2, coord.getAltitude());
+		LatLng WS = new LatLng(coord.getLat() - ilat,
+				coord.getLng() + ilng / 2, coord.getAltitude());
 
 		polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing()
-				.addToCoordinates(NN.toGoogleString() + "," + alt)
-				.addToCoordinates(NE.toGoogleString() + "," + alt)
-				.addToCoordinates(SE.toGoogleString() + "," + alt)
-				.addToCoordinates(SS.toGoogleString() + "," + alt)
-				.addToCoordinates(SW.toGoogleString() + "," + alt)
-				.addToCoordinates(NW.toGoogleString() + "," + alt);
-		System.out.println("Centre :" + coord + ", NE: " + NE + ", SW: " +SW);
+				.addToCoordinates(WW.toGoogleString()).addToCoordinates(
+						WN.toGoogleString()).addToCoordinates(
+						EN.toGoogleString()).addToCoordinates(
+						EE.toGoogleString()).addToCoordinates(
+						ES.toGoogleString()).addToCoordinates(
+						WS.toGoogleString());
+		System.out.println("Centre :" + coord + ", WN: " + WN + ", ES: " + ES);
 		cont++;
 
 	}
 
 	public void createTimeLine() {
-
+		if (scene instanceof FloodScenario) {
+			createDocument("Flooding State Level", "RainFalling Motherfuckers");
+			FloodScenario flood = (FloodScenario) scene;
+			HashSet<int[]> tiles = ((FloodHexagonalGrid)flood.getGrid()).getModCoordAndReset();
+			for (int[] tile : tiles){
+				LatLng coord = scene.tileToCoord(tile[0], tile[1]);
+				createHexagon(new LatLng(coord.getLat(),coord.getLng(),(short)tile[2]));
+			}
+			createKmlFile(scene.getName());
+		}
 	}
 
 }

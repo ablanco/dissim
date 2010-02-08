@@ -39,6 +39,7 @@ public class Scenario implements Serializable {
 	protected int gridY = -1;
 	protected HexagonalGrid grid = null;
 	private String description = "";
+	private String name ="";
 	// Diameter of the circle circunflex of the hexagon in meters
 	private short tileSize = 1;
 	// Increment in degrees (depends on tileSize)
@@ -165,7 +166,9 @@ public class Scenario implements Serializable {
 					coordUTM.getNorthing() + (y * tileSize) + tileSize / 2,
 					coordUTM.getLatZone(), coordUTM.getLngZone());
 		}
-		return coordAUX.toLatLng();
+		LatLng aux =coordAUX.toLatLng();
+		aux.setAltitude(grid.getTerrainValue(x, y));
+		return aux;
 	}
 
 	public void setDescription(String description) {
@@ -237,5 +240,13 @@ public class Scenario implements Serializable {
 
 	public double getLngInc() {
 		return lngInc;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 }

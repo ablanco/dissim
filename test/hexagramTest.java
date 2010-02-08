@@ -17,8 +17,8 @@ public class hexagramTest {
 		//newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
 		//		29.918075, -90.053707));
 
-		newOrleans.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
-				29.918075, -90.053707), (short) 150);
+		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short)10), new LatLng(
+				29.918075, -90.053707, (short)10), (short) 150);
 		newOrleans.complete();
 		
 		System.out.println(newOrleans.toString());
@@ -36,7 +36,7 @@ public class hexagramTest {
 		
 		for (int i=0;i<newOrleans.getGridSize()[0];i++){
 			for (int j=0;j<newOrleans.getGridSize()[1];j++){
-				k.createHexagon(newOrleans.tileToCoord(i, j), (short) 10);				
+				k.createHexagon(newOrleans.tileToCoord(i, j));				
 			}
 		}
 		k.createKmlFile("New Orleans Hexagram");

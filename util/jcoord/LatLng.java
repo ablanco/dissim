@@ -24,6 +24,7 @@ public class LatLng {
    */
   private double lng;
 
+  private short altitude;
 
   /**
    * Create a new LatLng object to represent a latitude/longitude pair.
@@ -37,8 +38,25 @@ public class LatLng {
   public LatLng(double lat, double lng) {
     this.lat = lat;
     this.lng = lng;
+    this.altitude = 0;
   }
-
+  /**
+   * Create a new LatLng object to represent a latitude/longitude pair.
+   * Now supporting altitude in decimeters
+   * @param lat
+   *          the latitude in degrees
+   * @param lng
+   *          the longitude in degrees
+   * @param altitude
+   * 			the altitude in decimeters
+   * @since 1.0
+   * @author Manuel Gomar Acosta
+   */
+  public LatLng(double lat, double lng, short altitude) {
+	    this.lat = lat;
+	    this.lng = lng;
+	    this.altitude=altitude;
+	  }
 
   /**
    * Get a String representation of this LatLng object.
@@ -47,18 +65,18 @@ public class LatLng {
    * @since 1.0
    */
   public String toString() {
-    return "(" + this.lat + ", " + this.lng + ")";
+    return "(" + this.lat + ", " + this.lng + ", "+ this.altitude +")";
   }
   
   
   /**
-   * Get a String KML friendly representation of this LatLng object
+   * Get a String KML friendly to  Google Earth representation of this LatLng object
    * 
    * @author Manuel Gomar Acosta
    * @return a String KML friendly representation of this LatLng object
    */
   public String toGoogleString(){
-	return this.lng + ", " + this.lat;
+	return this.lng + ", " + this.lat +", "+this.altitude;
   }
   
 
@@ -362,5 +380,22 @@ public class LatLng {
    */
   public double getLng() {
     return lng;
+  }
+  
+  /**
+   *Return the altitude in decimeters 
+   * @return in decimetres
+   * @author Manuel Gomar Acosta
+   */
+  public short getAltitude(){
+	  return altitude;
+  }
+  /**
+   * Set altitude
+   * @param altitude
+   * @author Manuel Gomar Acosta
+   */
+  public void setAltitude(short altitude){
+	  this.altitude = altitude;
   }
 }

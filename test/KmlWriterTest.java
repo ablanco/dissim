@@ -34,6 +34,7 @@ public class KmlWriterTest {
 
 		Scenario newOrleans = new FloodScenario();
 
+		newOrleans.setName("New Orleans Flood");
 		//newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
 		//		29.918075, -90.053707));
 
@@ -47,6 +48,7 @@ public class KmlWriterTest {
 		System.out.println(newOrleans.getDescription());
 		KmlWriter kmle = new KmlWriter();
 		kmle.buildKmlAltitudesMap("New Orleans - Altitudes Test");
+		kmle.createTimeLine();
 	}
 
 }
