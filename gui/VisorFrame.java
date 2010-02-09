@@ -19,12 +19,14 @@ package gui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 
@@ -36,30 +38,22 @@ import util.flood.FloodHexagonalGrid;
 public class VisorFrame extends JFrame {
 
 	private HexagonalGrid grid = null;
-	private int radius;
+	private int radius = -1;
 	private int hexWidth;
 	private int hexHeight;
 	private int sizeWidth;
 	private int sizeHeight;
-	private short min = Short.MIN_VALUE;
-	private short max = Short.MAX_VALUE;
+	private short min;
+	private short max;
 
-	public VisorFrame(int gridX, int gridY, int hexRadius) {
-		radius = hexRadius;
+	public VisorFrame() {
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		sizeWidth = (int) (dim.width * 0.9);
+		sizeHeight = (int) (dim.height * 0.9);
+
 		Container c = getContentPane();
 		c.setLayout(new FlowLayout());
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-		// Calcular el tamaño de la ventana
-		Polygon p = new Hexagon2D(0, 0, hexRadius);
-		hexWidth = p.xpoints[4] - p.xpoints[2];
-		hexHeight = p.ypoints[1] - p.ypoints[3];
-		// Decoración de ventana
-		int decoX = 8;
-		int decoY = 38;
-		sizeWidth = decoX + (hexWidth * gridX) + (hexWidth / 2);
-		sizeHeight = decoY + (radius * 2) + (hexHeight * (gridY - 1));
-		this.setSize(sizeWidth, sizeHeight);
 	}
 
 	@Override
@@ -82,7 +76,9 @@ public class VisorFrame extends JFrame {
 			g2.setStroke(stroke);
 
 			int diff = max - min;
-			int inc = 256 / diff;
+			int inc = 0;
+			if (diff != 0)
+				inc = 256 / diff;
 
 			int x = hexWidth / 2;
 			int y = radius * 2;
@@ -124,6 +120,30 @@ public class VisorFrame extends JFrame {
 
 	public void updateGrid(HexagonalGrid grid) {
 		this.grid = grid;
+
+		if (radius == -1) { // Primera vez que recibe un grid
+			// Calcular el radio de los hexágonos a representar
+			int radiusX = (sizeWidth / grid.getDimX()) / 2;
+			int radiusY = (sizeHeight / grid.getDimY()) / 2;
+			if (radiusX < radiusY)
+				radius = radiusX;
+			else
+				radius = radiusY;
+			if (radius < 30)
+				radius = 30;
+
+			// Calcular el tamaño de la ventana
+			Polygon p = new Hexagon2D(0, 0, radius);
+			hexWidth = p.xpoints[4] - p.xpoints[2];
+			hexHeight = p.ypoints[1] - p.ypoints[3];
+			// Decoración de ventana
+			int decoX = 8;
+			int decoY = 38;
+			sizeWidth = decoX + (hexWidth * grid.getDimX()) + (hexWidth / 2);
+			sizeHeight = decoY + (radius * 2)
+					+ (hexHeight * (grid.getDimY() - 1));
+			this.setSize(sizeWidth, sizeHeight);
+		}
 
 		min = Short.MAX_VALUE;
 		max = Short.MIN_VALUE;

@@ -16,6 +16,9 @@
 
 package test;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
+
 import util.flood.FloodHexagonalGrid;
 import gui.VisorFrame;
 
@@ -23,7 +26,21 @@ public class VisorTest {
 
 	public static void main(String[] args) throws InterruptedException {
 		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3, false);
-		VisorFrame v = new VisorFrame(3, 3, 30);
+
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		int width = (int) (dim.width * 0.9);
+		int height = (int) (dim.height * 0.9);
+		int radiusX = (width / grid.getDimX()) / 2;
+		int radiusY = (height / grid.getDimY()) / 2;
+		int radius;
+		if (radiusX < radiusY)
+			radius = radiusX;
+		else
+			radius = radiusY;
+		if (radius < 30)
+			radius = 30;
+
+		VisorFrame v = new VisorFrame();
 		grid.setTerrainValue(0, 0, (short) -2);
 		grid.setTerrainValue(0, 1, (short) -4);
 		grid.setTerrainValue(0, 2, (short) -5);

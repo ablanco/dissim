@@ -14,19 +14,36 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package agents.flood;
+package behaviours;
 
-import util.Scenario;
-import jade.core.Agent;
+import jade.core.AID;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 @SuppressWarnings("serial")
-public class VisorAgent extends Agent {
-	
-	Scenario scen;
-	
-	public VisorAgent() {
-		scen = Scenario.getCurrentScenario();
-		// TODO Mostrar un VisorFrame
+public class SyndicateVisorBehav extends CyclicBehaviour {
+
+	@Override
+	public void action() {
+		MessageTemplate mt = MessageTemplate.and(MessageTemplate
+				.MatchConversationId("syndicate-visor"), MessageTemplate
+				.MatchPerformative(ACLMessage.REQUEST));
+		ACLMessage msg = myAgent.receive(mt);
+		if (msg != null) {
+			// Mensaje recibido, hay que procesarlo
+			try {
+				AID visor = (AID) msg.getContentObject();
+				// TODO 500L ???
+				myAgent.addBehaviour(new UpdateVisorSendBehav(myAgent, 1000L,
+						visor));
+			} catch (UnreadableException e) {
+				e.printStackTrace();
+			}
+		} else {
+			block();
+		}
 	}
 
 }

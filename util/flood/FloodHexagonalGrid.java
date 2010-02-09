@@ -22,6 +22,8 @@ import util.HexagonalGrid;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
 
+	private static final long serialVersionUID = 1L;
+
 	private short[][] gridWater; // Nivel de agua en la casilla
 	private boolean useModifications;
 	private HashSet<int[]> modTiles = null;
@@ -46,8 +48,6 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 		if (useModifications)
 			modTiles.add(new int[] { x, y });
-
-		printGrid(); // TODO Debug
 	}
 
 	@Override

@@ -38,6 +38,7 @@ public class Sim1Test {
 	}
 
 	private static void smallGrid(boolean waterAgents) {
+		System.out.println("Usando agentes agua: " + waterAgents);
 		FloodScenario scen = new FloodScenario();
 		scen.setWaterAgents(waterAgents);
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(

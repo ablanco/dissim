@@ -29,9 +29,8 @@ import util.flood.WaterSource;
 import behaviours.CreateAgentBehav;
 import behaviours.CreateAgentTickerBehav;
 
+@SuppressWarnings("serial")
 public class CreatorAgent extends Agent {
-
-	private static final long serialVersionUID = 1808039536880287251L;
 
 	@Override
 	protected void setup() {
@@ -94,6 +93,11 @@ public class CreatorAgent extends Agent {
 					}
 				}
 			}
+
+			// TODO DEBUG
+			arguments = new Object[0];
+			addBehaviour(new CreateAgentBehav(this, "Default Visor",
+					"agents.VisorAgent", 1, arguments));
 		}
 	}
 }

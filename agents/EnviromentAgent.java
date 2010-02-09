@@ -27,13 +27,13 @@ import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
 import behaviours.AdjacentsGridBehav;
 import behaviours.QueryGridBehav;
+import behaviours.SyndicateVisorBehav;
 import behaviours.flood.AddWaterBehav;
 import behaviours.flood.RegisterFloodTileBehav;
 import behaviours.flood.UpdateFloodGridBehav;
 
+@SuppressWarnings("serial")
 public class EnviromentAgent extends Agent {
-
-	private static final long serialVersionUID = 9023113144679741543L;
 
 	private HexagonalGrid grid;
 
@@ -56,6 +56,7 @@ public class EnviromentAgent extends Agent {
 		// Añadir comportamientos
 		addBehaviour(new AdjacentsGridBehav(grid));
 		addBehaviour(new QueryGridBehav(grid));
+		addBehaviour(new SyndicateVisorBehav());
 
 		sd = new ServiceDescription();
 		sd.setType("grid-querying");
@@ -63,6 +64,10 @@ public class EnviromentAgent extends Agent {
 		dfd.addServices(sd);
 		sd = new ServiceDescription();
 		sd.setType("adjacents-grid");
+		sd.setName(getName());
+		dfd.addServices(sd);
+		sd = new ServiceDescription();
+		sd.setType("syndicate-visor");
 		sd.setName(getName());
 		dfd.addServices(sd);
 

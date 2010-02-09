@@ -16,9 +16,13 @@
 
 package util;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class HexagonalGrid {
+public class HexagonalGrid implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+
 	protected short[][] gridTerrain;
 	protected int dimX;
 	protected int dimY;
