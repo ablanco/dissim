@@ -38,10 +38,11 @@ public class CreatorAgent extends Agent {
 		// Obtener argumentos
 		Object[] args = getArguments();
 		int opt = 1;
-		if (args.length == 1) {
-			opt = Integer.parseInt((String) args[0]);
-		} else if (args.length != 0) {
-			throw new IllegalArgumentException("Wrong arguments.");
+		if (args != null) {
+			if (args.length == 1)
+				opt = Integer.parseInt((String) args[0]);
+			else
+				throw new IllegalArgumentException("Wrong arguments.");
 		}
 		Sim1Test.generateScenario(opt);
 		// FIN DEBUG
