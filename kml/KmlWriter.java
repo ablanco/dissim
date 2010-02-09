@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import util.Scenario;
 import util.jcoord.LatLng;
@@ -82,7 +83,7 @@ public class KmlWriter {
 	 * @return
 	 */
 	public void createPolygon(String name, String description,
-			ArrayList<LatLng> borderLine) {
+			List<LatLng> borderLine) {
 		Polygon polygon = document.createAndAddPlacemark().withName(
 				"tile" + cont).createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
