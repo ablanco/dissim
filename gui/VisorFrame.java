@@ -29,46 +29,122 @@ import java.awt.Stroke;
 import javax.swing.JFrame;
 
 import util.Hexagon2D;
+import util.HexagonalGrid;
+import util.flood.FloodHexagonalGrid;
 
 @SuppressWarnings("serial")
 public class VisorFrame extends JFrame {
 
-	public VisorFrame() {
+	private HexagonalGrid grid = null;
+	private int radius;
+	private int hexWidth;
+	private int hexHeight;
+	private int sizeWidth;
+	private int sizeHeight;
+	private short min = Short.MIN_VALUE;
+	private short max = Short.MAX_VALUE;
+	private Graphics2D graphics = null;
+
+	public VisorFrame(int gridX, int gridY, int hexRadius) {
+		radius = hexRadius;
 		Container c = getContentPane();
 		c.setLayout(new FlowLayout());
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.setSize(150, 150);
+
+		// Calcular el tamaño de la ventana
+		Polygon p = new Hexagon2D(0, 0, hexRadius);
+		hexWidth = p.xpoints[4] - p.xpoints[2];
+		hexHeight = p.ypoints[1] - p.ypoints[3];
+		// Decoración de ventana
+		int decoX = 8;
+		int decoY = 38;
+		sizeWidth = decoX + (hexWidth * gridX) + (hexWidth / 2);
+		sizeHeight = decoY + (radius * 2) + (hexHeight * (gridY - 1));
+		this.setSize(sizeWidth, sizeHeight);
 	}
 
 	@Override
 	public void paint(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g;
+		if (grid != null) {
+			Graphics2D g2 = (Graphics2D) g;
+			if (graphics == null)
+				graphics = g2;
 
-		// Preferencias para el renderizado, puede que en algunas plataformas se
-		// ignoren
-		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_OFF);
-		rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+			// Preferencias para el renderizado, puede que en algunas
+			// plataformas se ignoren. Anteponemos velocidad a calidad.
+			RenderingHints rh = new RenderingHints(
+					RenderingHints.KEY_ANTIALIASING,
+					RenderingHints.VALUE_ANTIALIAS_OFF);
+			rh.put(RenderingHints.KEY_RENDERING,
+					RenderingHints.VALUE_RENDER_SPEED);
+			g2.addRenderingHints(rh);
 
-		// Estilo de pincel
-		Stroke stroke = new BasicStroke(1, BasicStroke.CAP_ROUND,
-				BasicStroke.JOIN_ROUND);
-		g2.setStroke(stroke);
+			// Estilo de pincel
+			Stroke stroke = new BasicStroke(1, BasicStroke.CAP_ROUND,
+					BasicStroke.JOIN_ROUND);
+			g2.setStroke(stroke);
 
-		// Dibujar formas
-		Polygon p = new Hexagon2D(50, 50, 20);
-		int x = p.xpoints[5] - 50;
-		int y = 50 - p.ypoints[1];
-		g2.drawPolygon(p);
-		g2.fillPolygon(p);
-		p = new Hexagon2D(50 + 2 * x, 50, 20);
-		g2.drawPolygon(p);
-		p = new Hexagon2D(50 + x, 50 + 40 + y, 20);
-		g2.drawPolygon(p);
+			int diff = max - min;
+			int inc = 256 / diff;
 
-		// Colorear formas
-		g2.setPaint(new Color(150, 30, 60));
-		g2.fillPolygon(p);
+			int x = hexWidth / 2;
+			int y = radius * 2;
+			for (int i = 0; i < grid.getDimX(); i++) {
+				for (int j = 0; j < grid.getDimY(); j++) {
+					int posX;
+					if (i % 2 == 0)
+						posX = x + (j * hexWidth); // Fila par
+					else
+						posX = hexWidth + (j * hexWidth); // Fila impar
+					int posY = y + (i * hexHeight);
+
+					// Dibujar hexágono
+					Polygon hex = new Hexagon2D(posX, posY, radius);
+					// g2.setColor(Color.BLACK);
+					// g2.drawPolygon(hex);
+
+					// Colorear según la altura
+					int value = grid.getValue(i, j);
+					value -= min;
+					int color = value * inc;
+					if (color < 0)
+						color = 0;
+					if (color > 255)
+						color = 255;
+					g2.setColor(new Color(color, 0, 0));
+					if (grid instanceof FloodHexagonalGrid) { // Pintar agua
+						FloodHexagonalGrid fgrid = (FloodHexagonalGrid) grid;
+						int water = fgrid.getWaterValue(i, j);
+						if (water > 0) {
+							g2.setColor(new Color(0, 0, color));
+						}
+					}
+					g2.fillPolygon(hex);
+				}
+			}
+		}
+	}
+
+	public void updateGrid(HexagonalGrid grid) {
+		this.grid = grid;
+
+		min = Short.MAX_VALUE;
+		max = Short.MIN_VALUE;
+		for (int i = 0; i < grid.getDimX(); i++) {
+			for (int j = 0; j < grid.getDimY(); j++) {
+				short value = grid.getValue(i, j);
+				if (value < min)
+					min = value;
+				if (value > max)
+					max = value;
+			}
+		}
+
+		// TODO - Not working :(
+		if (graphics != null) {
+			graphics.clearRect(0, 0, sizeWidth, sizeHeight);
+			this.update(graphics);
+		}
 	}
 
 }

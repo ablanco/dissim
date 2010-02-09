@@ -16,13 +16,34 @@
 
 package test;
 
+import util.flood.FloodHexagonalGrid;
 import gui.VisorFrame;
 
 public class VisorTest {
 
-	public static void main(String[] args) {
-		VisorFrame v = new VisorFrame();
+	public static void main(String[] args) throws InterruptedException {
+		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3, false);
+		VisorFrame v = new VisorFrame(3, 3, 30);
+		grid.setTerrainValue(0, 0, (short) -2);
+		grid.setTerrainValue(0, 1, (short) -4);
+		grid.setTerrainValue(0, 2, (short) -5);
+		grid.setTerrainValue(1, 0, (short) 0);
+		grid.setTerrainValue(1, 1, (short) 1);
+		grid.setTerrainValue(1, 2, (short) -2);
+		grid.setTerrainValue(2, 0, (short) 2);
+		grid.setTerrainValue(2, 1, (short) 4);
+		grid.setTerrainValue(2, 2, (short) 1);
+		grid.setWaterValue(0, 0, (short) 4);
+		grid.setWaterValue(0, 1, (short) 6);
+		grid.setWaterValue(0, 2, (short) 6);
+		grid.setWaterValue(1, 0, (short) 1);
+		v.updateGrid(grid);
 		v.setVisible(true);
+
+		Thread.sleep(2000L);
+
+		grid.setWaterValue(1, 2, (short) 2);
+		v.updateGrid(grid);
 	}
 
 }
