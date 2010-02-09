@@ -79,7 +79,7 @@ public class FloodKml extends KmlWriter {
 				if (grid.getTerrainValue(i, j) != altitude) {
 					boolean borde = false;
 					// es borde si los adyacentes tienen distinto valor
-					for (LatLng c : newScene.getAdyacents(coord)) {
+					for (LatLng c : newScene.getAdjacents(coord)) {
 						if (c.getAltitude() != altitude) {
 							borde = true;
 							break;
@@ -99,12 +99,12 @@ public class FloodKml extends KmlWriter {
 							if (!newRegion) {// si encontramos otra region a la
 												// que pertenece hay que unirlas
 								if (region.contains(newScene
-										.getAdyacents(coord))) {
+										.getAdjacents(coord))) {
 									aux.addAll(region);
 									regions.removeAll(region);
 								}
 							} else if (region.contains(newScene
-									.getAdyacents(coord))) {// pertenece a una
+									.getAdjacents(coord))) {// pertenece a una
 															// region existente,
 															// añadimos el borde
 								newRegion = false;

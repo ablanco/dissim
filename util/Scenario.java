@@ -171,15 +171,16 @@ public class Scenario implements Serializable {
 		return aux;
 	}
 
-	public ArrayList<LatLng> getAdyacents(LatLng c){
-		ArrayList<LatLng> coordsAdyacents = new ArrayList<LatLng>();
+	public ArrayList<LatLng> getAdjacents(LatLng c) {
+		ArrayList<LatLng> coordsAdjacents = new ArrayList<LatLng>();
 		int ind[] = coordToTile(c);
-		ArrayList<int[]> tileAdyacens = grid.getAdjacents(ind[0], ind[1]);
-		for (int[] adyacents : tileAdyacens){
-			coordsAdyacents.add(tileToCoord(adyacents[0], adyacents[1]));
-		}		
-		return coordsAdyacents;
+		ArrayList<int[]> tileAdjacens = grid.getAdjacents(ind[0], ind[1]);
+		for (int[] adjacent : tileAdjacens) {
+			coordsAdjacents.add(tileToCoord(adjacent[0], adjacent[1]));
+		}
+		return coordsAdjacents;
 	}
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
