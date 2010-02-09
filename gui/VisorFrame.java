@@ -43,7 +43,6 @@ public class VisorFrame extends JFrame {
 	private int sizeHeight;
 	private short min = Short.MIN_VALUE;
 	private short max = Short.MAX_VALUE;
-	private Graphics2D graphics = null;
 
 	public VisorFrame(int gridX, int gridY, int hexRadius) {
 		radius = hexRadius;
@@ -67,8 +66,6 @@ public class VisorFrame extends JFrame {
 	public void paint(Graphics g) {
 		if (grid != null) {
 			Graphics2D g2 = (Graphics2D) g;
-			if (graphics == null)
-				graphics = g2;
 
 			// Preferencias para el renderizado, puede que en algunas
 			// plataformas se ignoren. Anteponemos velocidad a calidad.
@@ -140,11 +137,7 @@ public class VisorFrame extends JFrame {
 			}
 		}
 
-		// TODO - Not working :(
-		if (graphics != null) {
-			graphics.clearRect(0, 0, sizeWidth, sizeHeight);
-			this.update(graphics);
-		}
+		this.repaint();
 	}
 
 }
