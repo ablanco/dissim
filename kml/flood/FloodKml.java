@@ -2,30 +2,26 @@ package kml.flood;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import kml.KmlWriter;
 import util.HexagonalGrid;
-import util.flood.FloodHexagonalGrid;
-import util.flood.FloodScenario;
+import util.Scenario;
 import util.jcoord.LatLng;
 
 public class FloodKml extends KmlWriter {
 
-	private FloodScenario scene;
-	private FloodHexagonalGrid grid;
+	private Scenario scene;
+	private HexagonalGrid grid;
 
-	public FloodKml(FloodScenario scene) {
+	public FloodKml(Scenario scene) {
 		this.scene = scene;
-		this.grid = (FloodHexagonalGrid) scene.getGrid();
+		this.grid = scene.getGrid();
 	}
 
-	public void snapShot(FloodScenario newScene) {
+	public void snapShot(Scenario newScene) {
 		createDocument("Flooding State Level", "RainFalling Motherfuckers");
 		/*
 		 * ArrayList<LatLng> tiles = getModTiles(newScene);
@@ -64,7 +60,7 @@ public class FloodKml extends KmlWriter {
 
 
 	private Collection<List<List<LatLng>>> getBorderRegions(
-			FloodScenario newScene) {
+			Scenario newScene) {
 		HashMap<Short, List<List<LatLng>>> levelRegions = new HashMap<Short, List<List<LatLng>>>();
 		int dims[] = scene.getGridSize();
 		int x = dims[0];
@@ -100,7 +96,7 @@ public class FloodKml extends KmlWriter {
 												// que pertenece hay que unirlas
 								if (region.contains(newScene
 										.getAdjacents(coord))) {
-									aux.addAll(region);
+									aux.addAll(region); // TODO Null Access
 									regions.removeAll(region);
 								}
 							} else if (region.contains(newScene

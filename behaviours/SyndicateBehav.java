@@ -23,21 +23,27 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 @SuppressWarnings("serial")
-public class SyndicateVisorBehav extends CyclicBehaviour {
+public class SyndicateBehav extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate.and(MessageTemplate
-				.MatchConversationId("syndicate-visor"), MessageTemplate
-				.MatchPerformative(ACLMessage.REQUEST));
+		MessageTemplate mt = MessageTemplate.and(MessageTemplate.or(
+				MessageTemplate.MatchConversationId("syndicate-visor"),
+				MessageTemplate.MatchConversationId("syndicate-kml")),
+				MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
 			// Mensaje recibido, hay que procesarlo
 			try {
-				AID visor = (AID) msg.getContentObject();
-				// TODO 500L ???
-				myAgent.addBehaviour(new UpdateVisorSendBehav(myAgent, 1000L,
-						visor));
+				AID aid = (AID) msg.getContentObject();
+				// TODO periodos
+				if (msg.getConversationId().equals("syndicate-visor")) {
+					myAgent.addBehaviour(new UpdateVisorSendBehav(myAgent,
+							1000L, aid));
+				} else if (msg.getConversationId().equals("syndicate-kml")) {
+					myAgent.addBehaviour(new KMLSnapshotSendBehav(myAgent,
+							10000L, aid));
+				}
 			} catch (UnreadableException e) {
 				e.printStackTrace();
 			}

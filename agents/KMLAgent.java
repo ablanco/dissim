@@ -16,7 +16,11 @@
 
 package agents;
 
-import gui.VisorFrame;
+import java.io.IOException;
+
+import behaviours.KMLSnapshotReceiveBehav;
+
+import util.Scenario;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -24,17 +28,14 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
-
-import java.io.IOException;
-
-import behaviours.UpdateVisorReceiveBehav;
+import kml.flood.FloodKml;
 
 @SuppressWarnings("serial")
-public class VisorAgent extends Agent {
+public class KMLAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		VisorFrame visor = new VisorFrame();
+		FloodKml kml = new FloodKml(Scenario.getCurrentScenario());
 
 		// Obtener agente entorno
 		DFAgentDescription template = new DFAgentDescription();
@@ -58,7 +59,7 @@ public class VisorAgent extends Agent {
 		// Sindicarse en el entorno
 		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 		msg.addReceiver(envAID);
-		msg.setConversationId("syndicate-visor");
+		msg.setConversationId("syndicate-kml");
 		try {
 			msg.setContentObject(getAID());
 			send(msg);
@@ -66,10 +67,8 @@ public class VisorAgent extends Agent {
 			e.printStackTrace();
 		}
 
-		// Añadir comportamiento de actualización del visor
-		addBehaviour(new UpdateVisorReceiveBehav(visor));
-
-		visor.setVisible(true);
+		// Añadir comportamiento para la creación del KML
+		addBehaviour(new KMLSnapshotReceiveBehav(this, kml));
 	}
 
 }

@@ -35,7 +35,16 @@ public class CreatorAgent extends Agent {
 	@Override
 	protected void setup() {
 		// TODO DEBUG
-		Sim1Test.generateScenario(1);
+		// Obtener argumentos
+		Object[] args = getArguments();
+		int opt = 1;
+		if (args.length == 1) {
+			opt = Integer.parseInt((String) args[0]);
+		} else if (args.length != 0) {
+			throw new IllegalArgumentException("Wrong arguments.");
+		}
+		Sim1Test.generateScenario(opt);
+		// FIN DEBUG
 
 		Scenario scen = Scenario.getCurrentScenario();
 		if (scen != null) {
@@ -98,6 +107,7 @@ public class CreatorAgent extends Agent {
 			arguments = new Object[0];
 			addBehaviour(new CreateAgentBehav(this, "Default Visor",
 					"agents.VisorAgent", 1, arguments));
+			// FIN DEBUG
 		}
 	}
 }
