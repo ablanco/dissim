@@ -33,6 +33,8 @@ import kml.flood.FloodKml;
 @SuppressWarnings("serial")
 public class KMLAgent extends Agent {
 
+	private AID envAID = null;
+
 	@Override
 	protected void setup() {
 		FloodKml kml = new FloodKml(Scenario.getCurrentScenario());
@@ -42,7 +44,6 @@ public class KMLAgent extends Agent {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("syndicate");
 		template.addServices(sd);
-		AID envAID = null;
 		try {
 			DFAgentDescription[] result = DFService.search(this, template);
 			if (result.length != 1)
@@ -69,6 +70,22 @@ public class KMLAgent extends Agent {
 
 		// Añadir comportamiento para la creación del KML
 		addBehaviour(new KMLSnapshotReceiveBehav(this, kml));
+	}
+
+	@Override
+	protected void takeDown() {
+		if (envAID != null) {
+			// Desregistrarse en el entorno
+			ACLMessage msg = new ACLMessage(ACLMessage.CANCEL);
+			msg.addReceiver(envAID);
+			msg.setConversationId("syndicate-kml");
+			try {
+				msg.setContentObject(getAID());
+				send(msg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

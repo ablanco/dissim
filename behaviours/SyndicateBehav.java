@@ -16,7 +16,10 @@
 
 package behaviours;
 
+import java.util.Hashtable;
+
 import jade.core.AID;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -25,27 +28,44 @@ import jade.lang.acl.UnreadableException;
 @SuppressWarnings("serial")
 public class SyndicateBehav extends CyclicBehaviour {
 
+	Hashtable<AID, Behaviour> behaviours = new Hashtable<AID, Behaviour>();
+
 	@Override
 	public void action() {
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.or(
 				MessageTemplate.MatchConversationId("syndicate-visor"),
 				MessageTemplate.MatchConversationId("syndicate-kml")),
-				MessageTemplate.MatchPerformative(ACLMessage.REQUEST));
+				MessageTemplate.or(MessageTemplate
+						.MatchPerformative(ACLMessage.REQUEST), MessageTemplate
+						.MatchPerformative(ACLMessage.CANCEL)));
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
 			// Mensaje recibido, hay que procesarlo
+			AID aid = null;
 			try {
-				AID aid = (AID) msg.getContentObject();
-				// TODO periodos
-				if (msg.getConversationId().equals("syndicate-visor")) {
-					myAgent.addBehaviour(new UpdateVisorSendBehav(myAgent,
-							1000L, aid));
-				} else if (msg.getConversationId().equals("syndicate-kml")) {
-					myAgent.addBehaviour(new KMLSnapshotSendBehav(myAgent,
-							10000L, aid));
-				}
+				aid = (AID) msg.getContentObject();
 			} catch (UnreadableException e) {
 				e.printStackTrace();
+			}
+			// Sindicarse
+			if (msg.getPerformative() == ACLMessage.REQUEST && aid != null) {
+				// TODO periodos
+				Behaviour behav = null;
+				if (msg.getConversationId().equals("syndicate-visor")) {
+					behav = new UpdateVisorSendBehav(myAgent, 1000L, aid);
+				} else if (msg.getConversationId().equals("syndicate-kml")) {
+					behav = new KMLSnapshotSendBehav(myAgent, 10000L, aid);
+				}
+				Behaviour previous = behaviours.put(aid, behav);
+				if (previous != null)
+					myAgent.removeBehaviour(previous);
+				myAgent.addBehaviour(behav);
+			}
+			// Desregistrarse
+			else if (msg.getPerformative() == ACLMessage.CANCEL && aid != null) {
+				Behaviour behav = behaviours.remove(aid);
+				if (behav != null)
+					myAgent.removeBehaviour(behav);
 			}
 		} else {
 			block();

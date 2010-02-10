@@ -32,6 +32,8 @@ import behaviours.UpdateVisorReceiveBehav;
 @SuppressWarnings("serial")
 public class VisorAgent extends Agent {
 
+	private AID envAID = null;
+
 	@Override
 	protected void setup() {
 		VisorFrame visor = new VisorFrame();
@@ -41,7 +43,6 @@ public class VisorAgent extends Agent {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("syndicate");
 		template.addServices(sd);
-		AID envAID = null;
 		try {
 			DFAgentDescription[] result = DFService.search(this, template);
 			if (result.length != 1)
@@ -70,6 +71,22 @@ public class VisorAgent extends Agent {
 		addBehaviour(new UpdateVisorReceiveBehav(visor));
 
 		visor.setVisible(true);
+	}
+
+	@Override
+	protected void takeDown() {
+		if (envAID != null) {
+			// Desregistrarse en el entorno
+			ACLMessage msg = new ACLMessage(ACLMessage.CANCEL);
+			msg.addReceiver(envAID);
+			msg.setConversationId("syndicate-visor");
+			try {
+				msg.setContentObject(getAID());
+				send(msg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }
