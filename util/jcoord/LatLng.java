@@ -382,4 +382,11 @@ public class LatLng implements Comparable<LatLng>{
 			return -1;
 		}
 	}
+	
+	@Override
+	public boolean equals(Object coord){
+		LatLng c = (LatLng)coord;
+		return (c.getAltitude() == altitude) && (c.getLat() == lat) && (c.getLng() == lng);
+	}
+	
 }

@@ -20,8 +20,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
+import util.HexagonalGrid;
 import util.Scenario;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
@@ -32,14 +33,29 @@ import de.micromata.opengis.kml.v_2_2_0.Polygon;
 
 public class KmlWriter {
 
-	private Kml kml;
-	private Document document;
-	private Scenario scene;
-	private long cont;
+	protected Kml kml;
+	protected Document document;
+	protected HexagonalGrid oldGrid;
+	protected long cont;
+	protected double ilat;
+	protected double ilng;
+	protected int dimX;
+	protected int dimY;
 
 	public KmlWriter() {
 		kml = new Kml();
-		scene = Scenario.getCurrentScenario();
+		Scenario scene = Scenario.getCurrentScenario();
+		dimX = scene.getGridSize()[0];
+		dimY = scene.getGridSize()[1];
+		ilat = scene.getLatInc();
+		ilng = scene.getLngInc();
+		oldGrid = new HexagonalGrid(dimX, dimY);
+		HexagonalGrid grid = scene.getGrid();
+		for (int i = 0; i < dimX; i++) {
+			for (int j = 0; j < dimY; j++) {
+				oldGrid.setTerrainValue(i, j, grid.getTerrainValue(i, j));
+			}
+		}
 		cont = 0;
 	}
 
@@ -60,7 +76,6 @@ public class KmlWriter {
 		try {
 			kml.marshalAsKmz(fileName + ".kmz");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -83,11 +98,10 @@ public class KmlWriter {
 	 * @return
 	 */
 	public void createPolygon(String name, String description,
-			List<LatLng> borderLine) {
+			Set<LatLng> borderLine) {
 		Polygon polygon = document.createAndAddPlacemark().withName(
 				"tile" + cont).createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 		for (LatLng c : borderLine) {
@@ -133,8 +147,6 @@ public class KmlWriter {
 
 	public ArrayList<LatLng> createHexagon(LatLng coord) {
 		ArrayList<LatLng> border = new ArrayList<LatLng>();
-		double ilat = scene.getLatInc();
-		double ilng = scene.getLngInc();
 
 		border.add(new LatLng(coord.getLat(), coord.getLng() + ilng, coord
 				.getAltitude()));
@@ -151,4 +163,5 @@ public class KmlWriter {
 		return border;
 	}
 
+	
 }

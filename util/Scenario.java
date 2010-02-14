@@ -18,6 +18,8 @@ package util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import util.jcoord.LatLng;
 import util.jcoord.UTMRef;
@@ -170,9 +172,13 @@ public class Scenario implements Serializable {
 		aux.setAltitude(grid.getTerrainValue(x, y));
 		return aux;
 	}
-
-	public ArrayList<LatLng> getAdjacents(LatLng c) {
-		ArrayList<LatLng> coordsAdjacents = new ArrayList<LatLng>();
+/**
+ * Returns a list of adyacens from de coord
+ * @param c <LatLng>
+ * @return ArrayList<LatLng>
+ */
+	public Set<LatLng> getAdjacents(LatLng c) {
+		HashSet<LatLng> coordsAdjacents = new HashSet<LatLng>();
 		int ind[] = coordToTile(c);
 		ArrayList<int[]> tileAdjacens = grid.getAdjacents(ind[0], ind[1]);
 		for (int[] adjacent : tileAdjacens) {

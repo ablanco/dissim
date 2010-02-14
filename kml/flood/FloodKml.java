@@ -3,8 +3,9 @@ package kml.flood;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import kml.KmlWriter;
 import util.HexagonalGrid;
@@ -13,194 +14,110 @@ import util.jcoord.LatLng;
 
 public class FloodKml extends KmlWriter {
 
-	private Scenario scene;
-	private HexagonalGrid grid;
-
-	public FloodKml(Scenario scene) {
-		this.scene = scene;
-		this.grid = scene.getGrid();
+	public FloodKml() {
+		super();
 	}
-
 	public void snapShot(Scenario newScene) {
 		createDocument("Flooding State Level", "RainFalling Motherfuckers");
-		/*
-		 * ArrayList<LatLng> tiles = getModTiles(newScene);
-		 * 
-		 * HashMap<Short, ArrayList<LatLng>> polygons =
-		 * getSameHigthPolygons(tiles);
-		 * 
-		 * ArrayList<ArrayList<LatLng>> polygon =
-		 * getIndependentPolygones(polygons);
-		 * 
-		 * ArrayList<ArrayList<LatLng>> polygonBorders =
-		 * getPolygonBorders(polygon);
-		 * 
-		 * 
-		 * 
-		 * 
-		 * long cont =0; for (ArrayList<LatLng> pol : polygonBorders){
-		 * createPolygon("Flood "+cont, "", pol); }
-		 */
-
 		long cont = 0;
-		for (List<List<LatLng>> regions : getBorderRegions(newScene)) {
-			for (List<LatLng> region : regions) {
-				//TODO region podría no estar ordenados y salir cosas raras
-				//Collections.sort(region);
-				createPolygon("Flood " + cont, "", region);
+		for (List<Set<LatLng>> regions : getBorderRegions(newScene)) {
+			for (Set<LatLng> region : regions) {
+				// TODO region podría no estar ordenados y salir cosas raras
+				// Collections.sort(region);
+				System.out.println("Region Detectada:" + cont + " tamaño: "
+						+ region.size());
+				if (region.size()==1){
+					createHexagon((LatLng)(region.toArray())[0]);
+				}else{
+					createPolygon("Flood " + cont, "", region);	
+				}
+				cont++;
+				for (LatLng c : region){
+					int a[] = newScene.coordToTile(c);
+					System.out.print("["+a[0]+","+a[1]+"] ");
+				}
+				System.out.println();
 			}
 
 		}
 
-		createKmlFile(scene.getName());
+		createKmlFile(newScene.getName());
 	}
 
+	private boolean isBorderRegion(Set<LatLng> adyacents, short altitude) {
+		// es borde si los adyacentes tienen distinto valor
+		for (LatLng c : adyacents) {
+			if (c.getAltitude() != altitude) {
+				return true;
+			}
+		}
+		return false;
+	}
 
+	private boolean addBorderToRegion(List<Set<LatLng>> regions,
+			Set<LatLng> adyacents, LatLng border) {
+		for (Set<LatLng> region : regions) {
+			for (LatLng adyacent : adyacents) {
+				if (region.contains(adyacent)) {
+					region.add(border);
+					System.out.print(", añadido");
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-
-
-	private Collection<List<List<LatLng>>> getBorderRegions(
-			Scenario newScene) {
-		HashMap<Short, List<List<LatLng>>> levelRegions = new HashMap<Short, List<List<LatLng>>>();
-		int dims[] = scene.getGridSize();
-		int x = dims[0];
-		int y = dims[1];
+	private Collection<List<Set<LatLng>>> getBorderRegions(Scenario newScene) {
+		HashMap<Short, List<Set<LatLng>>> levelRegions = new HashMap<Short, List<Set<LatLng>>>();
 		HexagonalGrid newGrid = newScene.getGrid();
-		for (int i = 0; i < x; i++) {
-			for (int j = 0; j < y; j++) {
+		for (int i = 0; i < dimX; i++) {
+			for (int j = 0; j < dimY; j++) {
 				// recorremos cada punto de la matriz
 				short altitude = newGrid.getTerrainValue(i, j);
-				LatLng coord = newScene.tileToCoord(i, j);
+				System.out.print("(" + i + "," + j + ") Region :" + altitude);
 				// si son diferentes
-				if (grid.getTerrainValue(i, j) != altitude) {
-					boolean borde = false;
-					// es borde si los adyacentes tienen distinto valor
-					for (LatLng c : newScene.getAdjacents(coord)) {
-						if (c.getAltitude() != altitude) {
-							borde = true;
-							break;
-						}
-					}
-					// si es borde lo añadimos
-					if (borde) {
-						List<List<LatLng>> regions = levelRegions.get(altitude);
-						if (regions == null) {// si no exixte la region la
-												// creamos
-							regions = new ArrayList<List<LatLng>>();
-						}
-						// Puede haber regiones sin unir
-						boolean newRegion = true;
-						for (List<LatLng> region : regions) {
-							List<LatLng> aux = null;
-							if (!newRegion) {// si encontramos otra region a la
-												// que pertenece hay que unirlas
-								if (region.contains(newScene
-										.getAdjacents(coord))) {
-									aux.addAll(region); // TODO Null Access
-									regions.removeAll(region);
-								}
-							} else if (region.contains(newScene
-									.getAdjacents(coord))) {// pertenece a una
-															// region existente,
-															// añadimos el borde
-								newRegion = false;
-								region.add(coord);
-								// referenciamos por si hay que unirla con otra
-								// region
-								aux = region;
-							}
-						}
-						if (newRegion) {// es una nueva region
-							List<LatLng> region = new LinkedList<LatLng>();
+				if (oldGrid.getTerrainValue(i, j) != altitude) {
+					System.out.print(", !=");
+					LatLng coord = newScene.tileToCoord(i, j);
+					if (isBorderRegion(newScene.getAdjacents(coord), altitude)) {
+						// Solo añadimos los bordes
+						System.out.print(", Borde");
+						List<Set<LatLng>> regions = levelRegions.get(altitude);
+						if (regions == null) {
+							// si no exixte la region la creamos y añadimos el
+							// borde
+							regions = new ArrayList<Set<LatLng>>();
+							Set<LatLng> region = new HashSet<LatLng>();
 							region.add(coord);
 							regions.add(region);
-							levelRegions.put(altitude, regions); //creo la lista de regiones
+							levelRegions.put(altitude, regions);
+							System.out.print(", Nueva Lista Regiones Creada");
+						} else {
+							if(!addBorderToRegion(regions, newScene
+									.getAdjacents(coord), coord)){
+								//si no pertenece a una region creada, creamos una nueva region
+								Set<LatLng> region = new HashSet<LatLng>();
+								region.add(coord);
+								regions.add(region);
+								System.out.print(", nueva region");
+							}
 						}
-						
-						
+					} else {
+						System.out.print(", no es un borde");
 					}
-
+				} else {
+					System.out.print(", no son distintos");
 				}
+				System.out.println();
 			}
 		}
 		return levelRegions.values();
 	}
-	
-	/*
-	private ArrayList<ArrayList<LatLng>> getPolygonBorders(
-			ArrayList<ArrayList<LatLng>> polygon) {
-		ArrayList<ArrayList<LatLng>> borders = new ArrayList<ArrayList<LatLng>>();
-		for (ArrayList<LatLng> pol : polygon) {
-			ArrayList<LatLng> border = new ArrayList<LatLng>();
-			Iterator<LatLng> it = pol.iterator();
-			while (it.hasNext()) {
-				LatLng c = it.next();
-				if (!pol.containsAll(newScene.getAdyacents(c))) {
-					border.add(c);
-				}
-			}
-			// ordenadr los bordes de tal forma que al imprimirlos se vean
-			// bien
-			Collections.sort(border);
-			borders.add(border);
-		}
 
-		return borders;
+	public HexagonalGrid getOldGrid() {
+		return oldGrid;
 	}
 
-	private ArrayList<ArrayList<LatLng>> getIndependentPolygones(
-			HashMap<Short, ArrayList<LatLng>> polygons) {
-		ArrayList<ArrayList<LatLng>> polygonList = new ArrayList<ArrayList<LatLng>>();
-		for (ArrayList<LatLng> coords : polygons.values()) {
-			ArrayList<LatLng> onePolygon = new ArrayList<LatLng>();
-			while (!coords.isEmpty()) {
-				onePolygon.add(coords.remove(0));
-				int size = 0;
-				int newsize = 1;
-				while ((size != newsize) && !coords.isEmpty()) {
-					size = onePolygon.size();
-					for (LatLng c : coords) {
-						if (newScene.getAdyacents(c).contains(onePolygon)) {
-							onePolygon.add(c);
-							coords.remove(c);
-						}
-					}
-					newsize = onePolygon.size();
-				}
-				polygonList.add(onePolygon);
-				onePolygon = new ArrayList<LatLng>();
-			}
-		}
-		return polygonList;
-	}
 
-	private ArrayList<LatLng> getModTiles(FloodScenario newScene) {
-		ArrayList<LatLng> modTiles = new ArrayList<LatLng>();
-		int dims[] = scene.getGridSize();
-		int x = dims[0];
-		int y = dims[1];
-		HexagonalGrid newGrid = newScene.getGrid();
-		for (int i = 0; i < x; i++) {
-			for (int j = 0; j < y; j++) {
-				if (grid.getTerrainValue(x, y) != newGrid.getTerrainValue(x, y)) {
-					modTiles.add(newScene.tileToCoord(x, y));
-				}
-			}
-		}
-		return modTiles;
-	}
-	public HashMap<Short, ArrayList<LatLng>> getSameHigthPolygons(
-			ArrayList<LatLng> tiles) {
-		HashMap<Short, ArrayList<LatLng>> polygons = new HashMap<Short, ArrayList<LatLng>>();
-		for (LatLng tile : tiles) {
-			ArrayList<LatLng> polygon = polygons.get(tile.getAltitude());
-			if (polygon == null) {
-				polygon = new ArrayList<LatLng>();
-				polygons.put(tile.getAltitude(), polygon);
-			}
-			polygon.add(tile);
-		}
-		return polygons;
-	}
-*/
 }

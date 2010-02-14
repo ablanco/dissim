@@ -16,11 +16,6 @@
 
 package agents;
 
-import java.io.IOException;
-
-import behaviours.KMLSnapshotReceiveBehav;
-
-import util.Scenario;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -28,7 +23,11 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+
+import java.io.IOException;
+
 import kml.flood.FloodKml;
+import behaviours.KMLSnapshotReceiveBehav;
 
 @SuppressWarnings("serial")
 public class KMLAgent extends Agent {
@@ -37,7 +36,7 @@ public class KMLAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		FloodKml kml = new FloodKml(Scenario.getCurrentScenario());
+		FloodKml kml = new FloodKml();
 
 		// Obtener agente entorno
 		DFAgentDescription template = new DFAgentDescription();
