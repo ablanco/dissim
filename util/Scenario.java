@@ -172,11 +172,14 @@ public class Scenario implements Serializable {
 		aux.setAltitude(grid.getTerrainValue(x, y));
 		return aux;
 	}
-/**
- * Returns a list of adyacens from de coord
- * @param c <LatLng>
- * @return ArrayList<LatLng>
- */
+
+	/**
+	 * Returns a list of adjacens from coords
+	 * 
+	 * @param c
+	 *            <LatLng>
+	 * @return ArrayList<LatLng>
+	 */
 	public Set<LatLng> getAdjacents(LatLng c) {
 		HashSet<LatLng> coordsAdjacents = new HashSet<LatLng>();
 		int ind[] = coordToTile(c);
