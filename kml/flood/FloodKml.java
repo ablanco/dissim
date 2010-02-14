@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import kml.KmlWriter;
 import util.HexagonalGrid;
@@ -88,7 +89,7 @@ public class FloodKml extends KmlWriter {
 							// si no exixte la region la creamos y añadimos el
 							// borde
 							regions = new ArrayList<Set<LatLng>>();
-							Set<LatLng> region = new HashSet<LatLng>();
+							Set<LatLng> region = new TreeSet<LatLng>();
 							region.add(coord);
 							regions.add(region);
 							levelRegions.put(altitude, regions);
@@ -97,7 +98,7 @@ public class FloodKml extends KmlWriter {
 							if(!addBorderToRegion(regions, newScene
 									.getAdjacents(coord), coord)){
 								//si no pertenece a una region creada, creamos una nueva region
-								Set<LatLng> region = new HashSet<LatLng>();
+								Set<LatLng> region = new TreeSet<LatLng>();
 								region.add(coord);
 								regions.add(region);
 								System.out.print(", nueva region");

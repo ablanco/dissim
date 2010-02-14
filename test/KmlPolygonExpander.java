@@ -2,8 +2,13 @@ package test;
 
 import gui.VisorFrame;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import kml.KmlWriter;
 import kml.flood.FloodKml;
@@ -37,13 +42,7 @@ public class KmlPolygonExpander {
 		v.updateGrid(k.getOldGrid());
 		v.setVisible(true);
 		
-		Set<LatLng> s = new HashSet<LatLng>();
-		LatLng a = new LatLng(1.0, 2.0);
-		LatLng b = new LatLng(1.1, 2.0);
-		LatLng c = new LatLng(1.0, 2.0);
-		s.add(a);
-		s.add(b);
-		
+
 		
 		for (int i=0;i<newOrleans.getGridSize()[0];i++){
 			for (int j=0;j<newOrleans.getGridSize()[1];j++){
@@ -58,6 +57,29 @@ public class KmlPolygonExpander {
 		
 		k.snapShot(newOrleans);
 		
+		/*
+		SortedSet<LatLng> s = new TreeSet<LatLng>();
+		LatLng a = new LatLng(1.0, 2.0);
+		LatLng b = new LatLng(1.1, 2.0);
+		LatLng c = new LatLng(1.0, 2.0);
+		s.add(a);
+		s.add(b);
+		
+		HashSet<LatLng> t = new HashSet<LatLng>();
+		t.add(a);
+		t.add(b);
+		
+		List<LatLng> l = new ArrayList<LatLng>();
+		l.add(a);
+		l.add(b);
+		l.add(c);
+		
+		if (l.contains(c)){
+			System.out.println("l true");
+		}
+		if (t.contains(c)){
+			System.out.println("t true");
+		}
 		if (s.contains(c)){
 			System.out.println("c true");
 		}
@@ -65,6 +87,6 @@ public class KmlPolygonExpander {
 			System.out.println("e true");
 		}
 		
-		
+		*/
 	}
 }
