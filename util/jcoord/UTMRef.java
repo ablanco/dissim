@@ -33,6 +33,8 @@ public class UTMRef {
    * Longitude zone number
    */
   private int    lngZone;
+  
+  private short altitude;
 
 
   /**
@@ -55,6 +57,13 @@ public class UTMRef {
     this.lngZone = lngZone;
   }
 
+  public UTMRef(double easting, double northing, char latZone, int lngZone, short altitude) {
+	    this.easting = easting;
+	    this.northing = northing;
+	    this.latZone = latZone;
+	    this.lngZone = lngZone;
+	    this.setAltitude(altitude);
+	  }
 
   /**
    * Convert this UTM reference to a latitude and longitude.
@@ -236,4 +245,12 @@ public class UTMRef {
   public int getLngZone() {
     return lngZone;
   }
+
+public void setAltitude(short altitude) {
+	this.altitude = altitude;
+}
+
+public short getAltitude() {
+	return altitude;
+}
 }

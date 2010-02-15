@@ -34,9 +34,9 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public short setTerrainValue(int x, int y, short value) {
-		short old = gridTerrain[x][y];
-		gridTerrain[x][y] = value;
-		return old;
+			short old = gridTerrain[x][y];
+			gridTerrain[x][y] = value;
+			return old;	
 	}
 
 	public void increaseValue(int x, int y, short increment) {

@@ -20,9 +20,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import util.jcoord.LatLng;
-import util.jcoord.UTMRef;
 import webservices.AltitudeWS;
 
 public class Scenario implements Serializable {
@@ -74,19 +75,16 @@ public class Scenario implements Serializable {
 		this.SE = SE;
 		this.tileSize = tileSize;
 
-		// Obtain the opposite of the square
-		LatLng NE = new LatLng(NW.getLat(), SE.getLng());
-		LatLng SW = new LatLng(SE.getLat(), NW.getLng());
-		// Obtain the distance from the square and fix with precision
-		int x = (int) (NW.distance(NE) * 1000 / tileSize);
-		int y = (int) (SE.distance(SW) * 1000 / tileSize);
-		// Set grid size +1 because the dimension thing
-		createGrid(x + 1, y + 1);
+		// Obtain the opposite of the square distance in km
+		int x = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000 / tileSize);
+		int y = (int) (SE.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000 / tileSize);
+
+		// Set grid size
+		createGrid(x, y);
 		// Set offset in degrees between two hexagramas
-		latInc = Math.abs((Math.abs(tileToCoord(0, 0).getLat()) - Math
-				.abs(tileToCoord(0, 1).getLat())) / 2);
-		lngInc = Math.abs((Math.abs(tileToCoord(0, 0).getLng()) - Math
-				.abs(tileToCoord(2, 0).getLng())) / 4);
+		latInc = (Math.abs(NW.getLat()) - Math.abs(SE.getLat())) / x;
+		lngInc = (Math.abs(NW.getLng()) - Math.abs(SE.getLng())) / y;
+		// System.out.println(NW.toString()+SE.toString()+", x:"+x+", y:"+y+"lat inc ="+latInc+", long inc ="+lngInc);
 	}
 
 	public LatLng[] getArea() {
@@ -117,22 +115,30 @@ public class Scenario implements Serializable {
 		if (tileSize < 0)
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
-
-		// Obtain the opposite sides
-		LatLng xCoord = new LatLng(NW.getLat(), coord.getLng());
-		LatLng yCoord = new LatLng(coord.getLat(), NW.getLng());
-		// Obtain the distances from the sides to NW(0,0)
-		int x = (int) ((NW.distance(xCoord)) * 1000 / tileSize);
-		int y = (int) ((NW.distance(yCoord)) * 1000 / tileSize);
-		// Obtain adyacents and looks for closer.
-		ArrayList<int[]> adyacents = grid.getAdjacents(x, y);
-		double distance = coord.distance(tileToCoord(x, y));
-		for (int[] a : adyacents) {
-			if (distance > coord.distance(tileToCoord(a[0], a[1]))) {
-				x = a[0];
-				y = a[1];
+		// Aproximacion
+		int x = (int) (Math.abs(Math.abs(NW.getLat())
+				- Math.abs(coord.getLat())) / latInc);
+		int y = (int) (Math.abs(Math.abs(NW.getLng())
+				- Math.abs(coord.getLng())) / lngInc);
+		// Try to adjust aproximation errors. 7%
+		double minDist = coord.distance(tileToCoord(x, y));
+		for (int[] tile : grid.getAdjacents(x, y)) {
+			double dist = coord.distance(tileToCoord(tile[0], tile[1]));
+			if (dist <= minDist) {
+				minDist = dist;
+				x = tile[0];
+				y = tile[1];
+				for (int[] t : grid.getAdjacents(tile[0], tile[1])) {
+					dist = coord.distance(tileToCoord(t[0], t[1]));
+					if (dist < minDist) {
+						minDist = dist;
+						x = t[0];
+						y = t[1];
+					}
+				}
 			}
 		}
+
 		return new int[] { x, y };
 	}
 
@@ -149,28 +155,22 @@ public class Scenario implements Serializable {
 	 * @return
 	 */
 	public LatLng tileToCoord(int x, int y) {
-		if (NW == null || SE == null)
+		if (NW == null)
 			throw new IllegalStateException(
 					"Simulation area hasn't been defined yet.");
-		// Convert to UTM, cause is in meters
-		UTMRef coordUTM = NW.toUTMRef();
-		UTMRef coordAUX;
+		LatLng coord;
 		// Odd Rows has offset.
 		if (x % 2 == 0) {
 			// Just add the distance (x * tileSize) and get the new coordinate
-			coordAUX = new UTMRef(coordUTM.getEasting() + (x * tileSize),
-					coordUTM.getNorthing() + (y * tileSize), coordUTM
-							.getLatZone(), coordUTM.getLngZone());
+			coord = new LatLng(NW.getLat() + (x * latInc), NW.getLng()
+					+ (y * lngInc), grid.getTerrainValue(x, y));
 		} else {
 			// Just add the distance (x * tileSize) and get the new coordinate
 			// plus offset
-			coordAUX = new UTMRef(coordUTM.getEasting() + (x * tileSize),
-					coordUTM.getNorthing() + (y * tileSize) + tileSize / 2,
-					coordUTM.getLatZone(), coordUTM.getLngZone());
+			coord = new LatLng(NW.getLat() + (x * latInc), NW.getLng()
+					+ (y * lngInc) + (lngInc / 2), grid.getTerrainValue(x, y));
 		}
-		LatLng aux = coordAUX.toLatLng();
-		aux.setAltitude(grid.getTerrainValue(x, y));
-		return aux;
+		return coord;
 	}
 
 	/**
@@ -183,8 +183,7 @@ public class Scenario implements Serializable {
 	public Set<LatLng> getAdjacents(LatLng c) {
 		HashSet<LatLng> coordsAdjacents = new HashSet<LatLng>();
 		int ind[] = coordToTile(c);
-		ArrayList<int[]> tileAdjacens = grid.getAdjacents(ind[0], ind[1]);
-		for (int[] adjacent : tileAdjacens) {
+		for (int[] adjacent : grid.getAdjacents(ind[0], ind[1])) {
 			coordsAdjacents.add(tileToCoord(adjacent[0], adjacent[1]));
 		}
 		return coordsAdjacents;

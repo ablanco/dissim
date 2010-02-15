@@ -18,6 +18,7 @@ public class FloodKml extends KmlWriter {
 	public FloodKml() {
 		super();
 	}
+
 	public void snapShot(Scenario newScene) {
 		createDocument("Flooding State Level", "RainFalling Motherfuckers");
 		long cont = 0;
@@ -27,15 +28,15 @@ public class FloodKml extends KmlWriter {
 				// Collections.sort(region);
 				System.out.println("Region Detectada:" + cont + " tamaño: "
 						+ region.size());
-				if (region.size()==1){
-					createHexagon((LatLng)(region.toArray())[0]);
-				}else{
-					createPolygon("Flood " + cont, "", region);	
+				if (region.size() == 1) {
+					createHexagon((LatLng) (region.toArray())[0]);
+				} else {
+					createPolygon("Flood " + cont, "", region);
 				}
 				cont++;
-				for (LatLng c : region){
+				for (LatLng c : region) {
 					int a[] = newScene.coordToTile(c);
-					System.out.print("["+a[0]+","+a[1]+"] ");
+					System.out.print("[" + a[0] + "," + a[1] + "] ");
 				}
 				System.out.println();
 			}
@@ -61,7 +62,6 @@ public class FloodKml extends KmlWriter {
 			for (LatLng adyacent : adyacents) {
 				if (region.contains(adyacent)) {
 					region.add(border);
-					System.out.print(", añadido");
 					return true;
 				}
 			}
@@ -76,41 +76,44 @@ public class FloodKml extends KmlWriter {
 			for (int j = 0; j < dimY; j++) {
 				// recorremos cada punto de la matriz
 				short altitude = newGrid.getTerrainValue(i, j);
-				System.out.print("(" + i + "," + j + ") Region :" + altitude);
+				// System.out.print("(" + i + "," + j + ") Region :" +
+				// altitude);
 				// si son diferentes
 				if (oldGrid.getTerrainValue(i, j) != altitude) {
-					System.out.print(", !=");
+					// System.out.print(", !=");
 					LatLng coord = newScene.tileToCoord(i, j);
 					if (isBorderRegion(newScene.getAdjacents(coord), altitude)) {
 						// Solo añadimos los bordes
-						System.out.print(", Borde");
+						// System.out.print(", Borde");
 						List<Set<LatLng>> regions = levelRegions.get(altitude);
 						if (regions == null) {
 							// si no exixte la region la creamos y añadimos el
 							// borde
+							// System.out.print(", Nueva Lista Regiones Creada");
 							regions = new ArrayList<Set<LatLng>>();
 							Set<LatLng> region = new TreeSet<LatLng>();
 							region.add(coord);
 							regions.add(region);
 							levelRegions.put(altitude, regions);
-							System.out.print(", Nueva Lista Regiones Creada");
 						} else {
-							if(!addBorderToRegion(regions, newScene
-									.getAdjacents(coord), coord)){
-								//si no pertenece a una region creada, creamos una nueva region
+							if (!addBorderToRegion(regions, newScene
+									.getAdjacents(coord), coord)) {
+								// si no pertenece a una region creada, creamos
+								// una nueva region
+								// System.out.print(", Nueva Lista Regiones Creada");
 								Set<LatLng> region = new TreeSet<LatLng>();
 								region.add(coord);
 								regions.add(region);
-								System.out.print(", nueva region");
+
 							}
 						}
 					} else {
-						System.out.print(", no es un borde");
+						// System.out.print(", no es un borde");
 					}
 				} else {
-					System.out.print(", no son distintos");
+					// System.out.print(", no son distintos");
 				}
-				System.out.println();
+				// System.out.println();
 			}
 		}
 		return levelRegions.values();
@@ -119,6 +122,5 @@ public class FloodKml extends KmlWriter {
 	public HexagonalGrid getOldGrid() {
 		return oldGrid;
 	}
-
 
 }
