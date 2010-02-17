@@ -3,7 +3,6 @@ package kml.flood;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -26,24 +25,26 @@ public class FloodKml extends KmlWriter {
 			for (Set<LatLng> region : regions) {
 				// TODO region podría no estar ordenados y salir cosas raras
 				// Collections.sort(region);
-				System.out.println("Region Detectada:" + cont + " tamaño: "
-						+ region.size());
 				if (region.size() == 1) {
-					createHexagon((LatLng) (region.toArray())[0]);
+					createHexagon("HEX",(LatLng) (region.toArray())[0]);
 				} else {
-					createPolygon("Flood " + cont, "", region);
+					createPolygon("Flood " + cont, region);
+					if (region.size() > 10) {
+						System.out.println("Region Detectada:" + cont + " tamaño: "
+								+ region.size());
+						for (LatLng c : region) {
+							int a[] = newScene.coordToTile(c);
+							System.out.print("[" + a[0] + "," + a[1] + "] ");
+						}
+						System.out.println();
+					}
 				}
 				cont++;
-				for (LatLng c : region) {
-					int a[] = newScene.coordToTile(c);
-					System.out.print("[" + a[0] + "," + a[1] + "] ");
-				}
-				System.out.println();
 			}
 
 		}
 
-		createKmlFile(newScene.getName());
+		createKmzFile(newScene.getName());
 	}
 
 	private boolean isBorderRegion(Set<LatLng> adyacents, short altitude) {

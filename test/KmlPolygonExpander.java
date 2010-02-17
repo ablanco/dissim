@@ -28,11 +28,6 @@ public class KmlPolygonExpander {
 		FloodKml k = new FloodKml();
 		k.createDocument("Hexagam Maps", "Test of deployment hexagrams");
 		
-		VisorFrame v = new VisorFrame();
-		v.updateGrid(k.getOldGrid());
-		v.setVisible(true);
-		
-
 		
 		for (int i=0;i<newOrleans.getGridSize()[0];i++){
 			for (int j=0;j<newOrleans.getGridSize()[1];j++){

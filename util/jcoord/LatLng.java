@@ -12,7 +12,7 @@ package util.jcoord;
  * @since 1.0
  * @license GPL
  */
-public class LatLng implements Comparable<LatLng>{
+public class LatLng implements Comparable<LatLng> {
 
 	/**
 	 * Latitude in degrees.
@@ -371,25 +371,49 @@ public class LatLng implements Comparable<LatLng>{
 
 	@Override
 	public int compareTo(LatLng o) {
-		if (o.getLat() == lat) {
-			if (o.getLng() == lng) {
-				return 0;
-			} else {
-				return 1;
-			}
+		//TODO good comparator to short properly the adyacent list
+		if (o.getLat() == lat && o.getLng() == lng) {
+			return 0;
 		} else {
+			if (o.getLat() < lat){
+				return 1;				
+			}
 			return -1;
 		}
 	}
-	
+
 	@Override
-	public boolean equals(Object coord){
+	public boolean equals(Object coord) {
 		if (coord instanceof LatLng) {
 			LatLng c = (LatLng) coord;
-			return (c.getAltitude() == altitude) && (c.getLat() == lat) && (c.getLng() == lng);
+			return (c.getAltitude() == altitude) && (c.getLat() == lat)
+					&& (c.getLng() == lng);
 		} else {
 			return false;
 		}
 	}
-	
+
+	public LatLng metersToDegrees(double x, double y) {
+		//TODO chapuza que puede funcionar
+		UTMRef u = this.toUTMRef();
+		u.addNorthingEasting(x,y);
+		
+		LatLng l = u.toLatLng();
+		double lat = l.getLat();
+		double lng = l.getLng();
+		
+		return new LatLng(lat, lng, altitude);
+	}
+
+	public LatLng metersToDegrees(double x, double y, short terrainValue) {
+		UTMRef u = this.toUTMRef();
+		u.addNorthingEasting(x,y);
+		
+		LatLng l = u.toLatLng();
+		double lat = l.getLat();
+		double lng = l.getLng();
+		
+		return new LatLng(lat, lng, terrainValue);
+	}
+
 }

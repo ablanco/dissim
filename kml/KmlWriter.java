@@ -19,7 +19,6 @@ package kml;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Set;
 
 import util.HexagonalGrid;
@@ -39,6 +38,7 @@ public class KmlWriter {
 	protected long cont;
 	protected double ilat;
 	protected double ilng;
+	protected short tileSize;
 	protected int dimX;
 	protected int dimY;
 
@@ -47,8 +47,9 @@ public class KmlWriter {
 		Scenario scene = Scenario.getCurrentScenario();
 		dimX = scene.getGridSize()[0];
 		dimY = scene.getGridSize()[1];
-		ilat = scene.getLatInc();
-		ilng = scene.getLngInc();
+		
+		tileSize = scene.getTileSize();
+		
 		oldGrid = new HexagonalGrid(dimX, dimY);
 		HexagonalGrid grid = scene.getGrid();
 		for (int i = 0; i < dimX; i++) {
@@ -97,10 +98,9 @@ public class KmlWriter {
 	 * @param description
 	 * @return
 	 */
-	public void createPolygon(String name, String description,
-			Set<LatLng> borderLine) {
+	public void createPolygon(String name, Set<LatLng> borderLine) {
 		Polygon polygon = document.createAndAddPlacemark().withName(
-				"tile" + cont).createAndSetPolygon().withExtrude(true)
+				name + " " + cont).createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
@@ -115,53 +115,23 @@ public class KmlWriter {
 	 * @param coord
 	 * @param alt
 	 */
-	/*
-	 * public void createHexagon(LatLng coord) { Polygon polygon =
-	 * document.createAndAddPlacemark().withName( "tile" +
-	 * cont).createAndSetPolygon().withExtrude(true)
-	 * .withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-	 * 
-	 * double ilat = scene.getLatInc(); double ilng = scene.getLngInc();
-	 * 
-	 * LatLng WW = new LatLng(coord.getLat(), coord.getLng() + ilng, coord
-	 * .getAltitude()); LatLng WN = new LatLng(coord.getLat() + ilat,
-	 * coord.getLng() + ilng / 2, coord.getAltitude()); LatLng EN = new
-	 * LatLng(coord.getLat() + ilat, coord.getLng() - ilng / 2,
-	 * coord.getAltitude()); LatLng EE = new LatLng(coord.getLat(),
-	 * coord.getLng() - ilng, coord .getAltitude()); LatLng ES = new
-	 * LatLng(coord.getLat() - ilat, coord.getLng() - ilng / 2,
-	 * coord.getAltitude()); LatLng WS = new LatLng(coord.getLat() - ilat,
-	 * coord.getLng() + ilng / 2, coord.getAltitude());
-	 * 
-	 * polygon.createAndSetOuterBoundaryIs().createAndSetLinearRing()
-	 * .addToCoordinates(WW.toGoogleString()).addToCoordinates(
-	 * WN.toGoogleString()).addToCoordinates(
-	 * EN.toGoogleString()).addToCoordinates(
-	 * EE.toGoogleString()).addToCoordinates(
-	 * ES.toGoogleString()).addToCoordinates( WS.toGoogleString());
-	 * //System.out.println("Centre :" + coord + ", WN: " + WN + ", ES: " + ES);
-	 * cont++;
-	 * 
-	 * }
-	 */
+	public void createHexagon(String name, LatLng coord) {
 
-	public ArrayList<LatLng> createHexagon(LatLng coord) {
-		ArrayList<LatLng> border = new ArrayList<LatLng>();
+		Polygon polygon = document.createAndAddPlacemark().withName(
+				name + " " + cont).createAndSetPolygon().withExtrude(true)
+				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+		LinearRing l = polygon.createAndSetOuterBoundaryIs()
+				.createAndSetLinearRing();
 
-		border.add(new LatLng(coord.getLat(), coord.getLng() + ilng, coord
-				.getAltitude()));
-		border.add(new LatLng(coord.getLat() + ilat, coord.getLng() + ilng / 2,
-				coord.getAltitude()));
-		border.add(new LatLng(coord.getLat() + ilat, coord.getLng() - ilng / 2,
-				coord.getAltitude()));
-		border.add(new LatLng(coord.getLat(), coord.getLng() - ilng, coord
-				.getAltitude()));
-		border.add(new LatLng(coord.getLat() - ilat, coord.getLng() - ilng / 2,
-				coord.getAltitude()));
-		border.add(new LatLng(coord.getLat() - ilat, coord.getLng() + ilng / 2,
-				coord.getAltitude()));
-		return border;
+		
+		l.addToCoordinates(coord.metersToDegrees(tileSize/2, 0).toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(tileSize/4, tileSize/2).toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(-tileSize/4, tileSize/2).toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(-tileSize/2, 0).toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(-tileSize/4, -tileSize/2).toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(tileSize/4, -tileSize/2).toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(tileSize/2, 0).toGoogleString());
+		
 	}
 
-	
 }

@@ -17,8 +17,9 @@ public class hexagramTest {
 		//newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
 		//		29.918075, -90.053707));
 
-		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short)10), new LatLng(
-				29.918075, -90.053707, (short)10), (short) 10);
+		LatLng NW = new LatLng(29.953260, -90.088238, (short)10);
+		newOrleans.setGeoData(NW, new LatLng(
+				29.918075, -90.053707, (short)10), (short) 150);
 		newOrleans.setName("New Orleans Hexagrams");
 		newOrleans.setDescription("NW SE 1m");
 		newOrleans.complete();
@@ -27,21 +28,18 @@ public class hexagramTest {
 		KmlWriter k = new KmlWriter();
 		k.createDocument("Hexagam Maps", "Test of deployment hexagrams");
 		
-		LatLng c = newOrleans.tileToCoord(0, 0);
-		LatLng b = newOrleans.tileToCoord(11, 7);
-		
-		int a[] = newOrleans.coordToTile(b);
-		int d[] = newOrleans.coordToTile(c);
-		
-		System.out.println("[11][7] = "+b+", "+b+" = ["+a[0]+"]["+a[1]+"]");
-		System.out.println("[0][0] = "+c+", "+c+" = ["+d[0]+"]["+d[1]+"]");
-		
-		for (int i=0;i<newOrleans.getGridSize()[0];i++){
-			for (int j=0;j<newOrleans.getGridSize()[1];j++){
-				k.createHexagon(newOrleans.tileToCoord(i, j));				
+		for (int i=0;i<2;i++){
+			for (int j=0;j<5;j++){
+				LatLng c = newOrleans.tileToCoord(i, j);
+				k.createHexagon("HEX", c);
+				System.out.println("["+i+","+j+"] Distancia a [0,0] ->"+NW.distance(c));
 			}
 		}
-		k.createKmzFile("New Orleans Hexagram");
+		k.createHexagon("HEX",newOrleans.tileToCoord(6, 6));
+		
+		
+	
+		k.createKmzFile("New Orleans Test Hexagrams");
 
 	}
 

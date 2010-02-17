@@ -40,11 +40,9 @@ public class Scenario implements Serializable {
 	protected HexagonalGrid grid = null;
 	private String description = "";
 	private String name = "";
-	// Diameter of the circle circunflex of the hexagon in meters
+	// Diameter of the circunflex circle of the hexagon in meters
 	private short tileSize = 1;
 	// Increment in degrees (depends on tileSize)
-	private double latInc;
-	private double lngInc;
 	// 1 unit means 1/precision meters
 	private short precision = 10;
 	// Current Scenario showed on GUI
@@ -73,14 +71,12 @@ public class Scenario implements Serializable {
 		this.tileSize = tileSize;
 
 		// Obtain the opposite of the square distance in km
-		int x = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000 / tileSize);
-		int y = (int) (SE.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000 / tileSize);
+		int y = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000 / tileSize) / 2;
+		int x = (int) (NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000 / tileSize) / 2;
 
 		// Set grid size
-		createGrid(x, y);
+		createGrid(x + 1, y + 1);
 		// Set offset in degrees between two hexagramas
-		latInc = (Math.abs(NW.getLat()) - Math.abs(SE.getLat())) / x;
-		lngInc = (Math.abs(NW.getLng()) - Math.abs(SE.getLng())) / y;
 		// System.out.println(NW.toString()+SE.toString()+", x:"+x+", y:"+y+"lat inc ="+latInc+", long inc ="+lngInc);
 	}
 
@@ -103,6 +99,30 @@ public class Scenario implements Serializable {
 	}
 
 	/**
+	 * Convert form the grid to hexagram coordinate
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public LatLng tileToCoord(int x, int y) {
+		if (NW == null)
+			throw new IllegalStateException(
+					"Simulation area hasn't been defined yet.");
+		double lng;
+		double lat = (tileSize * x *3/4);
+
+		if (x % 2 != 0) {
+			// odd Rows has offset.
+			lng = ((tileSize / 2) + (tileSize * y));
+		} else {
+			lng = (tileSize * y);
+		}
+
+		return NW.metersToDegrees(lat, lng, grid.getTerrainValue(x, y));
+	}
+
+	/**
 	 * Convert from a coordinate to the position in the grid
 	 * 
 	 * @param coord
@@ -113,11 +133,10 @@ public class Scenario implements Serializable {
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
 		// Aproximacion
-		int x = (int) (Math.abs(Math.abs(NW.getLat())
-				- Math.abs(coord.getLat())) / latInc);
-		int y = (int) (Math.abs(Math.abs(NW.getLng())
-				- Math.abs(coord.getLng())) / lngInc);
+		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
+		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
 		// Try to adjust aproximation errors. 7%
+
 		double minDist = coord.distance(tileToCoord(x, y));
 		for (int[] tile : grid.getAdjacents(x, y)) {
 			double dist = coord.distance(tileToCoord(tile[0], tile[1]));
@@ -142,32 +161,6 @@ public class Scenario implements Serializable {
 	public LatLng coordToTileCentrum(LatLng coord) {
 		int c[] = coordToTile(coord);
 		return tileToCoord(c[0], c[1]);
-	}
-
-	/**
-	 * Convert form the grid to hexagram coordinate
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public LatLng tileToCoord(int x, int y) {
-		if (NW == null)
-			throw new IllegalStateException(
-					"Simulation area hasn't been defined yet.");
-		LatLng coord;
-		// Odd Rows has offset.
-		if (x % 2 == 0) {
-			// Just add the distance (x * tileSize) and get the new coordinate
-			coord = new LatLng(NW.getLat() + (x * latInc), NW.getLng()
-					+ (y * lngInc), grid.getTerrainValue(x, y));
-		} else {
-			// Just add the distance (x * tileSize) and get the new coordinate
-			// plus offset
-			coord = new LatLng(NW.getLat() + (x * latInc), NW.getLng()
-					+ (y * lngInc) + (lngInc / 2), grid.getTerrainValue(x, y));
-		}
-		return coord;
 	}
 
 	/**
@@ -248,14 +241,6 @@ public class Scenario implements Serializable {
 
 	public double innerToDouble(short s) {
 		return ((double) s) / precision;
-	}
-
-	public double getLatInc() {
-		return latInc;
-	}
-
-	public double getLngInc() {
-		return lngInc;
 	}
 
 	public void setName(String name) {
