@@ -99,14 +99,19 @@ public class KmlWriter {
 	 * @return
 	 */
 	public void createPolygon(String name, Set<LatLng> borderLine) {
+		if (borderLine == null){
+			throw new IllegalArgumentException("Poligon canot be empty");
+		}
 		Polygon polygon = document.createAndAddPlacemark().withName(
 				name + " " + cont).createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
+		Object[] primera = borderLine.toArray();
 		for (LatLng c : borderLine) {
 			l.addToCoordinates(c.toGoogleString());
 		}
+		l.addToCoordinates(((LatLng)primera[0]).toGoogleString());
 	}
 
 	/**

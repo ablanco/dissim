@@ -13,7 +13,7 @@ public class PositionGridTest {
 	public static void main(String[] args) {
 		Scenario newOrleans = new FloodScenario();
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short)10), new LatLng(
-				29.918075, -90.053707, (short)10), (short) 10);
+				29.918075, -90.053707, (short)10), (short) 600);
 		newOrleans.setName("New Orleans Hexagrams");
 		newOrleans.setDescription("NW SE 1m");
 		newOrleans.complete();

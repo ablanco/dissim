@@ -17,8 +17,8 @@
 package util;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
@@ -71,8 +71,8 @@ public class Scenario implements Serializable {
 		this.tileSize = tileSize;
 
 		// Obtain the opposite of the square distance in km
-		int y = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000 / tileSize) / 2;
-		int x = (int) (NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000 / tileSize) / 2;
+		int y = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000 / tileSize);
+		int x = (int) (NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000 / tileSize);
 
 		// Set grid size
 		createGrid(x + 1, y + 1);
@@ -118,7 +118,6 @@ public class Scenario implements Serializable {
 		} else {
 			lng = (tileSize * y);
 		}
-
 		return NW.metersToDegrees(lat, lng, grid.getTerrainValue(x, y));
 	}
 
@@ -133,28 +132,26 @@ public class Scenario implements Serializable {
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
 		// Aproximacion
-		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
 		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
+		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
 		// Try to adjust aproximation errors. 7%
-
+		
 		double minDist = coord.distance(tileToCoord(x, y));
-		for (int[] tile : grid.getAdjacents(x, y)) {
-			double dist = coord.distance(tileToCoord(tile[0], tile[1]));
-			if (dist <= minDist) {
-				minDist = dist;
-				x = tile[0];
-				y = tile[1];
-				for (int[] t : grid.getAdjacents(tile[0], tile[1])) {
-					dist = coord.distance(tileToCoord(t[0], t[1]));
-					if (dist < minDist) {
-						minDist = dist;
-						x = t[0];
-						y = t[1];
-					}
+		System.err.print("Estan a "+minDist+" kms");
+		//algoritmo voraz para encontrar el mas cercano
+		while ((minDist*1000) > tileSize*0.95){
+			for (int[] p : grid.getAdjacents(x, y)){
+				double auxDist = coord.distance(tileToCoord(p[0], p[1]));
+				System.err.println("x "+auxDist+" kms ");
+				if (auxDist < minDist){
+					x = p[0];
+					y = p[1];
+					minDist = auxDist;
+					System.err.print("["+x+","+y+"] ");
 				}
 			}
 		}
-
+		System.err.print(coord.distance(tileToCoord(x, y))+"kms ");
 		return new int[] { x, y };
 	}
 
@@ -170,13 +167,24 @@ public class Scenario implements Serializable {
 	 *            <LatLng>
 	 * @return ArrayList<LatLng>
 	 */
-	public Set<LatLng> getAdjacents(LatLng c) {
-		HashSet<LatLng> coordsAdjacents = new HashSet<LatLng>();
-		int ind[] = coordToTile(c);
-		for (int[] adjacent : grid.getAdjacents(ind[0], ind[1])) {
-			coordsAdjacents.add(tileToCoord(adjacent[0], adjacent[1]));
+	public Set<Punto> getAdjacents(Punto p) {
+		Set<Punto> puntos = new TreeSet<Punto>();
+		for (int[] a : grid.getAdjacents(p.x, p.y)) {
+			puntos.add(new Punto(a[0], a[1], grid.getTerrainValue(a[0], a[1])));
 		}
-		return coordsAdjacents;
+		return puntos;
+	}
+	
+	/**
+	 * Look for diferents values sorrounding
+	 */
+	public boolean isBorderPoint(Punto p){
+		for (int[] a :grid.getAdjacents(p.x, p.y)){
+			if (p.z != grid.getTerrainValue(a[0], a[1])){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void setDescription(String description) {
@@ -208,8 +216,8 @@ public class Scenario implements Serializable {
 		if (complete)
 			return "\nSize [" + gridX + "," + gridY + "] NW coord :"
 					+ NW.toString() + ", SE Coord: " + SE.toString()
-					+ " Tile size :" + NW.distance(tileToCoord(0, 1)) + "kms"
-					+ ", Diagonal =" + NW.distance(SE) + "kms";
+					+ "\nTile size :" + NW.distance(tileToCoord(0, 1)) + "kms"
+					+ " ~ "+tileSize+"m, Diagonal =" + NW.distance(SE) + "kms";
 		else
 			return "Incomplete scenario description: " + super.toString();
 	}
