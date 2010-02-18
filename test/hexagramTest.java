@@ -20,7 +20,7 @@ public class hexagramTest {
 		LatLng NW = new LatLng(29.953260, -90.088238, (short)10);
 		newOrleans.setGeoData(NW, new LatLng(
 				29.918075, -90.053707, (short)10), (short) 150);
-		newOrleans.setName("New Orleans Hexagrams");
+		newOrleans.setName("Hexagrams grid Test");
 		newOrleans.setDescription("NW SE 1m");
 		newOrleans.complete();
 		
@@ -39,7 +39,7 @@ public class hexagramTest {
 		
 		
 	
-		k.createKmzFile("New Orleans Test Hexagrams");
+		k.createKmzFile("Hexagrams grid Test");
 
 	}
 

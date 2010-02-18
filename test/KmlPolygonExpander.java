@@ -1,12 +1,7 @@
 package test;
 
 import gui.VisorFrame;
-
-import java.util.Set;
-import java.util.TreeSet;
-
 import kml.flood.FloodKml;
-import util.Punto;
 import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
@@ -19,8 +14,8 @@ public class KmlPolygonExpander {
 		//newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
 		//		29.918075, -90.053707));
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short)10), new LatLng(
-				29.918075, -90.053707, (short)10), (short) 10);
-		newOrleans.setName("New Orleans Hexagrams");
+				29.918075, -90.053707, (short)10), (short) 300);
+		newOrleans.setName("Polygon Expander TEST");
 		newOrleans.setDescription("NW SE 1m");
 		newOrleans.complete();
 		
@@ -30,11 +25,11 @@ public class KmlPolygonExpander {
 		FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
 		
 		FloodKml k = new FloodKml();
-		k.createDocument("Hexagam Maps", "Test of deployment hexagrams");
+		k.createDocument("TEST", "Test of polygon expader");
 		
 		for (int i=0;i<newOrleans.getGridSize()[0];i++){
 			for (int j=0;j<newOrleans.getGridSize()[1];j++){
-				short x = (short)((Math.random()*100)%20);
+				short x = (short)((Math.random()*100)%2);
 				grid.setTerrainValue(i, j, x);				
 			}
 		}

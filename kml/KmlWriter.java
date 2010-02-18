@@ -19,7 +19,7 @@ package kml;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Set;
+import java.util.List;
 
 import util.HexagonalGrid;
 import util.Scenario;
@@ -47,9 +47,9 @@ public class KmlWriter {
 		Scenario scene = Scenario.getCurrentScenario();
 		dimX = scene.getGridSize()[0];
 		dimY = scene.getGridSize()[1];
-		
+
 		tileSize = scene.getTileSize();
-		
+
 		oldGrid = new HexagonalGrid(dimX, dimY);
 		HexagonalGrid grid = scene.getGrid();
 		for (int i = 0; i < dimX; i++) {
@@ -98,20 +98,23 @@ public class KmlWriter {
 	 * @param description
 	 * @return
 	 */
-	public void createPolygon(String name, Set<LatLng> borderLine) {
-		if (borderLine == null){
+	public void createPolygon(String name, List<LatLng> borderLine) {
+		if (borderLine.size() < 0) {
 			throw new IllegalArgumentException("Poligon canot be empty");
 		}
-		Polygon polygon = document.createAndAddPlacemark().withName(
-				name + " " + cont).createAndSetPolygon().withExtrude(true)
-				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-		LinearRing l = polygon.createAndSetOuterBoundaryIs()
-				.createAndSetLinearRing();
-		Object[] primera = borderLine.toArray();
-		for (LatLng c : borderLine) {
-			l.addToCoordinates(c.toGoogleString());
+		if (borderLine.size() == 1) {
+			createHexagon(name, borderLine.get(0));
+		} else {
+			Polygon polygon = document.createAndAddPlacemark().withName(
+					name + " " + cont).createAndSetPolygon().withExtrude(true)
+					.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+			LinearRing l = polygon.createAndSetOuterBoundaryIs()
+					.createAndSetLinearRing();
+			for (LatLng c : borderLine) {
+				l.addToCoordinates(c.toGoogleString());
+			}
+			l.addToCoordinates(borderLine.get(0).toGoogleString());
 		}
-		l.addToCoordinates(((LatLng)primera[0]).toGoogleString());
 	}
 
 	/**
@@ -128,15 +131,21 @@ public class KmlWriter {
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
-		
-		l.addToCoordinates(coord.metersToDegrees(tileSize/2, 0).toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(tileSize/4, tileSize/2).toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(-tileSize/4, tileSize/2).toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(-tileSize/2, 0).toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(-tileSize/4, -tileSize/2).toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(tileSize/4, -tileSize/2).toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(tileSize/2, 0).toGoogleString());
-		
+		l.addToCoordinates(coord.metersToDegrees(tileSize / 2, 0)
+				.toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(tileSize / 4, tileSize / 2)
+				.toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(-tileSize / 4, tileSize / 2)
+				.toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(-tileSize / 2, 0)
+				.toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(-tileSize / 4, -tileSize / 2)
+				.toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(tileSize / 4, -tileSize / 2)
+				.toGoogleString());
+		l.addToCoordinates(coord.metersToDegrees(tileSize / 2, 0)
+				.toGoogleString());
+
 	}
 
 }
