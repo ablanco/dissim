@@ -17,11 +17,10 @@
 package behaviours;
 
 import gui.VisorFrame;
-import util.HexagonalGrid;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+import util.HexagonalGrid;
 
 @SuppressWarnings("serial")
 public class UpdateVisorReceiveBehav extends CyclicBehaviour {
@@ -34,15 +33,15 @@ public class UpdateVisorReceiveBehav extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate.and(MessageTemplate
-				.MatchConversationId("update-visor"), MessageTemplate
-				.MatchPerformative(ACLMessage.INFORM));
-		ACLMessage msg = myAgent.receive(mt);
+//		MessageTemplate mt = MessageTemplate.and(MessageTemplate
+//				.MatchConversationId("update-visor"), MessageTemplate
+//				.MatchPerformative(ACLMessage.INFORM));
+		ACLMessage msg = myAgent.receive();
 		if (msg != null) {
 			// Mensaje recibido, hay que procesarlo
 			try {
 				HexagonalGrid grid = (HexagonalGrid) msg.getContentObject();
-				visor.updateGrid(grid);
+				visor.update(grid);
 			} catch (UnreadableException e) {
 				e.printStackTrace();
 			}

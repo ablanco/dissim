@@ -54,13 +54,13 @@ public class VisorTest {
 		grid.setWaterValue(0, 1, (short) 6);
 		grid.setWaterValue(0, 2, (short) 6);
 		grid.setWaterValue(1, 0, (short) 1);
-		v.updateGrid(grid);
+		v.update(grid);
 		v.setVisible(true);
 
 		Thread.sleep(2000L);
 
 		grid.setWaterValue(1, 2, (short) 2);
-		v.updateGrid(grid);
+		v.update(grid);
 	}
 
 }

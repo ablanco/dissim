@@ -32,10 +32,11 @@ import javax.swing.JFrame;
 
 import util.Hexagon2D;
 import util.HexagonalGrid;
+import util.Updateable;
 import util.flood.FloodHexagonalGrid;
 
 @SuppressWarnings("serial")
-public class VisorFrame extends JFrame {
+public class VisorFrame extends JFrame implements Updateable {
 
 	private HexagonalGrid grid = null;
 	private int radius = -1;
@@ -118,8 +119,12 @@ public class VisorFrame extends JFrame {
 		}
 	}
 
-	public void updateGrid(HexagonalGrid grid) {
-		this.grid = grid;
+	public void update(Object obj) {
+		if (!(obj instanceof HexagonalGrid))
+			throw new IllegalArgumentException(
+					"Object is not an instance of HexagonalGrid");
+
+		this.grid = (HexagonalGrid) obj;
 
 		if (radius == -1) { // Primera vez que recibe un grid
 			// Calcular el radio de los hexágonos a representar

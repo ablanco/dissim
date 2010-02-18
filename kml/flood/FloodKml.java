@@ -12,9 +12,10 @@ import kml.KmlWriter;
 import util.HexagonalGrid;
 import util.Punto;
 import util.Scenario;
+import util.Updateable;
 import util.jcoord.LatLng;
 
-public class FloodKml extends KmlWriter {
+public class FloodKml extends KmlWriter implements Updateable {
 
 	public FloodKml() {
 		super();
@@ -27,7 +28,6 @@ public class FloodKml extends KmlWriter {
 			for (SortedSet<Punto> region : regions) {
 				// TODO region podría no estar ordenados y salir cosas raras
 				// Collections.sort(region);
-
 				createPolygon("Pol" + cont, regionToPoligon(region, newScene));
 				cont++;
 				if (region.size() > 10) {
@@ -42,20 +42,26 @@ public class FloodKml extends KmlWriter {
 		createKmzFile(newScene.getName());
 	}
 
-	public void snapShot(Scenario newScene) {
+	public void update(Object obj) {
+		if (!(obj instanceof Scenario))
+			throw new IllegalArgumentException(
+					"Object is not an instance of Scenario");
+
+		Scenario newScene = (Scenario) obj;
+
 		createDocument("Flooding State Level", "RainFalling Motherfuckers");
 		long cont = 0;
 		HexagonalGrid g = newScene.getGrid();
-		for (int x=0;x<g.getDimX();x++){
-			for (int y=0;y<g.getDimY();y++){
-				if (g.getTerrainValue(x, y)!=oldGrid.getTerrainValue(x, y)){
-					createHexagon("HEX"+cont, newScene.tileToCoord(x, y));
+		for (int x = 0; x < g.getDimX(); x++) {
+			for (int y = 0; y < g.getDimY(); y++) {
+				if (g.getTerrainValue(x, y) != oldGrid.getTerrainValue(x, y)) {
+					createHexagon("HEX" + cont, newScene.tileToCoord(x, y));
 					cont++;
 				}
-				
+
 			}
 		}
-		
+
 		System.out.println("Hexagonos Creados" + cont);
 		createKmzFile(newScene.getName());
 	}
@@ -64,9 +70,9 @@ public class FloodKml extends KmlWriter {
 			Scenario newScene) {
 		List<LatLng> borderLine = new ArrayList<LatLng>();
 		// Initializating
-		
+
 		List<Punto> adyList = new ArrayList<Punto>();
-		
+
 		while (!region.isEmpty()) {
 			Punto p = (Punto) (region).first();
 			adyList.add(p);
@@ -83,11 +89,11 @@ public class FloodKml extends KmlWriter {
 						adyList.add(b);
 					}
 				}
-				for (Punto r : adyList){
+				for (Punto r : adyList) {
 					region.remove(r);
 				}
 			}
-			
+
 		}
 
 		return borderLine;

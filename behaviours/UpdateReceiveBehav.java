@@ -19,32 +19,27 @@ package behaviours;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import kml.flood.FloodKml;
-import util.Scenario;
+import util.Updateable;
 
 @SuppressWarnings("serial")
-public class KMLSnapshotReceiveBehav extends CyclicBehaviour {
+public class UpdateReceiveBehav extends CyclicBehaviour {
 
-	FloodKml kml;
+	private Updateable obj;
 
-	public KMLSnapshotReceiveBehav(Agent a, FloodKml kml) {
+	public UpdateReceiveBehav(Agent a, Updateable obj) {
 		super(a);
-		this.kml = kml;
+		this.obj = obj;
 	}
 
 	@Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate.and(MessageTemplate
-				.MatchConversationId("kml-snapshot"), MessageTemplate
-				.MatchPerformative(ACLMessage.INFORM));
-		ACLMessage msg = myAgent.receive(mt);
+		ACLMessage msg = myAgent.receive();
 		if (msg != null) {
 			// Mensaje recibido, hay que procesarlo
 			try {
-				Scenario scen = (Scenario) msg.getContentObject();
-				kml.snapShot(scen);
+				Object content = msg.getContentObject();
+				obj.update(content);
 			} catch (UnreadableException e) {
 				e.printStackTrace();
 			}
