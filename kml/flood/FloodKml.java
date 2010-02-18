@@ -10,28 +10,54 @@ import java.util.TreeSet;
 
 import kml.KmlWriter;
 import util.HexagonalGrid;
-import util.Punto;
+import util.Point;
 import util.Scenario;
 import util.Updateable;
 import util.jcoord.LatLng;
 
 public class FloodKml extends KmlWriter implements Updateable {
+	private long cont = 0;
 
+	
 	public FloodKml() {
 		super();
+		openFolder("Flooding", "All these sectors are flooded");
+	}
+
+	public void update(Object obj) {
+		if (!(obj instanceof Scenario))
+			throw new IllegalArgumentException(
+					"Object is not an instance of Scenario");
+		Scenario newScene = (Scenario) obj;
+		beginTime = newScene.getDateAndTime().toString();
+		newScene.updateTime();
+		endTime = newScene.getDateAndTime().toString();
+		
+		HexagonalGrid g = newScene.getGrid();
+
+		for (int x = 0; x < g.getDimX(); x++) {
+			for (int y = 0; y < g.getDimY(); y++) {
+				if (g.getTerrainValue(x, y) != oldGrid.getTerrainValue(x, y)) {
+					createHexagon("HEX" + cont, newScene.tileToCoord(x, y));
+					cont++;
+				}
+
+			}
+		}
+		System.out.println("Hexagonos Creados" + cont);
 	}
 
 	public void snapShot2(Scenario newScene) {
-		createDocument("Flooding State Level", "RainFalling Motherfuckers");
+		openFolder("Flooding State Level", "RainFalling Motherfuckers");
 		long cont = 0;
-		for (List<SortedSet<Punto>> regions : getBorderRegions(newScene)) {
-			for (SortedSet<Punto> region : regions) {
+		for (List<SortedSet<Point>> regions : getBorderRegions(newScene)) {
+			for (SortedSet<Point> region : regions) {
 				// TODO region podría no estar ordenados y salir cosas raras
 				// Collections.sort(region);
 				createPolygon("Pol" + cont, regionToPoligon(region, newScene));
 				cont++;
 				if (region.size() > 10) {
-					for (Punto c : region) {
+					for (Point c : region) {
 						System.out.print("[" + c.x + "," + c.y + "] ");
 					}
 					System.out.println();
@@ -42,54 +68,30 @@ public class FloodKml extends KmlWriter implements Updateable {
 		createKmzFile(newScene.getName());
 	}
 
-	public void update(Object obj) {
-		if (!(obj instanceof Scenario))
-			throw new IllegalArgumentException(
-					"Object is not an instance of Scenario");
-
-		Scenario newScene = (Scenario) obj;
-
-		createDocument("Flooding State Level", "RainFalling Motherfuckers");
-		long cont = 0;
-		HexagonalGrid g = newScene.getGrid();
-		for (int x = 0; x < g.getDimX(); x++) {
-			for (int y = 0; y < g.getDimY(); y++) {
-				if (g.getTerrainValue(x, y) != oldGrid.getTerrainValue(x, y)) {
-					createHexagon("HEX" + cont, newScene.tileToCoord(x, y));
-					cont++;
-				}
-
-			}
-		}
-
-		System.out.println("Hexagonos Creados" + cont);
-		createKmzFile(newScene.getName());
-	}
-
-	private List<LatLng> regionToPoligon(SortedSet<Punto> region,
+	private List<LatLng> regionToPoligon(SortedSet<Point> region,
 			Scenario newScene) {
 		List<LatLng> borderLine = new ArrayList<LatLng>();
 		// Initializating
 
-		List<Punto> adyList = new ArrayList<Punto>();
+		List<Point> adyList = new ArrayList<Point>();
 
 		while (!region.isEmpty()) {
-			Punto p = (Punto) (region).first();
+			Point p = (Point) (region).first();
 			adyList.add(p);
 			region.remove(p);
 			while (!adyList.isEmpty()) {
 				p = adyList.get(0);
 				borderLine.add(newScene.tileToCoord(p.x, p.y));
 				adyList.remove(p);
-				Set<Punto> s = newScene.getAdjacents(p);
-				for (Punto b : region) {
+				Set<Point> s = newScene.getAdjacents(p);
+				for (Point b : region) {
 					// could be more than one each time
 					if (s.contains(b)) {
 						borderLine.add(newScene.tileToCoord(b.x, b.y));
 						adyList.add(b);
 					}
 				}
-				for (Punto r : adyList) {
+				for (Point r : adyList) {
 					region.remove(r);
 				}
 			}
@@ -99,10 +101,10 @@ public class FloodKml extends KmlWriter implements Updateable {
 		return borderLine;
 	}
 
-	private boolean addBorderToRegion(List<SortedSet<Punto>> regions,
-			Set<Punto> adyacents, Punto border) {
-		for (Set<Punto> region : regions) {
-			for (Punto adyacent : adyacents) {
+	private boolean addBorderToRegion(List<SortedSet<Point>> regions,
+			Set<Point> adyacents, Point border) {
+		for (Set<Point> region : regions) {
+			for (Point adyacent : adyacents) {
 				if (region.contains(adyacent)) {
 					region.add(border);
 					// System.out.print(", Borde añadido");
@@ -113,16 +115,16 @@ public class FloodKml extends KmlWriter implements Updateable {
 		return false;
 	}
 
-	private Collection<List<SortedSet<Punto>>> getBorderRegions(
+	private Collection<List<SortedSet<Point>>> getBorderRegions(
 			Scenario newScene) {
-		HashMap<Short, List<SortedSet<Punto>>> levelRegions = new HashMap<Short, List<SortedSet<Punto>>>();
+		HashMap<Short, List<SortedSet<Point>>> levelRegions = new HashMap<Short, List<SortedSet<Point>>>();
 		HexagonalGrid newGrid = newScene.getGrid();
 		for (int x = 0; x < dimX; x++) {
 			for (int y = 0; y < dimY; y++) {
 				// recorremos cada punto de la matriz
 				short altitude = newGrid.getTerrainValue(x, y);
 				// si son diferentes
-				Punto p = new Punto(x, y, altitude);
+				Point p = new Point(x, y, altitude);
 				if (oldGrid.getTerrainValue(x, y) != altitude) {
 					// System.out.print("!=, ");
 					if (newScene.isBorderPoint(p)) {
@@ -130,14 +132,14 @@ public class FloodKml extends KmlWriter implements Updateable {
 						// System.out.print(", Borde");
 						// System.out.print("(" + x + "," + y + ") Region :" +
 						// altitude);
-						List<SortedSet<Punto>> regions = levelRegions
+						List<SortedSet<Point>> regions = levelRegions
 								.get(altitude);
 						if (regions == null) {
 							// si no existe la region la creamos y añadimos el
 							// borde
 							// System.out.print(", Nueva Lista Regiones Creada");
-							regions = new ArrayList<SortedSet<Punto>>();
-							SortedSet<Punto> region = new TreeSet<Punto>();
+							regions = new ArrayList<SortedSet<Point>>();
+							SortedSet<Point> region = new TreeSet<Point>();
 							region.add(p);
 							regions.add(region);
 							levelRegions.put(altitude, regions);
@@ -147,7 +149,7 @@ public class FloodKml extends KmlWriter implements Updateable {
 								// si no pertenece a una region creada, creamos
 								// una nueva region
 								// System.out.print(", Nueva Lista Region Creada");
-								SortedSet<Punto> region = new TreeSet<Punto>();
+								SortedSet<Point> region = new TreeSet<Point>();
 								region.add(p);
 								regions.add(region);
 							}

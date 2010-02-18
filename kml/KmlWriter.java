@@ -25,15 +25,20 @@ import util.HexagonalGrid;
 import util.Scenario;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
-import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.ColorMode;
+import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
+import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import de.micromata.opengis.kml.v_2_2_0.LinearRing;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
+import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 
 public class KmlWriter {
 
 	protected Kml kml;
-	protected Document document;
+	// protected Document document;
+	protected Folder folder;
 	protected HexagonalGrid oldGrid;
 	protected long cont;
 	protected double ilat;
@@ -41,10 +46,12 @@ public class KmlWriter {
 	protected short tileSize;
 	protected int dimX;
 	protected int dimY;
+	protected String beginTime;
+	protected String endTime;
 
 	public KmlWriter() {
-		kml = new Kml();
 		Scenario scene = Scenario.getCurrentScenario();
+		kml = KmlFactory.createKml();
 		dimX = scene.getGridSize()[0];
 		dimY = scene.getGridSize()[1];
 
@@ -82,12 +89,14 @@ public class KmlWriter {
 
 	}
 
-	public void createDocument(String name, String description) {
-		document = new Document();
-		kml.setFeature(document);
-		document.setName(name);
-		document.setDescription(description);
-		document.setOpen(false);
+	/*
+	 * public void createDocument(String name, String description) { document =
+	 * new Document(); kml.setFeature(document); document.setName(name);
+	 * document.setDescription(description); document.setOpen(false); }
+	 */
+	public void openFolder(String name, String description) {
+		folder = kml.createAndSetFolder().withName(name).withOpen(true)
+				.withDescription(description);
 	}
 
 	/**
@@ -102,12 +111,23 @@ public class KmlWriter {
 		if (borderLine.size() < 0) {
 			throw new IllegalArgumentException("Poligon canot be empty");
 		}
+		
+
 		if (borderLine.size() == 1) {
 			createHexagon(name, borderLine.get(0));
 		} else {
-			Polygon polygon = document.createAndAddPlacemark().withName(
-					name + " " + cont).createAndSetPolygon().withExtrude(true)
+			folder.createAndAddStyle().withId("examplePolyStyle")
+					.createAndSetPolyStyle().withColor("ff0000cc")
+					.withColorMode(ColorMode.RANDOM);
+
+			Placemark placeMark = folder.createAndAddPlacemark().withName(
+					name + " " + cont);
+
+			setTimeSpan(placeMark);
+			
+			Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
 					.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+
 			LinearRing l = polygon.createAndSetOuterBoundaryIs()
 					.createAndSetLinearRing();
 			for (LatLng c : borderLine) {
@@ -115,6 +135,15 @@ public class KmlWriter {
 			}
 			l.addToCoordinates(borderLine.get(0).toGoogleString());
 		}
+	}
+	
+	
+	protected void setTimeSpan(Placemark placeMark){
+		TimeSpan t = new TimeSpan();
+		t.setBegin(beginTime);
+		t.setEnd(endTime);
+		
+		placeMark.setTimePrimitive(t);
 	}
 
 	/**
@@ -124,9 +153,13 @@ public class KmlWriter {
 	 * @param alt
 	 */
 	public void createHexagon(String name, LatLng coord) {
+		
+		Placemark placeMark = folder.createAndAddPlacemark().withName(
+				name + " " + cont);
+		
+		setTimeSpan(placeMark);
 
-		Polygon polygon = document.createAndAddPlacemark().withName(
-				name + " " + cont).createAndSetPolygon().withExtrude(true)
+		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();

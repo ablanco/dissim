@@ -17,6 +17,7 @@ public class KmlPolygonExpander {
 				new LatLng(29.918075, -90.053707, (short) 10), (short) 300);
 		newOrleans.setName("Polygon Expander TEST");
 		newOrleans.setDescription("NW SE 1m");
+		newOrleans.setDateAndTime(2000, 3, 15, 15, 3);
 		newOrleans.complete();
 
 		System.out.println(newOrleans.toString());
@@ -24,7 +25,7 @@ public class KmlPolygonExpander {
 		FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
 
 		FloodKml k = new FloodKml();
-		k.createDocument("TEST", "Test of polygon expader");
+		k.openFolder("TEST", "Test of polygon expader");
 
 		for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
 			for (int j = 0; j < newOrleans.getGridSize()[1]; j++) {

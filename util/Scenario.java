@@ -30,25 +30,45 @@ public class Scenario implements Serializable {
 	// The GUI is the one that should care that the Scenario is completed before
 	// simulating it
 	private boolean complete = false;
-	// Coordinates of simulation area (rectangle)
-	// NW means North West point
+	/**
+	 * Coordinates of simulation area (rectangle) NW means North West point
+	 */
 	protected LatLng NW = null;
-	// SE means South East point
+	/**
+	 * SE means South East point
+	 */
 	protected LatLng SE = null;
 	protected int gridX = -1;
 	protected int gridY = -1;
 	protected HexagonalGrid grid = null;
 	private String description = "";
 	private String name = "";
-	// Diameter of the circunflex circle of the hexagon in meters
+	/**
+	 * Diameter of the circunflex circle of the hexagon in meters
+	 */
 	private short tileSize = 1;
-	// Increment in degrees (depends on tileSize)
-	// 1 unit means 1/precision meters
+	/**
+	 * Increment in degrees (depends on tileSize) 1 unit means 1/precision
+	 * meters
+	 */
 	private short precision = 10;
-	// Current Scenario showed on GUI
-	// If a Scenario is loaded (from a file), or a new one is created, this
-	// reference MUST change
+	// 
+	/**
+	 * Current Scenario showed on GUI If a Scenario is loaded (from a file), or
+	 * a new one is created, this reference MUST change
+	 */
 	protected static Scenario current = null;
+	/**
+	 *Current Date and Time of the Simulation
+	 */
+	protected DateAndTime currentDateAndTime = null;
+	/**
+	 * Time between two simulation Steps
+	 */
+	private int updateTimeMinutes;
+	/**
+	 * Log manager for debungin
+	 */
 	private Logger defaultLogger = new Logger();
 
 	// This class shouldn't be used directly, that's why the constructor is
@@ -129,6 +149,7 @@ public class Scenario implements Serializable {
 	 * @return
 	 */
 	public int[] coordToTile(LatLng coord) {
+		//TODO Esto no rula ni pa tras.
 		if (tileSize < 0)
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
@@ -137,28 +158,7 @@ public class Scenario implements Serializable {
 		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
 		// Try to adjust aproximation errors. 7%
 
-		double minDist = coord.distance(tileToCoord(x, y));
-		// System.err.print("Están a " + minDist + " kms");
-		// algoritmo voraz para encontrar el mas cercano
-		while ((minDist * 1000) > tileSize * 0.95) {
-			for (int[] p : grid.getAdjacents(x, y)) {
-				double auxDist = coord.distance(tileToCoord(p[0], p[1]));
-				// System.err.println("x " + auxDist + " kms ");
-				if (auxDist < minDist) {
-					x = p[0];
-					y = p[1];
-					minDist = auxDist;
-					// System.err.print("[" + x + "," + y + "] ");
-				}
-			}
-		}
-		// System.err.print(coord.distance(tileToCoord(x, y)) + "kms ");
 		return new int[] { x, y };
-	}
-
-	public LatLng coordToTileCentrum(LatLng coord) {
-		int c[] = coordToTile(coord);
-		return tileToCoord(c[0], c[1]);
 	}
 
 	/**
@@ -168,10 +168,10 @@ public class Scenario implements Serializable {
 	 *            <LatLng>
 	 * @return ArrayList<LatLng>
 	 */
-	public Set<Punto> getAdjacents(Punto p) {
-		Set<Punto> puntos = new TreeSet<Punto>();
+	public Set<Point> getAdjacents(Point p) {
+		Set<Point> puntos = new TreeSet<Point>();
 		for (int[] a : grid.getAdjacents(p.x, p.y)) {
-			puntos.add(new Punto(a[0], a[1], grid.getTerrainValue(a[0], a[1])));
+			puntos.add(new Point(a[0], a[1], grid.getTerrainValue(a[0], a[1])));
 		}
 		return puntos;
 	}
@@ -179,6 +179,7 @@ public class Scenario implements Serializable {
 	/**
 	 * Look for diferents values sorrounding
 	 */
+
 	public boolean isBorderPoint(Punto p) {
 		for (int[] a : grid.getAdjacents(p.x, p.y)) {
 			if (p.z != grid.getTerrainValue(a[0], a[1])) {
@@ -215,7 +216,8 @@ public class Scenario implements Serializable {
 	@Override
 	public String toString() {
 		if (complete)
-			return "\nSize [" + gridX + "," + gridY + "] NW coord :"
+			return "Current Time: " + currentDateAndTime.toString()
+					+ "\nSize [" + gridX + "," + gridY + "] NW coord :"
 					+ NW.toString() + ", SE Coord: " + SE.toString()
 					+ "\nTile size :" + NW.distance(tileToCoord(0, 1)) + "kms"
 					+ " ~ " + tileSize + "m, Diagonal =" + NW.distance(SE)
@@ -223,7 +225,9 @@ public class Scenario implements Serializable {
 		else
 			return "Incomplete scenario description: " + super.toString();
 	}
-
+/**
+ * Webservice, gets elevation of all the grid.
+ */
 	public void obtainTerrainElevation() {
 		if (grid == null)
 			throw new IllegalStateException("The grid hasn't been created yet.");
@@ -265,6 +269,39 @@ public class Scenario implements Serializable {
 	public String getName() {
 		return name;
 	}
+/**
+ * Set time and date for the simulation
+ * @param year
+ * @param month
+ * @param dayOfMonth
+ * @param hourOfDay
+ * @param minute
+ */
+	public void setDateAndTime(int year, int month, int dayOfMonth,
+			int hourOfDay, int minute) {
+		this.currentDateAndTime = new DateAndTime(year, month, dayOfMonth,
+				hourOfDay, minute);
+	}
+
+	public DateAndTime getDateAndTime() {
+		return currentDateAndTime;
+	}
+
+	public void updateTime() {
+		currentDateAndTime.updateTime(updateTimeMinutes);
+	}
+/**
+ * Set the time in minutes between two steps of the simulation
+ * @param updateTimeMinutes
+ */
+	public void setUpdateTimeMinutes(int updateTimeMinutes) {
+		this.updateTimeMinutes = updateTimeMinutes;
+	}
+
+	public int getUpdateTimeMinutes() {
+		return updateTimeMinutes;
+	}
+
 
 	public void setDefaultLogger(Logger defaultLogger) {
 		this.defaultLogger = defaultLogger;
@@ -277,4 +314,5 @@ public class Scenario implements Serializable {
 	public void disableDefaultLogger() {
 		defaultLogger.disable();
 	}
+
 }

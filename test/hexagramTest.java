@@ -22,11 +22,12 @@ public class hexagramTest {
 				29.918075, -90.053707, (short)10), (short) 150);
 		newOrleans.setName("Hexagrams grid Test");
 		newOrleans.setDescription("NW SE 1m");
+		newOrleans.setDateAndTime(2000, 3, 15, 15, 3);
 		newOrleans.complete();
 		
 		System.out.println(newOrleans.toString());
 		KmlWriter k = new KmlWriter();
-		k.createDocument("Hexagam Maps", "Test of deployment hexagrams");
+		k.openFolder("Hexagam Maps", "Test of deployment hexagrams");
 		
 		for (int i=0;i<2;i++){
 			for (int j=0;j<5;j++){
