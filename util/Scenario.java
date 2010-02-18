@@ -180,7 +180,7 @@ public class Scenario implements Serializable {
 	 * Look for diferents values sorrounding
 	 */
 
-	public boolean isBorderPoint(Punto p) {
+	public boolean isBorderPoint(Point p) {
 		for (int[] a : grid.getAdjacents(p.x, p.y)) {
 			if (p.z != grid.getTerrainValue(a[0], a[1])) {
 				return true;
