@@ -281,6 +281,7 @@ public class Scenario implements Serializable {
 			int hourOfDay, int minute) {
 		this.currentDateAndTime = new DateAndTime(year, month, dayOfMonth,
 				hourOfDay, minute);
+		defaultLogger.println("Time has been set to :"+currentDateAndTime.toString());
 	}
 
 	public DateAndTime getDateAndTime() {
@@ -288,13 +289,16 @@ public class Scenario implements Serializable {
 	}
 
 	public void updateTime() {
+		defaultLogger.println("Time has benn updated to: ");
 		currentDateAndTime.updateTime(updateTimeMinutes);
+		defaultLogger.print(currentDateAndTime.toString());
 	}
 /**
  * Set the time in minutes between two steps of the simulation
  * @param updateTimeMinutes
  */
 	public void setUpdateTimeMinutes(int updateTimeMinutes) {
+		defaultLogger.println("Update Time set To "+updateTimeMinutes+" min");
 		this.updateTimeMinutes = updateTimeMinutes;
 	}
 

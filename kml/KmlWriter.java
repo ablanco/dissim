@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.List;
 
 import util.HexagonalGrid;
+import util.Logger;
 import util.Scenario;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
@@ -48,6 +49,7 @@ public class KmlWriter {
 	protected int dimY;
 	protected String beginTime;
 	protected String endTime;
+	protected Logger log;
 
 	public KmlWriter() {
 		Scenario scene = Scenario.getCurrentScenario();
