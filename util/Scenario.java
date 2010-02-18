@@ -49,6 +49,7 @@ public class Scenario implements Serializable {
 	// If a Scenario is loaded (from a file), or a new one is created, this
 	// reference MUST change
 	protected static Scenario current = null;
+	private Logger defaultLogger = new Logger();
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -137,21 +138,21 @@ public class Scenario implements Serializable {
 		// Try to adjust aproximation errors. 7%
 
 		double minDist = coord.distance(tileToCoord(x, y));
-		//System.err.print("Están a " + minDist + " kms");
+		// System.err.print("Están a " + minDist + " kms");
 		// algoritmo voraz para encontrar el mas cercano
 		while ((minDist * 1000) > tileSize * 0.95) {
 			for (int[] p : grid.getAdjacents(x, y)) {
 				double auxDist = coord.distance(tileToCoord(p[0], p[1]));
-				//System.err.println("x " + auxDist + " kms ");
+				// System.err.println("x " + auxDist + " kms ");
 				if (auxDist < minDist) {
 					x = p[0];
 					y = p[1];
 					minDist = auxDist;
-					//System.err.print("[" + x + "," + y + "] ");
+					// System.err.print("[" + x + "," + y + "] ");
 				}
 			}
 		}
-		//System.err.print(coord.distance(tileToCoord(x, y)) + "kms ");
+		// System.err.print(coord.distance(tileToCoord(x, y)) + "kms ");
 		return new int[] { x, y };
 	}
 
@@ -263,5 +264,17 @@ public class Scenario implements Serializable {
 
 	public String getName() {
 		return name;
+	}
+
+	public void setDefaultLogger(Logger defaultLogger) {
+		this.defaultLogger = defaultLogger;
+	}
+
+	public Logger getDefaultLogger() {
+		return defaultLogger;
+	}
+
+	public void disableDefaultLogger() {
+		defaultLogger.disable();
 	}
 }
