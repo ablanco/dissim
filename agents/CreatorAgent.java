@@ -57,6 +57,11 @@ public class CreatorAgent extends Agent {
 					"agents.EnviromentAgent", 1, arguments));
 
 			// TODO Esperar a que el entorno esté inicializado
+//			try {
+//				Thread.sleep(5000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
 
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {

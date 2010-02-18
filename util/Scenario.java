@@ -110,7 +110,7 @@ public class Scenario implements Serializable {
 			throw new IllegalStateException(
 					"Simulation area hasn't been defined yet.");
 		double lng;
-		double lat = (tileSize * x *3/4);
+		double lat = (tileSize * x * 3 / 4);
 
 		if (x % 2 != 0) {
 			// odd Rows has offset.
@@ -135,23 +135,23 @@ public class Scenario implements Serializable {
 		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
 		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
 		// Try to adjust aproximation errors. 7%
-		
+
 		double minDist = coord.distance(tileToCoord(x, y));
-		System.err.print("Estan a "+minDist+" kms");
-		//algoritmo voraz para encontrar el mas cercano
-		while ((minDist*1000) > tileSize*0.95){
-			for (int[] p : grid.getAdjacents(x, y)){
+		//System.err.print("Están a " + minDist + " kms");
+		// algoritmo voraz para encontrar el mas cercano
+		while ((minDist * 1000) > tileSize * 0.95) {
+			for (int[] p : grid.getAdjacents(x, y)) {
 				double auxDist = coord.distance(tileToCoord(p[0], p[1]));
-				System.err.println("x "+auxDist+" kms ");
-				if (auxDist < minDist){
+				//System.err.println("x " + auxDist + " kms ");
+				if (auxDist < minDist) {
 					x = p[0];
 					y = p[1];
 					minDist = auxDist;
-					System.err.print("["+x+","+y+"] ");
+					//System.err.print("[" + x + "," + y + "] ");
 				}
 			}
 		}
-		System.err.print(coord.distance(tileToCoord(x, y))+"kms ");
+		//System.err.print(coord.distance(tileToCoord(x, y)) + "kms ");
 		return new int[] { x, y };
 	}
 
@@ -174,13 +174,13 @@ public class Scenario implements Serializable {
 		}
 		return puntos;
 	}
-	
+
 	/**
 	 * Look for diferents values sorrounding
 	 */
-	public boolean isBorderPoint(Punto p){
-		for (int[] a :grid.getAdjacents(p.x, p.y)){
-			if (p.z != grid.getTerrainValue(a[0], a[1])){
+	public boolean isBorderPoint(Punto p) {
+		for (int[] a : grid.getAdjacents(p.x, p.y)) {
+			if (p.z != grid.getTerrainValue(a[0], a[1])) {
 				return true;
 			}
 		}
@@ -217,7 +217,8 @@ public class Scenario implements Serializable {
 			return "\nSize [" + gridX + "," + gridY + "] NW coord :"
 					+ NW.toString() + ", SE Coord: " + SE.toString()
 					+ "\nTile size :" + NW.distance(tileToCoord(0, 1)) + "kms"
-					+ " ~ "+tileSize+"m, Diagonal =" + NW.distance(SE) + "kms";
+					+ " ~ " + tileSize + "m, Diagonal =" + NW.distance(SE)
+					+ "kms";
 		else
 			return "Incomplete scenario description: " + super.toString();
 	}
@@ -226,11 +227,16 @@ public class Scenario implements Serializable {
 		if (grid == null)
 			throw new IllegalStateException("The grid hasn't been created yet.");
 
+		int total = gridX * gridY;
+		int cont = 0;
 		for (int i = 0; i < gridX; i++) {
 			for (int j = 0; j < gridY; j++) {
 				LatLng coord = tileToCoord(i, j);
 				double value = AltitudeWS.getElevation(coord);
 				grid.setTerrainValue(i, j, doubleToInner(value));
+				cont++;
+				System.out.println("Obtenidas " + cont + " de " + total
+						+ " alturas\r");
 			}
 		}
 	}

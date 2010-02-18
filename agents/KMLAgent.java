@@ -58,7 +58,7 @@ public class KMLAgent extends Agent {
 		}
 
 		// Sindicarse en el entorno
-		ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+		ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
 		msg.addReceiver(envAID);
 		msg.setConversationId("syndicate-kml");
 		try {

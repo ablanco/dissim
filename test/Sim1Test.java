@@ -43,13 +43,11 @@ public class Sim1Test {
 		scen.setWaterAgents(waterAgents);
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), (short) 800);
-		// 5 x 5
 		scen.setPrecision((short) 10);
 		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.9532,
 				-90.0882), scen.doubleToInner(4), 650L));
 		System.out.println("Water Source dentro del área de simulación: " + ws);
 		scen.obtainTerrainElevation();
-		System.out.println("Obtenidas todas las alturas.");
 		scen.complete();
 	}
 

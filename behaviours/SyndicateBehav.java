@@ -36,7 +36,7 @@ public class SyndicateBehav extends CyclicBehaviour {
 				MessageTemplate.MatchConversationId("syndicate-visor"),
 				MessageTemplate.MatchConversationId("syndicate-kml")),
 				MessageTemplate.or(MessageTemplate
-						.MatchPerformative(ACLMessage.REQUEST), MessageTemplate
+						.MatchPerformative(ACLMessage.SUBSCRIBE), MessageTemplate
 						.MatchPerformative(ACLMessage.CANCEL)));
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
@@ -48,11 +48,11 @@ public class SyndicateBehav extends CyclicBehaviour {
 				e.printStackTrace();
 			}
 			// Sindicarse
-			if (msg.getPerformative() == ACLMessage.REQUEST && aid != null) {
+			if (msg.getPerformative() == ACLMessage.SUBSCRIBE && aid != null) {
 				// TODO periodos
 				Behaviour behav = null;
 				if (msg.getConversationId().equals("syndicate-visor")) {
-					behav = new UpdateVisorSendBehav(myAgent, 1000L, aid);
+					behav = new UpdateVisorSendBehav(myAgent, 2000L, aid);
 				} else if (msg.getConversationId().equals("syndicate-kml")) {
 					behav = new UpdateKMLSendBehav(myAgent, 10000L, aid);
 				}
