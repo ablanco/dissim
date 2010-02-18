@@ -25,11 +25,11 @@ import jade.lang.acl.UnreadableException;
 import util.Updateable;
 
 @SuppressWarnings("serial")
-public class UpdateReceiveBehav extends CyclicBehaviour {
+public class ReceiveUpdateBehav extends CyclicBehaviour {
 
 	private Updateable obj;
 
-	public UpdateReceiveBehav(Agent a, Updateable obj) {
+	public ReceiveUpdateBehav(Agent a, Updateable obj) {
 		super(a);
 		this.obj = obj;
 	}
@@ -45,7 +45,7 @@ public class UpdateReceiveBehav extends CyclicBehaviour {
 				// que no se quede pillado el comportamiento de recibir mensajes
 				ParallelBehaviour parBehav = new ParallelBehaviour(
 						ParallelBehaviour.WHEN_ALL);
-				parBehav.addSubBehaviour(new UpdateParallelBehav(this.myAgent,
+				parBehav.addSubBehaviour(new UpdateBehav(this.myAgent,
 						content));
 				myAgent.addBehaviour(parBehav);
 			} catch (UnreadableException e) {
@@ -56,11 +56,11 @@ public class UpdateReceiveBehav extends CyclicBehaviour {
 		}
 	}
 
-	protected class UpdateParallelBehav extends OneShotBehaviour {
+	protected class UpdateBehav extends OneShotBehaviour {
 
 		Object content;
 
-		public UpdateParallelBehav(Agent a, Object content) {
+		public UpdateBehav(Agent a, Object content) {
 			super(a);
 			this.content = content;
 		}

@@ -27,7 +27,7 @@ import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
 
-import behaviours.UpdateReceiveBehav;
+import behaviours.ReceiveUpdateBehav;
 
 @SuppressWarnings("serial")
 public class VisorAgent extends Agent {
@@ -68,7 +68,7 @@ public class VisorAgent extends Agent {
 		}
 
 		// Añadir comportamiento de actualización del visor
-		addBehaviour(new UpdateReceiveBehav(this, visor));
+		addBehaviour(new ReceiveUpdateBehav(this, visor));
 
 		visor.setVisible(true);
 	}

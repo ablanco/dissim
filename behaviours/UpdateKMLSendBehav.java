@@ -27,7 +27,7 @@ import jade.lang.acl.ACLMessage;
 @SuppressWarnings("serial")
 public class UpdateKMLSendBehav extends TickerBehaviour {
 
-	AID to;
+	private AID to;
 
 	public UpdateKMLSendBehav(Agent a, long period, AID to) {
 		super(a, period);

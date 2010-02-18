@@ -26,7 +26,7 @@ import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
 
-import behaviours.UpdateReceiveBehav;
+import behaviours.ReceiveUpdateBehav;
 
 import kml.flood.FloodKml;
 
@@ -69,7 +69,7 @@ public class KMLAgent extends Agent {
 		}
 
 		// Añadir comportamiento para la creación del KML
-		addBehaviour(new UpdateReceiveBehav(this, kml));
+		addBehaviour(new ReceiveUpdateBehav(this, kml));
 	}
 
 	@Override
