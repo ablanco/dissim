@@ -54,7 +54,7 @@ public class SyndicateBehav extends CyclicBehaviour {
 				if (msg.getConversationId().equals("syndicate-visor")) {
 					behav = new UpdateVisorSendBehav(myAgent, 1000L, aid);
 				} else if (msg.getConversationId().equals("syndicate-kml")) {
-					behav = new KMLSnapshotSendBehav(myAgent, 10000L, aid);
+					behav = new UpdateKMLSendBehav(myAgent, 10000L, aid);
 				}
 				Behaviour previous = behaviours.put(aid, behav);
 				if (previous != null)

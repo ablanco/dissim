@@ -16,37 +16,34 @@
 
 package behaviours;
 
-import gui.VisorFrame;
-import jade.core.behaviours.CyclicBehaviour;
+import java.io.IOException;
+
+import util.Scenario;
+import jade.core.AID;
+import jade.core.Agent;
+import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.UnreadableException;
-import util.HexagonalGrid;
 
 @SuppressWarnings("serial")
-public class UpdateVisorReceiveBehav extends CyclicBehaviour {
+public class UpdateKMLSendBehav extends TickerBehaviour {
 
-	private VisorFrame visor;
+	AID to;
 
-	public UpdateVisorReceiveBehav(VisorFrame visor) {
-		this.visor = visor;
+	public UpdateKMLSendBehav(Agent a, long period, AID to) {
+		super(a, period);
+		this.to = to;
 	}
 
 	@Override
-	public void action() {
-//		MessageTemplate mt = MessageTemplate.and(MessageTemplate
-//				.MatchConversationId("update-visor"), MessageTemplate
-//				.MatchPerformative(ACLMessage.INFORM));
-		ACLMessage msg = myAgent.receive();
-		if (msg != null) {
-			// Mensaje recibido, hay que procesarlo
-			try {
-				HexagonalGrid grid = (HexagonalGrid) msg.getContentObject();
-				visor.update(grid);
-			} catch (UnreadableException e) {
-				e.printStackTrace();
-			}
-		} else {
-			block();
+	protected void onTick() {
+		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		msg.addReceiver(to);
+		msg.setConversationId("kml-snapshot");
+		try {
+			msg.setContentObject(Scenario.getCurrentScenario());
+			myAgent.send(msg);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
