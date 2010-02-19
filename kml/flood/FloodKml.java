@@ -18,23 +18,31 @@ import util.jcoord.LatLng;
 public class FloodKml extends KmlWriter implements Updateable {
 	private long cont = 0;
 
-	
 	public FloodKml() {
 		super();
 		openFolder("Flooding", "All these sectors are flooded");
 	}
 
+	/**
+	 * This metohs geneate a snapshot of the current state of the simulation
+	 * Needs the scenario has dateAndTime and updateTimeMinutes.
+	 */
 	public void update(Object obj) {
 		if (!(obj instanceof Scenario))
 			throw new IllegalArgumentException(
 					"Object is not an instance of Scenario");
 		Scenario newScene = (Scenario) obj;
+		// Now we update the time for each update call
 		beginTime = newScene.getDateAndTime().toString();
 		newScene.updateTime();
 		endTime = newScene.getDateAndTime().toString();
-		
+
+		kmlLog.println("************Update called, simulation state at"
+				+ endTime);
+
 		HexagonalGrid g = newScene.getGrid();
 
+		// For each tile who has changed ever, creates hexagon
 		for (int x = 0; x < g.getDimX(); x++) {
 			for (int y = 0; y < g.getDimY(); y++) {
 				if (g.getTerrainValue(x, y) != oldGrid.getTerrainValue(x, y)) {
@@ -47,6 +55,7 @@ public class FloodKml extends KmlWriter implements Updateable {
 		System.out.println("Hexagonos Creados" + cont);
 	}
 
+	// TODO Expanded Poligons
 	public void snapShot2(Scenario newScene) {
 		openFolder("Flooding State Level", "RainFalling Motherfuckers");
 		long cont = 0;
@@ -68,6 +77,14 @@ public class FloodKml extends KmlWriter implements Updateable {
 		createKmzFile(newScene.getName());
 	}
 
+	/**
+	 * Given an scenario and a SortedSet<Point> containin borders of a region of
+	 * equal height returns a List of LatLng in the right order to be printed
+	 * 
+	 * @param region
+	 * @param newScene
+	 * @return
+	 */
 	private List<LatLng> regionToPoligon(SortedSet<Point> region,
 			Scenario newScene) {
 		List<LatLng> borderLine = new ArrayList<LatLng>();
@@ -101,6 +118,18 @@ public class FloodKml extends KmlWriter implements Updateable {
 		return borderLine;
 	}
 
+	/**
+	 * Given a list of regions of same height, looks for the region with who has
+	 * adyacents points of border
+	 * 
+	 * @param regions
+	 * @param adyacents
+	 *            of border
+	 * @param border
+	 *            Border we want to add to his right region
+	 * @return False if has no adyacents in regions. If true means it already
+	 *         have added to the right region
+	 */
 	private boolean addBorderToRegion(List<SortedSet<Point>> regions,
 			Set<Point> adyacents, Point border) {
 		for (Set<Point> region : regions) {
@@ -115,6 +144,13 @@ public class FloodKml extends KmlWriter implements Updateable {
 		return false;
 	}
 
+	/**
+	 * Looks for changes between oldGrid y newGrid and add them into a
+	 * Collection of regions.
+	 * 
+	 * @param newScene
+	 * @return a Collection whit all regions
+	 */
 	private Collection<List<SortedSet<Point>>> getBorderRegions(
 			Scenario newScene) {
 		HashMap<Short, List<SortedSet<Point>>> levelRegions = new HashMap<Short, List<SortedSet<Point>>>();

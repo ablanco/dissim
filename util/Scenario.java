@@ -86,6 +86,16 @@ public class Scenario implements Serializable {
 		return instance;
 	}
 
+	/**
+	 * Sets the Geolocation of the simulation, and the size of the tiles
+	 * 
+	 * @param NW
+	 *            Upper left corner
+	 * @param SE
+	 *            Lower right corner
+	 * @param tileSize
+	 *            size of the tile terrain
+	 */
 	public void setGeoData(LatLng NW, LatLng SE, short tileSize) {
 		this.NW = NW;
 		this.SE = SE;
@@ -120,11 +130,13 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Convert form the grid to hexagram coordinate
+	 * Convert [x,y] to the corresponding LatLng Coordinate (with altitude)
 	 * 
 	 * @param x
+	 *            lat
 	 * @param y
-	 * @return
+	 *            lng
+	 * @return LatLng
 	 */
 	public LatLng tileToCoord(int x, int y) {
 		if (NW == null)
@@ -149,7 +161,7 @@ public class Scenario implements Serializable {
 	 * @return
 	 */
 	public int[] coordToTile(LatLng coord) {
-		//TODO Esto no rula ni pa tras.
+		// TODO Esto no rula ni pa tras.
 		if (tileSize < 0)
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
@@ -162,11 +174,12 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Returns a list of adjacens from coords
+	 * Returns a set of adjacens of pfrom coords
 	 * 
-	 * @param c
-	 *            <LatLng>
-	 * @return ArrayList<LatLng>
+	 * @param p
+	 *            Point
+	 * 
+	 * @return Set<Point> adyacents to p
 	 */
 	public Set<Point> getAdjacents(Point p) {
 		Set<Point> puntos = new TreeSet<Point>();
@@ -177,9 +190,11 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Look for diferents values sorrounding
+	 * Look for diferents values of the adyacents values, if different, is
+	 * border.
+	 * 
+	 * @return true is border, false if not
 	 */
-
 	public boolean isBorderPoint(Point p) {
 		for (int[] a : grid.getAdjacents(p.x, p.y)) {
 			if (p.z != grid.getTerrainValue(a[0], a[1])) {
@@ -225,9 +240,10 @@ public class Scenario implements Serializable {
 		else
 			return "Incomplete scenario description: " + super.toString();
 	}
-/**
- * Webservice, gets elevation of all the grid.
- */
+
+	/**
+	 * Webservice, gets elevation of all the grid.
+	 */
 	public void obtainTerrainElevation() {
 		if (grid == null)
 			throw new IllegalStateException("The grid hasn't been created yet.");
@@ -269,43 +285,56 @@ public class Scenario implements Serializable {
 	public String getName() {
 		return name;
 	}
-/**
- * Set time and date for the simulation
- * @param year
- * @param month
- * @param dayOfMonth
- * @param hourOfDay
- * @param minute
- */
+
+	/**
+	 * Set time and date for the simulation
+	 * 
+	 * @param year
+	 * @param month
+	 * @param dayOfMonth
+	 * @param hourOfDay
+	 * @param minute
+	 */
 	public void setDateAndTime(int year, int month, int dayOfMonth,
 			int hourOfDay, int minute) {
 		this.currentDateAndTime = new DateAndTime(year, month, dayOfMonth,
 				hourOfDay, minute);
-		defaultLogger.println("Time has been set to :"+currentDateAndTime.toString());
+		defaultLogger.println("Time has been set to :"
+				+ currentDateAndTime.toString());
 	}
 
+	/**
+	 * Gets currentDateAndTime
+	 * 
+	 * @return currentDateAndTime
+	 */
 	public DateAndTime getDateAndTime() {
 		return currentDateAndTime;
 	}
 
+	/**
+	 * Updates de current time by adding updateTimeMinutes to currentDateAndTime
+	 */
 	public void updateTime() {
 		defaultLogger.println("Time has benn updated to: ");
 		currentDateAndTime.updateTime(updateTimeMinutes);
 		defaultLogger.print(currentDateAndTime.toString());
 	}
-/**
- * Set the time in minutes between two steps of the simulation
- * @param updateTimeMinutes
- */
+
+	/**
+	 * Set the time in minutes between two steps of the simulation
+	 * 
+	 * @param updateTimeMinutes
+	 */
 	public void setUpdateTimeMinutes(int updateTimeMinutes) {
-		defaultLogger.println("Update Time set To "+updateTimeMinutes+" min");
+		defaultLogger.println("Update Time set To " + updateTimeMinutes
+				+ " min");
 		this.updateTimeMinutes = updateTimeMinutes;
 	}
 
 	public int getUpdateTimeMinutes() {
 		return updateTimeMinutes;
 	}
-
 
 	public void setDefaultLogger(Logger defaultLogger) {
 		this.defaultLogger = defaultLogger;

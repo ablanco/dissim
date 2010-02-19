@@ -16,6 +16,7 @@
 
 package kml;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -32,7 +33,9 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.KmlFactory;
 import de.micromata.opengis.kml.v_2_2_0.LinearRing;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
+import de.micromata.opengis.kml.v_2_2_0.Style;
 import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 
 public class KmlWriter {
@@ -40,16 +43,35 @@ public class KmlWriter {
 	protected Kml kml;
 	// protected Document document;
 	protected Folder folder;
+	/**
+	 * Copy of First Grid, we need it to see changes through time
+	 */
 	protected HexagonalGrid oldGrid;
-	protected long cont;
-	protected double ilat;
-	protected double ilng;
+	/**
+	 * Some polygons need diferents names
+	 */
+	protected static long cont;
+	/**
+	 * Size in meters of the circunflex circle of the hexagon
+	 */
 	protected short tileSize;
+	/**
+	 * Dimension X from Scenario
+	 */
 	protected int dimX;
+	/**
+	 * Dimension Y from Scenario
+	 */
 	protected int dimY;
+	/**
+	 * Begin time of the simulation step 
+	 */
 	protected String beginTime;
+	/**
+	 * End time of the simulation step 
+	 */
 	protected String endTime;
-	protected Logger log;
+	protected Logger kmlLog = new Logger();
 
 	public KmlWriter() {
 		Scenario scene = Scenario.getCurrentScenario();
@@ -70,9 +92,8 @@ public class KmlWriter {
 	}
 
 	/**
-	 * Crea el Fichero kml de nombre nombreFichero
-	 * 
-	 * @param nombreFichero
+	 * New kml file of the current kml
+	 * @param fileName
 	 */
 	public void createKmlFile(String fileName) {
 		try {
@@ -81,7 +102,10 @@ public class KmlWriter {
 			e.printStackTrace();
 		}
 	}
-
+/**
+ * New kmz file of the current kml
+ * @param fileName
+ */
 	public void createKmzFile(String fileName) {
 		try {
 			kml.marshalAsKmz(fileName + ".kmz");
@@ -95,6 +119,9 @@ public class KmlWriter {
 	 * public void createDocument(String name, String description) { document =
 	 * new Document(); kml.setFeature(document); document.setName(name);
 	 * document.setDescription(description); document.setOpen(false); }
+	 */
+	/**
+	 * A folder is a container where you can put several things inside
 	 */
 	public void openFolder(String name, String description) {
 		folder = kml.createAndSetFolder().withName(name).withOpen(true)
@@ -114,14 +141,12 @@ public class KmlWriter {
 			throw new IllegalArgumentException("Poligon canot be empty");
 		}
 		
-
+		
 		if (borderLine.size() == 1) {
 			createHexagon(name, borderLine.get(0));
 		} else {
-			folder.createAndAddStyle().withId("examplePolyStyle")
-					.createAndSetPolyStyle().withColor("ff0000cc")
-					.withColorMode(ColorMode.RANDOM);
-
+			short z = borderLine.get(0).getAltitude();
+			
 			Placemark placeMark = folder.createAndAddPlacemark().withName(
 					name + " " + cont);
 
@@ -139,6 +164,18 @@ public class KmlWriter {
 		}
 	}
 	
+	protected void createWaterStyleAndColor(short z){
+		
+		Style style = new Style();
+		folder.getStyleSelector().add(style);
+		style.setId(Color.BLUE.toString()+z);
+
+		PolyStyle polyStyle = new PolyStyle();
+		style.setPolyStyle(polyStyle);
+		
+		polyStyle.setColor("ff"+Integer.toHexString(Color.BLUE.getRGB()+z));
+		polyStyle.setColorMode(ColorMode.NORMAL);
+	}
 	
 	protected void setTimeSpan(Placemark placeMark){
 		TimeSpan t = new TimeSpan();
@@ -146,6 +183,11 @@ public class KmlWriter {
 		t.setEnd(endTime);
 		
 		placeMark.setTimePrimitive(t);
+	}
+	
+	protected void setWaterColorToPlaceMark(Placemark placeMark, short z){
+		//Adding to BLUE
+		placeMark.setStyleUrl(Color.BLUE.toString()+z);
 	}
 
 	/**

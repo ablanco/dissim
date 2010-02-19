@@ -63,7 +63,7 @@ public class TimeStampTest {
 			k.update(newOrleans);
 	
 		}
-		k.createKmzFile(newOrleans.getName());
+		k.createKmlFile(newOrleans.getName());
 	}
 
 }
