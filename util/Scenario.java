@@ -52,7 +52,6 @@ public class Scenario implements Serializable {
 	 * meters
 	 */
 	private short precision = 10;
-	// 
 	/**
 	 * Current Scenario showed on GUI If a Scenario is loaded (from a file), or
 	 * a new one is created, this reference MUST change
@@ -65,7 +64,7 @@ public class Scenario implements Serializable {
 	/**
 	 * Time between two simulation Steps
 	 */
-	private int updateTimeMinutes;
+	private int updateTimeMinutes = 1;
 	/**
 	 * Log manager for debungin
 	 */
@@ -242,7 +241,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Webservice, gets elevation of all the grid.
+	 * Call a webservice to obtain the elevation of all tiles of the grid
 	 */
 	public void obtainTerrainElevation() {
 		if (grid == null)
@@ -316,7 +315,7 @@ public class Scenario implements Serializable {
 	 * Updates de current time by adding updateTimeMinutes to currentDateAndTime
 	 */
 	public void updateTime() {
-		defaultLogger.println("Time has benn updated to: ");
+		defaultLogger.println("Time has been updated to: ");
 		currentDateAndTime.updateTime(updateTimeMinutes);
 		defaultLogger.print(currentDateAndTime.toString());
 	}
