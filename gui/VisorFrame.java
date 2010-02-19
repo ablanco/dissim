@@ -44,6 +44,8 @@ public class VisorFrame extends JFrame implements Updateable {
 	private int hexHeight;
 	private int sizeWidth;
 	private int sizeHeight;
+	private int decoX = 5; // Decoración de la ventana
+	private int decoY = 30; // TODO Mangazo, de dnd sacar estos números?
 	private short min;
 	private short max;
 
@@ -86,23 +88,18 @@ public class VisorFrame extends JFrame implements Updateable {
 			if (diff != 0)
 				inc = 256 / diff;
 
-			int x = hexWidth / 2;
-			int y = radius * 2;
 			for (int i = 0; i < grid.getDimX(); i++) {
 				for (int j = 0; j < grid.getDimY(); j++) {
 					int posX;
-					if (i % 2 == 0)
-						posX = x + (j * hexWidth); // Fila par
+					if (i % 2 == 0) // Fila par
+						posX = decoX + (hexWidth / 2) + (j * hexWidth);
 					else
-						posX = hexWidth + (j * hexWidth); // Fila impar
-					int posY = y + (i * hexHeight);
+						posX = decoX + hexWidth + (j * hexWidth); // Fila impar
+					int posY = decoY + radius + (i * hexHeight);
 
-					// Dibujar hexágono
+					// Generar hexágono
 					Polygon hex = new Hexagon2D(posX, posY, radius);
-					// g2.setColor(Color.BLACK);
-					// g2.drawPolygon(hex);
-
-					// Colorear según la altura
+					// Dibujar y colorear según la altura
 					int value = grid.getValue(i, j);
 					value -= min;
 					int color = value * inc;
@@ -143,13 +140,11 @@ public class VisorFrame extends JFrame implements Updateable {
 			if (radius < 30)
 				radius = 30;
 
-			// Calcular el tamaño de la ventana
+			// Calcular las distancias de referencia de los hexágonos
 			Polygon p = new Hexagon2D(0, 0, radius);
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
-			// Decoración de ventana
-			int decoX = 8;
-			int decoY = 38;
+			// Calcular el tamaño de la ventana
 			sizeWidth = decoX + (hexWidth * grid.getDimX()) + (hexWidth / 2);
 			sizeHeight = decoY + (radius * 2)
 					+ (hexHeight * (grid.getDimY() - 1));
