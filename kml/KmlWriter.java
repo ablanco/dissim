@@ -16,11 +16,12 @@
 
 package kml;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import util.HexagonalGrid;
 import util.Logger;
@@ -64,14 +65,16 @@ public class KmlWriter {
 	 */
 	protected int dimY;
 	/**
-	 * Begin time of the simulation step 
+	 * Begin time of the simulation step
 	 */
 	protected String beginTime;
 	/**
-	 * End time of the simulation step 
+	 * End time of the simulation step
 	 */
 	protected String endTime;
 	protected Logger kmlLog = new Logger();
+
+	protected SortedSet<Short> altitudes;
 
 	public KmlWriter() {
 		Scenario scene = Scenario.getCurrentScenario();
@@ -89,10 +92,12 @@ public class KmlWriter {
 			}
 		}
 		cont = 0;
+		altitudes = new TreeSet<Short>();
 	}
 
 	/**
 	 * New kml file of the current kml
+	 * 
 	 * @param fileName
 	 */
 	public void createKmlFile(String fileName) {
@@ -102,10 +107,12 @@ public class KmlWriter {
 			e.printStackTrace();
 		}
 	}
-/**
- * New kmz file of the current kml
- * @param fileName
- */
+
+	/**
+	 * New kmz file of the current kml
+	 * 
+	 * @param fileName
+	 */
 	public void createKmzFile(String fileName) {
 		try {
 			kml.marshalAsKmz(fileName + ".kmz");
@@ -140,54 +147,64 @@ public class KmlWriter {
 		if (borderLine.size() < 0) {
 			throw new IllegalArgumentException("Poligon canot be empty");
 		}
-		
-		
+
 		if (borderLine.size() == 1) {
 			createHexagon(name, borderLine.get(0));
 		} else {
-			short z = borderLine.get(0).getAltitude();
-			
+
+			LatLng z = borderLine.get(0);
+			createWaterStyleAndColor(z.getAltitude());
+
 			Placemark placeMark = folder.createAndAddPlacemark().withName(
 					name + " " + cont);
 
 			setTimeSpan(placeMark);
-			
+			setWaterColorToPlaceMark(placeMark, z.getAltitude());
+
 			Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
 					.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 
 			LinearRing l = polygon.createAndSetOuterBoundaryIs()
 					.createAndSetLinearRing();
+
 			for (LatLng c : borderLine) {
 				l.addToCoordinates(c.toGoogleString());
 			}
-			l.addToCoordinates(borderLine.get(0).toGoogleString());
+			l.addToCoordinates(z.toGoogleString());
 		}
 	}
-	
-	protected void createWaterStyleAndColor(short z){
-		
-		Style style = new Style();
-		folder.getStyleSelector().add(style);
-		style.setId(Color.BLUE.toString()+z);
 
-		PolyStyle polyStyle = new PolyStyle();
-		style.setPolyStyle(polyStyle);
-		
-		polyStyle.setColor("ff"+Integer.toHexString(Color.BLUE.getRGB()+z));
-		polyStyle.setColorMode(ColorMode.NORMAL);
+	/**
+	 * Creates a new Water color for this altitude
+	 * @param z
+	 */
+	protected void createWaterStyleAndColor(short z) {
+
+		if (!altitudes.contains(z)) {
+			Style style = new Style();
+			folder.getStyleSelector().add(style);
+			style.setId("BLUE" + z);
+
+			PolyStyle polyStyle = new PolyStyle();
+			style.setPolyStyle(polyStyle);
+			//TODO por ahora solo permite 16 tonalizades de azul
+			polyStyle.setColor("ffff"+Integer.toHexString(z* 16)+"00");
+			polyStyle.setColorMode(ColorMode.NORMAL);
+			altitudes.add(z);
+		}
 	}
-	
-	protected void setTimeSpan(Placemark placeMark){
+
+	protected void setTimeSpan(Placemark placeMark) {
 		TimeSpan t = new TimeSpan();
 		t.setBegin(beginTime);
 		t.setEnd(endTime);
-		
+
 		placeMark.setTimePrimitive(t);
 	}
-	
-	protected void setWaterColorToPlaceMark(Placemark placeMark, short z){
-		//Adding to BLUE
-		placeMark.setStyleUrl(Color.BLUE.toString()+z);
+
+	protected void setWaterColorToPlaceMark(Placemark placeMark, short z) {
+		// Adding to BLUE
+		placeMark.setStyleUrl("BLUE" + z);
 	}
 
 	/**
@@ -197,11 +214,13 @@ public class KmlWriter {
 	 * @param alt
 	 */
 	public void createHexagon(String name, LatLng coord) {
-		
+
 		Placemark placeMark = folder.createAndAddPlacemark().withName(
 				name + " " + cont);
-		
+
+		createWaterStyleAndColor(coord.getAltitude());
 		setTimeSpan(placeMark);
+		setWaterColorToPlaceMark(placeMark, coord.getAltitude());
 
 		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);

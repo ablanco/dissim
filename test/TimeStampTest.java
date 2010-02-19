@@ -39,7 +39,7 @@ public class TimeStampTest {
 		// 29.918075, -90.053707));
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short) 10),
 				new LatLng(29.918075, -90.053707, (short) 10), (short) 300);
-		newOrleans.setName("Time inundation");
+		newOrleans.setName("Time inundation Colored");
 		newOrleans.setDescription("NW SE 1m");
 		newOrleans.setDateAndTime(2000, 3, 15, 15, 3);
 		newOrleans.setUpdateTimeMinutes(1);
