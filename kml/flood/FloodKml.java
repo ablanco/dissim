@@ -23,10 +23,16 @@ public class FloodKml extends KmlWriter implements Updateable {
 		openFolder("Flooding", "All these sectors are flooded");
 	}
 
+	@Override
+	public void init() {
+		// empty
+	}
+
 	/**
 	 * This metohs geneate a snapshot of the current state of the simulation
 	 * Needs the scenario has dateAndTime and updateTimeMinutes.
 	 */
+	@Override
 	public void update(Object obj) {
 		if (!(obj instanceof Scenario))
 			throw new IllegalArgumentException(
@@ -204,6 +210,11 @@ public class FloodKml extends KmlWriter implements Updateable {
 
 	public HexagonalGrid getOldGrid() {
 		return oldGrid;
+	}
+
+	@Override
+	public String getConversationId() {
+		return "kml";
 	}
 
 }

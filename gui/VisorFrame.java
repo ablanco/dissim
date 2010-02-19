@@ -58,6 +58,11 @@ public class VisorFrame extends JFrame implements Updateable {
 	}
 
 	@Override
+	public void init() {
+		this.setVisible(true);
+	}
+
+	@Override
 	public void paint(Graphics g) {
 		if (grid != null) {
 			Graphics2D g2 = (Graphics2D) g;
@@ -119,6 +124,7 @@ public class VisorFrame extends JFrame implements Updateable {
 		}
 	}
 
+	@Override
 	public void update(Object obj) {
 		if (!(obj instanceof HexagonalGrid))
 			throw new IllegalArgumentException(
@@ -163,6 +169,11 @@ public class VisorFrame extends JFrame implements Updateable {
 		}
 
 		this.repaint();
+	}
+
+	@Override
+	public String getConversationId() {
+		return "visor";
 	}
 
 }

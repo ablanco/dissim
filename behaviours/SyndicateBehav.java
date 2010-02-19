@@ -36,8 +36,8 @@ public class SyndicateBehav extends CyclicBehaviour {
 				MessageTemplate.MatchConversationId("syndicate-visor"),
 				MessageTemplate.MatchConversationId("syndicate-kml")),
 				MessageTemplate.or(MessageTemplate
-						.MatchPerformative(ACLMessage.SUBSCRIBE), MessageTemplate
-						.MatchPerformative(ACLMessage.CANCEL)));
+						.MatchPerformative(ACLMessage.SUBSCRIBE),
+						MessageTemplate.MatchPerformative(ACLMessage.CANCEL)));
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
 			// Mensaje recibido, hay que procesarlo

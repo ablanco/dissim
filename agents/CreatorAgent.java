@@ -16,6 +16,7 @@
 
 package agents;
 
+import gui.VisorFrame;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 
@@ -57,11 +58,11 @@ public class CreatorAgent extends Agent {
 					"agents.EnviromentAgent", 1, arguments));
 
 			// TODO Esperar a que el entorno esté inicializado
-//			try {
-//				Thread.sleep(5000);
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
-//			}
+			// try {
+			// Thread.sleep(5000);
+			// } catch (InterruptedException e) {
+			// e.printStackTrace();
+			// }
 
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {
@@ -110,9 +111,9 @@ public class CreatorAgent extends Agent {
 			}
 
 			// TODO DEBUG
-			arguments = new Object[0];
+			arguments = new Object[] { new VisorFrame() };
 			addBehaviour(new CreateAgentBehav(this, "Default Visor",
-					"agents.VisorAgent", 1, arguments));
+					"agents.UpdateAgent", 1, arguments));
 			// FIN DEBUG
 		}
 	}

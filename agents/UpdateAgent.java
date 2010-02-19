@@ -16,7 +16,6 @@
 
 package agents;
 
-import gui.VisorFrame;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -27,16 +26,27 @@ import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
 
+import util.Updateable;
 import behaviours.ReceiveUpdateBehav;
 
 @SuppressWarnings("serial")
-public class VisorAgent extends Agent {
+public class UpdateAgent extends Agent {
 
 	private AID envAID = null;
+	private Updateable client = null;
 
 	@Override
 	protected void setup() {
-		VisorFrame visor = new VisorFrame();
+		// Obtener argumentos
+		Object[] args = getArguments();
+		if (args.length == 1) {
+			if (args[0] instanceof Updateable)
+				client = (Updateable) args[0];
+			else
+				doDelete();
+		} else {
+			throw new IllegalArgumentException("Wrong number of arguments.");
+		}
 
 		// Obtener agente entorno
 		DFAgentDescription template = new DFAgentDescription();
@@ -59,7 +69,7 @@ public class VisorAgent extends Agent {
 		// Sindicarse en el entorno
 		ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
 		msg.addReceiver(envAID);
-		msg.setConversationId("syndicate-visor");
+		msg.setConversationId("syndicate-" + client.getConversationId());
 		try {
 			msg.setContentObject(getAID());
 			send(msg);
@@ -67,10 +77,10 @@ public class VisorAgent extends Agent {
 			e.printStackTrace();
 		}
 
-		// Añadir comportamiento de actualización del visor
-		addBehaviour(new ReceiveUpdateBehav(this, visor));
+		// Añadir comportamiento de actualización del objeto cliente
+		addBehaviour(new ReceiveUpdateBehav(this, client));
 
-		visor.setVisible(true);
+		client.init();
 	}
 
 	@Override
@@ -79,7 +89,7 @@ public class VisorAgent extends Agent {
 			// Desregistrarse en el entorno
 			ACLMessage msg = new ACLMessage(ACLMessage.CANCEL);
 			msg.addReceiver(envAID);
-			msg.setConversationId("syndicate-visor");
+			msg.setConversationId("syndicate-" + client.getConversationId());
 			try {
 				msg.setContentObject(getAID());
 				send(msg);
