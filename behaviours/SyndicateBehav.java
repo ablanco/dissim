@@ -30,6 +30,9 @@ public class SyndicateBehav extends CyclicBehaviour {
 
 	Hashtable<AID, Behaviour> behaviours = new Hashtable<AID, Behaviour>();
 
+	// TODO y si en vez de más comportamientos se añaden más destinatarios a los
+	// mensajes de un único comportamiento?
+
 	@Override
 	public void action() {
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.or(

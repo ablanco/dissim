@@ -21,7 +21,8 @@ import java.io.PrintStream;
 public class Logger {
 
 	private PrintStream log = System.out;
-	private PrintStream debug = System.err;
+	private PrintStream debug = System.err; // TODO - No son errores
+	private PrintStream error = System.err;
 	private boolean disabled = false;
 
 	public Logger() {
@@ -32,14 +33,17 @@ public class Logger {
 		if (log != null) {
 			this.log = log;
 			this.debug = log;
+			this.error = log;
 		}
 	}
 
-	public Logger(PrintStream log, PrintStream debug) {
+	public Logger(PrintStream log, PrintStream debug, PrintStream error) {
 		if (log != null)
 			this.log = log;
 		if (debug != null)
 			this.debug = debug;
+		if (error != null)
+			this.error = error;
 	}
 
 	// Métodos de escritura
@@ -70,6 +74,22 @@ public class Logger {
 		if (debug.equals(log))
 			s = "DEBUG: " + s;
 		debug.println(s);
+	}
+
+	public void error(String s) {
+		if (disabled)
+			return;
+		if (error.equals(log))
+			s = "ERROR: " + s;
+		error.print(s);
+	}
+
+	public void errorln(String s) {
+		if (disabled)
+			return;
+		if (error.equals(log))
+			s = "ERROR: " + s;
+		error.println(s);
 	}
 
 	public void disable() {
