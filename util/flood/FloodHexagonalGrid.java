@@ -16,9 +16,11 @@
 
 package util.flood;
 
-import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import util.HexagonalGrid;
+import util.Point;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
 
@@ -26,14 +28,14 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	private short[][] gridWater; // Nivel de agua en la casilla
 	private boolean useModifications;
-	private HashSet<int[]> modTiles = null;
+	private TreeSet<Point> modTiles = null;
 
 	public FloodHexagonalGrid(int x, int y, boolean useAgents) {
 		super(x, y);
 		gridWater = new short[x][y];
 		useModifications = !useAgents;
 		if (useModifications)
-			modTiles = new HashSet<int[]>();
+			modTiles = new TreeSet<Point>();
 	}
 
 	public short setWaterValue(int x, int y, short value) {
@@ -47,7 +49,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		gridWater[x][y] += increment;
 
 		if (useModifications)
-			modTiles.add(new int[] { x, y });
+			modTiles.add(new Point(x, y));
 	}
 
 	@Override
@@ -63,7 +65,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		}
 
 		if (useModifications)
-			modTiles.add(new int[] { x, y });
+			modTiles.add(new Point(x, y));
 
 		return result;
 	}
@@ -77,9 +79,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		return gridWater[x][y];
 	}
 
-	public HashSet<int[]> getModCoordAndReset() {
-		HashSet<int[]> result = modTiles;
-		modTiles = new HashSet<int[]>();
+	public Set<Point> getModCoordAndReset() {
+		TreeSet<Point> result = modTiles;
+		modTiles = new TreeSet<Point>();
 		return result;
 	}
 

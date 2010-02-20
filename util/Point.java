@@ -16,11 +16,19 @@
 
 package util;
 
+import java.io.Serializable;
 
-public class Point implements Comparable<Point> {
-	public int x;
-	public int y;
-	public short z;
+public class Point implements Comparable<Point>, Serializable {
+
+	private static final long serialVersionUID = 1L;
+
+	private int x;
+	private int y;
+	private short z;
+
+	public Point(int x, int y) {
+		this(x, y, (short) 0);
+	}
 
 	public Point(int x, int y, short z) {
 		this.x = x;
@@ -43,7 +51,28 @@ public class Point implements Comparable<Point> {
 
 	@Override
 	public boolean equals(Object o) {
-		Point p = (Point) o;
-		return (p.x == x) && (p.y == y);
+		if (o instanceof Point) {
+			Point p = (Point) o;
+			return (p.x == x) && (p.y == y);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "[(" + x + "," + y + ") " + z + "]";
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public short getZ() {
+		return z;
 	}
 }

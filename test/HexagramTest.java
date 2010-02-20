@@ -5,7 +5,7 @@ import util.Scenario;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
 
-public class hexagramTest {
+public class HexagramTest {
 
 	/**
 	 * @param args

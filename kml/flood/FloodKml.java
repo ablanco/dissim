@@ -73,7 +73,7 @@ public class FloodKml extends KmlWriter implements Updateable {
 				cont++;
 				if (region.size() > 10) {
 					for (Point c : region) {
-						System.out.print("[" + c.x + "," + c.y + "] ");
+						System.out.print("[" + c.getX() + "," + c.getY() + "] ");
 					}
 					System.out.println();
 				}
@@ -104,13 +104,13 @@ public class FloodKml extends KmlWriter implements Updateable {
 			region.remove(p);
 			while (!adyList.isEmpty()) {
 				p = adyList.get(0);
-				borderLine.add(newScene.tileToCoord(p.x, p.y));
+				borderLine.add(newScene.tileToCoord(p.getX(), p.getY()));
 				adyList.remove(p);
 				Set<Point> s = newScene.getAdjacents(p);
 				for (Point b : region) {
 					// could be more than one each time
 					if (s.contains(b)) {
-						borderLine.add(newScene.tileToCoord(b.x, b.y));
+						borderLine.add(newScene.tileToCoord(b.getX(), b.getY()));
 						adyList.add(b);
 					}
 				}

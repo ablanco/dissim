@@ -21,7 +21,11 @@ import jade.core.behaviours.TickerBehaviour;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
 
+import util.Logger;
+import util.Point;
+import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 
 public class UpdateFloodGridBehav extends TickerBehaviour {
@@ -29,18 +33,25 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private static final long serialVersionUID = 8964259995058162322L;
 
 	private FloodHexagonalGrid grid;
+	private Logger logger;
 
 	public UpdateFloodGridBehav(Agent a, long period, FloodHexagonalGrid grid) {
 		super(a, period);
 		this.grid = grid;
+		logger = Scenario.getCurrentScenario().getDefaultLogger();
 	}
 
 	@Override
 	protected void onTick() {
-		Iterator<int[]> it = grid.getModCoordAndReset().iterator();
+		long time = System.currentTimeMillis();
+
+		Set<Point> set = grid.getModCoordAndReset();
+		logger.debugln("Modified tiles set size: " + set.size());
+		Iterator<Point> it = set.iterator();
 		// Por cada casilla modificada
 		while (it.hasNext()) {
-			int[] coord = it.next();
+			Point p = it.next();
+			int[] coord = new int[] { p.getX(), p.getY() };
 			ArrayList<int[]> adjacents = grid.getAdjacents(coord[0], coord[1]);
 			short value = grid.getValue(coord[0], coord[1]);
 
@@ -84,6 +95,9 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				grid.increaseValue(adjCoord[0], adjCoord[1], water);
 			}
 		}
+
+		time = System.currentTimeMillis() - time;
+		logger.debugln("UpdateFloodGridBehav took " + time + " ms");
 	}
 
 }

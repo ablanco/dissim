@@ -182,7 +182,7 @@ public class Scenario implements Serializable {
 	 */
 	public Set<Point> getAdjacents(Point p) {
 		Set<Point> puntos = new TreeSet<Point>();
-		for (int[] a : grid.getAdjacents(p.x, p.y)) {
+		for (int[] a : grid.getAdjacents(p.getX(), p.getY())) {
 			puntos.add(new Point(a[0], a[1], grid.getTerrainValue(a[0], a[1])));
 		}
 		return puntos;
@@ -195,8 +195,8 @@ public class Scenario implements Serializable {
 	 * @return true is border, false if not
 	 */
 	public boolean isBorderPoint(Point p) {
-		for (int[] a : grid.getAdjacents(p.x, p.y)) {
-			if (p.z != grid.getTerrainValue(a[0], a[1])) {
+		for (int[] a : grid.getAdjacents(p.getX(), p.getY())) {
+			if (p.getZ() != grid.getTerrainValue(a[0], a[1])) {
 				return true;
 			}
 		}
