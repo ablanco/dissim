@@ -1,3 +1,19 @@
+//    Flood and evacuation simulator using multi-agent technology
+//    Copyright (C) 2010 Alejandro Blanco and Manuel Gomar
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package kml.flood;
 
 import java.util.ArrayList;
@@ -14,23 +30,30 @@ import util.Point;
 import util.Scenario;
 import util.Updateable;
 import util.jcoord.LatLng;
+import de.micromata.opengis.kml.v_2_2_0.ColorMode;
+import de.micromata.opengis.kml.v_2_2_0.Placemark;
+import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
+import de.micromata.opengis.kml.v_2_2_0.Polygon;
+import de.micromata.opengis.kml.v_2_2_0.Style;
 
 public class FloodKml extends KmlWriter implements Updateable {
 	private long cont = 0;
+	private Set<Short> altitudes;
 
 	public FloodKml() {
 		super();
-		openFolder("Flooding", "All these sectors are flooded");
+		newFolder("Flooding", "All these sectors are flooded");
+		altitudes = new TreeSet<Short>();
 	}
 
 	@Override
 	public void init() {
 		// Código de inicialización
 	}
-	
+
 	@Override
 	public void finish() {
-		// Código de finalización	
+		// Código de finalización
 	}
 
 	/**
@@ -48,45 +71,69 @@ public class FloodKml extends KmlWriter implements Updateable {
 		newScene.updateTime();
 		endTime = newScene.getDateAndTime().toString();
 
-		kmlLog.println("************Update called, simulation state at"
-				+ endTime);
+		kmlLog.println("Simulation state at: " + endTime);
 
 		HexagonalGrid g = newScene.getGrid();
 
 		// For each tile who has changed ever, creates hexagon
 		for (int x = 0; x < g.getDimX(); x++) {
 			for (int y = 0; y < g.getDimY(); y++) {
-				if (g.getTerrainValue(x, y) != oldGrid.getTerrainValue(x, y)) {
-					createHexagon("HEX" + cont, newScene.tileToCoord(x, y));
+				short z = (short) ((short) g.getTerrainValue(x, y) - oldGrid
+						.getTerrainValue(x, y));
+				if (z != 0) {
+					drawWaterHexagon("HEX" + cont, newScene.tileToCoord(x, y),
+							z);
 					cont++;
 				}
 
 			}
 		}
-		System.out.println("Hexagonos Creados" + cont);
+	}
+
+	protected void drawWaterPolygon(String name, List<LatLng> borderLine,
+			short z) {
+		Placemark placeMark = newPlaceMark(name);
+		setTimeSpan(placeMark);
+		setWaterColorToPlaceMark(placeMark, z);
+
+		Polygon polygon = newPolygon(placeMark);
+		
+		switch (borderLine.size()) {
+		case 0:
+			throw new IllegalArgumentException("Poligon canot be empty");
+		case 1:
+			drawHexagonBorders(polygon, borderLine.get(0));
+			break;
+		default:
+			drawPolygon(name, borderLine);
+			break;
+		}
+	}
+
+	protected void drawWaterHexagon(String name, LatLng borderLine, short z) {
+		Placemark placeMark = newPlaceMark(name);
+		setWaterColorToPlaceMark(placeMark, z);
+		setTimeSpan(placeMark);
+
+		Polygon polygon = newPolygon(placeMark);
+
+		drawHexagonBorders(polygon, borderLine);
 	}
 
 	// TODO Expanded Poligons
-	public void snapShot2(Scenario newScene) {
-		openFolder("Flooding State Level", "RainFalling Motherfuckers");
-		long cont = 0;
-		for (List<SortedSet<Point>> regions : getBorderRegions(newScene)) {
-			for (SortedSet<Point> region : regions) {
-				// TODO region podría no estar ordenados y salir cosas raras
-				// Collections.sort(region);
-				createPolygon("Pol" + cont, regionToPoligon(region, newScene));
-				cont++;
-				if (region.size() > 10) {
-					for (Point c : region) {
-						System.out.print("[" + c.getX() + "," + c.getY() + "] ");
-					}
-					System.out.println();
-				}
-			}
-		}
-		System.out.println("Regiones detectadas" + cont);
-		createKmzFile(newScene.getName());
-	}
+	/*
+	 * public void snapShot2(Scenario newScene) {
+	 * openFolder("Flooding State Level", "RainFalling Motherfuckers"); long
+	 * cont = 0; for (List<SortedSet<Point>> regions :
+	 * getBorderRegions(newScene)) { for (SortedSet<Point> region : regions) {
+	 * // TODO region podría no estar ordenados y salir cosas raras //
+	 * Collections.sort(region); drawWaterPolygon("Pol" + cont,
+	 * regionToPoligon(region, newScene)); cont++; if (region.size() > 10) { for
+	 * (Point c : region) { System.out .print("[" + c.getX() + "," + c.getY() +
+	 * "] "); } System.out.println(); } } }
+	 * System.out.println("Regiones detectadas" + cont);
+	 * createKmzFile(newScene.getName()); }
+	 */
 
 	/**
 	 * Given an scenario and a SortedSet<Point> containin borders of a region of
@@ -115,7 +162,8 @@ public class FloodKml extends KmlWriter implements Updateable {
 				for (Point b : region) {
 					// could be more than one each time
 					if (s.contains(b)) {
-						borderLine.add(newScene.tileToCoord(b.getX(), b.getY()));
+						borderLine
+								.add(newScene.tileToCoord(b.getX(), b.getY()));
 						adyList.add(b);
 					}
 				}
@@ -147,7 +195,6 @@ public class FloodKml extends KmlWriter implements Updateable {
 			for (Point adyacent : adyacents) {
 				if (region.contains(adyacent)) {
 					region.add(border);
-					// System.out.print(", Borde añadido");
 					return true;
 				}
 			}
@@ -220,6 +267,28 @@ public class FloodKml extends KmlWriter implements Updateable {
 	@Override
 	public String getConversationId() {
 		return "kml";
+	}
+
+	protected void setWaterColorToPlaceMark(Placemark placeMark, short z) {
+		// Adding to BLUE
+		createWaterStyleAndColor(z);
+		placeMark.setStyleUrl("BLUE" + z);
+	}
+
+	protected void createWaterStyleAndColor(short z) {
+
+		if (!altitudes.contains(z)) {
+			Style style = new Style();
+			folder.getStyleSelector().add(style);
+			style.setId("BLUE" + z);
+
+			PolyStyle polyStyle = new PolyStyle();
+			style.setPolyStyle(polyStyle);
+			// TODO por ahora solo permite 64 tonalizades de azul
+			polyStyle.setColor("ffff" + Integer.toHexString(z * 4) + "00");
+			polyStyle.setColorMode(ColorMode.NORMAL);
+			altitudes.add(z);
+		}
 	}
 
 }

@@ -1,6 +1,7 @@
 package test;
 
 import kml.KmlWriter;
+import kml.flood.FloodKml;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
@@ -27,19 +28,16 @@ public class HexagramTest {
 		
 		System.out.println(newOrleans.toString());
 		KmlWriter k = new KmlWriter();
-		k.openFolder("Hexagam Maps", "Test of deployment hexagrams");
 		
 		for (int i=0;i<2;i++){
 			for (int j=0;j<5;j++){
 				LatLng c = newOrleans.tileToCoord(i, j);
-				k.createHexagon("HEX", c);
+				k.drawHexagon("HEX", c);
 				System.out.println("["+i+","+j+"] Distancia a [0,0] ->"+NW.distance(c));
 			}
 		}
-		k.createHexagon("HEX",newOrleans.tileToCoord(6, 6));
+		k.drawHexagon("HEX",newOrleans.tileToCoord(6, 6));
 		
-		
-	
 		k.createKmzFile("Hexagrams grid Test");
 
 	}

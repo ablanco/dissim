@@ -25,7 +25,6 @@ public class KmlPolygonExpander {
 		FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
 
 		FloodKml k = new FloodKml();
-		k.openFolder("TEST", "Test of polygon expader");
 
 		for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
 			for (int j = 0; j < newOrleans.getGridSize()[1]; j++) {

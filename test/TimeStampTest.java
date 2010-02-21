@@ -38,7 +38,7 @@ public class TimeStampTest {
 		// newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
 		// 29.918075, -90.053707));
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short) 10),
-				new LatLng(29.918075, -90.053707, (short) 10), (short) 300);
+				new LatLng(29.918075, -90.053707, (short) 10), (short) 600);
 		newOrleans.setName("Time inundation Colored");
 		newOrleans.setDescription("NW SE 1m");
 		newOrleans.setDateAndTime(2000, 3, 15, 15, 3);
@@ -54,16 +54,14 @@ public class TimeStampTest {
 		for (int rep=0;rep<6;rep++){
 			for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
 				for (int j = 0; j < newOrleans.getGridSize()[1]; j++) {
-					short x = (short) ((Math.random() * 100) % 2);
+					short x = (short) ((Math.random() * 100) % 64);
 					grid.setTerrainValue(i, j, x);
 				}
-			}
-			
-			System.out.println(newOrleans.toString());	
+			}	
 			k.update(newOrleans);
 	
 		}
-		k.createKmlFile(newOrleans.getName());
+		k.createKmzFile(newOrleans.getName());
 	}
 
 }
