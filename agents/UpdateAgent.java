@@ -97,6 +97,9 @@ public class UpdateAgent extends Agent {
 				e.printStackTrace();
 			}
 		}
+		if (client != null) {
+			client.finish();
+		}
 	}
 
 }

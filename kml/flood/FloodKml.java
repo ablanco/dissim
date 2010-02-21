@@ -25,7 +25,12 @@ public class FloodKml extends KmlWriter implements Updateable {
 
 	@Override
 	public void init() {
-		// empty
+		// Código de inicialización
+	}
+	
+	@Override
+	public void finish() {
+		// Código de finalización	
 	}
 
 	/**

@@ -23,6 +23,8 @@ import jade.core.behaviours.Behaviour;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
+import kml.flood.FloodKml;
+
 import test.Sim1Test;
 import util.Scenario;
 import util.flood.FloodScenario;
@@ -114,6 +116,10 @@ public class CreatorAgent extends Agent {
 			arguments = new Object[] { new VisorFrame() };
 			addBehaviour(new CreateAgentBehav(this, "Default Visor",
 					"agents.UpdateAgent", 1, arguments));
+
+//			arguments = new Object[] { new FloodKml() };
+//			addBehaviour(new CreateAgentBehav(this, "Default KML creator",
+//					"agents.UpdateAgent", 1, arguments));
 			// FIN DEBUG
 		}
 	}

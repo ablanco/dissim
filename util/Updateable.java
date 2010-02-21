@@ -21,6 +21,8 @@ public interface Updateable {
 	public void init();
 	
 	public void update(Object obj);
+	
+	public void finish();
 
 	public String getConversationId();
 
