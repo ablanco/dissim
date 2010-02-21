@@ -89,7 +89,13 @@ public class FloodKml extends KmlWriter implements Updateable {
 			}
 		}
 	}
-
+	
+	/**
+	 * New Water Polygon to the kml file
+	 * @param name of the polygon
+	 * @param borderLine borders of the polygon
+	 * @param z amount of water over the ground
+	 */
 	protected void drawWaterPolygon(String name, List<LatLng> borderLine,
 			short z) {
 		Placemark placeMark = newPlaceMark(name);
@@ -110,6 +116,12 @@ public class FloodKml extends KmlWriter implements Updateable {
 		}
 	}
 
+	/**
+	 * New Water Hexagon to the kml file
+	 * @param name of the polygon
+	 * @param borderLine borders of the polygon
+	 * @param z amount of water over the ground
+	 */
 	protected void drawWaterHexagon(String name, LatLng borderLine, short z) {
 		Placemark placeMark = newPlaceMark(name);
 		setWaterColorToPlaceMark(placeMark, z);

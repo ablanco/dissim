@@ -37,7 +37,6 @@ import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 public class KmlWriter {
 
 	protected Kml kml;
-	// protected Document document;
 	protected Folder folder;
 	/**
 	 * Copy of First Grid, we need it to see changes through time
@@ -121,10 +120,20 @@ public class KmlWriter {
 		folder = kml.createAndSetFolder().withName(name).withOpen(true)
 				.withDescription(description);
 	}
+	/**
+	 * A placemark to geolocate things
+	 * @param name of the placemark
+	 * @return placeMark to geolocate things
+	 */
 	protected Placemark newPlaceMark(String name) {
 		return folder.createAndAddPlacemark().withName(name);
 	}
 
+	/**
+	 * Draw a polygon from the sequence of points
+	 * @param name of the polygon
+	 * @param borderLine borders of the polygon
+	 */
 	public void drawPolygon(String name, List<LatLng> borderLine) {
 		Polygon polygon = newPolygon(newPlaceMark(name));
 		switch (borderLine.size()) {
@@ -139,6 +148,11 @@ public class KmlWriter {
 		}
 	}
 
+	/**
+	 * Draw an Hexagon from the locaion borderline
+	 * @param name of the hexagon
+	 * @param borderLine coord of the hexagon
+	 */
 	public void drawHexagon(String name, LatLng borderLine) {
 		Polygon polygon = newPolygon(newPlaceMark(name));
 		drawHexagonBorders(polygon, borderLine);
@@ -166,7 +180,11 @@ public class KmlWriter {
 	}
 
 
-
+	/**
+	 * Creates Polygon Object
+	 * @param placeMark
+	 * @return
+	 */
 	protected Polygon newPolygon(Placemark placeMark) {
 		return placeMark.createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
@@ -182,6 +200,10 @@ public class KmlWriter {
 		l.addToCoordinates(z.toGoogleString());
 	}
 
+	/**
+	 * Sets when the event happends
+	 * @param placeMark
+	 */
 	protected void setTimeSpan(Placemark placeMark) {
 		TimeSpan t = new TimeSpan();
 		t.setBegin(beginTime);
