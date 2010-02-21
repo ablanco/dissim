@@ -64,10 +64,10 @@ public class VisorFrame extends JFrame implements Updateable {
 	public void init() {
 		this.setVisible(true);
 	}
-	
+
 	@Override
 	public void finish() {
-		this.dispose();		
+		this.dispose();
 	}
 
 	@Override
@@ -90,9 +90,9 @@ public class VisorFrame extends JFrame implements Updateable {
 			g2.setStroke(stroke);
 
 			int diff = max - min;
-			int inc = 0;
-			if (diff != 0)
-				inc = 256 / diff;
+			double inc = 1;
+			if (diff > 0)
+				inc = 256.0 / ((double) diff);
 
 			for (int i = 0; i < grid.getDimX(); i++) {
 				for (int j = 0; j < grid.getDimY(); j++) {
@@ -108,12 +108,12 @@ public class VisorFrame extends JFrame implements Updateable {
 					// Dibujar y colorear según la altura
 					int value = grid.getValue(i, j);
 					value -= min;
-					int color = value * inc;
+					int color = (int) (value * inc);
 					if (color < 0)
 						color = 0;
 					if (color > 255)
 						color = 255;
-					g2.setColor(new Color(color, 0, 0));
+					g2.setColor(new Color(0, color, 0));
 					if (grid instanceof FloodHexagonalGrid) { // Pintar agua
 						FloodHexagonalGrid fgrid = (FloodHexagonalGrid) grid;
 						int water = fgrid.getWaterValue(i, j);

@@ -23,9 +23,7 @@ import jade.core.behaviours.Behaviour;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-import kml.flood.FloodKml;
-
-import test.Sim1Test;
+import test.SimulationTest;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
@@ -39,32 +37,29 @@ public class CreatorAgent extends Agent {
 	protected void setup() {
 		// TODO DEBUG
 		// Obtener argumentos
-		Object[] args = getArguments();
-		int opt = 1;
-		if (args != null) {
-			if (args.length == 1)
-				opt = Integer.parseInt((String) args[0]);
-			else
-				throw new IllegalArgumentException("Wrong arguments.");
+		Object[] agtArgs = getArguments();
+		int opt = 0;
+		String[] strArgs = new String[] { Boolean.toString(false) };
+		if (agtArgs != null) {
+			opt = Integer.parseInt((String) agtArgs[0]);
+			strArgs = new String[agtArgs.length - 1];
+			for (int i = 1; i < agtArgs.length; i++) {
+				strArgs[i - 1] = (String) agtArgs[i];
+			}
 		}
-		Sim1Test.generateScenario(opt);
+		SimulationTest.generateScenario(opt, strArgs);
 		// FIN DEBUG
 
 		Scenario scen = Scenario.getCurrentScenario();
 		if (scen != null) {
-			Object[] arguments;
 
 			// Enviroment
-			arguments = new Object[0];
+			Object[] arguments = new Object[0];
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
 					"agents.EnviromentAgent", 1, arguments));
 
 			// TODO Esperar a que el entorno esté inicializado
-			// try {
-			// Thread.sleep(5000);
-			// } catch (InterruptedException e) {
-			// e.printStackTrace();
-			// }
+			// Quizás q entorno mande un mensaje?
 
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {
@@ -117,9 +112,9 @@ public class CreatorAgent extends Agent {
 			addBehaviour(new CreateAgentBehav(this, "Default Visor",
 					"agents.UpdateAgent", 1, arguments));
 
-//			arguments = new Object[] { new FloodKml() };
-//			addBehaviour(new CreateAgentBehav(this, "Default KML creator",
-//					"agents.UpdateAgent", 1, arguments));
+			// arguments = new Object[] { new FloodKml() };
+			// addBehaviour(new CreateAgentBehav(this, "Default KML creator",
+			// "agents.UpdateAgent", 1, arguments));
 			// FIN DEBUG
 		}
 	}
