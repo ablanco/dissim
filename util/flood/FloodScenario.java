@@ -33,7 +33,7 @@ public class FloodScenario extends Scenario {
 	/**
 	 * Determina si se representa el agua como agentes o no
 	 */
-	private boolean waterAgents = true;
+	private boolean waterAgents = false;
 	/**
 	 * Representa los ms entre cada actualización de la posición del agua
 	 */

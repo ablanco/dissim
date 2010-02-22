@@ -16,7 +16,6 @@
 
 package agents;
 
-import gui.VisorFrame;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 
@@ -106,16 +105,6 @@ public class CreatorAgent extends Agent {
 					}
 				}
 			}
-
-			// TODO DEBUG
-			arguments = new Object[] { new VisorFrame() };
-			addBehaviour(new CreateAgentBehav(this, "Default Visor",
-					"agents.UpdateAgent", 1, arguments));
-
-			// arguments = new Object[] { new FloodKml() };
-			// addBehaviour(new CreateAgentBehav(this, "Default KML creator",
-			// "agents.UpdateAgent", 1, arguments));
-			// FIN DEBUG
 		}
 	}
 }

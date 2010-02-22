@@ -56,7 +56,7 @@ public class VisorFrame extends JFrame implements Updateable {
 
 		Container c = getContentPane();
 		c.setLayout(new FlowLayout());
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.setTitle("Visor de inundación"); // TODO Internacionalización
 	}
 

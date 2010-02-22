@@ -25,6 +25,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 
 import util.Updateable;
 import behaviours.ReceiveUpdateBehav;
@@ -35,15 +36,21 @@ public class UpdateAgent extends Agent {
 	private AID envAID = null;
 	private Updateable client = null;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args.length == 1) {
-			if (args[0] instanceof Updateable)
-				client = (Updateable) args[0];
-			else
+			try {
+				// Carga, y crea un objeto de la clase pasada, por reflexión
+				Class cls = Class.forName((String) args[0]);
+				Constructor ct = cls.getConstructor(new Class[0]);
+				client = (Updateable) ct.newInstance(new Object[0]);
+			} catch (Throwable e) {
+				e.printStackTrace();
 				doDelete();
+			}
 		} else {
 			throw new IllegalArgumentException("Wrong number of arguments.");
 		}
