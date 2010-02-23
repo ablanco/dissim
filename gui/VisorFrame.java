@@ -155,18 +155,20 @@ public class VisorFrame extends JFrame implements Updateable {
 			sizeHeight = decoY + (radius * 2)
 					+ (hexHeight * (grid.getDimY() - 1));
 			this.setSize(sizeWidth, sizeHeight);
-		}
 
-		min = Short.MAX_VALUE;
-		max = Short.MIN_VALUE;
-		for (int i = 0; i < grid.getDimX(); i++) {
-			for (int j = 0; j < grid.getDimY(); j++) {
-				short value = grid.getValue(i, j);
-				if (value < min)
-					min = value;
-				if (value > max)
-					max = value;
+			// La escala de colores se calcula ahora (una única vez)
+			min = Short.MAX_VALUE;
+			max = Short.MIN_VALUE;
+			for (int i = 0; i < grid.getDimX(); i++) {
+				for (int j = 0; j < grid.getDimY(); j++) {
+					short value = grid.getValue(i, j);
+					if (value < min)
+						min = value;
+					if (value > max)
+						max = value;
+				}
 			}
+			max += 100; // TODO Sacar el max nivel del agua del scenario
 		}
 
 		this.repaint();

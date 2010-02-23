@@ -146,6 +146,11 @@ public class CreatorAgent extends Agent {
 						}
 					}
 				}
+
+				// TODO DEBUG
+				arguments = new Object[] { "gui.VisorFrame" };
+				myAgent.addBehaviour(new CreateAgentBehav(myAgent,
+						"DefaultVisor", "agents.UpdateAgent", 1, arguments));
 			} else {
 				block();
 			}
