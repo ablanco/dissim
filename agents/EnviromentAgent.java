@@ -16,12 +16,15 @@
 
 package agents;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 import util.HexagonalGrid;
+import util.Logger;
 import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
@@ -35,17 +38,19 @@ import behaviours.flood.UpdateFloodGridBehav;
 @SuppressWarnings("serial")
 public class EnviromentAgent extends Agent {
 
-	private HexagonalGrid grid;
+	private HexagonalGrid grid = null;
+	private Logger logger = new Logger();
 
 	@Override
 	protected void setup() {
 		Scenario scen = Scenario.getCurrentScenario();
+		logger = scen.getDefaultLogger();
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args.length == 0) {
 			grid = scen.getGrid();
 		} else {
-			System.err.println(getLocalName() + " wrong arguments.");
+			logger.errorln(getLocalName() + " wrong arguments.");
 			doDelete();
 		}
 
@@ -99,14 +104,28 @@ public class EnviromentAgent extends Agent {
 			}
 		}
 
-		// Registrarse con el agente DF
 		try {
+			// Registrarse con el agente DF
 			DFService.register(this, dfd);
+
+			// Obtener agente creador
+			dfd = new DFAgentDescription();
+			sd = new ServiceDescription();
+			sd.setType("creator");
+			dfd.addServices(sd);
+			DFAgentDescription[] result = DFService.search(this, dfd);
+			if (result.length != 1) {
+				logger.errorln("Error searching for the creator agent. Found "
+						+ result.length + " agents.");
+				doDelete();
+			}
+			AID creatorAID = result[0].getName();
+			// Mandar mensaje al agente creador
+			ACLMessage msg = new ACLMessage(ACLMessage.CONFIRM);
+			msg.addReceiver(creatorAID);
+			send(msg);
 		} catch (FIPAException e) {
-			System.err.println(getLocalName()
-					+ " registration with DF unsucceeded. Reason: "
-					+ e.getMessage());
-			e.printStackTrace();
+			e.printStackTrace(logger.getError());
 			doDelete();
 		}
 	}
@@ -117,9 +136,9 @@ public class EnviromentAgent extends Agent {
 		try {
 			DFService.deregister(this);
 		} catch (FIPAException fe) {
-			fe.printStackTrace();
+			fe.printStackTrace(logger.getError());
 		}
-		System.out.println("Enviroment-agent " + getAID().getName()
+		logger.println("Enviroment-agent " + getAID().getName()
 				+ " terminating.");
 	}
 }

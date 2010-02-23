@@ -18,11 +18,18 @@ package agents;
 
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 
 import java.util.ArrayList;
 import java.util.ListIterator;
 
 import test.SimulationTest;
+import util.Logger;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
@@ -31,6 +38,9 @@ import behaviours.CreateAgentTickerBehav;
 
 @SuppressWarnings("serial")
 public class CreatorAgent extends Agent {
+
+	private Scenario scen = null;
+	private Logger logger = new Logger();
 
 	@Override
 	protected void setup() {
@@ -49,62 +59,98 @@ public class CreatorAgent extends Agent {
 		SimulationTest.generateScenario(opt, strArgs);
 		// FIN DEBUG
 
-		Scenario scen = Scenario.getCurrentScenario();
+		scen = Scenario.getCurrentScenario();
 		if (scen != null) {
+			logger = scen.getDefaultLogger();
 
 			// Enviroment
 			Object[] arguments = new Object[0];
 			addBehaviour(new CreateAgentBehav(this, "Enviroment",
 					"agents.EnviromentAgent", 1, arguments));
 
-			// TODO Esperar a que el entorno esté inicializado
-			// Quizás q entorno mande un mensaje?
-
-			// Si es una inundación
-			if (scen instanceof FloodScenario) {
-				FloodScenario fscen = (FloodScenario) scen;
-				ListIterator<WaterSource> it = fscen.waterSourcesIterator();
-				// Si el agua se agentifica
-				if (fscen.useWaterAgents()) {
-					ArrayList<Behaviour> waterAgents = new ArrayList<Behaviour>(
-							fscen.waterSourcesSize());
-					while (it.hasNext()) {
-						WaterSource ws = it.next();
-						int[] tileIdx = scen.coordToTile(ws.getCoord());
-						// Calcular cuántos agentes hacen falta para representar
-						// esa cantidad de agua
-						short water = ws.getWater();
-						short scenWater = fscen.getWater();
-						int clones = water / scenWater; // Nº de agentes
-						// int spare = water - (scenWater * clones); // Resto
-						arguments = new Object[] {
-								Integer.toString(tileIdx[0]),
-								Integer.toString(tileIdx[1]) };
-						// Agentes Water
-						Behaviour wa = new CreateAgentTickerBehav(this, ws
-								.getRhythm(), "Water",
-								"agents.flood.WaterAgent", clones, arguments);
-						addBehaviour(wa);
-						waterAgents.add(wa);
-					}
-					// TODO cuando parar de crear WaterAgent (usando
-					// waterAgents)
-				}
-				// Si no se agentifica el agua
-				else {
-					while (it.hasNext()) {
-						WaterSource ws = it.next();
-						int[] tileIdx = scen.coordToTile(ws.getCoord());
-						arguments = new Object[] {
-								Integer.toString(tileIdx[0]),
-								Integer.toString(tileIdx[1]),
-								Short.toString(ws.getWater()),
-								Long.toString(ws.getRhythm()) };
-						addBehaviour(new CreateAgentBehav(this, "WaterSource",
-								"agents.flood.WaterSourceAgent", 1, arguments));
-					}
-				}
+			DFAgentDescription dfd = new DFAgentDescription();
+			dfd.setName(getAID());
+			ServiceDescription sd = new ServiceDescription();
+			sd.setType("creator");
+			sd.setName(getName());
+			dfd.addServices(sd);
+			// Registrarse con el agente DF
+			try {
+				DFService.register(this, dfd);
+			} catch (FIPAException e) {
+				e.printStackTrace(logger.getError());
 			}
+
+			// Esperar a que el entorno esté inicializado
+			addBehaviour(new WaitForReadyBehav());
 		}
 	}
+
+	protected class WaitForReadyBehav extends CyclicBehaviour {
+
+		@Override
+		public void action() {
+			ACLMessage msg = myAgent.receive();
+			if (msg != null) {
+				// Mensaje recibido, hay que procesarlo
+				if (msg.getPerformative() != ACLMessage.CONFIRM)
+					return;
+				Object[] arguments;
+				// Si es una inundación
+				if (scen instanceof FloodScenario) {
+					FloodScenario fscen = (FloodScenario) scen;
+					ListIterator<WaterSource> it = fscen.waterSourcesIterator();
+					// Si el agua se agentifica
+					if (fscen.useWaterAgents()) {
+						ArrayList<Behaviour> waterAgents = new ArrayList<Behaviour>(
+								fscen.waterSourcesSize());
+						while (it.hasNext()) {
+							WaterSource ws = it.next();
+							int[] tileIdx = scen.coordToTile(ws.getCoord());
+							// Calcular cuántos agentes hacen falta para
+							// representar
+							// esa cantidad de agua
+							short water = ws.getWater();
+							short scenWater = fscen.getWater();
+							int clones = water / scenWater; // Nº de agentes
+							// int spare = water - (scenWater * clones); //
+							// Resto
+							arguments = new Object[] {
+									Integer.toString(tileIdx[0]),
+									Integer.toString(tileIdx[1]) };
+							// Agentes Water
+							Behaviour wa = new CreateAgentTickerBehav(myAgent,
+									ws.getRhythm(), "Water",
+									"agents.flood.WaterAgent", clones,
+									arguments);
+							myAgent.addBehaviour(wa);
+							waterAgents.add(wa);
+						}
+						// TODO cuando parar de crear WaterAgent (usando
+						// waterAgents)
+					}
+					// Si no se agentifica el agua
+					else {
+						while (it.hasNext()) {
+							WaterSource ws = it.next();
+							int[] tileIdx = scen.coordToTile(ws.getCoord());
+							arguments = new Object[] {
+									Integer.toString(tileIdx[0]),
+									Integer.toString(tileIdx[1]),
+									Short.toString(ws.getWater()),
+									Long.toString(ws.getRhythm()) };
+							myAgent.addBehaviour(new CreateAgentBehav(myAgent,
+									"WaterSource",
+									"agents.flood.WaterSourceAgent", 1,
+									arguments));
+						}
+					}
+				}
+			} else {
+				block();
+			}
+		}
+
+	}
+
 }

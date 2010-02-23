@@ -143,8 +143,8 @@ public class VisorFrame extends JFrame implements Updateable {
 				radius = radiusX;
 			else
 				radius = radiusY;
-			if (radius < 30)
-				radius = 30;
+			if (radius < 6)
+				radius = 6;
 
 			// Calcular las distancias de referencia de los hexágonos
 			Polygon p = new Hexagon2D(0, 0, radius);
