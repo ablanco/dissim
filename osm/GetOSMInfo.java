@@ -50,7 +50,16 @@ public class GetOSMInfo {
 		writeDocumentToLog(root, 0);
 		xmlLog.println("... end of statement");
 	}
-	
+	/*
+	protected Streets xmlToStreets(Node root){
+		
+	}
+	*/
+	/**
+	 * Given a proper url for OSM returns a file with the information 
+	 * @param url
+	 * @return
+	 */
 	protected File getOSMXmlFromURL(String url) {
 		File file = null;
 		try {
