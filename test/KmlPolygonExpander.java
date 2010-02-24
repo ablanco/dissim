@@ -1,7 +1,7 @@
 package test;
 
+import googleEarth.GoogleEarthFlood;
 import gui.VisorFrame;
-import kml.flood.FloodKml;
 import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
@@ -24,7 +24,7 @@ public class KmlPolygonExpander {
 
 		FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
 
-		FloodKml k = new FloodKml();
+		GoogleEarthFlood k = new GoogleEarthFlood(newOrleans.getName(),newOrleans.getDescription());
 
 		for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
 			for (int j = 0; j < newOrleans.getGridSize()[1]; j++) {

@@ -16,7 +16,7 @@
 
 package test;
 
-import kml.KmlWriter;
+import googleEarth.GoogleEarthUtils;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
@@ -46,7 +46,7 @@ public class KmlWriterTest {
 
 		System.out.println(newOrleans.toString());
 		System.out.println(newOrleans.getDescription());
-		KmlWriter kmle = new KmlWriter();
+		GoogleEarthUtils kmle = new GoogleEarthUtils();
 	}
 
 }

@@ -169,6 +169,27 @@ public class Scenario implements Serializable {
 		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
 		// Try to adjust aproximation errors. 7%
 
+		double distMin = coord.distance(tileToCoord(x, y));
+		boolean mejor = true;
+		//Dist ins given in kms, tilesize is diameter, so 1000/2=500
+		System.err.print("["+x+","+y+"] Dist min :"+distMin*2000+" ? "+tileSize);
+		while ((distMin*2000)>tileSize && mejor){
+			//Look for all adyacents
+			mejor = false;
+			for (Point point : getAdjacents(new Point(x,y))){
+				LatLng aux = tileToCoord(point.getX(), point.getY());
+				double dist = coord.distance(aux);
+				//Keeps the nearest
+				if (dist<distMin){
+					distMin = dist;
+					x = point.getX();
+					y = point.getY();
+					mejor = true;
+				}
+			}
+			System.err.print(" ,"+distMin);
+		}
+		System.err.println();
 		return new int[] { x, y };
 	}
 

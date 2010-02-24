@@ -16,7 +16,8 @@
 
 package test;
 
-import kml.flood.FloodKml;
+import googleEarth.GoogleEarthFlood;
+import googleEarth.GoogleEarthUtils;
 import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
@@ -49,7 +50,7 @@ public class TimeStampTest {
 
 		FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
 
-		FloodKml k = new FloodKml();
+		GoogleEarthFlood k = new GoogleEarthFlood(newOrleans.getName(),newOrleans.getDescription());
 
 		for (int rep=0;rep<6;rep++){
 			for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
@@ -61,7 +62,7 @@ public class TimeStampTest {
 			k.update(newOrleans);
 	
 		}
-		k.createKmzFile(newOrleans.getName());
+		GoogleEarthUtils.createKmzFile(k.getKml(),newOrleans.getName());
 	}
 
 }
