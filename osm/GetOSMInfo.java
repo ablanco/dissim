@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,79 +28,176 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import util.Logger;
+import util.Scenario;
 import util.jcoord.LatLng;
 
 public class GetOSMInfo {
 	private Document doc;
 	private Node root;
-	private Logger xmlLog;
+	private Logger osmLog;
+	private Scenario scene;
 
 	/** Creates a new instance of XmlParser */
-	public GetOSMInfo(LatLng[] mapBox) {
-		//Open Streets Maps uses a differente mapBox, NE, SW
-		xmlLog = new Logger();
-		String url ="http://api.openstreetmap.org/api/0.6/map?bbox=";
-		url +=mapBox[0].getLng()+","+mapBox[1].getLat();
-		url +=","+mapBox[1].getLng()+","+mapBox[0].getLat();
-		xmlLog.println("Obtaining info from :"+url);
+	public GetOSMInfo(Scenario scene) {
+		// Open Streets Maps uses a differente mapBox, NE, SW
+		this.scene = scene;
+		LatLng[] mapBox = scene.getArea();
+		osmLog = new Logger();
+		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
+		url += mapBox[0].getLng() + "," + mapBox[1].getLat();
+		url += "," + mapBox[1].getLng() + "," + mapBox[0].getLat();
+		osmLog.println("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url);
-		
+
 		// parse XML file -> XML document will be build
 		doc = parseFile(xmlFile.getPath());
 		// get root node of xml tree structure
 		root = doc.getDocumentElement();
 		// write node and its child nodes into System.out
-		xmlLog.println("Statemend of XML document...");
-		//writeDocumentToLog(root, 0);
+		osmLog.println("Statemend of XML document...");
+		// writeDocumentToLog(root, 0);
 		xmlToStreets(root);
-		xmlLog.println("... end of statement");
-	}
-	
-	protected OsmMap xmlToStreets(Node root){
-		OsmMap map = null;
-		// get element name
-		String nodeName = root.getNodeName();
-		// get element value
-		String nodeValue = getElementValue(root);
-		// get attributes of element
-		NamedNodeMap attributes = root.getAttributes();
-		xmlLog.debugln("NodeName: " + nodeName
-				+ ", NodeValue: " + nodeValue);
-		for (int i = 0; i < attributes.getLength(); i++) {
-			Node attribute = attributes.item(i);
-			xmlLog.debugln("AttributeName: "
-					+ attribute.getNodeName() + ", attributeValue: "
-					+ attribute.getNodeValue());
-		}
-		/*
-		// write all child nodes recursively
-		NodeList children = node.getChildNodes();
-		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
-			if (child.getNodeType() == Node.ELEMENT_NODE) {
-				writeDocumentToLog(child, indent + 2);
-			}
-		}*/
-		return map;
+		osmLog.println("... end of statement");
 	}
 
-	protected OsmNode getNodeInfo(Node node){
+	protected OsmMap xmlToStreets(Node root) {
+		OsmMap osmMap = null;
+		// Skips osm and bounds
+		root = root.getFirstChild().getNextSibling().getNextSibling();
+		// gets First Node contains info about location
+		Node mapInfo = root.getNextSibling();
+		// Root node has id
+		NamedNodeMap attributes = mapInfo.getAttributes();
+		long id = Long.parseLong(attributes.item(0).getNodeValue());
+		// Children has the info
+		NodeList mapInfoChilds = mapInfo.getChildNodes();
+		// First child has Continent name
+		attributes = mapInfoChilds.item(1).getAttributes();
+		String continent = attributes.item(1).getNodeValue();
+		// Second child has the name of the place
+		attributes = mapInfoChilds.item(3).getAttributes();
+		String name = attributes.item(1).getNodeValue();
+		// Forth child contains place type
+		mapInfo = mapInfoChilds.item(6).getNextSibling();
+		attributes = mapInfo.getAttributes();
+		String place = attributes.item(1).getNodeValue();
+		// Now we've got all information
+		osmLog.debugln(continent + " " + place + ", " + name);
+		osmMap = new OsmMap(id, continent, name, place);
+
+		SortedMap<Long, OsmNode> osmNodes = new TreeMap<Long, OsmNode>();
+		// When this methods finised we've shuld have the first way
+		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes,
+				osmMap.ways);
+
+		return osmMap;
+	}
+
+	protected void printNodeInfo(Node node) {
+		System.out.println();
+		System.out.print("Name: " + node.getNodeName() + ",Value: "
+				+ node.getNodeValue() + " - ");
+		NamedNodeMap attributes = node.getAttributes();
+		if (attributes != null) {
+			for (int j = 0; j < attributes.getLength(); j++) {
+				System.out.print(attributes.item(j).getNodeValue() + ", ");
+			}
+		}
+
+		NodeList infoChilds = node.getChildNodes();
+		if (infoChilds != null) {
+			for (int i = 0; i < infoChilds.getLength(); i++) {
+				printNodeInfo(infoChilds.item(i));
+			}
+		}
+		System.out.println("Fin de hijos");
+
+	}
+
+	protected void getNodeInfo(Node node, SortedMap<Long, OsmNode> osmNodes,
+			SortedSet<OsmWay> ways) {
 		String nodeName = node.getNodeName();
-		if ("node"==nodeName){
-			NamedNodeMap attributes = root.getAttributes();
+		if ("node" == nodeName) {
+			NamedNodeMap attributes = node.getAttributes();
 			long id = Long.parseLong(attributes.item(0).getNodeValue());
 			double lat = Double.parseDouble(attributes.item(1).getNodeValue());
-			double lng =Double.parseDouble(attributes.item(2).getNodeValue());
-			xmlLog.debugln("Creating node: "+id+"("+lat+","+lng+")");
-			return new OsmNode(id, new LatLng(lat, lng));	
-		}else{
-			return null;
+			double lng = Double.parseDouble(attributes.item(2).getNodeValue());
+			OsmNode osmNode;
+			try {
+				osmNode = new OsmNode(id, scene
+						.coordToTile(new LatLng(lat, lng)));
+				osmLog.debugln("new node: " + osmNode.toString());
+				osmNodes.put(id, osmNode);
+			} catch (Exception e) {
+				osmNodes.put(id, new OsmNode(id, lat, lng));
+			}
+			getNodeInfo(node.getNextSibling(), osmNodes, ways);
+		} else if ("#text" == nodeName) {
+			getNodeInfo(node.getNextSibling(), osmNodes, ways);
+		} else {
+			osmLog.debugln("we've reached the end of nodes begin: " + nodeName);
+
+			getWayInfo(node, osmNodes, ways);
 		}
-		
 	}
-	
+
+	protected void getWayInfo(Node way, SortedMap<Long, OsmNode> osmNodes,
+			SortedSet<OsmWay> osmWays) {
+		String nodeName = way.getNodeName();
+		if ("way" == nodeName) {
+			NamedNodeMap attributes = way.getAttributes();
+			long id = Long.parseLong(attributes.item(0).getNodeValue());
+			OsmWay osmWay = new OsmWay(id);
+			osmWays.add(osmWay);
+			NodeList wayNodesList = way.getChildNodes();
+			for (int i = 0; i < wayNodesList.getLength(); i++) {
+				Node n = wayNodesList.item(i);
+				// Here comes ID
+				if (n.getNodeName().equalsIgnoreCase("nd")) {
+					String key = n.getAttributes().item(0).getNodeValue();
+					OsmNode on = osmNodes.get(Long.parseLong(key));
+					if (on != null) {
+						osmWay.addToWay(on);
+						osmNodes.remove(Long.parseLong(key));
+					}
+					// Here comes Info
+				} else if (n.getNodeName().equalsIgnoreCase("tag")) {
+					String value = n.getAttributes().item(0).getNodeValue();
+					if (value.equalsIgnoreCase("highway")) {
+						String type = n.getAttributes().item(1).getNodeValue();
+						// osmLog.debug("Type: "+type);
+						osmWay.setType(type);
+					} else if (value.equalsIgnoreCase("name")) {
+						String name = n.getAttributes().item(1).getNodeValue();
+						// osmLog.debug("Name: "+name);
+						osmWay.setName(name);
+					} else if (value.equalsIgnoreCase("oneway")) {
+						String oneWay = n.getAttributes().item(1)
+								.getNodeValue();
+						// osmLog.debug("OneWay: "+oneWay);
+						osmWay.setOneWay(oneWay);
+					} else {
+						// osmLog.debug(", item: "+value);
+					}
+				} else {
+					// not interested
+				}
+			}
+			osmLog.debugln("new way: " + osmWay);
+			getWayInfo(way.getNextSibling(), osmNodes, osmWays);
+		} else if ("#text" == nodeName) {
+			getWayInfo(way.getNextSibling(), osmNodes, osmWays);
+		} else if ("node" == nodeName) {
+			osmLog.debugln("que coño hace aqui un nodo???");
+			getWayInfo(way.getNextSibling(), osmNodes, osmWays);
+		} else {
+			osmLog.debugln("We've reached the end of way begins: " + nodeName);
+		}
+	}
+
 	/**
-	 * Given a proper url for OSM returns a file with the information 
+	 * Given a proper url for OSM returns a file with the information
+	 * 
 	 * @param url
 	 * @return
 	 */
@@ -108,18 +209,19 @@ public class GetOSMInfo {
 				f.delete();
 			}
 			if (f.mkdir()) {
-				xmlLog.debugln("New Directory in: " + f.getPath());
-			} 
+				osmLog.debugln("New Directory in: " + f.getPath());
+			}
 
 			if (!Wget.wget(f.getPath(), url)) {
-				xmlLog.debugln("Cannot obtain "+url+", into :"+f.getPath());
+				osmLog.debugln("Cannot obtain " + url + ", into :"
+						+ f.getPath());
 			}
 
 			f.deleteOnExit();
 			File[] xmlFile = f.listFiles();
 
 			file = xmlFile[0];
-					} catch (Exception e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -172,11 +274,11 @@ public class GetOSMInfo {
 		String nodeValue = getElementValue(node);
 		// get attributes of element
 		NamedNodeMap attributes = node.getAttributes();
-		xmlLog.debugln(getIndentSpaces(indent) + "NodeName: " + nodeName
+		osmLog.debugln(getIndentSpaces(indent) + "NodeName: " + nodeName
 				+ ", NodeValue: " + nodeValue);
 		for (int i = 0; i < attributes.getLength(); i++) {
 			Node attribute = attributes.item(i);
-			xmlLog.debugln(getIndentSpaces(indent + 2) + "AttributeName: "
+			osmLog.debugln(getIndentSpaces(indent + 2) + "AttributeName: "
 					+ attribute.getNodeName() + ", attributeValue: "
 					+ attribute.getNodeValue());
 		}
@@ -265,15 +367,13 @@ public class GetOSMInfo {
 		System.out.println("XML file parsed");
 		return doc;
 	}
-	
-	public Document getDocument(){
+
+	public Document getDocument() {
 		return doc;
 	}
-	
-	public Node getRoot(){
+
+	public Node getRoot() {
 		return root;
 	}
-	
-	
 
 }

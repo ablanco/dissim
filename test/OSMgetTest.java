@@ -16,12 +16,12 @@ public class OSMgetTest {
 		
 		Scenario newOrleans = new FloodScenario();
 		newOrleans.setGeoData(new LatLng(29.953, -90.088, (short)10), new LatLng(
-				29.940, -90.070, (short)10), (short) 600);
+				29.940, -90.070, (short)10), (short) 1);
 		newOrleans.setName("Position Grid Test");
 		newOrleans.setDescription("NW SE 1m");
 		newOrleans.complete();
 		
-		GetOSMInfo osmInfo = new GetOSMInfo(newOrleans.getArea());
+		GetOSMInfo osmInfo = new GetOSMInfo(newOrleans);
 		
 	}
 	

@@ -1,15 +1,22 @@
 package osm;
 
-import osm.Streets.Nod;
-import util.jcoord.LatLng;
+import util.Point;
 
 public class OsmNode implements Comparable<OsmNode>{
 	protected long id;
-	protected LatLng coord;
+	protected Point point;
+	protected double lng;
+	protected double lat;
 
-	public OsmNode(long id, LatLng coord) {
+	public OsmNode(long id, Point point) {
 		this.id = id;
-		this.coord = coord;
+		this.point = point;
+	}
+	
+	public OsmNode(long id, double lat, double lng) {
+		this.id=id;
+		this.lat=lat;
+		this.lng=lng;
 	}
 
 	@Override
@@ -26,6 +33,16 @@ public class OsmNode implements Comparable<OsmNode>{
 	public boolean equals(Object o) {
 		OsmNode node = (OsmNode) o;
 		return id == node.id;
+	}
+	
+	public String toString(){
+		String result="IdNode: "+id+" ";
+		if (point != null){
+			result +=point.toString();
+		}else{
+			result +="("+lat+","+lng+")";
+		}
+		return result;
 	}
 }
 

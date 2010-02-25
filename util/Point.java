@@ -35,6 +35,12 @@ public class Point implements Comparable<Point>, Serializable {
 		this.y = y;
 		this.z = z;
 	}
+	
+	public Point (int[] xyz){
+		x = xyz[0];
+		y = xyz[1];
+		z = (short)xyz[2];
+	}
 
 	@Override
 	public int compareTo(Point o) {

@@ -158,6 +158,7 @@ public class Scenario implements Serializable {
 		} else {
 			lng = (tileSize * y);
 		}
+		
 		return NW.metersToDegrees(lat, lng, grid.getTerrainValue(x, y));
 	}
 
@@ -167,15 +168,17 @@ public class Scenario implements Serializable {
 	 * @param coord
 	 * @return
 	 */
-	public int[] coordToTile(LatLng coord) {
+	public Point coordToTile(LatLng coord) {
 		// TODO Esto no rula ni pa tras.
 		if (tileSize < 0)
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
 		// Aproximacion
+
 		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
 		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
 		// Try to adjust aproximation errors. 7%
+		short z = 0;
 
 		double distMin = coord.distance(tileToCoord(x, y));
 		boolean mejor = true;
@@ -193,13 +196,14 @@ public class Scenario implements Serializable {
 					distMin = dist;
 					x = point.getX();
 					y = point.getY();
+					z= point.getZ();
 					mejor = true;
 				}
 			}
 			System.err.print(" ," + distMin);
 		}
 		System.err.println();
-		return new int[] { x, y };
+		return new Point(x,y,z);
 	}
 
 	/**

@@ -3,7 +3,6 @@ package osm;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import osm.Streets.Way;
 import util.Logger;
 
 public class OsmMap {

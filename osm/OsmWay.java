@@ -1,29 +1,47 @@
 package osm;
 
 import java.util.SortedSet;
-
-import osm.Streets.Way;
+import java.util.TreeSet;
 
 public class OsmWay implements Comparable<OsmWay>{
 	protected SortedSet<OsmNode> way;
 	protected long id;
-	protected OsmNode first;
-	protected OsmNode last;
 	protected String type;
 	protected String name;
+	protected boolean oneWay;
 
 	public OsmWay(long id, String name, String type) {
 		this.name = name;
 		this.type = type;
 		this.id = id;
+		way = new TreeSet<OsmNode>();
+	}
+	
+	public OsmWay(long id){
+		this.id = id;
+		way = new TreeSet<OsmNode>();
 	}
 
-	public void addToWay(OsmNode node) {
+	protected void addToWay(OsmNode node) {
 		way.add(node);
 	}
 
 	public boolean containsNode(OsmNode node) {
 		return way.contains(node);
+	}
+	
+	protected void setName(String name){
+		this.name = name;
+	}
+	protected void setType(String type){
+		this.type=type;
+	}
+	protected void setOneWay(String value){
+		if (value == "yes"){
+			oneWay = true;
+		}else{
+			oneWay = false;
+		}
 	}
 
 	@Override
@@ -38,7 +56,15 @@ public class OsmWay implements Comparable<OsmWay>{
 	}
 	
 	public boolean equals (Object o){
-		Way way = (Way) o;
+		OsmWay way = (OsmWay) o;
 		return id==way.id;
+	}
+	
+	public String toString(){
+		String result ="Id: "+id+", Type: "+type+", Name: "+name+"\nNodes: ";
+		for (OsmNode n: way){
+			result+=n.toString()+", ";
+		}
+		return result;
 	}
 }

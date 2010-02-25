@@ -1,5 +1,6 @@
 package test;
 
+import util.Point;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
@@ -12,7 +13,7 @@ public class PositionGridTest {
 	public static void main(String[] args) {
 		Scenario newOrleans = new FloodScenario();
 		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short)10), new LatLng(
-				29.918075, -90.053707, (short)10), (short) 600);
+				29.918075, -90.053707, (short)10), (short) 100);
 		newOrleans.setName("Position Grid Test");
 		newOrleans.setDescription("NW SE 1m");
 		newOrleans.setDateAndTime(2000, 3, 15, 15, 3);
@@ -26,9 +27,9 @@ public class PositionGridTest {
 		for (int i=0;i<dim[0];i++){
 			for (int j=0;j<dim[1];j++){
 				LatLng c =newOrleans.tileToCoord(i, j); 
-				int d[] = newOrleans.coordToTile(c);
-				if ((i!=d[0]) || (j!=d[1])){
-					System.err.println("["+i+","+j+"] != ["+d[0]+","+d[1]+"]");
+				Point p = newOrleans.coordToTile(c);
+				if ((i!=p.getX()) || (j!=p.getY())){
+					System.err.println("["+i+","+j+"] != ["+p.getX()+","+p.getY()+"]");
 					err++;
 				}
 			}

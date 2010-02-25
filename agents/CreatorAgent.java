@@ -30,6 +30,7 @@ import java.util.ListIterator;
 
 import test.SimulationTest;
 import util.Logger;
+import util.Point;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
@@ -106,7 +107,7 @@ public class CreatorAgent extends Agent {
 								fscen.waterSourcesSize());
 						while (it.hasNext()) {
 							WaterSource ws = it.next();
-							int[] tileIdx = scen.coordToTile(ws.getCoord());
+							Point p = scen.coordToTile(ws.getCoord());
 							// Calcular cuántos agentes hacen falta para
 							// representar
 							// esa cantidad de agua
@@ -116,8 +117,8 @@ public class CreatorAgent extends Agent {
 							// int spare = water - (scenWater * clones); //
 							// Resto
 							arguments = new Object[] {
-									Integer.toString(tileIdx[0]),
-									Integer.toString(tileIdx[1]) };
+									Integer.toString(p.getX()),
+									Integer.toString(p.getY()) };
 							// Agentes Water
 							Behaviour wa = new CreateAgentTickerBehav(myAgent,
 									ws.getRhythm(), "Water",
@@ -133,10 +134,10 @@ public class CreatorAgent extends Agent {
 					else {
 						while (it.hasNext()) {
 							WaterSource ws = it.next();
-							int[] tileIdx = scen.coordToTile(ws.getCoord());
+							Point p = scen.coordToTile(ws.getCoord());
 							arguments = new Object[] {
-									Integer.toString(tileIdx[0]),
-									Integer.toString(tileIdx[1]),
+									Integer.toString(p.getX()),
+									Integer.toString(p.getY()),
 									Short.toString(ws.getWater()),
 									Long.toString(ws.getRhythm()) };
 							myAgent.addBehaviour(new CreateAgentBehav(myAgent,
