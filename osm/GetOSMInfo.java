@@ -47,14 +47,54 @@ public class GetOSMInfo {
 		root = doc.getDocumentElement();
 		// write node and its child nodes into System.out
 		xmlLog.println("Statemend of XML document...");
-		writeDocumentToLog(root, 0);
+		//writeDocumentToLog(root, 0);
+		xmlToStreets(root);
 		xmlLog.println("... end of statement");
 	}
-	/*
-	protected Streets xmlToStreets(Node root){
+	
+	protected OsmMap xmlToStreets(Node root){
+		OsmMap map = null;
+		// get element name
+		String nodeName = root.getNodeName();
+		// get element value
+		String nodeValue = getElementValue(root);
+		// get attributes of element
+		NamedNodeMap attributes = root.getAttributes();
+		xmlLog.debugln("NodeName: " + nodeName
+				+ ", NodeValue: " + nodeValue);
+		for (int i = 0; i < attributes.getLength(); i++) {
+			Node attribute = attributes.item(i);
+			xmlLog.debugln("AttributeName: "
+					+ attribute.getNodeName() + ", attributeValue: "
+					+ attribute.getNodeValue());
+		}
+		/*
+		// write all child nodes recursively
+		NodeList children = node.getChildNodes();
+		for (int i = 0; i < children.getLength(); i++) {
+			Node child = children.item(i);
+			if (child.getNodeType() == Node.ELEMENT_NODE) {
+				writeDocumentToLog(child, indent + 2);
+			}
+		}*/
+		return map;
+	}
+
+	protected OsmNode getNodeInfo(Node node){
+		String nodeName = node.getNodeName();
+		if ("node"==nodeName){
+			NamedNodeMap attributes = root.getAttributes();
+			long id = Long.parseLong(attributes.item(0).getNodeValue());
+			double lat = Double.parseDouble(attributes.item(1).getNodeValue());
+			double lng =Double.parseDouble(attributes.item(2).getNodeValue());
+			xmlLog.debugln("Creating node: "+id+"("+lat+","+lng+")");
+			return new OsmNode(id, new LatLng(lat, lng));	
+		}else{
+			return null;
+		}
 		
 	}
-	*/
+	
 	/**
 	 * Given a proper url for OSM returns a file with the information 
 	 * @param url
