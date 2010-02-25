@@ -16,18 +16,21 @@
 
 package behaviours.flood;
 
-import util.HexagonalGrid;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
+import java.util.Iterator;
+
+import util.flood.FloodHexagonalGrid;
 
 public class AddWaterBehav extends CyclicBehaviour {
 
 	private static final long serialVersionUID = 6693696497776800016L;
 
-	private HexagonalGrid grid;
+	private FloodHexagonalGrid grid;
 
-	public AddWaterBehav(HexagonalGrid grid) {
+	public AddWaterBehav(FloodHexagonalGrid grid) {
 		this.grid = grid;
 	}
 
@@ -39,10 +42,28 @@ public class AddWaterBehav extends CyclicBehaviour {
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
 			// Mensaje CFP recibido, hay que procesarlo
-			String pos = msg.getContent();
-			String[] data = pos.split(" ");
-			grid.increaseValue(Integer.parseInt(data[0]), Integer
-					.parseInt(data[1]), Short.parseShort(data[2]));
+			String[] data = msg.getContent().split(" ");
+			int x = Integer.parseInt(data[0]);
+			int y = Integer.parseInt(data[1]);
+			short water = Short.parseShort(data[2]);
+
+			// Máximo nivel que va a alcanzar el agua
+			short nivelMax = (short) (grid.getTerrainValue(x, y) + water);
+			Iterator<int[]> it = grid.getAdjacents(x, y).iterator();
+			short min = Short.MAX_VALUE;
+			// Buscamos la casilla adyacente más baja
+			while (it.hasNext()) {
+				int[] tile = it.next();
+				if (tile[2] < min)
+					min = (short) tile[2];
+			}
+			// Si las adyacentes tienen más agua no inundamos
+			if (min < nivelMax) {
+				grid.increaseValue(x, y, water);
+			} else {
+				if (water > grid.getWaterValue(x, y))
+					grid.setWaterValue(x, y, water);
+			}
 		} else {
 			block();
 		}

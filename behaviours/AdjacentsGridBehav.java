@@ -37,9 +37,8 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate.and(MessageTemplate
-				.MatchConversationId("adjacents-grid"), MessageTemplate
-				.MatchPerformative(ACLMessage.CFP));
+		MessageTemplate mt = MessageTemplate
+				.MatchConversationId("adjacents-grid");
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
 			// Mensaje CFP recibido, hay que procesarlo

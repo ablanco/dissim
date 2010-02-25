@@ -62,8 +62,8 @@ public class SimulationTest {
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), tileSize);
 		scen.setPrecision((short) 10);
-		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.9532,
-				-90.0882), scen.doubleToInner(30), 200L));
+		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.97,
+				-90.07), scen.doubleToInner(30), 200L));
 		System.out.println("Water Source dentro del área de simulación: " + ws);
 		HexagonalGrid grid = scen.getGrid();
 		int x = grid.getDimX();
@@ -75,6 +75,7 @@ public class SimulationTest {
 				grid.setTerrainValue(i, j, (short) (rnd.nextInt(500) - 250));
 			}
 		}
+		//grid.setTerrainValue(x - 3, x - 3, (short) 600);
 		scen.setFloodUpdateTime(50);
 		scen.disableDefaultLogger();
 		scen.complete();

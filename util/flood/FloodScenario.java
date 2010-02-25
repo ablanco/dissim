@@ -20,7 +20,6 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import util.Scenario;
-import util.jcoord.UTMRef;
 
 public class FloodScenario extends Scenario {
 
@@ -59,14 +58,16 @@ public class FloodScenario extends Scenario {
 	public boolean addWaterSource(WaterSource ws) {
 		boolean result = false;
 
-		UTMRef utmWS = ws.getCoord().toUTMRef();
-		UTMRef utmNW = NW.toUTMRef();
-		UTMRef utmSE = SE.toUTMRef();
+		// TODO Comparar correctamente
+//		UTMRef utmWS = ws.getCoord().toUTMRef();
+//		UTMRef utmNW = NW.toUTMRef();
+//		UTMRef utmSE = SE.toUTMRef();
 		// Comprobamos que esté dentro del área de simulación
-		if (utmNW.getNorthing() >= utmWS.getNorthing()
-				&& utmNW.getEasting() <= utmWS.getEasting()
-				&& utmSE.getNorthing() <= utmWS.getNorthing()
-				&& utmSE.getEasting() >= utmWS.getEasting()) {
+//		if (utmNW.getNorthing() >= utmWS.getNorthing()
+//				&& utmNW.getEasting() <= utmWS.getEasting()
+//				&& utmSE.getNorthing() <= utmWS.getNorthing()
+//				&& utmSE.getEasting() >= utmWS.getEasting()) {
+		if (true) {
 			result = waterSources.add(ws);
 		}
 

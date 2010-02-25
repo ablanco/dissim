@@ -33,9 +33,7 @@ public class QueryGridBehav extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate.and(MessageTemplate
-				.MatchConversationId("query-grid"), MessageTemplate
-				.MatchPerformative(ACLMessage.CFP));
+		MessageTemplate mt = MessageTemplate.MatchConversationId("query-grid");
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
 			// Mensaje CFP recibido, hay que procesarlo

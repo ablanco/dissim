@@ -20,7 +20,6 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
@@ -46,6 +45,7 @@ public class WaterSourceBehav extends TickerBehaviour {
 
 	@Override
 	protected void onTick() {
+		ACLMessage msg;
 		switch (step) {
 		case 0:
 			// Obtener agente entorno
@@ -62,15 +62,15 @@ public class WaterSourceBehav extends TickerBehaviour {
 							"Error searching for the enviroment agent. Found "
 									+ result.length + " agents.");
 				envAID = result[0].getName();
-			} catch (FIPAException fe) {
-				fe.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
+				myAgent.doDelete();
 			}
+
 			step = 1;
 		case 1:
 			// Inundar casilla
-			ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
+			msg = new ACLMessage(ACLMessage.PROPOSE);
 			msg.addReceiver(envAID);
 			msg.setContent(Integer.toString(x) + " " + Integer.toString(y)
 					+ " " + Short.toString(water));

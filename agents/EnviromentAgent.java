@@ -92,7 +92,7 @@ public class EnviromentAgent extends Agent {
 			}
 			// Si no se agentifica
 			else {
-				addBehaviour(new AddWaterBehav(grid));
+				addBehaviour(new AddWaterBehav((FloodHexagonalGrid) grid));
 
 				sd = new ServiceDescription();
 				sd.setType("add-water");
