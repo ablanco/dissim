@@ -16,51 +16,38 @@
 
 package test;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
-import util.flood.FloodHexagonalGrid;
 import gui.VisorFrame;
+import util.flood.FloodHexagonalGrid;
 
 public class VisorTest {
 
 	public static void main(String[] args) throws InterruptedException {
 		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3, false);
 
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		int width = (int) (dim.width * 0.9);
-		int height = (int) (dim.height * 0.9);
-		int radiusX = (width / grid.getDimX()) / 2;
-		int radiusY = (height / grid.getDimY()) / 2;
-		int radius;
-		if (radiusX < radiusY)
-			radius = radiusX;
-		else
-			radius = radiusY;
-		if (radius < 30)
-			radius = 30;
-
 		VisorFrame v = new VisorFrame();
-		grid.setTerrainValue(0, 0, (short) -2);
-		grid.setTerrainValue(0, 1, (short) -4);
-		grid.setTerrainValue(0, 2, (short) -5);
+		grid.setTerrainValue(0, 0, (short) -20);
+		grid.setTerrainValue(0, 1, (short) -40);
+		grid.setTerrainValue(0, 2, (short) -50);
 		grid.setTerrainValue(1, 0, (short) 0);
-		grid.setTerrainValue(1, 1, (short) 1);
-		grid.setTerrainValue(1, 2, (short) -2);
-		grid.setTerrainValue(2, 0, (short) 2);
-		grid.setTerrainValue(2, 1, (short) 4);
-		grid.setTerrainValue(2, 2, (short) 1);
-		grid.setWaterValue(0, 0, (short) 4);
-		grid.setWaterValue(0, 1, (short) 6);
-		grid.setWaterValue(0, 2, (short) 6);
-		grid.setWaterValue(1, 0, (short) 1);
+		grid.setTerrainValue(1, 1, (short) 100);
+		grid.setTerrainValue(1, 2, (short) -20);
+		grid.setTerrainValue(2, 0, (short) 200);
+		grid.setTerrainValue(2, 1, (short) 40);
+		grid.setTerrainValue(2, 2, (short) 100);
+		grid.setWaterValue(0, 0, (short) 40);
+		grid.setWaterValue(0, 1, (short) 60);
+		grid.setWaterValue(0, 2, (short) 60);
+		grid.setWaterValue(1, 0, (short) 100);
 		v.update(grid);
 		v.setVisible(true);
 
 		Thread.sleep(2000L);
 
-		grid.setWaterValue(1, 2, (short) 2);
+		grid.setWaterValue(1, 2, (short) 200);
 		v.update(grid);
+		
+		Thread.sleep(2000L);
+		v.dispose();
 	}
 
 }
