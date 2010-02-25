@@ -16,8 +16,6 @@
 
 package behaviours;
 
-import java.util.Hashtable;
-
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
@@ -25,14 +23,20 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import util.Scenario;
+
 @SuppressWarnings("serial")
 public class SyndicateBehav extends CyclicBehaviour {
 
-	Hashtable<AID, Behaviour> behaviours = new Hashtable<AID, Behaviour>();
+	private Scenario scen = Scenario.getCurrentScenario();
+	private Map<String, Object[]> subscribers = new Hashtable<String, Object[]>();
 
-	// TODO y si en vez de más comportamientos se añaden más destinatarios a los
-	// mensajes de un único comportamiento?
-
+	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.or(
@@ -52,27 +56,55 @@ public class SyndicateBehav extends CyclicBehaviour {
 			}
 			// Sindicarse
 			if (msg.getPerformative() == ACLMessage.SUBSCRIBE && aid != null) {
-				// TODO periodos
-				Behaviour behav = null;
-				if (msg.getConversationId().equals("syndicate-visor")) {
-					behav = new UpdateVisorSendBehav(myAgent, 1000L, aid);
-				} else if (msg.getConversationId().equals("syndicate-kml")) {
-					behav = new UpdateKMLSendBehav(myAgent, 5000L, aid);
+				Object[] data = subscribers.get(msg.getConversationId());
+				Set<AID> receivers = null;
+				if (data != null) {
+					myAgent.removeBehaviour((Behaviour) data[0]);
+					receivers = (Set<AID>) data[1];
+				} else {
+					data = new Object[2];
+					receivers = new TreeSet<AID>();
 				}
-				Behaviour previous = behaviours.put(aid, behav);
-				if (previous != null)
-					myAgent.removeBehaviour(previous);
+				receivers.add(aid);
+				Behaviour behav = createBehav(msg.getConversationId(),
+						receivers);
 				myAgent.addBehaviour(behav);
+				data[0] = behav;
+				data[1] = receivers;
+				subscribers.put(msg.getConversationId(), data);
 			}
 			// Desregistrarse
 			else if (msg.getPerformative() == ACLMessage.CANCEL && aid != null) {
-				Behaviour behav = behaviours.remove(aid);
-				if (behav != null)
-					myAgent.removeBehaviour(behav);
+				Object[] data = subscribers.remove(msg.getConversationId());
+				if (data != null) {
+					myAgent.removeBehaviour((Behaviour) data[0]);
+					Set<AID> receivers = (Set<AID>) data[1];
+					receivers.remove(aid);
+					if (receivers.size() > 0) {
+						Behaviour behav = createBehav(msg.getConversationId(),
+								receivers);
+						myAgent.addBehaviour(behav);
+						data[0] = behav;
+						data[1] = receivers;
+						subscribers.put(msg.getConversationId(), data);
+					}
+				}
 			}
 		} else {
 			block();
 		}
+	}
+
+	private Behaviour createBehav(String convId, Set<AID> receivers) {
+		Behaviour behav = null;
+		if (convId.equals("syndicate-visor")) {
+			behav = new UpdateVisorSendBehav(myAgent, scen
+					.getUpdateVisorPeriod(), receivers);
+		} else if (convId.equals("syndicate-kml")) {
+			behav = new UpdateKMLSendBehav(myAgent, scen.getUpdateKMLPeriod(),
+					receivers);
+		}
+		return behav;
 	}
 
 }

@@ -69,6 +69,14 @@ public class Scenario implements Serializable {
 	 * Log manager for debungin
 	 */
 	private Logger defaultLogger = new Logger();
+	/**
+	 * Periodo de actualización de los visores
+	 */
+	private long updateVisor = 1000L;
+	/**
+	 * Periodo de actualización de los generadores de KML
+	 */
+	private long updateKML = 5000L;
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -171,23 +179,24 @@ public class Scenario implements Serializable {
 
 		double distMin = coord.distance(tileToCoord(x, y));
 		boolean mejor = true;
-		//Dist ins given in kms, tilesize is diameter, so 1000/2=500
-		System.err.print("["+x+","+y+"] Dist min :"+distMin*2000+" ? "+tileSize);
-		while ((distMin*2000)>tileSize && mejor){
-			//Look for all adyacents
+		// Dist ins given in kms, tilesize is diameter, so 1000/2=500
+		System.err.print("[" + x + "," + y + "] Dist min :" + distMin * 2000
+				+ " ? " + tileSize);
+		while ((distMin * 2000) > tileSize && mejor) {
+			// Look for all adyacents
 			mejor = false;
-			for (Point point : getAdjacents(new Point(x,y))){
+			for (Point point : getAdjacents(new Point(x, y))) {
 				LatLng aux = tileToCoord(point.getX(), point.getY());
 				double dist = coord.distance(aux);
-				//Keeps the nearest
-				if (dist<distMin){
+				// Keeps the nearest
+				if (dist < distMin) {
 					distMin = dist;
 					x = point.getX();
 					y = point.getY();
 					mejor = true;
 				}
 			}
-			System.err.print(" ,"+distMin);
+			System.err.print(" ," + distMin);
 		}
 		System.err.println();
 		return new int[] { x, y };
@@ -337,7 +346,8 @@ public class Scenario implements Serializable {
 	 */
 	public void updateTime() {
 		currentDateAndTime.updateTime(updateTimeMinutes);
-		defaultLogger.debugln("Time updated to: "+currentDateAndTime.toString());
+		defaultLogger.debugln("Time updated to: "
+				+ currentDateAndTime.toString());
 	}
 
 	/**
@@ -365,6 +375,22 @@ public class Scenario implements Serializable {
 
 	public void disableDefaultLogger() {
 		defaultLogger.disable();
+	}
+
+	public long getUpdateVisorPeriod() {
+		return updateVisor;
+	}
+
+	public void setUpdateVisorPeriod(long updateVisor) {
+		this.updateVisor = updateVisor;
+	}
+
+	public long getUpdateKMLPeriod() {
+		return updateKML;
+	}
+
+	public void setUpdateKMLPeriod(long updateKML) {
+		this.updateKML = updateKML;
 	}
 
 }

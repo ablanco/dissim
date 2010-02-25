@@ -17,6 +17,8 @@
 package behaviours;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
 
 import util.Scenario;
 import jade.core.AID;
@@ -27,9 +29,9 @@ import jade.lang.acl.ACLMessage;
 @SuppressWarnings("serial")
 public class UpdateVisorSendBehav extends TickerBehaviour {
 
-	private AID to;
+	private Set<AID> to;
 
-	public UpdateVisorSendBehav(Agent a, long period, AID to) {
+	public UpdateVisorSendBehav(Agent a, long period, Set<AID> to) {
 		super(a, period);
 		this.to = to;
 	}
@@ -37,7 +39,9 @@ public class UpdateVisorSendBehav extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		msg.addReceiver(to);
+		Iterator<AID> it = to.iterator();
+		while (it.hasNext())
+			msg.addReceiver(it.next());
 		msg.setConversationId("update-visor");
 		try {
 			msg.setContentObject(Scenario.getCurrentScenario().getGrid());
