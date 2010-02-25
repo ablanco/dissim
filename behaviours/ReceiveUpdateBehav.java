@@ -25,35 +25,45 @@ import jade.lang.acl.UnreadableException;
 import util.Updateable;
 
 @SuppressWarnings("serial")
-public class ReceiveUpdateBehav extends CyclicBehaviour {
+public class ReceiveUpdateBehav extends ParallelBehaviour {
 
-	private Updateable obj;
+	private Updateable client;
 
-	public ReceiveUpdateBehav(Agent a, Updateable obj) {
-		super(a);
-		this.obj = obj;
+	public ReceiveUpdateBehav(Agent a, Updateable client) {
+		super(ParallelBehaviour.WHEN_ALL);
+		this.client = client;
+		addSubBehaviour(new ReceiveBehav(a, this));
 	}
 
-	@Override
-	public void action() {
-		ACLMessage msg = myAgent.receive();
-		if (msg != null) {
-			// Mensaje recibido, hay que procesarlo
-			try {
-				Object content = msg.getContentObject();
-				// El procesado pesado se hace un comportamiento paralelo para
-				// que no se quede pillado el comportamiento de recibir mensajes
-				ParallelBehaviour parBehav = new ParallelBehaviour(
-						ParallelBehaviour.WHEN_ALL);
-				parBehav.addSubBehaviour(new UpdateBehav(this.myAgent,
-						content));
-				myAgent.addBehaviour(parBehav);
-			} catch (UnreadableException e) {
-				e.printStackTrace();
-			}
-		} else {
-			block();
+	protected class ReceiveBehav extends CyclicBehaviour {
+
+		private ParallelBehaviour parallel;
+
+		public ReceiveBehav(Agent a, ParallelBehaviour p) {
+			super(a);
+			parallel = p;
 		}
+
+		@Override
+		public void action() {
+			ACLMessage msg = myAgent.receive();
+			if (msg != null) {
+				// Mensaje recibido, hay que procesarlo
+				try {
+					Object content = msg.getContentObject();
+					// El procesado pesado se hace un comportamiento paralelo
+					// para que no se quede pillado el comportamiento de recibir
+					// mensajes
+					parallel.addSubBehaviour(new UpdateBehav(this.myAgent,
+							content));
+				} catch (UnreadableException e) {
+					e.printStackTrace();
+				}
+			} else {
+				block();
+			}
+		}
+
 	}
 
 	protected class UpdateBehav extends OneShotBehaviour {
@@ -67,7 +77,7 @@ public class ReceiveUpdateBehav extends CyclicBehaviour {
 
 		@Override
 		public void action() {
-			obj.update(content);
+			client.update(content);
 		}
 
 	}
