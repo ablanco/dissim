@@ -17,6 +17,7 @@
 package behaviours;
 
 import jade.core.AID;
+import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -28,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import util.HexagonalGrid;
 import util.Scenario;
 
 @SuppressWarnings("serial")
@@ -35,6 +37,12 @@ public class SyndicateBehav extends CyclicBehaviour {
 
 	private Scenario scen = Scenario.getCurrentScenario();
 	private Map<String, Object[]> subscribers = new Hashtable<String, Object[]>();
+	private HexagonalGrid grid;
+
+	public SyndicateBehav(Agent a, HexagonalGrid grid) {
+		super(a);
+		this.grid = grid;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -98,11 +106,11 @@ public class SyndicateBehav extends CyclicBehaviour {
 	private Behaviour createBehav(String convId, Set<AID> receivers) {
 		Behaviour behav = null;
 		if (convId.equals("syndicate-visor")) {
-			behav = new UpdateVisorSendBehav(myAgent, scen
-					.getUpdateVisorPeriod(), receivers);
+			behav = new SendUpdateBehav(myAgent, scen.getUpdateVisorPeriod(),
+					receivers, grid);
 		} else if (convId.equals("syndicate-kml")) {
-			behav = new UpdateKMLSendBehav(myAgent, scen.getUpdateKMLPeriod(),
-					receivers);
+			behav = new SendUpdateBehav(myAgent, scen.getUpdateKMLPeriod(),
+					receivers, grid);
 		}
 		return behav;
 	}

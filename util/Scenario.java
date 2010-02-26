@@ -17,36 +17,18 @@
 package util;
 
 import java.io.Serializable;
-import java.util.Set;
-import java.util.TreeSet;
 
 import util.jcoord.LatLng;
-import webservices.AltitudeWS;
 
 public class Scenario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	// The GUI is the one that should care that the Scenario is completed before
 	// simulating it
 	private boolean complete = false;
-	/**
-	 * Coordinates of simulation area (rectangle) NW means North West point
-	 */
-	protected LatLng NW = null;
-	/**
-	 * SE means South East point
-	 */
-	protected LatLng SE = null;
-	protected int gridX = -1;
-	protected int gridY = -1;
-	protected HexagonalGrid grid = null;
 	private String description = "";
 	private String name = "";
-	/**
-	 * Diameter of the circunflex circle of the hexagon in meters
-	 */
-	private short tileSize = 1;
 	/**
 	 * Increment in degrees (depends on tileSize) 1 unit means 1/precision
 	 * meters
@@ -57,10 +39,6 @@ public class Scenario implements Serializable {
 	 * a new one is created, this reference MUST change
 	 */
 	protected static Scenario current = null;
-	/**
-	 *Current Date and Time of the Simulation
-	 */
-	protected DateAndTime currentDateAndTime = null;
 	/**
 	 * Time between two simulation Steps
 	 */
@@ -73,6 +51,22 @@ public class Scenario implements Serializable {
 	 * Periodo de actualización de los generadores de KML
 	 */
 	private long updateKML = 5000L;
+	/**
+	 * Coordinates of the North West point of the simulation area
+	 */
+	private LatLng globalNW = null;
+	/**
+	 * Coordinates of the South East point of the simulation area
+	 */
+	private LatLng globalSE = null;
+	/**
+	 * Diameter of the circunflex circle of the hexagon in meters
+	 */
+	private short tileSize;
+	/**
+	 * Number of enviroment agents
+	 */
+	private int numEnv = 1; // TODO unsigned
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -100,137 +94,13 @@ public class Scenario implements Serializable {
 	 *            size of the tile terrain
 	 */
 	public void setGeoData(LatLng NW, LatLng SE, short tileSize) {
-		this.NW = NW;
-		this.SE = SE;
+		globalNW = NW;
+		globalSE = SE;
 		this.tileSize = tileSize;
-
-		// Obtain the opposite of the square distance in km
-		int y = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000 / tileSize);
-		int x = (int) (NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000 / tileSize);
-
-		// Set grid size
-		createGrid(x + 1, y + 1);
-		// Set offset in degrees between two hexagramas
-		// System.out.println(NW.toString()+SE.toString()+", x:"+x+", y:"+y+"lat inc ="+latInc+", long inc ="+lngInc);
 	}
 
-	public LatLng[] getArea() {
-		return new LatLng[] { NW, SE };
-	}
-
-	protected void createGrid(int x, int y) {
-		gridX = x;
-		gridY = y;
-		grid = new HexagonalGrid(x, y);
-	}
-
-	public int[] getGridSize() {
-		return new int[] { gridX, gridY };
-	}
-
-	public HexagonalGrid getGrid() {
-		return grid;
-	}
-
-	/**
-	 * Convert [x,y] to the corresponding LatLng Coordinate (with altitude)
-	 * 
-	 * @param x
-	 *            lat
-	 * @param y
-	 *            lng
-	 * @return LatLng
-	 */
-	public LatLng tileToCoord(int x, int y) {
-		if (NW == null)
-			throw new IllegalStateException(
-					"Simulation area hasn't been defined yet.");
-		double lng;
-		double lat = (tileSize * x * 3 / 4);
-
-		if (x % 2 != 0) {
-			// odd Rows has offset.
-			lng = ((tileSize / 2) + (tileSize * y));
-		} else {
-			lng = (tileSize * y);
-		}
-
-		return NW.metersToDegrees(lat, lng, grid.getTerrainValue(x, y));
-	}
-
-	/**
-	 * Convert from a coordinate to the position in the grid
-	 * 
-	 * @param coord
-	 * @return
-	 */
-	public Point coordToTile(LatLng coord) {
-		// TODO Esto no rula ni pa tras.
-		if (tileSize < 0)
-			throw new IllegalStateException(
-					"The size of the tiles hasn't been defined yet.");
-		// Aproximacion
-
-		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
-		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
-		// Try to adjust aproximation errors. 7%
-		short z = 0;
-
-		double distMin = coord.distance(tileToCoord(x, y));
-		boolean mejor = true;
-		// Dist ins given in kms, tilesize is diameter, so 1000/2=500
-		System.err.print("[" + x + "," + y + "] Dist min :" + distMin * 2000
-				+ " ? " + tileSize);
-		while ((distMin * 2000) > tileSize && mejor) {
-			// Look for all adyacents
-			mejor = false;
-			for (Point point : getAdjacents(new Point(x, y))) {
-				LatLng aux = tileToCoord(point.getX(), point.getY());
-				double dist = coord.distance(aux);
-				// Keeps the nearest
-				if (dist < distMin) {
-					distMin = dist;
-					x = point.getX();
-					y = point.getY();
-					z = point.getZ();
-					mejor = true;
-				}
-			}
-			System.err.print(" ," + distMin);
-		}
-		System.err.println();
-		return new Point(x, y, z);
-	}
-
-	/**
-	 * Returns a set of adjacens of pfrom coords
-	 * 
-	 * @param p
-	 *            Point
-	 * 
-	 * @return Set<Point> adyacents to p
-	 */
-	public Set<Point> getAdjacents(Point p) {
-		Set<Point> puntos = new TreeSet<Point>();
-		for (int[] a : grid.getAdjacents(p.getX(), p.getY())) {
-			puntos.add(new Point(a[0], a[1], grid.getTerrainValue(a[0], a[1])));
-		}
-		return puntos;
-	}
-
-	/**
-	 * Look for diferents values of the adyacents values, if different, is
-	 * border.
-	 * 
-	 * @return true is border, false if not
-	 */
-	public boolean isBorderPoint(Point p) {
-		for (int[] a : grid.getAdjacents(p.getX(), p.getY())) {
-			if (p.getZ() != grid.getTerrainValue(a[0], a[1])) {
-				return true;
-			}
-		}
-		return false;
+	public LatLng[] getSimulationArea() {
+		return new LatLng[] { globalNW, globalSE };
 	}
 
 	public void setDescription(String description) {
@@ -246,7 +116,7 @@ public class Scenario implements Serializable {
 	}
 
 	public void complete() {
-		if (NW == null || SE == null || grid == null || tileSize < 0)
+		if (globalNW == null || globalSE == null || tileSize < 0)
 			throw new IllegalStateException(
 					"There are mandatory parameters that hasn't been defined yet.");
 
@@ -257,39 +127,18 @@ public class Scenario implements Serializable {
 		return tileSize;
 	}
 
-	@Override
-	public String toString() {
-		if (complete)
-			return "Current Time: " + currentDateAndTime.toString()
-					+ "\nSize [" + gridX + "," + gridY + "] NW coord :"
-					+ NW.toString() + ", SE Coord: " + SE.toString()
-					+ "\nTile size :" + NW.distance(tileToCoord(0, 1)) + "kms"
-					+ " ~ " + tileSize + "m, Diagonal =" + NW.distance(SE)
-					+ "kms";
-		else
-			return "Incomplete scenario description: " + super.toString();
-	}
-
-	/**
-	 * Call a webservice to obtain the elevation of all tiles of the grid
-	 */
-	public void obtainTerrainElevation() {
-		if (grid == null)
-			throw new IllegalStateException("The grid hasn't been created yet.");
-
-		int total = gridX * gridY;
-		int cont = 0;
-		for (int i = 0; i < gridX; i++) {
-			for (int j = 0; j < gridY; j++) {
-				LatLng coord = tileToCoord(i, j);
-				double value = AltitudeWS.getElevation(coord);
-				grid.setTerrainValue(i, j, doubleToInner(value));
-				cont++;
-				System.out.println("Obtenidas " + cont + " de " + total
-						+ " alturas\r");
-			}
-		}
-	}
+	// @Override
+	// public String toString() {
+	// if (complete)
+	// return "Current Time: " + currentDateAndTime.toString()
+	// + "\nSize [" + gridX + "," + gridY + "] NW coord :"
+	// + NW.toString() + ", SE Coord: " + SE.toString()
+	// + "\nTile size :" + NW.distance(tileToCoord(0, 1)) + "kms"
+	// + " ~ " + tileSize + "m, Diagonal =" + NW.distance(SE)
+	// + "kms";
+	// else
+	// return "Incomplete scenario description: " + super.toString();
+	// }
 
 	public void setPrecision(short precision) {
 		this.precision = precision;
@@ -315,40 +164,41 @@ public class Scenario implements Serializable {
 		return name;
 	}
 
-	/**
-	 * Set time and date for the simulation
-	 * 
-	 * @param year
-	 * @param month
-	 * @param dayOfMonth
-	 * @param hourOfDay
-	 * @param minute
-	 */
-	public void setDateAndTime(int year, int month, int dayOfMonth,
-			int hourOfDay, int minute) {
-		this.currentDateAndTime = new DateAndTime(year, month, dayOfMonth,
-				hourOfDay, minute);
-//		defaultLogger.debugln("Time has been set to :"
-//				+ currentDateAndTime.toString());
-	}
-
-	/**
-	 * Gets currentDateAndTime
-	 * 
-	 * @return currentDateAndTime
-	 */
-	public DateAndTime getDateAndTime() {
-		return currentDateAndTime;
-	}
-
-	/**
-	 * Updates de current time by adding updateTimeMinutes to currentDateAndTime
-	 */
-	public void updateTime() {
-		currentDateAndTime.updateTime(updateTimeMinutes);
-//		defaultLogger.debugln("Time updated to: "
-//				+ currentDateAndTime.toString());
-	}
+	// /**
+	// * Set time and date for the simulation
+	// *
+	// * @param year
+	// * @param month
+	// * @param dayOfMonth
+	// * @param hourOfDay
+	// * @param minute
+	// */
+	// public void setDateAndTime(int year, int month, int dayOfMonth,
+	// int hourOfDay, int minute) {
+	// this.currentDateAndTime = new DateAndTime(year, month, dayOfMonth,
+	// hourOfDay, minute);
+	// // defaultLogger.debugln("Time has been set to :"
+	// // + currentDateAndTime.toString());
+	// }
+	//
+	// /**
+	// * Gets currentDateAndTime
+	// *
+	// * @return currentDateAndTime
+	// */
+	// public DateAndTime getDateAndTime() {
+	// return currentDateAndTime;
+	// }
+	//
+	// /**
+	// * Updates de current time by adding updateTimeMinutes to
+	// currentDateAndTime
+	// */
+	// public void updateTime() {
+	// currentDateAndTime.updateTime(updateTimeMinutes);
+	// // defaultLogger.debugln("Time updated to: "
+	// // + currentDateAndTime.toString());
+	// }
 
 	/**
 	 * Set the time in minutes between two steps of the simulation
@@ -356,8 +206,8 @@ public class Scenario implements Serializable {
 	 * @param updateTimeMinutes
 	 */
 	public void setUpdateTimeMinutes(int updateTimeMinutes) {
-//		defaultLogger.debugln("Update Time set To " + updateTimeMinutes
-//				+ " min");
+		// defaultLogger.debugln("Update Time set To " + updateTimeMinutes
+		// + " min");
 		this.updateTimeMinutes = updateTimeMinutes;
 	}
 
@@ -365,17 +215,17 @@ public class Scenario implements Serializable {
 		return updateTimeMinutes;
 	}
 
-//	public void setDefaultLogger(Logger defaultLogger) {
-//		this.defaultLogger = defaultLogger;
-//	}
-//
-//	public Logger getDefaultLogger() {
-//		return defaultLogger;
-//	}
-//
-//	public void disableDefaultLogger() {
-//		defaultLogger.disable();
-//	}
+	// public void setDefaultLogger(Logger defaultLogger) {
+	// this.defaultLogger = defaultLogger;
+	// }
+	//
+	// public Logger getDefaultLogger() {
+	// return defaultLogger;
+	// }
+	//
+	// public void disableDefaultLogger() {
+	// defaultLogger.disable();
+	// }
 
 	public long getUpdateVisorPeriod() {
 		return updateVisor;
@@ -391,6 +241,14 @@ public class Scenario implements Serializable {
 
 	public void setUpdateKMLPeriod(long updateKML) {
 		this.updateKML = updateKML;
+	}
+
+	public int getNumEnv() {
+		return numEnv;
+	}
+
+	public void setNumEnv(int numEnv) {
+		this.numEnv = numEnv;
 	}
 
 }

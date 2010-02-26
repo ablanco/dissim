@@ -18,21 +18,37 @@ package util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.TreeSet;
+
+import util.jcoord.LatLng;
+import webservices.AltitudeWS;
 
 public class HexagonalGrid implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Coordinates of simulation area (rectangle) NW means North West point
+	 */
+	protected LatLng NW = null;
+	/**
+	 * SE means South East point
+	 */
+	protected LatLng SE = null;
+	/**
+	 * Diameter of the circunflex circle of the hexagon in meters
+	 */
+	private short tileSize = 1;
+
 	protected short[][] gridTerrain;
 	protected int dimX;
 	protected int dimY;
-//	protected Logger gridLogger;
 
 	public HexagonalGrid(int x, int y) {
 		gridTerrain = new short[x][y];
 		dimX = x;
 		dimY = y;
-//		gridLogger = new Logger();
 	}
 
 	public short setTerrainValue(int x, int y, short value) {
@@ -55,7 +71,7 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public short getTerrainValue(int x, int y) {
-		if (x>dimX || y>dimY){
+		if (x > dimX || y > dimY) {
 			throw new IndexOutOfBoundsException();
 		}
 		return gridTerrain[x][y];
@@ -143,17 +159,131 @@ public class HexagonalGrid implements Serializable {
 		return result;
 	}
 
-	// DEBUG method
-	protected void printGrid() {
-		for (int i = 0; i < dimX; i++) {
-			if (i % 2 != 0) {
-				System.out.print("  ");
-			}
-			for (int j = 0; j < dimY; j++) {
-				System.out.print(getValue(i, j) + "  ");
-			}
-			System.out.print("\n");
+	/**
+	 * Returns a set of adjacents points
+	 * 
+	 * @param p
+	 *            Point
+	 * 
+	 * @return Set<Point> adjacents to p
+	 */
+	public Set<Point> getAdjacents(Point p) {
+		Set<Point> puntos = new TreeSet<Point>();
+		for (int[] a : getAdjacents(p.getX(), p.getY())) {
+			puntos.add(new Point(a[0], a[1], getTerrainValue(a[0], a[1])));
 		}
-		System.out.print("\n");
+		return puntos;
+	}
+
+	public LatLng[] getArea() {
+		return new LatLng[] { NW, SE };
+	}
+	
+	public short getTileSize() {
+		return tileSize;
+	}
+
+	/**
+	 * Convert [x,y] to the corresponding LatLng Coordinate (with altitude)
+	 * 
+	 * @param x
+	 *            lat
+	 * @param y
+	 *            lng
+	 * @return LatLng
+	 */
+	public LatLng tileToCoord(int x, int y) {
+		if (NW == null)
+			throw new IllegalStateException(
+					"Simulation area hasn't been defined yet.");
+		double lng;
+		double lat = (tileSize * x * 3 / 4);
+
+		if (x % 2 != 0) {
+			// odd Rows has offset.
+			lng = ((tileSize / 2) + (tileSize * y));
+		} else {
+			lng = (tileSize * y);
+		}
+
+		return NW.metersToDegrees(lat, lng, getTerrainValue(x, y));
+	}
+
+	/**
+	 * Convert from a coordinate to the position in the grid
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	public Point coordToTile(LatLng coord) {
+		// TODO Esto no rula ni pa tras.
+		if (tileSize < 0)
+			throw new IllegalStateException(
+					"The size of the tiles hasn't been defined yet.");
+
+		// Aproximacion
+		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
+		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
+		// Try to adjust aproximation errors. 7%
+		short z = 0;
+
+		double distMin = coord.distance(tileToCoord(x, y));
+		boolean mejor = true;
+		// Dist ins given in kms, tilesize is diameter, so 1000/2=500
+		System.err.print("[" + x + "," + y + "] Dist min :" + distMin * 2000
+				+ " ? " + tileSize);
+		while ((distMin * 2000) > tileSize && mejor) {
+			// Look for all adyacents
+			mejor = false;
+			for (Point point : getAdjacents(new Point(x, y))) {
+				LatLng aux = tileToCoord(point.getX(), point.getY());
+				double dist = coord.distance(aux);
+				// Keeps the nearest
+				if (dist < distMin) {
+					distMin = dist;
+					x = point.getX();
+					y = point.getY();
+					z = point.getZ();
+					mejor = true;
+				}
+			}
+			System.err.print(" ," + distMin);
+		}
+		System.err.println();
+		return new Point(x, y, z);
+	}
+
+	/**
+	 * Look for differents values of the adjacents values, if different, is
+	 * border.
+	 * 
+	 * @return true is border, false if not
+	 */
+	public boolean isBorderPoint(Point p) {
+		for (int[] a : getAdjacents(p.getX(), p.getY())) {
+			if (p.getZ() != getValue(a[0], a[1])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Call a webservice to obtain the elevation of all tiles of the grid
+	 */
+	public void obtainTerrainElevation() {
+		// int total = gridX * gridY;
+		int cont = 0;
+		for (int i = 0; i < dimX; i++) {
+			for (int j = 0; j < dimY; j++) {
+				LatLng coord = tileToCoord(i, j);
+				double value = AltitudeWS.getElevation(coord);
+				setTerrainValue(i, j, (short) value); // TODO
+														// doubleToInner(value));
+				cont++;
+				// System.out.println("Obtenidas " + cont + " de " + total +
+				// " alturas\r");
+			}
+		}
 	}
 }

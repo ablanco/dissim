@@ -25,6 +25,7 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
 import util.HexagonalGrid;
+import util.Snapshot;
 import util.Updateable;
 
 @SuppressWarnings("serial")
@@ -59,11 +60,12 @@ public class VisorFrame extends JFrame implements Updateable {
 
 	@Override
 	public void update(Object obj) {
-		if (!(obj instanceof HexagonalGrid))
+		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
-					"Object is not an instance of HexagonalGrid");
-
-		pane.updateGrid((HexagonalGrid) obj);
+					"Object is not an instance of Snapshot");
+		
+		Snapshot snap = (Snapshot) obj;
+		pane.updateGrid(snap.getGrid());
 	}
 
 	@Override

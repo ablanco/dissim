@@ -30,7 +30,7 @@ public class ModifiedTilesTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3, false);
+		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3);
 
 		grid.setTerrainValue(0, 0, (short) -2);
 		grid.setTerrainValue(0, 1, (short) -4);

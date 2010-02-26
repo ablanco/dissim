@@ -32,7 +32,6 @@ import behaviours.AdjacentsGridBehav;
 import behaviours.QueryGridBehav;
 import behaviours.SyndicateBehav;
 import behaviours.flood.AddWaterBehav;
-import behaviours.flood.RegisterFloodTileBehav;
 import behaviours.flood.UpdateFloodGridBehav;
 
 @SuppressWarnings("serial")
@@ -44,11 +43,11 @@ public class EnviromentAgent extends Agent {
 	@Override
 	protected void setup() {
 		Scenario scen = Scenario.getCurrentScenario();
-//		logger = scen.getDefaultLogger();
+		// logger = scen.getDefaultLogger();
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args.length == 0) {
-			grid = scen.getGrid();
+			grid = new FloodHexagonalGrid(12, 14); // TODO
 		} else {
 			logger.errorln(getLocalName() + " wrong arguments.");
 			doDelete();
@@ -61,7 +60,7 @@ public class EnviromentAgent extends Agent {
 		// Añadir comportamientos
 		addBehaviour(new AdjacentsGridBehav(grid));
 		addBehaviour(new QueryGridBehav(grid));
-		addBehaviour(new SyndicateBehav());
+		addBehaviour(new SyndicateBehav(this, grid));
 
 		sd = new ServiceDescription();
 		sd.setType("grid-querying");
@@ -79,29 +78,15 @@ public class EnviromentAgent extends Agent {
 		// Si es una inundación
 		if (scen instanceof FloodScenario) {
 			FloodScenario fscen = (FloodScenario) scen;
+			addBehaviour(new AddWaterBehav((FloodHexagonalGrid) grid));
 
-			// En el caso de que el agua se agentifique
-			if (fscen.useWaterAgents()) {
-				addBehaviour(new RegisterFloodTileBehav(
-						(FloodHexagonalGrid) grid));
+			sd = new ServiceDescription();
+			sd.setType("add-water");
+			sd.setName(getName());
+			dfd.addServices(sd);
 
-				sd = new ServiceDescription();
-				sd.setType("flood-registering");
-				sd.setName(getName());
-				dfd.addServices(sd);
-			}
-			// Si no se agentifica
-			else {
-				addBehaviour(new AddWaterBehav((FloodHexagonalGrid) grid));
-
-				sd = new ServiceDescription();
-				sd.setType("add-water");
-				sd.setName(getName());
-				dfd.addServices(sd);
-
-				addBehaviour(new UpdateFloodGridBehav(this, fscen
-						.getFloodUpdateTime(), (FloodHexagonalGrid) grid));
-			}
+			addBehaviour(new UpdateFloodGridBehav(this, fscen
+					.getFloodUpdateTime(), (FloodHexagonalGrid) grid));
 		}
 
 		try {

@@ -16,24 +16,28 @@
 
 package behaviours;
 
-import java.io.IOException;
-import java.util.Iterator;
-import java.util.Set;
-
-import util.Scenario;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
+
+import util.HexagonalGrid;
+import util.Snapshot;
+
 @SuppressWarnings("serial")
-public class UpdateVisorSendBehav extends TickerBehaviour {
+public class SendUpdateBehav extends TickerBehaviour {
 
 	private Set<AID> to;
+	private HexagonalGrid grid;
 
-	public UpdateVisorSendBehav(Agent a, long period, Set<AID> to) {
+	public SendUpdateBehav(Agent a, long period, Set<AID> to, HexagonalGrid grid) {
 		super(a, period);
 		this.to = to;
+		this.grid = grid;
 	}
 
 	@Override
@@ -44,7 +48,7 @@ public class UpdateVisorSendBehav extends TickerBehaviour {
 			msg.addReceiver(it.next());
 		msg.setConversationId("update-visor");
 		try {
-			msg.setContentObject(Scenario.getCurrentScenario().getGrid());
+			msg.setContentObject(new Snapshot(myAgent.getAID(), grid, null)); // TODO
 			myAgent.send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();

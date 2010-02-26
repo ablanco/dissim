@@ -27,15 +27,12 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	private static final long serialVersionUID = 1L;
 
 	private short[][] gridWater; // Nivel de agua en la casilla
-	private boolean useModifications;
 	private TreeSet<Point> modTiles = null;
 
-	public FloodHexagonalGrid(int x, int y, boolean useAgents) {
+	public FloodHexagonalGrid(int x, int y) {
 		super(x, y);
 		gridWater = new short[x][y];
-		useModifications = !useAgents;
-		if (useModifications)
-			modTiles = new TreeSet<Point>();
+		modTiles = new TreeSet<Point>();
 	}
 
 	public short setWaterValue(int x, int y, short value) {
@@ -47,9 +44,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	@Override
 	public void increaseValue(int x, int y, short increment) {
 		gridWater[x][y] += increment;
-
-		if (useModifications)
-			modTiles.add(new Point(x, y));
+		modTiles.add(new Point(x, y));
 	}
 
 	@Override
@@ -63,10 +58,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 			result = gridWater[x][y];
 			gridWater[x][y] = 0;
 		}
-
-		if (useModifications)
-			modTiles.add(new Point(x, y));
-
+		modTiles.add(new Point(x, y));
 		return result;
 	}
 

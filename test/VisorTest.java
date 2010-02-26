@@ -22,7 +22,7 @@ import util.flood.FloodHexagonalGrid;
 public class VisorTest {
 
 	public static void main(String[] args) throws InterruptedException {
-		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3, false);
+		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3);
 
 		VisorFrame v = new VisorFrame();
 		grid.setTerrainValue(0, 0, (short) -20);

@@ -30,17 +30,9 @@ public class FloodScenario extends Scenario {
 	 */
 	private LinkedList<WaterSource> waterSources;
 	/**
-	 * Determina si se representa el agua como agentes o no
-	 */
-	private boolean waterAgents = false;
-	/**
 	 * Representa los ms entre cada actualización de la posición del agua
 	 */
 	private long floodUpdateTime = 500L;
-	/**
-	 * Representa la cantidad de agua que tiene cada agente
-	 */
-	private short water = 1;
 
 	public FloodScenario() {
 		super();
@@ -48,25 +40,25 @@ public class FloodScenario extends Scenario {
 		Scenario.current = this;
 	}
 
-	@Override
-	protected void createGrid(int x, int y) {
-		gridX = x;
-		gridY = y;
-		grid = new FloodHexagonalGrid(x, y, waterAgents);
-	}
+	// @Override
+	// protected void createGrid(int x, int y) {
+	// gridX = x;
+	// gridY = y;
+	// grid = new FloodHexagonalGrid(x, y, waterAgents);
+	// }
 
 	public boolean addWaterSource(WaterSource ws) {
 		boolean result = false;
 
 		// TODO Comparar correctamente
-//		UTMRef utmWS = ws.getCoord().toUTMRef();
-//		UTMRef utmNW = NW.toUTMRef();
-//		UTMRef utmSE = SE.toUTMRef();
+		// UTMRef utmWS = ws.getCoord().toUTMRef();
+		// UTMRef utmNW = NW.toUTMRef();
+		// UTMRef utmSE = SE.toUTMRef();
 		// Comprobamos que esté dentro del área de simulación
-//		if (utmNW.getNorthing() >= utmWS.getNorthing()
-//				&& utmNW.getEasting() <= utmWS.getEasting()
-//				&& utmSE.getNorthing() <= utmWS.getNorthing()
-//				&& utmSE.getEasting() >= utmWS.getEasting()) {
+		// if (utmNW.getNorthing() >= utmWS.getNorthing()
+		// && utmNW.getEasting() <= utmWS.getEasting()
+		// && utmSE.getNorthing() <= utmWS.getNorthing()
+		// && utmSE.getEasting() >= utmWS.getEasting()) {
 		if (true) {
 			result = waterSources.add(ws);
 		}
@@ -82,37 +74,12 @@ public class FloodScenario extends Scenario {
 		return waterSources.size();
 	}
 
-	public void setWaterAgents(boolean waterAgents) {
-		this.waterAgents = waterAgents;
-	}
-
-	/**
-	 * Devuelve un booleano indicando si se representa el agua como agentes o no
-	 * 
-	 * @return boolean waterAgents
-	 */
-	public boolean useWaterAgents() {
-		return waterAgents;
-	}
-
 	public void setFloodUpdateTime(long floodUpdateTime) {
 		this.floodUpdateTime = floodUpdateTime;
 	}
 
 	public long getFloodUpdateTime() {
-		if (!waterAgents)
-			return floodUpdateTime;
-		return -1;
-	}
-
-	public void setWater(short water) {
-		this.water = water;
-	}
-
-	public short getWater() {
-		if (!waterAgents)
-			return -1;
-		return water;
+		return floodUpdateTime;
 	}
 
 }

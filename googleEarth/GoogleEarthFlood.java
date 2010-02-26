@@ -27,7 +27,7 @@ import java.util.TreeSet;
 import util.HexagonalGrid;
 import util.Logger;
 import util.Point;
-import util.Scenario;
+import util.Snapshot;
 import util.Updateable;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
@@ -76,19 +76,19 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	 */
 	@Override
 	public void update(Object obj) {
-		if (!(obj instanceof Scenario))
+		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
-					"Object is not an instance of Scenario");
-		Scenario scene = (Scenario) obj;
-		updateScenarioValues(scene);
+					"Object is not an instance of Snapshot");
+		Snapshot snap = (Snapshot) obj;
+		updateScenarioValues(snap);
 		// Now we update the time for each update call
-		beginTime = scene.getDateAndTime().toString();
-		scene.updateTime();
-		endTime = scene.getDateAndTime().toString();
+		beginTime = snap.getDateTime().toString();
+		// snap.updateTime();
+		endTime = snap.getDateTime().toString();
 
 		kmlLog.println("Simulation state at: " + endTime);
 
-		HexagonalGrid g = scene.getGrid();
+		HexagonalGrid g = snap.getGrid();
 
 		// For each tile who has changed ever, creates hexagon
 		for (int x = 0; x < g.getDimX(); x++) {
@@ -96,7 +96,8 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 				short z = (short) ((short) g.getTerrainValue(x, y) - oldGrid
 						.getTerrainValue(x, y));
 				if (z != 0) {
-					drawWaterHexagon("HEX" + cont, scene.tileToCoord(x, y), z);
+					drawWaterHexagon("HEX" + cont, snap.getGrid().tileToCoord(
+							x, y), z);
 					cont++;
 				}
 
@@ -104,17 +105,16 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 		}
 	}
 
-	protected void updateScenarioValues(Scenario scene) {
+	protected void updateScenarioValues(Snapshot snap) {
 		if (!initialized) {
-			//First Grid to compair
-			int[] dims = scene.getGridSize();
+			// First Grid to compare
+			GoogleEarthUtils.tileSize = snap.getGrid().getTileSize();
 
-			GoogleEarthUtils.tileSize = scene.getTileSize();
-
-			oldGrid = new HexagonalGrid(dims[0], dims[1]);
-			HexagonalGrid grid = scene.getGrid();
-			for (int i = 0; i < dims[0]; i++) {
-				for (int j = 0; j < dims[1]; j++) {
+			oldGrid = new HexagonalGrid(snap.getGrid().getDimX(), snap
+					.getGrid().getDimY());
+			HexagonalGrid grid = snap.getGrid();
+			for (int i = 0; i < snap.getGrid().getDimX(); i++) {
+				for (int j = 0; j < snap.getGrid().getDimY(); j++) {
 					oldGrid.setTerrainValue(i, j, grid.getTerrainValue(i, j));
 				}
 			}
@@ -132,8 +132,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	 * @param z
 	 *            amount of water over the ground
 	 */
-	public void drawWaterPolygon(String name, List<LatLng> borderLine,
-			short z) {
+	public void drawWaterPolygon(String name, List<LatLng> borderLine, short z) {
 		Placemark placeMark = GoogleEarthUtils.newPlaceMark(folder, name);
 		GoogleEarthUtils.setTimeSpan(placeMark, beginTime, endTime);
 		setWaterColorToPlaceMark(placeMark, z);
@@ -177,11 +176,11 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	 * equal height returns a List of LatLng in the right order to be printed
 	 * 
 	 * @param region
-	 * @param newScene
+	 * @param newSnap
 	 * @return
 	 */
 	private List<LatLng> regionToPoligon(SortedSet<Point> region,
-			Scenario newScene) {
+			Snapshot newSnap) {
 		List<LatLng> borderLine = new ArrayList<LatLng>();
 		// Initializating
 
@@ -193,14 +192,15 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 			region.remove(p);
 			while (!adyList.isEmpty()) {
 				p = adyList.get(0);
-				borderLine.add(newScene.tileToCoord(p.getX(), p.getY()));
+				borderLine.add(newSnap.getGrid()
+						.tileToCoord(p.getX(), p.getY()));
 				adyList.remove(p);
-				Set<Point> s = newScene.getAdjacents(p);
+				Set<Point> s = newSnap.getGrid().getAdjacents(p);
 				for (Point b : region) {
 					// could be more than one each time
 					if (s.contains(b)) {
-						borderLine
-								.add(newScene.tileToCoord(b.getX(), b.getY()));
+						borderLine.add(newSnap.getGrid().tileToCoord(b.getX(),
+								b.getY()));
 						adyList.add(b);
 					}
 				}
@@ -243,14 +243,13 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	 * Looks for changes between oldGrid y newGrid and add them into a
 	 * Collection of regions.
 	 * 
-	 * @param newScene
+	 * @param newSnap
 	 * @return a Collection whit all regions
 	 */
-	private Collection<List<SortedSet<Point>>> getBorderRegions(
-			Scenario newScene) {
+	private Collection<List<SortedSet<Point>>> getBorderRegions(Snapshot newSnap) {
 		HashMap<Short, List<SortedSet<Point>>> levelRegions = new HashMap<Short, List<SortedSet<Point>>>();
-		HexagonalGrid newGrid = newScene.getGrid();
-		//TODO mirar los extremos del array
+		HexagonalGrid newGrid = newSnap.getGrid();
+		// TODO mirar los extremos del array
 		for (int x = 0; x < 0; x++) {
 			for (int y = 0; y < 0; y++) {
 				// recorremos cada punto de la matriz
@@ -259,7 +258,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 				Point p = new Point(x, y, altitude);
 				if (oldGrid.getTerrainValue(x, y) != altitude) {
 					// System.out.print("!=, ");
-					if (newScene.isBorderPoint(p)) {
+					if (newSnap.getGrid().isBorderPoint(p)) {
 						// Solo añadimos los bordes
 						// System.out.print(", Borde");
 						// System.out.print("(" + x + "," + y + ") Region :" +
@@ -276,7 +275,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 							regions.add(region);
 							levelRegions.put(altitude, regions);
 						} else {
-							if (!addBorderToRegion(regions, newScene
+							if (!addBorderToRegion(regions, newSnap.getGrid()
 									.getAdjacents(p), p)) {
 								// si no pertenece a una region creada, creamos
 								// una nueva region

@@ -42,23 +42,23 @@ public class TimeStampTest {
 				new LatLng(29.918075, -90.053707, (short) 10), (short) 600);
 		newOrleans.setName("Time inundation Colored");
 		newOrleans.setDescription("NW SE 1m");
-		newOrleans.setDateAndTime(2000, 3, 15, 15, 3);
+//		newOrleans.setDateAndTime(2000, 3, 15, 15, 3);
 		newOrleans.setUpdateTimeMinutes(1);
 		newOrleans.complete();
 
 		System.out.println(newOrleans.toString());
 
-		FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
+//		FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
 
 		GoogleEarthFlood k = new GoogleEarthFlood(newOrleans.getName(),newOrleans.getDescription());
 
 		for (int rep=0;rep<6;rep++){
-			for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
-				for (int j = 0; j < newOrleans.getGridSize()[1]; j++) {
-					short x = (short) ((Math.random() * 100) % 64);
-					grid.setTerrainValue(i, j, x);
-				}
-			}	
+//			for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
+//				for (int j = 0; j < newOrleans.getGridSize()[1]; j++) {
+//					short x = (short) ((Math.random() * 100) % 64);
+//					grid.setTerrainValue(i, j, x);
+//				}
+//			}	
 			k.update(newOrleans);
 	
 		}

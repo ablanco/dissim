@@ -28,6 +28,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import util.Logger;
+import util.Point;
 import util.Scenario;
 import util.jcoord.LatLng;
 
@@ -41,7 +42,7 @@ public class GetOSMInfo {
 	public GetOSMInfo(Scenario scene) {
 		// Open Streets Maps uses a differente mapBox, NE, SW
 		this.scene = scene;
-		LatLng[] mapBox = scene.getArea();
+		LatLng[] mapBox = scene.getSimulationArea();
 		osmLog = new Logger();
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
 		url += mapBox[0].getLng() + "," + mapBox[1].getLat();
@@ -124,8 +125,7 @@ public class GetOSMInfo {
 			double lng = Double.parseDouble(attributes.item(2).getNodeValue());
 			OsmNode osmNode;
 			try {
-				osmNode = new OsmNode(id, scene
-						.coordToTile(new LatLng(lat, lng)));
+				osmNode = new OsmNode(id, new Point(0,0));//scene.coordToTile(new LatLng(lat, lng)));
 				osmLog.debugln("new node: " + osmNode.toString());
 				osmNodes.put(id, osmNode);
 			} catch (Exception e) {
