@@ -16,8 +16,6 @@
 
 package test;
 
-import org.apache.crimson.tree.ElementNode2;
-
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
 
@@ -40,9 +38,9 @@ public class AltitudeTest {
 		altitude = AltitudeWS.getElevation(coord);
 		System.out.println("Altitud para " + coord.toString() + " -> "
 				+ altitude);
-		ElementNode2 elem = AltitudeWS.getAllElevations(coord);
+		String elem = AltitudeWS.getAllElevations(coord);
 		System.out.println("\nTodas las altitudes para " + coord.toString()
-				+ " -> " + elem.getFirstChild().toString());
+				+ " -> " + elem);
 	}
 
 }

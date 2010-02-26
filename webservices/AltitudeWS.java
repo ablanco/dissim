@@ -20,8 +20,6 @@ import java.util.List;
 
 import javax.xml.ws.WebServiceException;
 
-import org.apache.crimson.tree.ElementNode2;
-
 import util.jcoord.LatLng;
 import webservices.gov.usgs.gisdata.xmlwebservices2.ElevationService;
 import webservices.gov.usgs.gisdata.xmlwebservices2.ElevationServiceSoap;
@@ -43,7 +41,7 @@ public class AltitudeWS {
 		service = serv.getElevationServiceSoap();
 	}
 
-	public static ElementNode2 getElevation(LatLng coord, String sourceLayer,
+	public static String getElevation(LatLng coord, String sourceLayer,
 			String elevationUnits, boolean elevationOnly)
 			throws WebServiceException {
 		if (service == null)
@@ -65,21 +63,22 @@ public class AltitudeWS {
 			throw new WebServiceException("Wrong results obtained -> "
 					+ results.toString());
 
-		return (ElementNode2) results.get(0);
+		return results.get(0).toString();
 	}
 
 	public static double getElevation(LatLng coord) throws WebServiceException {
 		// -1.79769313486231E+308 means no valid values were found at that point
 		double altitude = Double.MIN_VALUE;
 
-		ElementNode2 result = getElevation(coord, "-1", "METERS", true);
-		altitude = Double.parseDouble(result.getFirstChild().toString());
+		String result = getElevation(coord, "-1", "METERS", true);
+		result = result.substring(8, result.length() - 9);
+		altitude = Double.parseDouble(result);
 
 		return altitude;
 	}
 
-	public static ElementNode2 getAllElevations(LatLng coord,
-			String elevationUnits) throws WebServiceException {
+	public static String getAllElevations(LatLng coord, String elevationUnits)
+			throws WebServiceException {
 		if (service == null)
 			init();
 
@@ -94,10 +93,10 @@ public class AltitudeWS {
 			throw new WebServiceException("Wrong results obtained -> "
 					+ results.toString());
 
-		return (ElementNode2) results.get(0);
+		return results.get(0).toString();
 	}
 
-	public static ElementNode2 getAllElevations(LatLng coord)
+	public static String getAllElevations(LatLng coord)
 			throws WebServiceException {
 		return getAllElevations(coord, "METERS");
 	}
