@@ -39,13 +39,20 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Diameter of the circunflex circle of the hexagon in meters
 	 */
-	private short tileSize = 1;
+	private int tileSize = 1;
 
 	protected short[][] gridTerrain;
 	protected int dimX;
 	protected int dimY;
 
-	public HexagonalGrid(int x, int y) {
+	public HexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
+		// Calcular el tamaño de la rejilla en función de la distancia real y el
+		// tamaño de los hexágonos
+		double ts = tileSize;
+		int x = (int) ((NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000) / (((ts / 2.0) * Math
+				.cos(Math.PI / 6.0)) * 2.0));
+		int y = (int) (((NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000) - (ts / 4.0)) / ((ts * 3.0) / 4.0));
+
 		gridTerrain = new short[x][y];
 		dimX = x;
 		dimY = y;
@@ -178,8 +185,8 @@ public class HexagonalGrid implements Serializable {
 	public LatLng[] getArea() {
 		return new LatLng[] { NW, SE };
 	}
-	
-	public short getTileSize() {
+
+	public int getTileSize() {
 		return tileSize;
 	}
 
@@ -206,7 +213,7 @@ public class HexagonalGrid implements Serializable {
 			lng = (tileSize * y);
 		}
 
-		return NW.metersToDegrees(lat, lng, getTerrainValue(x, y));
+		return NW.metersToDegrees(lat, lng, getValue(x, y));
 	}
 
 	/**
@@ -279,7 +286,7 @@ public class HexagonalGrid implements Serializable {
 				LatLng coord = tileToCoord(i, j);
 				double value = AltitudeWS.getElevation(coord);
 				setTerrainValue(i, j, (short) value); // TODO
-														// doubleToInner(value));
+				// doubleToInner(value));
 				cont++;
 				// System.out.println("Obtenidas " + cont + " de " + total +
 				// " alturas\r");

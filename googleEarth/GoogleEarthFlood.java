@@ -110,14 +110,15 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 			// First Grid to compare
 			GoogleEarthUtils.tileSize = snap.getGrid().getTileSize();
 
-			oldGrid = new HexagonalGrid(snap.getGrid().getDimX(), snap
-					.getGrid().getDimY());
-			HexagonalGrid grid = snap.getGrid();
-			for (int i = 0; i < snap.getGrid().getDimX(); i++) {
-				for (int j = 0; j < snap.getGrid().getDimY(); j++) {
-					oldGrid.setTerrainValue(i, j, grid.getTerrainValue(i, j));
-				}
-			}
+//			oldGrid = new HexagonalGrid(snap.getGrid().getDimX(), snap
+//					.getGrid().getDimY());
+//			HexagonalGrid grid = snap.getGrid();
+//			for (int i = 0; i < snap.getGrid().getDimX(); i++) {
+//				for (int j = 0; j < snap.getGrid().getDimY(); j++) {
+//					oldGrid.setTerrainValue(i, j, grid.getTerrainValue(i, j));
+//				}
+//			}
+			oldGrid = snap.getGrid();
 			initialized = true;
 		}
 	}

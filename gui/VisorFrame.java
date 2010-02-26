@@ -24,7 +24,6 @@ import java.awt.Toolkit;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
-import util.HexagonalGrid;
 import util.Snapshot;
 import util.Updateable;
 

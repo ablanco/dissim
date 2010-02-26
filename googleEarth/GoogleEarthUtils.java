@@ -39,9 +39,9 @@ public class GoogleEarthUtils {
 	/**
 	 * Size in meters of the circunflex circle of the hexagon
 	 */
-	protected static short tileSize;
+	protected static int tileSize;
 
-	public static void setTileSize(short tileSize) {
+	public static void setTileSize(int tileSize) {
 		GoogleEarthUtils.tileSize = tileSize;
 	}
 

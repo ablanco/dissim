@@ -21,6 +21,7 @@ import java.util.TreeSet;
 
 import util.HexagonalGrid;
 import util.Point;
+import util.jcoord.LatLng;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
 
@@ -29,9 +30,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	private short[][] gridWater; // Nivel de agua en la casilla
 	private TreeSet<Point> modTiles = null;
 
-	public FloodHexagonalGrid(int x, int y) {
-		super(x, y);
-		gridWater = new short[x][y];
+	public FloodHexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
+		super(NW, SE, tileSize);
+		gridWater = new short[dimX][dimY];
 		modTiles = new TreeSet<Point>();
 	}
 

@@ -19,51 +19,52 @@ package util;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-
 public class DateAndTime {
-	
+
 	private GregorianCalendar g;
-	
-	public DateAndTime(int year, int month, int dayOfMonth, int hourOfDay, int minute){
+
+	public DateAndTime(int year, int month, int dayOfMonth, int hourOfDay,
+			int minute) {
 		g = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute, 0);
 	}
-	
-	public void updateTime(int minutes){
+
+	public void updateTime(int minutes) {
 		g.add(Calendar.MINUTE, minutes);
 	}
-	
+
 	@Override
-	public String toString(){
-		//dateTime (AAAA-MM-DDThh:mm:ssZ)
+	public String toString() {
+		// dateTime (AAAA-MM-DDThh:mm:ssZ)
 		String month = "";
 		String day = "";
 		String hour = "";
 		String minute = "";
-		int m = g.get(g.MONTH);
-		int da = g.get(g.DAY_OF_MONTH);
-		int h = g.get(g.HOUR_OF_DAY);
-		int mm = g.get(g.MINUTE);
-		if (m<10){
-			month = "0"+m;
-		}else{
-			month = ""+m;
+		int m = g.get(Calendar.MONTH);
+		int da = g.get(Calendar.DAY_OF_MONTH);
+		int h = g.get(Calendar.HOUR_OF_DAY);
+		int mm = g.get(Calendar.MINUTE);
+		if (m < 10) {
+			month = "0" + m;
+		} else {
+			month = "" + m;
 		}
-		if (da<10){
-			day = "0"+da;
-		}else{
-			day = ""+da;
+		if (da < 10) {
+			day = "0" + da;
+		} else {
+			day = "" + da;
 		}
-		if (h<10){
-			hour = "0"+h;
-		}else{
-			hour =""+h;
+		if (h < 10) {
+			hour = "0" + h;
+		} else {
+			hour = "" + h;
 		}
-		if (mm<10){
-			minute = "0"+mm;
-		}else{
-			minute = ""+mm;
+		if (mm < 10) {
+			minute = "0" + mm;
+		} else {
+			minute = "" + mm;
 		}
-		return g.get(g.YEAR)+"-"+month+"-"+day+"T"+hour+":"+minute+":00";
+		return g.get(Calendar.YEAR) + "-" + month + "-" + day + "T" + hour
+				+ ":" + minute + ":00";
 	}
-	
+
 }

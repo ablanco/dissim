@@ -16,9 +16,6 @@
 
 package test;
 
-import java.util.Random;
-
-import util.HexagonalGrid;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
 import util.jcoord.LatLng;

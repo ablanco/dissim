@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Set;
 
+import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Snapshot;
 
@@ -33,11 +34,14 @@ public class SendUpdateBehav extends TickerBehaviour {
 
 	private Set<AID> to;
 	private HexagonalGrid grid;
+	private DateAndTime dateTime;
 
-	public SendUpdateBehav(Agent a, long period, Set<AID> to, HexagonalGrid grid) {
+	public SendUpdateBehav(Agent a, long period, Set<AID> to,
+			HexagonalGrid grid, DateAndTime dateTime) {
 		super(a, period);
 		this.to = to;
 		this.grid = grid;
+		this.dateTime = dateTime;
 	}
 
 	@Override
@@ -48,7 +52,7 @@ public class SendUpdateBehav extends TickerBehaviour {
 			msg.addReceiver(it.next());
 		msg.setConversationId("update-visor");
 		try {
-			msg.setContentObject(new Snapshot(myAgent.getAID(), grid, null)); // TODO
+			msg.setContentObject(new Snapshot(myAgent.getAID(), grid, dateTime));
 			myAgent.send(msg);
 		} catch (IOException e) {
 			e.printStackTrace();

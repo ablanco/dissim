@@ -23,11 +23,13 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Logger;
 import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
+import util.jcoord.LatLng;
 import behaviours.AdjacentsGridBehav;
 import behaviours.QueryGridBehav;
 import behaviours.SyndicateBehav;
@@ -39,15 +41,25 @@ public class EnviromentAgent extends Agent {
 
 	private HexagonalGrid grid = null;
 	private Logger logger = new Logger();
+	private DateAndTime dateTime;
+
+	// TODO Calcular en el entorno los valores de tiempo en función del agua que
+	// haya entrado
 
 	@Override
 	protected void setup() {
 		Scenario scen = Scenario.getCurrentScenario();
-		// logger = scen.getDefaultLogger();
+		// TODO logger = scen.getDefaultLogger();
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args.length == 0) {
-			grid = new FloodHexagonalGrid(12, 14); // TODO
+		if (args.length == 5) {
+			LatLng NW = new LatLng(Double.parseDouble((String) args[0]), Double
+					.parseDouble((String) args[1]));
+			LatLng SE = new LatLng(Double.parseDouble((String) args[2]), Double
+					.parseDouble((String) args[3]));
+			grid = new FloodHexagonalGrid(NW, SE, Integer
+					.parseInt((String) args[4]));
+			dateTime = new DateAndTime(2010, 2, 26, 20, 32);
 		} else {
 			logger.errorln(getLocalName() + " wrong arguments.");
 			doDelete();
@@ -60,7 +72,7 @@ public class EnviromentAgent extends Agent {
 		// Añadir comportamientos
 		addBehaviour(new AdjacentsGridBehav(grid));
 		addBehaviour(new QueryGridBehav(grid));
-		addBehaviour(new SyndicateBehav(this, grid));
+		addBehaviour(new SyndicateBehav(this, grid, dateTime));
 
 		sd = new ServiceDescription();
 		sd.setType("grid-querying");

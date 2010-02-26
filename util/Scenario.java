@@ -17,6 +17,7 @@
 package util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import util.jcoord.LatLng;
 
@@ -40,10 +41,6 @@ public class Scenario implements Serializable {
 	 */
 	protected static Scenario current = null;
 	/**
-	 * Time between two simulation Steps
-	 */
-	private int updateTimeMinutes = 1;
-	/**
 	 * Periodo de actualización de los visores
 	 */
 	private long updateVisor = 1000L;
@@ -62,11 +59,12 @@ public class Scenario implements Serializable {
 	/**
 	 * Diameter of the circunflex circle of the hexagon in meters
 	 */
-	private short tileSize;
+	private int tileSize = -1;
 	/**
 	 * Number of enviroment agents
 	 */
 	private int numEnv = 1; // TODO unsigned
+	private ArrayList<LatLng[]> envAreas = null;
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -123,7 +121,7 @@ public class Scenario implements Serializable {
 		complete = true;
 	}
 
-	public short getTileSize() {
+	public int getTileSize() {
 		return tileSize;
 	}
 
@@ -164,57 +162,6 @@ public class Scenario implements Serializable {
 		return name;
 	}
 
-	// /**
-	// * Set time and date for the simulation
-	// *
-	// * @param year
-	// * @param month
-	// * @param dayOfMonth
-	// * @param hourOfDay
-	// * @param minute
-	// */
-	// public void setDateAndTime(int year, int month, int dayOfMonth,
-	// int hourOfDay, int minute) {
-	// this.currentDateAndTime = new DateAndTime(year, month, dayOfMonth,
-	// hourOfDay, minute);
-	// // defaultLogger.debugln("Time has been set to :"
-	// // + currentDateAndTime.toString());
-	// }
-	//
-	// /**
-	// * Gets currentDateAndTime
-	// *
-	// * @return currentDateAndTime
-	// */
-	// public DateAndTime getDateAndTime() {
-	// return currentDateAndTime;
-	// }
-	//
-	// /**
-	// * Updates de current time by adding updateTimeMinutes to
-	// currentDateAndTime
-	// */
-	// public void updateTime() {
-	// currentDateAndTime.updateTime(updateTimeMinutes);
-	// // defaultLogger.debugln("Time updated to: "
-	// // + currentDateAndTime.toString());
-	// }
-
-	/**
-	 * Set the time in minutes between two steps of the simulation
-	 * 
-	 * @param updateTimeMinutes
-	 */
-	public void setUpdateTimeMinutes(int updateTimeMinutes) {
-		// defaultLogger.debugln("Update Time set To " + updateTimeMinutes
-		// + " min");
-		this.updateTimeMinutes = updateTimeMinutes;
-	}
-
-	public int getUpdateTimeMinutes() {
-		return updateTimeMinutes;
-	}
-
 	// public void setDefaultLogger(Logger defaultLogger) {
 	// this.defaultLogger = defaultLogger;
 	// }
@@ -248,7 +195,50 @@ public class Scenario implements Serializable {
 	}
 
 	public void setNumEnv(int numEnv) {
+		// TODO En realidad los que no valen son los primos
+		if (!(numEnv == 1 || (numEnv % 2) == 0))
+			throw new IllegalArgumentException(
+					"Number of enviroments must be one or even");
+
 		this.numEnv = numEnv;
+	}
+
+	public LatLng[] getEnvArea(int index) {
+		if (globalNW == null || globalSE == null || tileSize < 0)
+			throw new IllegalStateException(
+					"Geographical data hasn't been initialized yet.");
+		if (envAreas == null)
+			divideAreaBetweenEnvs();
+		return envAreas.get(index);
+	}
+
+	private void divideAreaBetweenEnvs() {
+		envAreas = new ArrayList<LatLng[]>(numEnv);
+
+		if (numEnv == 1) {
+			envAreas.add(new LatLng[] { globalNW, globalSE });
+			return;
+		}
+
+		double diflng = Math.abs(globalNW.getLng() - globalSE.getLng());
+		double diflat = Math.abs(globalNW.getLat() - globalSE.getLat());
+
+		// TODO Mejorar
+		int mitt = numEnv / 2;
+		diflat = diflat / 2.0;
+		diflng = diflng / ((double) mitt);
+		double lat = globalNW.getLat();
+		for (int i = 0; i < numEnv; i++) {
+			if (i == mitt)
+				lat += diflat;
+
+			LatLng NW = new LatLng(lat, globalNW.getLng()
+					+ (diflng * Math.abs(i % mitt)));
+			LatLng SE = new LatLng(lat + diflat, globalNW.getLng() + diflng
+					+ (diflng * Math.abs(i % mitt)));
+
+			envAreas.add(i, new LatLng[] { NW, SE });
+		}
 	}
 
 }

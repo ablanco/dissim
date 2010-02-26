@@ -32,6 +32,7 @@ import util.Point;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
+import util.jcoord.LatLng;
 import behaviours.CreateAgentBehav;
 
 @SuppressWarnings("serial")
@@ -59,12 +60,19 @@ public class CreatorAgent extends Agent {
 
 		scen = Scenario.getCurrentScenario();
 		if (scen != null) {
-			// logger = scen.getDefaultLogger();
-
-			// Enviroment
-			Object[] arguments = new Object[0];
-			addBehaviour(new CreateAgentBehav(this, "Enviroment",
-					"agents.EnviromentAgent", scen.getNumEnv(), arguments));
+			// Enviroments
+			for (int i = 0; i < scen.getNumEnv(); i++) {
+				LatLng[] area = scen.getEnvArea(i);
+				Object[] arguments = new Object[]{
+						Double.toString(area[0].getLat()),
+						Double.toString(area[0].getLng()),
+						Double.toString(area[1].getLat()),
+						Double.toString(area[1].getLng()),
+						Integer.toString(scen.getTileSize())
+				};
+				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
+						"agents.EnviromentAgent", 1, arguments));
+			}
 
 			DFAgentDescription dfd = new DFAgentDescription();
 			dfd.setName(getAID());
@@ -101,7 +109,7 @@ public class CreatorAgent extends Agent {
 					while (it.hasNext()) {
 						WaterSource ws = it.next();
 						Point p = new Point(0, 0); // TODO
-													// scen.coordToTile(ws.getCoord());
+						// scen.coordToTile(ws.getCoord());
 						arguments = new Object[] { Integer.toString(p.getX()),
 								Integer.toString(p.getY()),
 								Short.toString(ws.getWater()),
@@ -110,7 +118,6 @@ public class CreatorAgent extends Agent {
 								"WaterSource", "agents.flood.WaterSourceAgent",
 								1, arguments));
 					}
-
 				}
 
 				// TODO DEBUG
