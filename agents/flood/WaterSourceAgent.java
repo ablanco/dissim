@@ -17,30 +17,59 @@
 package agents.flood;
 
 import behaviours.flood.WaterSourceBehav;
+import jade.core.AID;
 import jade.core.Agent;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jade.lang.acl.ACLMessage;
 
 public class WaterSourceAgent extends Agent {
 
 	private static final long serialVersionUID = -901992561566307027L;
+	private AID envAID;
 	
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		int x; // Posición en la rejilla
-		int y;
+		double lat;
+		double lng;
 		short water;
 		long rhythm;
 		if (args.length == 4) {
-			x = Integer.parseInt((String) args[0]);
-			y = Integer.parseInt((String) args[1]);
+			lat = Double.parseDouble((String) args[0]);
+			lng = Double.parseDouble((String) args[1]);
 			water = Short.parseShort((String) args[2]);
 			rhythm = Long.parseLong((String) args[3]); 
 		} else {
 			throw new IllegalArgumentException("Wrong arguments.");
 		}
 		
-		addBehaviour(new WaterSourceBehav(this, rhythm, x, y, water));
+		// Obtener agentes entorno
+		DFAgentDescription template = new DFAgentDescription();
+		ServiceDescription sd = new ServiceDescription();
+		sd.setType("syndicate");
+		template.addServices(sd);
+		try {
+			DFAgentDescription[] result = DFService.search(this, template);
+			if (result.length < 1)
+				throw new Exception(
+						"Error searching for the enviroment agent. Found "
+								+ result.length + " agents.");
+			envAID = result[0].getName();
+			ACLMessage msg;
+		} catch (Exception e) {
+			e.printStackTrace();
+			doDelete();
+		}
+			
+		// TODO Encontrar qué agente entorno gestiona esas coord y preguntarle a qué casilla corresponden 
+		
+		int x = 0;
+		int y = 0;
+		
+		addBehaviour(new WaterSourceBehav(this, rhythm, envAID, x, y, water));
 	}
 
 }

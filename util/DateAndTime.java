@@ -16,11 +16,14 @@
 
 package util;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class DateAndTime {
+public class DateAndTime implements Serializable{
 
+	private static final long serialVersionUID = 1L;
+	
 	private GregorianCalendar g;
 
 	public DateAndTime(int year, int month, int dayOfMonth, int hourOfDay,

@@ -29,6 +29,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	private short[][] gridWater; // Nivel de agua en la casilla
 	private TreeSet<Point> modTiles = null;
+	// TODO TreeSet no acaba de funcionar bien
 
 	public FloodHexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
 		super(NW, SE, tileSize);

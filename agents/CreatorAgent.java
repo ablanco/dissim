@@ -28,7 +28,6 @@ import java.util.ListIterator;
 
 import test.SimulationTest;
 import util.Logger;
-import util.Point;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
@@ -108,10 +107,10 @@ public class CreatorAgent extends Agent {
 					ListIterator<WaterSource> it = fscen.waterSourcesIterator();
 					while (it.hasNext()) {
 						WaterSource ws = it.next();
-						Point p = new Point(0, 0); // TODO
-						// scen.coordToTile(ws.getCoord());
-						arguments = new Object[] { Integer.toString(p.getX()),
-								Integer.toString(p.getY()),
+						LatLng coord = ws.getCoord();
+						arguments = new Object[] {
+								Double.toString(coord.getLat()),
+								Double.toString(coord.getLng()),
 								Short.toString(ws.getWater()),
 								Long.toString(ws.getRhythm()) };
 						myAgent.addBehaviour(new CreateAgentBehav(myAgent,
@@ -119,9 +118,8 @@ public class CreatorAgent extends Agent {
 								1, arguments));
 					}
 				}
-
 				// TODO DEBUG
-				arguments = new Object[] { "gui.VisorFrame" };
+				arguments = new Object[] { "gui.VisorFrame", "0" };
 				myAgent.addBehaviour(new CreateAgentBehav(myAgent,
 						"DefaultVisor", "agents.UpdateAgent", 1, arguments));
 			} else {

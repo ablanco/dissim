@@ -19,7 +19,6 @@ package agents;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
@@ -33,7 +32,7 @@ import behaviours.ReceiveUpdateBehav;
 @SuppressWarnings("serial")
 public class UpdateAgent extends Agent {
 
-	private AID envAID = null;
+	private AID[] envAID = null;
 	private Updateable client = null;
 
 	@SuppressWarnings("unchecked")
@@ -41,12 +40,15 @@ public class UpdateAgent extends Agent {
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args.length == 1) {
+		String[] envs = null;
+		if (args.length == 2) {
 			try {
 				// Carga, y crea un objeto de la clase pasada, por reflexión
 				Class cls = Class.forName((String) args[0]);
 				Constructor ct = cls.getConstructor(new Class[0]);
 				client = (Updateable) ct.newInstance(new Object[0]);
+
+				envs = ((String) args[1]).split(",");
 			} catch (Throwable e) {
 				e.printStackTrace();
 				doDelete();
@@ -55,27 +57,39 @@ public class UpdateAgent extends Agent {
 			throw new IllegalArgumentException("Wrong number of arguments.");
 		}
 
-		// Obtener agente entorno
+		// Obtener agentes entorno
 		DFAgentDescription template = new DFAgentDescription();
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("syndicate");
 		template.addServices(sd);
 		try {
 			DFAgentDescription[] result = DFService.search(this, template);
-			if (result.length != 1)
+			if (result.length < 1)
 				throw new Exception(
 						"Error searching for the enviroment agent. Found "
 								+ result.length + " agents.");
-			envAID = result[0].getName();
-		} catch (FIPAException fe) {
-			fe.printStackTrace();
+			envAID = new AID[envs.length];
+			int idx = 0;
+			for (DFAgentDescription df : result) {
+				String name = df.getName().getLocalName();
+				name = name.substring(name.indexOf("-") + 1, name
+						.lastIndexOf("-"));
+				for (String e : envs) {
+					if (e.equals(name)) {
+						envAID[idx] = df.getName();
+						break;
+					}
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			doDelete();
 		}
 
 		// Sindicarse en el entorno
 		ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
-		msg.addReceiver(envAID);
+		for (int i = 0; i < envAID.length; i++)
+			msg.addReceiver(envAID[i]);
 		msg.setConversationId("syndicate-" + client.getConversationId());
 		try {
 			msg.setContentObject(getAID());
@@ -95,7 +109,8 @@ public class UpdateAgent extends Agent {
 		if (envAID != null) {
 			// Desregistrarse en el entorno
 			ACLMessage msg = new ACLMessage(ACLMessage.CANCEL);
-			msg.addReceiver(envAID);
+			for (int i = 0; i < envAID.length; i++)
+				msg.addReceiver(envAID[i]);
 			msg.setConversationId("syndicate-" + client.getConversationId());
 			try {
 				msg.setContentObject(getAID());

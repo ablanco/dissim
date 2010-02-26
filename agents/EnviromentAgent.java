@@ -43,8 +43,7 @@ public class EnviromentAgent extends Agent {
 	private Logger logger = new Logger();
 	private DateAndTime dateTime;
 
-	// TODO Calcular en el entorno los valores de tiempo en función del agua que
-	// haya entrado
+	// TODO Calcular los valores de tiempo en función del agua que haya entrado
 
 	@Override
 	protected void setup() {
@@ -97,6 +96,7 @@ public class EnviromentAgent extends Agent {
 			sd.setName(getName());
 			dfd.addServices(sd);
 
+			// Mover agua por la rejilla
 			addBehaviour(new UpdateFloodGridBehav(this, fscen
 					.getFloodUpdateTime(), (FloodHexagonalGrid) grid));
 		}

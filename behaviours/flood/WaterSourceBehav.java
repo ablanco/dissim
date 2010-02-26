@@ -19,9 +19,6 @@ package behaviours.flood;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 public class WaterSourceBehav extends TickerBehaviour {
@@ -31,52 +28,25 @@ public class WaterSourceBehav extends TickerBehaviour {
 	private int x;
 	private int y;
 	private short water;
-
 	private AID envAID;
-	private short step;
 
-	public WaterSourceBehav(Agent a, long period, int x, int y, short water) {
+	public WaterSourceBehav(Agent a, long period, AID envAID, int x, int y,
+			short water) {
 		super(a, period);
+		this.envAID = envAID;
 		this.x = x;
 		this.y = y;
 		this.water = water;
-		step = 0;
 	}
 
 	@Override
 	protected void onTick() {
-		ACLMessage msg;
-		switch (step) {
-		case 0:
-			// Obtener agente entorno
-			DFAgentDescription template = new DFAgentDescription();
-			ServiceDescription sd = new ServiceDescription();
-			sd.setType("add-water");
-			template.addServices(sd);
-
-			try {
-				DFAgentDescription[] result = DFService.search(myAgent,
-						template);
-				if (result.length != 1)
-					throw new Exception(
-							"Error searching for the enviroment agent. Found "
-									+ result.length + " agents.");
-				envAID = result[0].getName();
-			} catch (Exception e) {
-				e.printStackTrace();
-				myAgent.doDelete();
-			}
-
-			step = 1;
-		case 1:
-			// Inundar casilla
-			msg = new ACLMessage(ACLMessage.PROPOSE);
-			msg.addReceiver(envAID);
-			msg.setContent(Integer.toString(x) + " " + Integer.toString(y)
-					+ " " + Short.toString(water));
-			msg.setConversationId("add-water");
-			myAgent.send(msg);
-			break;
-		}
+		// Inundar casilla
+		ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
+		msg.addReceiver(envAID);
+		msg.setContent(Integer.toString(x) + " " + Integer.toString(y) + " "
+				+ Short.toString(water));
+		msg.setConversationId("add-water");
+		myAgent.send(msg);
 	}
 }
