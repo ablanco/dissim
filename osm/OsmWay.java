@@ -1,10 +1,10 @@
 package osm;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 public class OsmWay implements Comparable<OsmWay>{
-	protected SortedSet<OsmNode> way;
+	protected List<OsmNode> way;
 	protected long id;
 	protected String type;
 	protected String name;
@@ -14,12 +14,12 @@ public class OsmWay implements Comparable<OsmWay>{
 		this.name = name;
 		this.type = type;
 		this.id = id;
-		way = new TreeSet<OsmNode>();
+		way = new ArrayList<OsmNode>();
 	}
 	
 	public OsmWay(long id){
 		this.id = id;
-		way = new TreeSet<OsmNode>();
+		way = new ArrayList<OsmNode>();
 	}
 
 	protected void addToWay(OsmNode node) {

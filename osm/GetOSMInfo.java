@@ -1,3 +1,19 @@
+//    Flood and evacuation simulator using multi-agent technology
+//    Copyright (C) 2010 Alejandro Blanco and Manuel Gomar
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package osm;
 
 import java.io.File;
@@ -7,7 +23,6 @@ import java.io.IOException;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -27,22 +42,22 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import util.HexagonalGrid;
 import util.Logger;
-import util.Point;
-import util.Scenario;
+import util.Snapshot;
 import util.jcoord.LatLng;
 
 public class GetOSMInfo {
 	private Document doc;
 	private Node root;
 	private Logger osmLog;
-	private Scenario scene;
+	private HexagonalGrid grid;
 
 	/** Creates a new instance of XmlParser */
-	public GetOSMInfo(Scenario scene) {
+	public GetOSMInfo(Snapshot snapShot) {
 		// Open Streets Maps uses a differente mapBox, NE, SW
-		this.scene = scene;
-		LatLng[] mapBox = scene.getSimulationArea();
+		this.grid = snapShot.getGrid();
+		LatLng[] mapBox = grid.getArea();
 		osmLog = new Logger();
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
 		url += mapBox[0].getLng() + "," + mapBox[1].getLat();
@@ -94,107 +109,164 @@ public class GetOSMInfo {
 		return osmMap;
 	}
 
-	protected void printNodeInfo(Node node) {
-		System.out.println();
-		System.out.print("Name: " + node.getNodeName() + ",Value: "
-				+ node.getNodeValue() + " - ");
-		NamedNodeMap attributes = node.getAttributes();
-		if (attributes != null) {
-			for (int j = 0; j < attributes.getLength(); j++) {
-				System.out.print(attributes.item(j).getNodeValue() + ", ");
-			}
-		}
-
-		NodeList infoChilds = node.getChildNodes();
-		if (infoChilds != null) {
-			for (int i = 0; i < infoChilds.getLength(); i++) {
-				printNodeInfo(infoChilds.item(i));
-			}
-		}
-		System.out.println("Fin de hijos");
-
-	}
-
 	protected void getNodeInfo(Node node, SortedMap<Long, OsmNode> osmNodes,
 			SortedSet<OsmWay> ways) {
-		String nodeName = node.getNodeName();
-		if ("node" == nodeName) {
-			NamedNodeMap attributes = node.getAttributes();
-			long id = Long.parseLong(attributes.item(0).getNodeValue());
-			double lat = Double.parseDouble(attributes.item(1).getNodeValue());
-			double lng = Double.parseDouble(attributes.item(2).getNodeValue());
-			OsmNode osmNode;
-			try {
-				osmNode = new OsmNode(id, new Point(0,0));//scene.coordToTile(new LatLng(lat, lng)));
-				osmLog.debugln("new node: " + osmNode.toString());
-				osmNodes.put(id, osmNode);
-			} catch (Exception e) {
-				osmNodes.put(id, new OsmNode(id, lat, lng));
+		while (node != null) {
+			String nodeName = node.getNodeName();
+			if (nodeName.equalsIgnoreCase("node")) {
+				getNodeInfoNode(node, osmNodes);
+			} else if (nodeName.equalsIgnoreCase("way")) {
+				getNodeInfoWay(node, osmNodes, ways);
+			} else {
+				// Skipping
 			}
-			getNodeInfo(node.getNextSibling(), osmNodes, ways);
-		} else if ("#text" == nodeName) {
-			getNodeInfo(node.getNextSibling(), osmNodes, ways);
-		} else {
-			osmLog.debugln("we've reached the end of nodes begin: " + nodeName);
-
-			getWayInfo(node, osmNodes, ways);
+			node = node.getNextSibling();
 		}
 	}
 
-	protected void getWayInfo(Node way, SortedMap<Long, OsmNode> osmNodes,
-			SortedSet<OsmWay> osmWays) {
-		String nodeName = way.getNodeName();
-		if ("way" == nodeName) {
-			NamedNodeMap attributes = way.getAttributes();
-			long id = Long.parseLong(attributes.item(0).getNodeValue());
-			OsmWay osmWay = new OsmWay(id);
-			osmWays.add(osmWay);
-			NodeList wayNodesList = way.getChildNodes();
-			for (int i = 0; i < wayNodesList.getLength(); i++) {
-				Node n = wayNodesList.item(i);
-				// Here comes ID
-				if (n.getNodeName().equalsIgnoreCase("nd")) {
-					String key = n.getAttributes().item(0).getNodeValue();
-					OsmNode on = osmNodes.get(Long.parseLong(key));
-					if (on != null) {
-						osmWay.addToWay(on);
-						osmNodes.remove(Long.parseLong(key));
-					}
-					// Here comes Info
-				} else if (n.getNodeName().equalsIgnoreCase("tag")) {
-					String value = n.getAttributes().item(0).getNodeValue();
-					if (value.equalsIgnoreCase("highway")) {
-						String type = n.getAttributes().item(1).getNodeValue();
-						// osmLog.debug("Type: "+type);
-						osmWay.setType(type);
-					} else if (value.equalsIgnoreCase("name")) {
-						String name = n.getAttributes().item(1).getNodeValue();
-						// osmLog.debug("Name: "+name);
-						osmWay.setName(name);
-					} else if (value.equalsIgnoreCase("oneway")) {
-						String oneWay = n.getAttributes().item(1)
-								.getNodeValue();
-						// osmLog.debug("OneWay: "+oneWay);
-						osmWay.setOneWay(oneWay);
+	protected void getNodeInfoNode(Node node, SortedMap<Long, OsmNode> osmNodes) {
+		NamedNodeMap attributes = node.getAttributes();
+		// Getting attributes
+		long id = Long.parseLong(attributes.item(0).getNodeValue());
+		double lat = Double.parseDouble(attributes.item(1).getNodeValue());
+		double lng = Double.parseDouble(attributes.item(2).getNodeValue());
+		OsmNode osmNode = null;
+		try {
+			osmNode = new OsmNode(id, grid.coordToTile(new LatLng(lat, lng)));
+		} catch (Exception e) {
+			// If its out of bounds
+			osmNode = new OsmNode(id, lat, lng);
+		}
+//		osmLog.debugln("new node: " + osmNode.toString());
+		//Adding node to map of nodes
+		osmNodes.put(id, osmNode);
+		// If is extended Node:
+		if (node.getFirstChild() != null) {
+			/*
+			 * tags for uses: amenity;(place_of_workship) historic;(monument)
+			 * leisure; (park) building; (yes/no)
+			 */
+			String use = "";
+			String name = "";
+			NodeList nodeList = node.getChildNodes();
+			for (int i = 0; i < attributes.getLength(); i++) {
+				Node aux = nodeList.item(i);
+				osmLog.debug("node name: "+aux.getNodeName()+", ");
+				if(aux.getNodeName().equalsIgnoreCase("tag")){
+					String value = aux.getAttributes().item(0).getNodeValue();
+					osmLog.debug("value: "+value+" | ");
+					// Getting Name
+					if (value.equalsIgnoreCase("name")) {
+						name = aux.getAttributes().item(1).getNodeValue();
+						// Getting use of the buildin, building value: yes/no
+					} else if (value.equalsIgnoreCase("amenity")
+							|| value.equalsIgnoreCase("historic")
+							|| value.equalsIgnoreCase("leisure")
+							|| value.equalsIgnoreCase("building")) {
+						use = aux.getAttributes().item(1).getNodeValue();
 					} else {
-						// osmLog.debug(", item: "+value);
-					}
-				} else {
-					// not interested
+						// Skip
+					}	
 				}
 			}
-			osmLog.debugln("new way: " + osmWay);
-			getWayInfo(way.getNextSibling(), osmNodes, osmWays);
-		} else if ("#text" == nodeName) {
-			getWayInfo(way.getNextSibling(), osmNodes, osmWays);
-		} else if ("node" == nodeName) {
-			osmLog.debugln("que coño hace aqui un nodo???");
-			getWayInfo(way.getNextSibling(), osmNodes, osmWays);
-		} else {
-			osmLog.debugln("We've reached the end of way begins: " + nodeName);
+			osmNode.setExtendedInfo(new OsmNodeExtendedInfo(name, use));
+			osmLog.debugln(osmNode.toString());
 		}
+
 	}
 
+	protected void getNodeInfoWay(Node node, SortedMap<Long, OsmNode> osmNodes,
+			SortedSet<OsmWay> ways) {
+		NamedNodeMap attributes = node.getAttributes();
+		// Getting attributes
+		long id = Long.parseLong(attributes.item(0).getNodeValue());
+		NodeList nodeList = node.getChildNodes();
+		// Creating the way and adding to map
+		OsmWay osmWay = new OsmWay(id);
+		ways.add(osmWay);
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			// Now we search for value information
+			Node aux = nodeList.item(i);
+			String value = aux.getNodeName();
+			if (value.equalsIgnoreCase("nd")) {
+				// es un nodo
+				long key = Long.parseLong(aux.getAttributes().item(0)
+						.getNodeValue());
+				// Adding to way removin from unasigned
+				OsmNode auxNode =  osmNodes.get(key);
+				if (auxNode!=null){
+					osmWay.addToWay(auxNode);					
+				}else{
+					osmLog.debugln("***Warning*** Loocking for a id not existing: "+key);
+				}
+			} else if (value.equalsIgnoreCase("tag")) {
+				// Informacion extendida
+				String info = aux.getAttributes().item(0).getNodeValue();
+				osmLog.debug("info: "+info);
+				if (info.equalsIgnoreCase("highway") || info.equalsIgnoreCase("railway")) {
+					osmWay.setType(aux.getAttributes().item(1).getNodeValue());
+				} else if (info.equalsIgnoreCase("name")) {
+					osmWay.setName(aux.getAttributes().item(1).getNodeValue());
+				} else if (info.equalsIgnoreCase("oneway")) {
+					osmWay
+							.setOneWay(aux.getAttributes().item(1)
+									.getNodeValue());
+				} else {
+					// Skiping info
+				}
+			} else {
+				// Skiping Info
+			}
+		}
+//		osmLog.debugln(osmWay.toString());
+	}
+
+	/*
+	 * protected void getNodeInfo(Node node, SortedMap<Long, OsmNode> osmNodes,
+	 * SortedSet<OsmWay> ways) { String nodeName = node.getNodeName(); if
+	 * ("node" == nodeName) { NamedNodeMap attributes = node.getAttributes();
+	 * long id = Long.parseLong(attributes.item(0).getNodeValue()); double lat =
+	 * Double.parseDouble(attributes.item(1).getNodeValue()); double lng =
+	 * Double.parseDouble(attributes.item(2).getNodeValue()); OsmNode osmNode;
+	 * try { osmNode = new OsmNode(id, scene .coordToTile(new LatLng(lat,
+	 * lng))); osmLog.debugln("new node: " + osmNode.toString());
+	 * osmNodes.put(id, osmNode); } catch (Exception e) { osmNodes.put(id, new
+	 * OsmNode(id, lat, lng)); } getNodeInfo(node.getNextSibling(), osmNodes,
+	 * ways); } else if ("#text" == nodeName) {
+	 * getNodeInfo(node.getNextSibling(), osmNodes, ways); } else {
+	 * osmLog.debugln("we've reached the end of nodes begin: " + nodeName);
+	 * 
+	 * getWayInfo(node, osmNodes, ways); } }
+	 * 
+	 * protected void getWayInfo(Node way, SortedMap<Long, OsmNode> osmNodes,
+	 * SortedSet<OsmWay> osmWays) { String nodeName = way.getNodeName(); if
+	 * ("way" == nodeName) { NamedNodeMap attributes = way.getAttributes(); long
+	 * id = Long.parseLong(attributes.item(0).getNodeValue()); OsmWay osmWay =
+	 * new OsmWay(id); osmWays.add(osmWay); NodeList wayNodesList =
+	 * way.getChildNodes(); for (int i = 0; i < wayNodesList.getLength(); i++) {
+	 * Node n = wayNodesList.item(i); // Here comes ID if
+	 * (n.getNodeName().equalsIgnoreCase("nd")) { String key =
+	 * n.getAttributes().item(0).getNodeValue(); OsmNode on =
+	 * osmNodes.get(Long.parseLong(key)); if (on != null) { osmWay.addToWay(on);
+	 * osmNodes.remove(Long.parseLong(key)); } // Here comes Info } else if
+	 * (n.getNodeName().equalsIgnoreCase("tag")) { String value =
+	 * n.getAttributes().item(0).getNodeValue(); if
+	 * (value.equalsIgnoreCase("highway")) { String type =
+	 * n.getAttributes().item(1).getNodeValue(); // osmLog.debug("Type: "+type);
+	 * osmWay.setType(type); } else if (value.equalsIgnoreCase("name")) { String
+	 * name = n.getAttributes().item(1).getNodeValue(); //
+	 * osmLog.debug("Name: "+name); osmWay.setName(name); } else if
+	 * (value.equalsIgnoreCase("oneway")) { String oneWay =
+	 * n.getAttributes().item(1) .getNodeValue(); //
+	 * osmLog.debug("OneWay: "+oneWay); osmWay.setOneWay(oneWay); } else { //
+	 * osmLog.debug(", item: "+value); } } else { // not interested } }
+	 * osmLog.debugln("new way: " + osmWay); getWayInfo(way.getNextSibling(),
+	 * osmNodes, osmWays); } else if ("#text" == nodeName) {
+	 * getWayInfo(way.getNextSibling(), osmNodes, osmWays); } else if ("node" ==
+	 * nodeName) { osmLog.debugln("que coño hace aqui un nodo???");
+	 * getWayInfo(way.getNextSibling(), osmNodes, osmWays); } else {
+	 * osmLog.debugln("We've reached the end of way begins: " + nodeName); } }
+	 */
 	/**
 	 * Given a proper url for OSM returns a file with the information
 	 * 
@@ -374,6 +446,27 @@ public class GetOSMInfo {
 
 	public Node getRoot() {
 		return root;
+	}
+
+	protected void printNodeInfo(Node node) {
+		System.out.println();
+		System.out.print("Name: " + node.getNodeName() + ",Value: "
+				+ node.getNodeValue() + " - ");
+		NamedNodeMap attributes = node.getAttributes();
+		if (attributes != null) {
+			for (int j = 0; j < attributes.getLength(); j++) {
+				System.out.print(attributes.item(j).getNodeValue() + ", ");
+			}
+		}
+
+		NodeList infoChilds = node.getChildNodes();
+		if (infoChilds != null) {
+			for (int i = 0; i < infoChilds.getLength(); i++) {
+				printNodeInfo(infoChilds.item(i));
+			}
+		}
+		System.out.println("Fin de hijos");
+
 	}
 
 }
