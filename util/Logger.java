@@ -45,15 +45,15 @@ public class Logger {
 		if (error != null)
 			this.error = error;
 	}
-	
+
 	public PrintStream getLog() {
 		return log;
 	}
-	
+
 	public PrintStream getDebug() {
 		return debug;
 	}
-	
+
 	public PrintStream getError() {
 		return error;
 	}
@@ -111,8 +111,8 @@ public class Logger {
 	public void enable() {
 		disabled = false;
 	}
-	
-	public boolean isDisabled(){
+
+	public boolean isDisabled() {
 		return disabled;
 	}
 

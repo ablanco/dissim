@@ -6,6 +6,8 @@ import java.util.TreeSet;
 import util.Logger;
 
 public class OsmMap {
+	public static final short COUNTRY = 0;
+	
 	private Logger streetsLogger;
 	protected String continent;
 	protected String name;

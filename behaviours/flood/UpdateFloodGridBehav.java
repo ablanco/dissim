@@ -25,7 +25,6 @@ import java.util.Set;
 
 import util.Logger;
 import util.Point;
-import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 
 public class UpdateFloodGridBehav extends TickerBehaviour {
@@ -33,12 +32,12 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private static final long serialVersionUID = 8964259995058162322L;
 
 	private FloodHexagonalGrid grid;
-	private Logger logger;
+	private Logger logger = new Logger();
 
 	public UpdateFloodGridBehav(Agent a, long period, FloodHexagonalGrid grid) {
 		super(a, period);
 		this.grid = grid;
-		logger = Scenario.getCurrentScenario().getDefaultLogger();
+//		logger = Scenario.getCurrentScenario().getDefaultLogger();
 	}
 
 	@Override

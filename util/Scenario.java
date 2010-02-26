@@ -26,7 +26,7 @@ import webservices.AltitudeWS;
 public class Scenario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-
+	
 	// The GUI is the one that should care that the Scenario is completed before
 	// simulating it
 	private boolean complete = false;
@@ -65,10 +65,6 @@ public class Scenario implements Serializable {
 	 * Time between two simulation Steps
 	 */
 	private int updateTimeMinutes = 1;
-	/**
-	 * Log manager for debungin
-	 */
-	private Logger defaultLogger = new Logger();
 	/**
 	 * Periodo de actualización de los visores
 	 */
@@ -158,7 +154,7 @@ public class Scenario implements Serializable {
 		} else {
 			lng = (tileSize * y);
 		}
-		
+
 		return NW.metersToDegrees(lat, lng, grid.getTerrainValue(x, y));
 	}
 
@@ -196,14 +192,14 @@ public class Scenario implements Serializable {
 					distMin = dist;
 					x = point.getX();
 					y = point.getY();
-					z= point.getZ();
+					z = point.getZ();
 					mejor = true;
 				}
 			}
 			System.err.print(" ," + distMin);
 		}
 		System.err.println();
-		return new Point(x,y,z);
+		return new Point(x, y, z);
 	}
 
 	/**
@@ -332,8 +328,8 @@ public class Scenario implements Serializable {
 			int hourOfDay, int minute) {
 		this.currentDateAndTime = new DateAndTime(year, month, dayOfMonth,
 				hourOfDay, minute);
-		defaultLogger.debugln("Time has been set to :"
-				+ currentDateAndTime.toString());
+//		defaultLogger.debugln("Time has been set to :"
+//				+ currentDateAndTime.toString());
 	}
 
 	/**
@@ -350,8 +346,8 @@ public class Scenario implements Serializable {
 	 */
 	public void updateTime() {
 		currentDateAndTime.updateTime(updateTimeMinutes);
-		defaultLogger.debugln("Time updated to: "
-				+ currentDateAndTime.toString());
+//		defaultLogger.debugln("Time updated to: "
+//				+ currentDateAndTime.toString());
 	}
 
 	/**
@@ -360,8 +356,8 @@ public class Scenario implements Serializable {
 	 * @param updateTimeMinutes
 	 */
 	public void setUpdateTimeMinutes(int updateTimeMinutes) {
-		defaultLogger.debugln("Update Time set To " + updateTimeMinutes
-				+ " min");
+//		defaultLogger.debugln("Update Time set To " + updateTimeMinutes
+//				+ " min");
 		this.updateTimeMinutes = updateTimeMinutes;
 	}
 
@@ -369,17 +365,17 @@ public class Scenario implements Serializable {
 		return updateTimeMinutes;
 	}
 
-	public void setDefaultLogger(Logger defaultLogger) {
-		this.defaultLogger = defaultLogger;
-	}
-
-	public Logger getDefaultLogger() {
-		return defaultLogger;
-	}
-
-	public void disableDefaultLogger() {
-		defaultLogger.disable();
-	}
+//	public void setDefaultLogger(Logger defaultLogger) {
+//		this.defaultLogger = defaultLogger;
+//	}
+//
+//	public Logger getDefaultLogger() {
+//		return defaultLogger;
+//	}
+//
+//	public void disableDefaultLogger() {
+//		defaultLogger.disable();
+//	}
 
 	public long getUpdateVisorPeriod() {
 		return updateVisor;

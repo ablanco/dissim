@@ -26,13 +26,13 @@ public class HexagonalGrid implements Serializable {
 	protected short[][] gridTerrain;
 	protected int dimX;
 	protected int dimY;
-	protected Logger gridLogger;
+//	protected Logger gridLogger;
 
 	public HexagonalGrid(int x, int y) {
 		gridTerrain = new short[x][y];
 		dimX = x;
 		dimY = y;
-		gridLogger = new Logger();
+//		gridLogger = new Logger();
 	}
 
 	public short setTerrainValue(int x, int y, short value) {

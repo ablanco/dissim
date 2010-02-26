@@ -45,7 +45,7 @@ public class FloodTileBehav extends Behaviour {
 	private AID envAID; // Identificador del agente entorno
 	private Random rnd;
 	private boolean stopped = false; // Comportamiento terminado?
-	private Logger logger;
+	private Logger logger = new Logger();
 
 	private short value; // Potencial de la casilla actual
 	private short step = 0;
@@ -58,7 +58,7 @@ public class FloodTileBehav extends Behaviour {
 		FloodScenario scen = (FloodScenario) Scenario.getCurrentScenario();
 		this.water = scen.getWater();
 		rnd = new Random(System.currentTimeMillis());
-		logger = Scenario.getCurrentScenario().getDefaultLogger();
+//		logger = Scenario.getCurrentScenario().getDefaultLogger();
 	}
 
 	@SuppressWarnings("unchecked")

@@ -62,7 +62,7 @@ public class CreatorAgent extends Agent {
 
 		scen = Scenario.getCurrentScenario();
 		if (scen != null) {
-			logger = scen.getDefaultLogger();
+//			logger = scen.getDefaultLogger();
 
 			// Enviroment
 			Object[] arguments = new Object[0];

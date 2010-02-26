@@ -44,7 +44,7 @@ public class EnviromentAgent extends Agent {
 	@Override
 	protected void setup() {
 		Scenario scen = Scenario.getCurrentScenario();
-		logger = scen.getDefaultLogger();
+//		logger = scen.getDefaultLogger();
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args.length == 0) {
