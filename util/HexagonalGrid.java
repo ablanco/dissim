@@ -39,7 +39,7 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Diameter of the circunflex circle of the hexagon in meters
 	 */
-	private int tileSize = 1;
+	private int tileSize;
 	/**
 	 * Grid data
 	 */
@@ -57,9 +57,10 @@ public class HexagonalGrid implements Serializable {
 	public HexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
 		this.NW = NW;
 		this.SE = SE;
-		
+
 		// Calcular el tamaño de la rejilla en función de la distancia real y el
 		// tamaño de los hexágonos
+		this.tileSize=tileSize;
 		double ts = tileSize;
 		int x = (int) ((NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000) / (((ts / 2.0) * Math
 				.cos(Math.PI / 6.0)) * 2.0));
@@ -265,43 +266,41 @@ public class HexagonalGrid implements Serializable {
 	 * @return
 	 */
 	public Point coordToTile(LatLng coord) {
-		// TODO Esto no rula ni pa tras.
-		return new Point(5, 5);
-		
-//		if (tileSize < 0)
-//			throw new IllegalStateException(
-//					"The size of the tiles hasn't been defined yet.");
-//
-//		// Aproximacion
-//		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
-//		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
-//		// Try to adjust aproximation errors. 7%
-//		short z = 0;
-//
-//		double distMin = coord.distance(tileToCoord(x, y));
-//		boolean mejor = true;
-//		// Dist ins given in kms, tilesize is diameter, so 1000/2=500
+		// TODO Mientras mayor es el tileSize mayor son los errores, para 100 metros = Errores =0.22858617131062953
+		if (tileSize < 0)
+			throw new IllegalStateException(
+					"The size of the tiles hasn't been defined yet.");
+
+		// Aproximacion
+		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
+		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
+		// Try to adjust aproximation errors. 7%
+		short z = 0;
+
+		double distMin = coord.distance(tileToCoord(x, y));
+		boolean mejor = true;
+		// Dist ins given in kms, tilesize is diameter, so 1000/2=500
 //		System.err.print("[" + x + "," + y + "] Dist min :" + distMin * 2000
-//				+ " ? " + tileSize);
-//		while ((distMin * 2000) > tileSize && mejor) {
-//			// Look for all adyacents
-//			mejor = false;
-//			for (Point point : getAdjacents(new Point(x, y))) {
-//				LatLng aux = tileToCoord(point.getX(), point.getY());
-//				double dist = coord.distance(aux);
-//				// Keeps the nearest
-//				if (dist < distMin) {
-//					distMin = dist;
-//					x = point.getX();
-//					y = point.getY();
-//					z = point.getZ();
-//					mejor = true;
-//				}
-//			}
-//			System.err.print(" ," + distMin);
-//		}
+//				+ " ? " + (short)tileSize);
+		while ((distMin * 2000) > tileSize && mejor) {
+			// Look for all adyacents
+			mejor = false;
+			for (Point point : getAdjacents(new Point(x, y))) {
+				LatLng aux = tileToCoord(point.getX(), point.getY());
+				double dist = coord.distance(aux);
+				// Keeps the nearest
+				if (dist <= distMin) {
+					distMin = dist;
+					x = point.getX();
+					y = point.getY();
+					z = point.getZ();
+					mejor = true;
+				}
+			}
+//			System.err.print(" ," + distMin * 2000);
+		}
 //		System.err.println();
-//		return new Point(x, y, z);
+		return new Point(x, y, z);
 	}
 
 	/**

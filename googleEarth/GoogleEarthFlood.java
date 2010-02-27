@@ -43,15 +43,15 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	/**
 	 * Copy of First Grid, we need it to see changes through time
 	 */
-	private HexagonalGrid oldGrid;
+	private short[][] oldGrid;
 	/**
 	 * Begin time of the simulation step
 	 */
-	protected String beginTime;
+	protected String beginTime=null;
 	/**
 	 * End time of the simulation step
 	 */
-	protected String endTime;
+	protected String endTime=null;
 	protected Logger kmlLog = new Logger();
 
 	public GoogleEarthFlood(String name, String description) {
@@ -80,10 +80,11 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");
 		Snapshot snap = (Snapshot) obj;
-		updateScenarioValues(snap);
+		HexagonalGrid grid = snap.getGrid();
+		GoogleEarthUtils.tileSize= grid.getTileSize();
+		setOldGrid(grid);
 		// Now we update the time for each update call
-		beginTime = snap.getDateTime().toString();
-		// snap.updateTime();
+		beginTime = endTime;
 		endTime = snap.getDateTime().toString();
 
 		kmlLog.println("Simulation state at: " + endTime);
@@ -93,8 +94,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 		// For each tile who has changed ever, creates hexagon
 		for (int x = 0; x < g.getDimX(); x++) {
 			for (int y = 0; y < g.getDimY(); y++) {
-				short z = (short) ((short) g.getTerrainValue(x, y) - oldGrid
-						.getTerrainValue(x, y));
+				short z = (short) (g.getTerrainValue(x, y) - oldGrid[x][y]);
 				if (z != 0) {
 					drawWaterHexagon("HEX" + cont, snap.getGrid().tileToCoord(
 							x, y), z);
@@ -105,20 +105,15 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 		}
 	}
 
-	protected void updateScenarioValues(Snapshot snap) {
+	protected void setOldGrid(HexagonalGrid grid) {
 		if (!initialized) {
 			// First Grid to compare
-			GoogleEarthUtils.tileSize = snap.getGrid().getTileSize();
-
-//			oldGrid = new HexagonalGrid(snap.getGrid().getDimX(), snap
-//					.getGrid().getDimY());
-//			HexagonalGrid grid = snap.getGrid();
-//			for (int i = 0; i < snap.getGrid().getDimX(); i++) {
-//				for (int j = 0; j < snap.getGrid().getDimY(); j++) {
-//					oldGrid.setTerrainValue(i, j, grid.getTerrainValue(i, j));
-//				}
-//			}
-			oldGrid = snap.getGrid();
+			oldGrid = new short[grid.getDimX()][grid.getDimY()];
+			for (int x = 0; x < grid.getDimX(); x++) {
+				for (int y = 0; y < grid.getDimY(); y++) {
+					oldGrid[x][y]= grid.getTerrainValue(x, y);
+				}
+			}
 			initialized = true;
 		}
 	}

@@ -176,9 +176,12 @@ public class GoogleEarthUtils {
 	 */
 	protected static void setTimeSpan(Placemark placeMark, String beginTime, String endTime) {
 		TimeSpan t = new TimeSpan();
-		t.setBegin(beginTime);
-		t.setEnd(endTime);
-
+		if (beginTime != null){
+			t.setBegin(beginTime);	
+		}
+		if (endTime != null){
+			t.setEnd(endTime);	
+		}
 		placeMark.setTimePrimitive(t);
 	}
 

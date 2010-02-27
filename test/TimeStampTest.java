@@ -18,9 +18,10 @@ package test;
 
 import googleEarth.GoogleEarthFlood;
 import googleEarth.GoogleEarthUtils;
-import util.Scenario;
-import util.flood.FloodHexagonalGrid;
-import util.flood.FloodScenario;
+import jade.core.AID;
+import util.DateAndTime;
+import util.HexagonalGrid;
+import util.Snapshot;
 import util.jcoord.LatLng;
 
 public class TimeStampTest {
@@ -34,35 +35,23 @@ public class TimeStampTest {
 		 * NW:  29.952869, -90.063764  SE:  29.952158, -90.062461
 		 */
 		
-		Scenario newOrleans = new FloodScenario();
-
-		// newOrleans.setArea(new LatLng(29.953260, -90.088238), new LatLng(
-		// 29.918075, -90.053707));
-		newOrleans.setGeoData(new LatLng(29.953260, -90.088238, (short) 10),
+		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953260, -90.088238, (short) 10),
 				new LatLng(29.918075, -90.053707, (short) 10), (short) 600);
-		newOrleans.setName("Time inundation Colored");
-		newOrleans.setDescription("NW SE 1m");
-//		newOrleans.setDateAndTime(2000, 3, 15, 15, 3);
-		newOrleans.setUpdateTimeMinutes(1);
-		newOrleans.complete();
+		Snapshot newOrleans = new Snapshot(new AID(), grid, new DateAndTime(2000, 3, 15, 15, 3));
 
-		System.out.println(newOrleans.toString());
-
-//		FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
-
-		GoogleEarthFlood k = new GoogleEarthFlood(newOrleans.getName(),newOrleans.getDescription());
+		GoogleEarthFlood k = new GoogleEarthFlood("TimeStamp Test","Move on");
 
 		for (int rep=0;rep<6;rep++){
-//			for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
-//				for (int j = 0; j < newOrleans.getGridSize()[1]; j++) {
-//					short x = (short) ((Math.random() * 100) % 64);
-//					grid.setTerrainValue(i, j, x);
-//				}
-//			}	
+			for (int i = 0; i < grid.getDimX(); i++) {
+				for (int j = 0; j < grid.getDimY(); j++) {
+					short x = (short) ((Math.random() * 100) % 64);
+					grid.setTerrainValue(i, j, x);
+				}
+			}	
 			k.update(newOrleans);
 	
 		}
-		GoogleEarthUtils.createKmzFile(k.getKml(),newOrleans.getName());
+		GoogleEarthUtils.createKmzFile(k.getKml(),"TimeStamp Test");
 	}
 
 }
