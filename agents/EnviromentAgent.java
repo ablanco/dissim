@@ -40,15 +40,14 @@ import behaviours.flood.UpdateFloodGridBehav;
 public class EnviromentAgent extends Agent {
 
 	private HexagonalGrid grid = null;
-	private Logger logger = new Logger();
+	private Logger logger = new Logger(); //TODO
 	private DateAndTime dateTime;
 
 	// TODO Calcular los valores de tiempo en función del agua que haya entrado
 
 	@Override
 	protected void setup() {
-		Scenario scen = Scenario.getCurrentScenario();
-		// TODO logger = scen.getDefaultLogger();
+		Scenario scen = Scenario.getCurrentScenario(); //TODO
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args.length == 5) {

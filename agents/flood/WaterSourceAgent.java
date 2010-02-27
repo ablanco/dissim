@@ -16,60 +16,86 @@
 
 package agents.flood;
 
-import behaviours.flood.WaterSourceBehav;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jade.lang.acl.ACLMessage;
+import util.jcoord.LatLng;
+import behaviours.ReceiveScenarioBehav;
+import behaviours.RequestScenarioBehav;
+import behaviours.flood.WaterSourceBehav;
 
 public class WaterSourceAgent extends Agent {
 
 	private static final long serialVersionUID = -901992561566307027L;
 	private AID envAID;
-	
+	private LatLng coord;
+	private short water;
+	private long rhythm;
+
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		double lat;
-		double lng;
-		short water;
-		long rhythm;
 		if (args.length == 4) {
-			lat = Double.parseDouble((String) args[0]);
-			lng = Double.parseDouble((String) args[1]);
+			double lat = Double.parseDouble((String) args[0]);
+			double lng = Double.parseDouble((String) args[1]);
+			coord = new LatLng(lat, lng);
 			water = Short.parseShort((String) args[2]);
-			rhythm = Long.parseLong((String) args[3]); 
+			rhythm = Long.parseLong((String) args[3]);
 		} else {
 			throw new IllegalArgumentException("Wrong arguments.");
 		}
-		
-		// Obtener agentes entorno
-		DFAgentDescription template = new DFAgentDescription();
-		ServiceDescription sd = new ServiceDescription();
-		sd.setType("syndicate");
-		template.addServices(sd);
-		try {
-			DFAgentDescription[] result = DFService.search(this, template);
-			if (result.length < 1)
-				throw new Exception(
-						"Error searching for the enviroment agent. Found "
-								+ result.length + " agents.");
-			envAID = result[0].getName();
-			ACLMessage msg;
-		} catch (Exception e) {
-			e.printStackTrace();
-			doDelete();
+
+		addBehaviour(new RequestScenarioBehav(new ContinueWS()));
+	}
+
+	@SuppressWarnings("serial")
+	protected class ContinueWS extends ReceiveScenarioBehav {
+
+		boolean done = false;
+
+		@Override
+		public void action() {
+			String env = Integer.toString(scen.getEnviromentByCoord(coord));
+
+			// Obtener agentes entorno
+			DFAgentDescription template = new DFAgentDescription();
+			ServiceDescription sd = new ServiceDescription();
+			sd.setType("add-water");
+			template.addServices(sd);
+			try {
+				DFAgentDescription[] result = DFService.search(myAgent,
+						template);
+				if (result.length < 1)
+					throw new Exception(
+							"Error searching for the enviroment agent. Found "
+									+ result.length + " agents.");
+				for (DFAgentDescription df : result) {
+					String name = df.getName().getLocalName();
+					name = name.substring(name.indexOf("-") + 1, name
+							.lastIndexOf("-"));
+					if (name.equals(env)) {
+						envAID = df.getName();
+						break;
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				doDelete();
+			}
+
+			myAgent.addBehaviour(new WaterSourceBehav(myAgent, rhythm, envAID,
+					coord, water));
+			done = true;
 		}
-			
-		// TODO Encontrar qué agente entorno gestiona esas coord y preguntarle a qué casilla corresponden 
-		
-		int x = 0;
-		int y = 0;
-		
-		addBehaviour(new WaterSourceBehav(this, rhythm, envAID, x, y, water));
+
+		@Override
+		public boolean done() {
+			return done;
+		}
+
 	}
 
 }

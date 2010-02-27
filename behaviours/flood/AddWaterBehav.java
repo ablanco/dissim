@@ -22,11 +22,12 @@ import jade.lang.acl.MessageTemplate;
 
 import java.util.Iterator;
 
+import util.Point;
 import util.flood.FloodHexagonalGrid;
+import util.jcoord.LatLng;
 
+@SuppressWarnings("serial")
 public class AddWaterBehav extends CyclicBehaviour {
-
-	private static final long serialVersionUID = 6693696497776800016L;
 
 	private FloodHexagonalGrid grid;
 
@@ -41,11 +42,14 @@ public class AddWaterBehav extends CyclicBehaviour {
 				.MatchPerformative(ACLMessage.PROPOSE));
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
-			// Mensaje CFP recibido, hay que procesarlo
+			// Mensaje recibido, hay que procesarlo
 			String[] data = msg.getContent().split(" ");
-			int x = Integer.parseInt(data[0]);
-			int y = Integer.parseInt(data[1]);
+			double lat = Double.parseDouble(data[0]);
+			double lng = Double.parseDouble(data[1]);
 			short water = Short.parseShort(data[2]);
+			Point p = grid.coordToTile(new LatLng(lat, lng));
+			int x = p.getX();
+			int y = p.getY();
 
 			// Máximo nivel que va a alcanzar el agua
 			short nivelMax = (short) (grid.getTerrainValue(x, y) + water);

@@ -48,22 +48,9 @@ public class FloodScenario extends Scenario {
 
 		boolean result = false;
 		LatLng coord = ws.getCoord();
-		boolean lat = false;
-		boolean lng = false;
 
-		// Ha de ser un valor intermedio
-		lat = ((globalNW.getLat() >= coord.getLat()) && (coord.getLat() >= globalSE
-				.getLat()))
-				|| ((globalNW.getLat() <= coord.getLat()) && (coord.getLat() <= globalSE
-						.getLat()));
-		lng = ((globalNW.getLng() >= coord.getLng()) && (coord.getLng() >= globalSE
-				.getLng()))
-				|| ((globalNW.getLng() <= coord.getLng()) && (coord.getLng() <= globalSE
-						.getLng()));
-
-		if (lat && lng) {
+		if (coord.isContainedIn(globalNW, globalSE))
 			result = waterSources.add(ws);
-		}
 
 		return result;
 	}

@@ -241,4 +241,18 @@ public class Scenario implements Serializable {
 		}
 	}
 
+	public int getEnviromentByCoord(LatLng coord) {
+		if (envAreas == null)
+			throw new IllegalStateException(
+					"Enviroments haven't been initialized");
+
+		int idx = 0;
+		for (LatLng[] envCoords : envAreas) {
+			if (coord.isContainedIn(envCoords[0], envCoords[1]))
+				return idx;
+			idx++;
+		}
+		return -1;
+	}
+
 }

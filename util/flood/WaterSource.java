@@ -16,9 +16,13 @@
 
 package util.flood;
 
+import java.io.Serializable;
+
 import util.jcoord.LatLng;
 
-public class WaterSource {
+public class WaterSource implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private LatLng coord;
 	/**

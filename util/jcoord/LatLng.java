@@ -1,5 +1,7 @@
 package util.jcoord;
 
+import java.io.Serializable;
+
 /**
  * Class to represent a latitude/longitude pair.
  * 
@@ -12,7 +14,9 @@ package util.jcoord;
  * @since 1.0
  * @license GPL
  */
-public class LatLng implements Comparable<LatLng> {
+public class LatLng implements Comparable<LatLng>, Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Latitude in degrees.
@@ -371,12 +375,12 @@ public class LatLng implements Comparable<LatLng> {
 
 	@Override
 	public int compareTo(LatLng o) {
-		//TODO good comparator to short properly the adyacent list
+		// TODO good comparator to short properly the adyacent list
 		if (o.getLat() == lat && o.getLng() == lng) {
 			return 0;
 		} else {
-			if (o.getLat() < lat){
-				return 1;				
+			if (o.getLat() < lat) {
+				return 1;
 			}
 			return -1;
 		}
@@ -394,26 +398,39 @@ public class LatLng implements Comparable<LatLng> {
 	}
 
 	public LatLng metersToDegrees(double x, double y) {
-		//TODO chapuza que puede funcionar
+		// TODO chapuza que puede funcionar
 		UTMRef u = this.toUTMRef();
-		u.addNorthingEasting(x,y);
-		
+		u.addNorthingEasting(x, y);
+
 		LatLng l = u.toLatLng();
 		double lat = l.getLat();
 		double lng = l.getLng();
-		
+
 		return new LatLng(lat, lng, altitude);
 	}
 
 	public LatLng metersToDegrees(double x, double y, short terrainValue) {
 		UTMRef u = this.toUTMRef();
-		u.addNorthingEasting(x,y);
-		
+		u.addNorthingEasting(x, y);
+
 		LatLng l = u.toLatLng();
 		double lat = l.getLat();
 		double lng = l.getLng();
-		
+
 		return new LatLng(lat, lng, terrainValue);
+	}
+
+	public boolean isContainedIn(LatLng NW, LatLng SE) {
+		boolean blat = false;
+		boolean blng = false;
+
+		// Ha de ser un valor intermedio
+		blat = ((NW.getLat() >= lat) && (lat >= SE.getLat()))
+				|| ((NW.getLat() <= lat) && (lat <= SE.getLat()));
+		blng = ((NW.getLng() >= lng) && (lng >= SE.getLng()))
+				|| ((NW.getLng() <= lng) && (lng <= SE.getLng()));
+
+		return blat && blng;
 	}
 
 }

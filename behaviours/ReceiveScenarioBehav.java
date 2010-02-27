@@ -14,39 +14,18 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.flood;
+package behaviours;
 
-import util.jcoord.LatLng;
-import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.TickerBehaviour;
-import jade.lang.acl.ACLMessage;
+import jade.core.behaviours.Behaviour;
+import util.Scenario;
 
 @SuppressWarnings("serial")
-public class WaterSourceBehav extends TickerBehaviour {
+public abstract class ReceiveScenarioBehav extends Behaviour {
 
-	private LatLng coord;
-	private short water;
-	private AID envAID;
+	protected Scenario scen = null;
 
-	public WaterSourceBehav(Agent a, long period, AID envAID, LatLng coord,
-			short water) {
-		super(a, period);
-		this.envAID = envAID;
-		this.coord = coord;
-		this.water = water;
+	public void setScenario(Scenario scen) {
+		this.scen = scen;
 	}
 
-	@Override
-	protected void onTick() {
-		// Inundar casilla
-		ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
-		msg.addReceiver(envAID);
-		msg
-				.setContent(Double.toString(coord.getLat()) + " "
-						+ Double.toString(coord.getLng()) + " "
-						+ Short.toString(water));
-		msg.setConversationId("add-water");
-		myAgent.send(msg);
-	}
 }

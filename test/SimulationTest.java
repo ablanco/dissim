@@ -55,7 +55,7 @@ public class SimulationTest {
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), tileSize);
 		scen.setPrecision((short) 10);
-		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.97,
+		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.94,
 				-90.07), scen.doubleToInner(30), 200L));
 		System.out.println("Water Source dentro del área de simulación: " + ws);
 //		HexagonalGrid grid = scen.getGrid();

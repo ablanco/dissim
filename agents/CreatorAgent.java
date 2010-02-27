@@ -24,6 +24,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
+import java.io.IOException;
 import java.util.ListIterator;
 
 import test.SimulationTest;
@@ -62,13 +63,12 @@ public class CreatorAgent extends Agent {
 			// Enviroments
 			for (int i = 0; i < scen.getNumEnv(); i++) {
 				LatLng[] area = scen.getEnvArea(i);
-				Object[] arguments = new Object[]{
+				Object[] arguments = new Object[] {
 						Double.toString(area[0].getLat()),
 						Double.toString(area[0].getLng()),
 						Double.toString(area[1].getLat()),
 						Double.toString(area[1].getLng()),
-						Integer.toString(scen.getTileSize())
-				};
+						Integer.toString(scen.getTileSize()) };
 				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
 						"agents.EnviromentAgent", 1, arguments));
 			}
@@ -86,12 +86,17 @@ public class CreatorAgent extends Agent {
 				e.printStackTrace(logger.getError());
 			}
 
-			// Esperar a que el entorno esté inicializado
+			// Esperar a que los entornos estén inicializados
 			addBehaviour(new WaitForReadyBehav());
 		}
 	}
 
 	protected class WaitForReadyBehav extends CyclicBehaviour {
+
+		/**
+		 * Number of enviroments that are ready to go
+		 */
+		private int count = 0;
 
 		@Override
 		public void action() {
@@ -100,6 +105,11 @@ public class CreatorAgent extends Agent {
 				// Mensaje recibido, hay que procesarlo
 				if (msg.getPerformative() != ACLMessage.CONFIRM)
 					return;
+				count++;
+				// Esperar a que todos los entornos estén listos
+				if (count < scen.getNumEnv())
+					return;
+
 				Object[] arguments;
 				// Si es una inundación
 				if (scen instanceof FloodScenario) {
@@ -118,10 +128,38 @@ public class CreatorAgent extends Agent {
 								1, arguments));
 					}
 				}
+
 				// TODO DEBUG
 				arguments = new Object[] { "gui.VisorFrame", "0" };
 				myAgent.addBehaviour(new CreateAgentBehav(myAgent,
 						"DefaultVisor", "agents.UpdateAgent", 1, arguments));
+				// FIN DEBUG
+
+				myAgent.addBehaviour(new SendScenarioBehav());
+				myAgent.removeBehaviour(this);
+			} else {
+				block();
+			}
+		}
+
+	}
+
+	protected class SendScenarioBehav extends CyclicBehaviour {
+
+		@Override
+		public void action() {
+			ACLMessage msg = myAgent.receive();
+			if (msg != null) {
+				if (msg.getPerformative() != ACLMessage.REQUEST)
+					return;
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(ACLMessage.INFORM);
+				try {
+					reply.setContentObject(scen);
+					myAgent.send(reply);
+				} catch (IOException e) {
+					e.printStackTrace(logger.getError());
+				}
 			} else {
 				block();
 			}
