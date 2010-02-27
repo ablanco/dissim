@@ -44,14 +44,14 @@ public class OsmNode implements Comparable<OsmNode> {
 	}
 
 	public String toString() {
-		String result = "IdNode: " + id + " ";
+		String result = "Node Id: " + id + " ";
 		if (point != null) {
 			result += point.toString();
 		} else {
 			result += "(" + lat + "," + lng + ")";
 		}
 		if (extendedInfo!=null){
-			result +="Name: "+extendedInfo.getName()+", Use: "+extendedInfo.getUse();
+			result += extendedInfo.toString();
 		}
 		return result;
 	}

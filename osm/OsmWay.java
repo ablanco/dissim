@@ -6,16 +6,7 @@ import java.util.List;
 public class OsmWay implements Comparable<OsmWay>{
 	protected List<OsmNode> way;
 	protected long id;
-	protected String type;
-	protected String name;
-	protected boolean oneWay;
-
-	public OsmWay(long id, String name, String type) {
-		this.name = name;
-		this.type = type;
-		this.id = id;
-		way = new ArrayList<OsmNode>();
-	}
+	protected OsmNodeExtendedInfo extendedInfo;
 	
 	public OsmWay(long id){
 		this.id = id;
@@ -28,20 +19,6 @@ public class OsmWay implements Comparable<OsmWay>{
 
 	public boolean containsNode(OsmNode node) {
 		return way.contains(node);
-	}
-	
-	protected void setName(String name){
-		this.name = name;
-	}
-	protected void setType(String type){
-		this.type=type;
-	}
-	protected void setOneWay(String value){
-		if (value == "yes"){
-			oneWay = true;
-		}else{
-			oneWay = false;
-		}
 	}
 
 	@Override
@@ -61,10 +38,17 @@ public class OsmWay implements Comparable<OsmWay>{
 	}
 	
 	public String toString(){
-		String result ="Id: "+id+", Type: "+type+", Name: "+name+"\nNodes: ";
+		String result ="Way Id: "+id;
+		if (extendedInfo!=null){
+			result +=": "+extendedInfo.toString();
+		}
+		result += "| Nodes: ";
 		for (OsmNode n: way){
 			result+=n.toString()+", ";
 		}
 		return result;
+	}
+	public void setExtendedInfo(OsmNodeExtendedInfo extendedInfo) {
+		this.extendedInfo = extendedInfo;
 	}
 }
