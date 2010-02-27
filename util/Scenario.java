@@ -51,11 +51,11 @@ public class Scenario implements Serializable {
 	/**
 	 * Coordinates of the North West point of the simulation area
 	 */
-	private LatLng globalNW = null;
+	protected LatLng globalNW = null;
 	/**
 	 * Coordinates of the South East point of the simulation area
 	 */
-	private LatLng globalSE = null;
+	protected LatLng globalSE = null;
 	/**
 	 * Diameter of the circunflex circle of the hexagon in meters
 	 */

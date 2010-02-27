@@ -28,49 +28,89 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	private static final long serialVersionUID = 1L;
 
 	private short[][] gridWater; // Nivel de agua en la casilla
+	private short[] northWater;
+	private short[] southWater;
+	private short[] eastWater;
+	private short[] westWater;
+
 	private TreeSet<Point> modTiles = null;
+
 	// TODO TreeSet no acaba de funcionar bien
 
 	public FloodHexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
 		super(NW, SE, tileSize);
 		gridWater = new short[dimX][dimY];
+		northWater = new short[dimX + 2];
+		southWater = new short[dimX + 2];
+		eastWater = new short[dimY];
+		westWater = new short[dimY];
 		modTiles = new TreeSet<Point>();
 	}
 
 	public short setWaterValue(int x, int y, short value) {
-		short old = gridWater[x][y];
-		gridWater[x][y] = value;
+		short old;
+		if (y == -1) {
+			old = northWater[x];
+			northWater[x] = value;
+		} else if (y == dimY) {
+			old = southWater[x];
+			southWater[x] = value;
+		} else if (x == -1) {
+			old = westWater[y];
+			westWater[y] = value;
+		} else if (x == dimX) {
+			old = eastWater[y];
+			eastWater[y] = value;
+		} else {
+			old = gridWater[x][y];
+			gridWater[x][y] = value;
+		}
 		return old;
+	}
+
+	public short getWaterValue(int x, int y) {
+		short value;
+		if (y == -1) {
+			value = northWater[x];
+		} else if (y == dimY) {
+			value = southWater[x];
+		} else if (x == -1) {
+			value = westWater[y];
+		} else if (x == dimX) {
+			value = eastWater[y];
+		} else {
+			value = gridWater[x][y];
+		}
+		return value;
 	}
 
 	@Override
 	public void increaseValue(int x, int y, short increment) {
-		gridWater[x][y] += increment;
+		short old = getWaterValue(x, y);
+		setWaterValue(x, y, (short) (old + increment));
 		modTiles.add(new Point(x, y));
 	}
 
 	@Override
 	public short decreaseValue(int x, int y, short decrement) {
 		short result;
+		short old = getWaterValue(x, y);
 		// El nivel de agua no puede ser menor que cero
-		if (gridWater[x][y] >= decrement) {
-			gridWater[x][y] -= decrement;
+		if (old >= decrement) {
+			old -= decrement;
 			result = decrement;
 		} else {
-			result = gridWater[x][y];
-			gridWater[x][y] = 0;
+			result = old;
+			old = 0;
 		}
+		setWaterValue(x, y, old);
 		modTiles.add(new Point(x, y));
 		return result;
 	}
 
 	@Override
 	public short getValue(int x, int y) {
-		return (short) (gridTerrain[x][y] + gridWater[x][y]);
-	}
-
-	public short getWaterValue(int x, int y) {
-		return gridWater[x][y];
+		return (short) (getTerrainValue(x, y) + getWaterValue(x, y));
 	}
 
 	public Set<Point> getModCoordAndReset() {

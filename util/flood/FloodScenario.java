@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import util.Scenario;
+import util.jcoord.LatLng;
 
 public class FloodScenario extends Scenario {
 
@@ -40,26 +41,27 @@ public class FloodScenario extends Scenario {
 		Scenario.current = this;
 	}
 
-	// @Override
-	// protected void createGrid(int x, int y) {
-	// gridX = x;
-	// gridY = y;
-	// grid = new FloodHexagonalGrid(x, y, waterAgents);
-	// }
-
 	public boolean addWaterSource(WaterSource ws) {
-		boolean result = false;
+		if (globalNW == null || globalSE == null)
+			throw new IllegalStateException(
+					"Geographical data hasn't been initialized");
 
-		// TODO Comparar correctamente
-		// UTMRef utmWS = ws.getCoord().toUTMRef();
-		// UTMRef utmNW = NW.toUTMRef();
-		// UTMRef utmSE = SE.toUTMRef();
-		// Comprobamos que esté dentro del área de simulación
-		// if (utmNW.getNorthing() >= utmWS.getNorthing()
-		// && utmNW.getEasting() <= utmWS.getEasting()
-		// && utmSE.getNorthing() <= utmWS.getNorthing()
-		// && utmSE.getEasting() >= utmWS.getEasting()) {
-		if (true) {
+		boolean result = false;
+		LatLng coord = ws.getCoord();
+		boolean lat = false;
+		boolean lng = false;
+
+		// Ha de ser un valor intermedio
+		lat = ((globalNW.getLat() >= coord.getLat()) && (coord.getLat() >= globalSE
+				.getLat()))
+				|| ((globalNW.getLat() <= coord.getLat()) && (coord.getLat() <= globalSE
+						.getLat()));
+		lng = ((globalNW.getLng() >= coord.getLng()) && (coord.getLng() >= globalSE
+				.getLng()))
+				|| ((globalNW.getLng() <= coord.getLng()) && (coord.getLng() <= globalSE
+						.getLng()));
+
+		if (lat && lng) {
 			result = waterSources.add(ws);
 		}
 

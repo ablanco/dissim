@@ -40,10 +40,19 @@ public class HexagonalGrid implements Serializable {
 	 * Diameter of the circunflex circle of the hexagon in meters
 	 */
 	private int tileSize = 1;
-
-	protected short[][] gridTerrain;
+	/**
+	 * Grid data
+	 */
 	protected int dimX;
 	protected int dimY;
+	protected short[][] gridTerrain;
+	/**
+	 * External border
+	 */
+	protected short[] northTerrain;
+	protected short[] southTerrain;
+	protected short[] eastTerrain;
+	protected short[] westTerrain;
 
 	public HexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
 		// Calcular el tamaño de la rejilla en función de la distancia real y el
@@ -54,34 +63,64 @@ public class HexagonalGrid implements Serializable {
 		int y = (int) (((NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000) - (ts / 4.0)) / ((ts * 3.0) / 4.0));
 
 		gridTerrain = new short[x][y];
+		northTerrain = new short[x + 2];
+		southTerrain = new short[x + 2];
+		eastTerrain = new short[y];
+		westTerrain = new short[y];
 		dimX = x;
 		dimY = y;
 	}
 
 	public short setTerrainValue(int x, int y, short value) {
-		short old = gridTerrain[x][y];
-		gridTerrain[x][y] = value;
+		short old;
+		if (y == -1) {
+			old = northTerrain[x];
+			northTerrain[x] = value;
+		} else if (y == dimY) {
+			old = southTerrain[x];
+			southTerrain[x] = value;
+		} else if (x == -1) {
+			old = westTerrain[y];
+			westTerrain[y] = value;
+		} else if (x == dimX) {
+			old = eastTerrain[y];
+			eastTerrain[y] = value;
+		} else {
+			old = gridTerrain[x][y];
+			gridTerrain[x][y] = value;
+		}
 		return old;
 	}
 
+	public short getTerrainValue(int x, int y) {
+		short value;
+		if (y == -1) {
+			value = northTerrain[x];
+		} else if (y == dimY) {
+			value = southTerrain[x];
+		} else if (x == -1) {
+			value = westTerrain[y];
+		} else if (x == dimX) {
+			value = eastTerrain[y];
+		} else {
+			value = gridTerrain[x][y];
+		}
+		return value;
+	}
+
 	public void increaseValue(int x, int y, short increment) {
-		gridTerrain[x][y] += increment;
+		short old = getTerrainValue(x, y);
+		setTerrainValue(x, y, (short) (old + increment));
 	}
 
 	public short decreaseValue(int x, int y, short decrement) {
-		gridTerrain[x][y] -= decrement;
+		short old = getTerrainValue(x, y);
+		setTerrainValue(x, y, (short) (old - decrement));
 		return decrement;
 	}
 
 	public short getValue(int x, int y) {
-		return gridTerrain[x][y];
-	}
-
-	public short getTerrainValue(int x, int y) {
-		if (x > dimX || y > dimY) {
-			throw new IndexOutOfBoundsException();
-		}
-		return gridTerrain[x][y];
+		return getTerrainValue(x, y);
 	}
 
 	public int getDimX() {
@@ -125,7 +164,7 @@ public class HexagonalGrid implements Serializable {
 				}
 				// Comprobamos que el hexágono adyacente no está fuera de la
 				// rejilla
-				if (col >= 0 && col < dimX && fila >= 0 && fila < dimY) {
+				if (col >= -1 && col <= dimX && fila >= -1 && fila <= dimY) {
 					adjacents[cont][0] = col;
 					adjacents[cont][1] = fila;
 					cont++;
@@ -177,7 +216,7 @@ public class HexagonalGrid implements Serializable {
 	public Set<Point> getAdjacents(Point p) {
 		Set<Point> puntos = new TreeSet<Point>();
 		for (int[] a : getAdjacents(p.getX(), p.getY())) {
-			puntos.add(new Point(a[0], a[1], getTerrainValue(a[0], a[1])));
+			puntos.add(new Point(a[0], a[1], getValue(a[0], a[1])));
 		}
 		return puntos;
 	}
@@ -281,8 +320,8 @@ public class HexagonalGrid implements Serializable {
 	public void obtainTerrainElevation() {
 		// int total = gridX * gridY;
 		int cont = 0;
-		for (int i = 0; i < dimX; i++) {
-			for (int j = 0; j < dimY; j++) {
+		for (int i = -1; i <= dimX; i++) {
+			for (int j = -1; j <= dimY; j++) {
 				LatLng coord = tileToCoord(i, j);
 				double value = AltitudeWS.getElevation(coord);
 				setTerrainValue(i, j, (short) value); // TODO
