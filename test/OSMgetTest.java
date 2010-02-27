@@ -1,8 +1,11 @@
 package test;
 
+import jade.core.AID;
 import osm.GetOSMInfo;
-import util.Scenario;
-import util.flood.FloodScenario;
+import osm.OsmMap;
+import util.DateAndTime;
+import util.HexagonalGrid;
+import util.Snapshot;
 import util.jcoord.LatLng;
 
 public class OSMgetTest {
@@ -14,14 +17,15 @@ public class OSMgetTest {
 		// TODO Auto-generated method stub
 		//String url="http://api.openstreetmap.org/api/0.6/map?bbox=11.54,48.14,11.543,48.145";
 		
-		Scenario newOrleans = new FloodScenario();
-		newOrleans.setGeoData(new LatLng(29.953, -90.088, (short)10), new LatLng(
+		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953, -90.088, (short)10), new LatLng(
 				29.940, -90.070, (short)10), (short) 100);
-		newOrleans.setName("Position Grid Test");
-		newOrleans.setDescription("NW SE 1m");
-		newOrleans.complete();
+		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
+		Snapshot snapShot = new Snapshot(new AID(), grid, dateTime);
+		GetOSMInfo osmInfo = new GetOSMInfo(snapShot);
 		
-		GetOSMInfo osmInfo = new GetOSMInfo(newOrleans);
+		OsmMap osmMap = osmInfo.getOsmMap();
+		
+		osmMap.setMapInfo(snapShot.getGrid());
 		
 	}
 	

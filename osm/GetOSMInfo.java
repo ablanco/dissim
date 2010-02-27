@@ -42,21 +42,23 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import util.HexagonalGrid;
 import util.Logger;
-import util.Scenario;
+import util.Snapshot;
 import util.jcoord.LatLng;
 
 public class GetOSMInfo {
 	private Document doc;
 	private Node root;
 	private Logger osmLog;
-	private Scenario scene;
+	private HexagonalGrid grid;
+	private OsmMap osmMap;
 
 	/** Creates a new instance of XmlParser */
-	public GetOSMInfo(Scenario scene) {
+	public GetOSMInfo(Snapshot scene) {
 		// Open Streets Maps uses a differente mapBox, NE, SW
-		this.scene = scene;
-		LatLng[] mapBox = scene.getArea();
+		grid = scene.getGrid();
+		LatLng[] mapBox = grid.getArea();
 		osmLog = new Logger();
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
 		url += mapBox[0].getLng() + "," + mapBox[1].getLat();
@@ -71,7 +73,7 @@ public class GetOSMInfo {
 		// write node and its child nodes into System.out
 		osmLog.println("Statemend of XML document...");
 		// writeDocumentToLog(root, 0);
-		xmlToStreets(root);
+		osmMap = xmlToStreets(root);
 		osmLog.println("... end of statement");
 	}
 
@@ -101,7 +103,7 @@ public class GetOSMInfo {
 		SortedMap<Long, OsmNode> osmNodes = new TreeMap<Long, OsmNode>();
 		// When this methods finised we've shuld have the first way
 		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes, osmMap);
-		osmLog.debugln(osmMap.toString());
+//		 osmLog.debugln(osmMap.toString());
 		return osmMap;
 	}
 
@@ -127,14 +129,7 @@ public class GetOSMInfo {
 		long id = Long.parseLong(attributes.item(0).getNodeValue());
 		double lat = Double.parseDouble(attributes.item(1).getNodeValue());
 		double lng = Double.parseDouble(attributes.item(2).getNodeValue());
-		OsmNode osmNode = null;
-		try {
-			osmNode = new OsmNode(id, scene.coordToTile(new LatLng(lat, lng)));
-		} catch (Exception e) {
-			// If its out of bounds
-			osmNode = new OsmNode(id, lat, lng);
-		}
-		// 
+		OsmNode osmNode = new OsmNode(id, new LatLng(lat, lng));
 		// If is extended Node:
 		if (node.getFirstChild() != null) {
 			// Is a special Place
@@ -375,4 +370,7 @@ public class GetOSMInfo {
 
 	}
 
+	public OsmMap getOsmMap() {
+		return osmMap;
+	}
 }

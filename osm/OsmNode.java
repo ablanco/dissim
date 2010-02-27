@@ -1,12 +1,12 @@
 package osm;
 
 import util.Point;
+import util.jcoord.LatLng;
 
 public class OsmNode implements Comparable<OsmNode> {
 	protected long id;
 	protected Point point;
-	protected double lng;
-	protected double lat;
+	protected LatLng coord;
 	protected OsmNodeExtendedInfo extendedInfo;
 
 	public OsmNode(long id, Point point) {
@@ -14,10 +14,9 @@ public class OsmNode implements Comparable<OsmNode> {
 		this.point = point;
 	}
 
-	public OsmNode(long id, double lat, double lng) {
-		this.id = id;
-		this.lat = lat;
-		this.lng = lng;
+	public OsmNode(long id, LatLng coord) {
+		this.id=id;
+		this.coord=coord;
 	}
 
 	public void setExtendedInfo(OsmNodeExtendedInfo extendedInfo) {
@@ -48,7 +47,7 @@ public class OsmNode implements Comparable<OsmNode> {
 		if (point != null) {
 			result += point.toString();
 		} else {
-			result += "(" + lat + "," + lng + ")";
+			result += coord.toString()+" ";
 		}
 		if (extendedInfo!=null){
 			result += extendedInfo.toString();

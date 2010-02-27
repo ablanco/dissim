@@ -5,6 +5,10 @@ import java.util.TreeSet;
 
 import org.w3c.dom.Node;
 
+import util.HexagonalGrid;
+import util.Point;
+import util.jcoord.LatLng;
+
 public class OsmMap {
 	public static final short Raw_Field = 0;
 	public static final short Highway = 1;
@@ -26,6 +30,7 @@ public class OsmMap {
 	public static final short Military = 17;
 	public static final short Natural = 18;
 	public static final short Geological = 19;
+	public static final short Building = 20;
 
 	protected String continent;
 	protected String name;
@@ -119,6 +124,9 @@ public class OsmMap {
 				} else if (type.equalsIgnoreCase("Geological")) {
 					value = node.getAttributes().item(1).getNodeValue();
 					key = Geological;
+				}else if (type.equalsIgnoreCase("Building")) {
+					value = node.getAttributes().item(0).getNodeValue();
+					key = Building;
 				}
 			}
 			node = node.getNextSibling();
@@ -137,5 +145,29 @@ public class OsmMap {
 			result += n.toString()+"\n";
 		}
 		return result;
+	}
+	
+	public void setMapInfo(HexagonalGrid infoGrid){
+		for (OsmWay way : ways){
+			System.err.println(way.toString());
+			for (OsmNode node : way.way){
+				setMapInfoValue(infoGrid, node.coord, way.extendedInfo.getKey());
+			}			
+		}		
+		for (OsmNode node : specialPlaces){
+			System.err.println(node.toString());
+			setMapInfoValue(infoGrid, node.coord, node.extendedInfo.getKey());
+		}
+	}
+
+	private void setMapInfoValue(HexagonalGrid infoGrid, LatLng coord, short value) {
+		try{
+			Point point = infoGrid.coordToTile(coord);
+			infoGrid.setTerrainValue(point.getX(), point.getY(), value);
+			System.err.println("Valor del grid cambiado con exito");
+		}catch (ArrayIndexOutOfBoundsException e) {
+			System.err.println("Intentando acceder fuera del array");
+		}
+		
 	}
 }

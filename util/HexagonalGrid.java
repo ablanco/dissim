@@ -57,6 +57,9 @@ public class HexagonalGrid implements Serializable {
 	public HexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
 		// Calcular el tamaño de la rejilla en función de la distancia real y el
 		// tamaño de los hexágonos
+		this.NW=NW;
+		this.SE=SE;
+		
 		double ts = tileSize;
 		int x = (int) ((NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000) / (((ts / 2.0) * Math
 				.cos(Math.PI / 6.0)) * 2.0));
