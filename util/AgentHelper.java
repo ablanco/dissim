@@ -78,8 +78,45 @@ public class AgentHelper {
 		}
 		return result;
 	}
-	
-	// TODO Register with DF helper 
+
+	/**
+	 * Register an agent into the DF Service
+	 * 
+	 * @param agt
+	 *            Agent to register
+	 * @param service
+	 *            Service that the agent provide
+	 */
+	public static void register(Agent agt, String service) {
+		register(agt, new String[] { service });
+	}
+
+	/**
+	 * Register an agent into the DF Service
+	 * 
+	 * @param agt
+	 *            Agent to register
+	 * @param services
+	 *            Services that the agent provide
+	 */
+	public static void register(Agent agt, String[] services) {
+		DFAgentDescription dfd = new DFAgentDescription();
+		dfd.setName(agt.getAID());
+		ServiceDescription sd;
+		for (String srv : services) {
+			if (srv != null) {
+				sd = new ServiceDescription();
+				sd.setType(srv);
+				sd.setName(agt.getName());
+				dfd.addServices(sd);
+			}
+		}
+		try {
+			DFService.register(agt, dfd);
+		} catch (FIPAException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Send a message to another agent
@@ -94,7 +131,8 @@ public class AgentHelper {
 	 * @param convId
 	 *            Conversation ID (may be null)
 	 * @param content
-	 *            Content of the message (may be null)
+	 *            Content of the message (may be null), may be a String or may
+	 *            be a Serializable object
 	 * @return A template to receive the answer (if needed)
 	 */
 	public static MessageTemplate send(Agent sender, AID receiver,
@@ -116,7 +154,8 @@ public class AgentHelper {
 	 * @param convId
 	 *            Conversation ID (may be null)
 	 * @param content
-	 *            Content of the message (may be null)
+	 *            Content of the message (may be null), may be a String or may
+	 *            be a Serializable object
 	 * @return A template to receive the answer (if needed)
 	 */
 	public static MessageTemplate send(Agent sender, AID[] receivers,

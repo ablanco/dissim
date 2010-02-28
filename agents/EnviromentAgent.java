@@ -21,7 +21,6 @@ import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import util.AgentHelper;
 import util.DateAndTime;
@@ -64,61 +63,44 @@ public class EnviromentAgent extends Agent {
 			doDelete();
 		}
 
-		DFAgentDescription dfd = new DFAgentDescription();
-		dfd.setName(getAID());
-		ServiceDescription sd;
+		String[] services;
+
+		// Si es una inundación
+		if (scen instanceof FloodScenario) {
+			services = new String[4];
+			FloodScenario fscen = (FloodScenario) scen;
+			addBehaviour(new AddWaterBehav((FloodHexagonalGrid) grid));
+
+			services[3] = "add-water";
+
+			// Mover agua por la rejilla
+			addBehaviour(new UpdateFloodGridBehav(this, fscen
+					.getFloodUpdateTime(), (FloodHexagonalGrid) grid));
+		} else {
+			services = new String[3];
+		}
 
 		// Añadir comportamientos
 		addBehaviour(new AdjacentsGridBehav(grid));
 		addBehaviour(new QueryGridBehav(grid));
 		addBehaviour(new SyndicateBehav(this, grid, dateTime));
+		services[0] = "adjacents-grid";
+		services[1] = "grid-querying";
+		services[2] = "syndicate";
 
-		sd = new ServiceDescription();
-		sd.setType("grid-querying");
-		sd.setName(getName());
-		dfd.addServices(sd);
-		sd = new ServiceDescription();
-		sd.setType("adjacents-grid");
-		sd.setName(getName());
-		dfd.addServices(sd);
-		sd = new ServiceDescription();
-		sd.setType("syndicate");
-		sd.setName(getName());
-		dfd.addServices(sd);
+		// Registrarse con el agente DF
+		AgentHelper.register(this, services);
 
-		// Si es una inundación
-		if (scen instanceof FloodScenario) {
-			FloodScenario fscen = (FloodScenario) scen;
-			addBehaviour(new AddWaterBehav((FloodHexagonalGrid) grid));
-
-			sd = new ServiceDescription();
-			sd.setType("add-water");
-			sd.setName(getName());
-			dfd.addServices(sd);
-
-			// Mover agua por la rejilla
-			addBehaviour(new UpdateFloodGridBehav(this, fscen
-					.getFloodUpdateTime(), (FloodHexagonalGrid) grid));
-		}
-
-		try {
-			// Registrarse con el agente DF
-			DFService.register(this, dfd);
-
-			// Obtener agente creador
-			DFAgentDescription[] result = AgentHelper.search(this, "creator");
-			if (result.length != 1) {
-				logger.errorln("Error searching for the creator agent. Found "
-						+ result.length + " agents.");
-				doDelete();
-			}
-			AID creatorAID = result[0].getName();
-			// Mandar mensaje al agente creador
-			AgentHelper.send(this, creatorAID, ACLMessage.CONFIRM, null, null);
-		} catch (FIPAException e) {
-			e.printStackTrace(logger.getError());
+		// Obtener agente creador
+		DFAgentDescription[] result = AgentHelper.search(this, "creator");
+		if (result.length != 1) {
+			logger.errorln("Error searching for the creator agent. Found "
+					+ result.length + " agents.");
 			doDelete();
 		}
+		AID creatorAID = result[0].getName();
+		// Mandar mensaje al agente creador
+		AgentHelper.send(this, creatorAID, ACLMessage.CONFIRM, null, null);
 	}
 
 	@Override

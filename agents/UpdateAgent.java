@@ -21,7 +21,6 @@ import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 
 import util.AgentHelper;
@@ -72,16 +71,8 @@ public class UpdateAgent extends Agent {
 		}
 
 		// Sindicarse en el entorno
-		ACLMessage msg = new ACLMessage(ACLMessage.SUBSCRIBE);
-		for (int i = 0; i < envAID.length; i++)
-			msg.addReceiver(envAID[i]);
-		msg.setConversationId("syndicate-" + client.getConversationId());
-		try {
-			msg.setContentObject(getAID());
-			send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		AgentHelper.send(this, envAID, ACLMessage.SUBSCRIBE, "syndicate-"
+				+ client.getConversationId(), getAID());
 
 		// Añadir comportamiento de actualización del objeto cliente
 		addBehaviour(new ReceiveUpdateBehav(this, client));
@@ -93,16 +84,8 @@ public class UpdateAgent extends Agent {
 	protected void takeDown() {
 		if (envAID != null) {
 			// Desregistrarse en el entorno
-			ACLMessage msg = new ACLMessage(ACLMessage.CANCEL);
-			for (int i = 0; i < envAID.length; i++)
-				msg.addReceiver(envAID[i]);
-			msg.setConversationId("syndicate-" + client.getConversationId());
-			try {
-				msg.setContentObject(getAID());
-				send(msg);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			AgentHelper.send(this, envAID, ACLMessage.CANCEL, "syndicate-"
+					+ client.getConversationId(), getAID());
 		}
 		if (client != null) {
 			client.finish();

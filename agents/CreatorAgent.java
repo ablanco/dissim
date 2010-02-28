@@ -18,16 +18,13 @@ package agents;
 
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
 import java.util.ListIterator;
 
 import test.SimulationTest;
+import util.AgentHelper;
 import util.Logger;
 import util.Scenario;
 import util.flood.FloodScenario;
@@ -60,6 +57,8 @@ public class CreatorAgent extends Agent {
 
 		scen = Scenario.getCurrentScenario();
 		if (scen != null) {
+			AgentHelper.register(this, "creator");
+
 			// Enviroments
 			for (int i = 0; i < scen.getNumEnv(); i++) {
 				LatLng[] area = scen.getEnvArea(i);
@@ -71,19 +70,6 @@ public class CreatorAgent extends Agent {
 						Integer.toString(scen.getTileSize()) };
 				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
 						"agents.EnviromentAgent", 1, arguments));
-			}
-
-			DFAgentDescription dfd = new DFAgentDescription();
-			dfd.setName(getAID());
-			ServiceDescription sd = new ServiceDescription();
-			sd.setType("creator");
-			sd.setName(getName());
-			dfd.addServices(sd);
-			// Registrarse con el agente DF
-			try {
-				DFService.register(this, dfd);
-			} catch (FIPAException e) {
-				e.printStackTrace(logger.getError());
 			}
 
 			// Esperar a que los entornos estén inicializados
