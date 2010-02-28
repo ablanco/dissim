@@ -16,6 +16,7 @@
 
 package behaviours.flood;
 
+import util.AgentHelper;
 import util.jcoord.LatLng;
 import jade.core.AID;
 import jade.core.Agent;
@@ -40,13 +41,9 @@ public class WaterSourceBehav extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		// Inundar casilla
-		ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
-		msg.addReceiver(envAID);
-		msg
-				.setContent(Double.toString(coord.getLat()) + " "
-						+ Double.toString(coord.getLng()) + " "
-						+ Short.toString(water));
-		msg.setConversationId("add-water");
-		myAgent.send(msg);
+		String content = Double.toString(coord.getLat()) + " "
+				+ Double.toString(coord.getLng()) + " " + Short.toString(water);
+		AgentHelper.send(myAgent, envAID, ACLMessage.PROPOSE, "add-water",
+				content);
 	}
 }

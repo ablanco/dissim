@@ -18,13 +18,11 @@ package behaviours;
 
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.domain.DFService;
-import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+import util.AgentHelper;
 import util.Scenario;
 
 @SuppressWarnings("serial")
@@ -44,31 +42,11 @@ public class RequestScenarioBehav extends CyclicBehaviour {
 		switch (step) {
 		case 0:
 			// Obtener agente creador
-			DFAgentDescription dfd = new DFAgentDescription();
-			ServiceDescription sd = new ServiceDescription();
-			sd.setType("creator");
-			dfd.addServices(sd);
-			DFAgentDescription[] result;
-			AID creatorAID = null;
-			try {
-				result = DFService.search(myAgent, dfd);
-				if (result.length != 1) {
-					System.err
-							.println("Error searching for the creator agent. Found "
-									+ result.length + " agents.");
-					myAgent.doDelete();
-				}
-				creatorAID = result[0].getName();
-			} catch (FIPAException e) {
-				e.printStackTrace();
-				myAgent.doDelete();
-			}
+			DFAgentDescription[] result = AgentHelper.search(myAgent, "creator");
+			AID creatorAID = result[0].getName();
+
 			// Pedir Scenario
-			msg = new ACLMessage(ACLMessage.REQUEST);
-			msg.addReceiver(creatorAID);
-			msg.setReplyWith("scen" + System.currentTimeMillis());
-			myAgent.send(msg);
-			mt = MessageTemplate.MatchInReplyTo(msg.getReplyWith());
+			mt = AgentHelper.send(myAgent, creatorAID, ACLMessage.REQUEST, null, null);
 			step = 1;
 		case 1:
 			// Recibir la información de la rejilla

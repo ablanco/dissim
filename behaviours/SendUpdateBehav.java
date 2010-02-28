@@ -21,10 +21,9 @@ import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
-import java.io.IOException;
-import java.util.Iterator;
 import java.util.Set;
 
+import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Snapshot;
@@ -33,30 +32,23 @@ import util.Snapshot;
 public class SendUpdateBehav extends TickerBehaviour {
 
 	private Set<AID> to;
+	private String convId;
 	private HexagonalGrid grid;
 	private DateAndTime dateTime;
 
-	public SendUpdateBehav(Agent a, long period, Set<AID> to,
+	public SendUpdateBehav(Agent a, long period, Set<AID> to, String convId,
 			HexagonalGrid grid, DateAndTime dateTime) {
 		super(a, period);
 		this.to = to;
+		this.convId = convId;
 		this.grid = grid;
 		this.dateTime = dateTime;
 	}
 
 	@Override
 	protected void onTick() {
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		Iterator<AID> it = to.iterator();
-		while (it.hasNext())
-			msg.addReceiver(it.next());
-		msg.setConversationId("update-visor");
-		try {
-			msg.setContentObject(new Snapshot(myAgent.getAID(), grid, dateTime));
-			myAgent.send(msg);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		AgentHelper.send(myAgent, (AID[]) to.toArray(), ACLMessage.INFORM,
+				convId, new Snapshot(myAgent.getAID(), grid, dateTime));
 	}
 
 }

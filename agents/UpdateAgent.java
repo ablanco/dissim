@@ -18,14 +18,13 @@ package agents;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 
+import util.AgentHelper;
 import util.Updateable;
 import behaviours.ReceiveUpdateBehav;
 
@@ -58,32 +57,18 @@ public class UpdateAgent extends Agent {
 		}
 
 		// Obtener agentes entorno
-		DFAgentDescription template = new DFAgentDescription();
-		ServiceDescription sd = new ServiceDescription();
-		sd.setType("syndicate");
-		template.addServices(sd);
-		try {
-			DFAgentDescription[] result = DFService.search(this, template);
-			if (result.length < 1)
-				throw new Exception(
-						"Error searching for the enviroment agent. Found "
-								+ result.length + " agents.");
-			envAID = new AID[envs.length];
-			int idx = 0;
-			for (DFAgentDescription df : result) {
-				String name = df.getName().getLocalName();
-				name = name.substring(name.indexOf("-") + 1, name
-						.lastIndexOf("-"));
-				for (String e : envs) {
-					if (e.equals(name)) {
-						envAID[idx] = df.getName();
-						break;
-					}
+		DFAgentDescription[] result = AgentHelper.search(this, "syndicate");
+		envAID = new AID[envs.length];
+		int idx = 0;
+		for (DFAgentDescription df : result) {
+			String name = df.getName().getLocalName();
+			name = name.substring(name.indexOf("-") + 1, name.lastIndexOf("-"));
+			for (String e : envs) {
+				if (e.equals(name)) {
+					envAID[idx] = df.getName();
+					break;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			doDelete();
 		}
 
 		// Sindicarse en el entorno

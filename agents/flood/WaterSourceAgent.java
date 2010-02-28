@@ -18,9 +18,8 @@ package agents.flood;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
+import util.AgentHelper;
 import util.jcoord.LatLng;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
@@ -61,29 +60,16 @@ public class WaterSourceAgent extends Agent {
 			String env = Integer.toString(scen.getEnviromentByCoord(coord));
 
 			// Obtener agentes entorno
-			DFAgentDescription template = new DFAgentDescription();
-			ServiceDescription sd = new ServiceDescription();
-			sd.setType("add-water");
-			template.addServices(sd);
-			try {
-				DFAgentDescription[] result = DFService.search(myAgent,
-						template);
-				if (result.length < 1)
-					throw new Exception(
-							"Error searching for the enviroment agent. Found "
-									+ result.length + " agents.");
-				for (DFAgentDescription df : result) {
-					String name = df.getName().getLocalName();
-					name = name.substring(name.indexOf("-") + 1, name
-							.lastIndexOf("-"));
-					if (name.equals(env)) {
-						envAID = df.getName();
-						break;
-					}
+			DFAgentDescription[] result = AgentHelper
+					.search(myAgent, "add-water");
+			for (DFAgentDescription df : result) {
+				String name = df.getName().getLocalName();
+				name = name.substring(name.indexOf("-") + 1, name
+						.lastIndexOf("-"));
+				if (name.equals(env)) {
+					envAID = df.getName();
+					break;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-				doDelete();
 			}
 
 			myAgent.addBehaviour(new WaterSourceBehav(myAgent, rhythm, envAID,

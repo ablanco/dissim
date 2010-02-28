@@ -23,6 +23,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
+import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Logger;
@@ -40,14 +41,14 @@ import behaviours.flood.UpdateFloodGridBehav;
 public class EnviromentAgent extends Agent {
 
 	private HexagonalGrid grid = null;
-	private Logger logger = new Logger(); //TODO
+	private Logger logger = new Logger(); // TODO
 	private DateAndTime dateTime;
 
 	// TODO Calcular los valores de tiempo en función del agua que haya entrado
 
 	@Override
 	protected void setup() {
-		Scenario scen = Scenario.getCurrentScenario(); //TODO
+		Scenario scen = Scenario.getCurrentScenario(); // TODO
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args.length == 5) {
@@ -105,11 +106,7 @@ public class EnviromentAgent extends Agent {
 			DFService.register(this, dfd);
 
 			// Obtener agente creador
-			dfd = new DFAgentDescription();
-			sd = new ServiceDescription();
-			sd.setType("creator");
-			dfd.addServices(sd);
-			DFAgentDescription[] result = DFService.search(this, dfd);
+			DFAgentDescription[] result = AgentHelper.search(this, "creator");
 			if (result.length != 1) {
 				logger.errorln("Error searching for the creator agent. Found "
 						+ result.length + " agents.");
@@ -117,9 +114,7 @@ public class EnviromentAgent extends Agent {
 			}
 			AID creatorAID = result[0].getName();
 			// Mandar mensaje al agente creador
-			ACLMessage msg = new ACLMessage(ACLMessage.CONFIRM);
-			msg.addReceiver(creatorAID);
-			send(msg);
+			AgentHelper.send(this, creatorAID, ACLMessage.CONFIRM, null, null);
 		} catch (FIPAException e) {
 			e.printStackTrace(logger.getError());
 			doDelete();
