@@ -86,25 +86,31 @@ public class GetOSMInfo {
 		// Root node has id
 		NamedNodeMap attributes = mapInfo.getAttributes();
 		long id = Long.parseLong(attributes.item(0).getNodeValue());
+		osmMap = new OsmMap(id);
 		// Children has the info
 		NodeList mapInfoChilds = mapInfo.getChildNodes();
-		// First child has Continent name
-		attributes = mapInfoChilds.item(1).getAttributes();
-		String continent = attributes.item(1).getNodeValue();
-		// Second child has the name of the place
-		attributes = mapInfoChilds.item(3).getAttributes();
-		String name = attributes.item(1).getNodeValue();
-		// Forth child contains place type
-		mapInfo = mapInfoChilds.item(6).getNextSibling();
-		attributes = mapInfo.getAttributes();
-		String place = attributes.item(1).getNodeValue();
-		// Now we've got all information
-		osmMap = new OsmMap(id, continent, name, place);
+		if (mapInfoChilds != null) {// First child has Continent name
+			attributes = mapInfoChilds.item(1).getAttributes();
+			osmMap.setContinent(attributes.item(1).getNodeValue());
+			// Second child has the name of the place
+			attributes = mapInfoChilds.item(3).getAttributes();
+			osmMap.setName(attributes.item(1).getNodeValue());
+			// Forth child contains place type
+			mapInfo = mapInfoChilds.item(6).getNextSibling();
+			attributes = mapInfo.getAttributes();
+			osmMap.setPlace(attributes.item(1).getNodeValue());
+			// Now we've got all information
+		}
 		SortedMap<Long, OsmNode> osmNodes = new TreeMap<Long, OsmNode>();
 		// When this methods finised we've shuld have the first way
 		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes, osmMap);
-//		 osmLog.debugln(osmMap.toString());
+		adaptNodesMap();
+		// osmLog.debugln(osmMap.toString());
 		return osmMap;
+	}
+
+	private void adaptNodesMap() {
+
 	}
 
 	protected void getNodeInfo(Node node, SortedMap<Long, OsmNode> osmNodes,
@@ -129,7 +135,13 @@ public class GetOSMInfo {
 		long id = Long.parseLong(attributes.item(0).getNodeValue());
 		double lat = Double.parseDouble(attributes.item(1).getNodeValue());
 		double lng = Double.parseDouble(attributes.item(2).getNodeValue());
-		OsmNode osmNode = new OsmNode(id, new LatLng(lat, lng));
+		LatLng latLng = new LatLng(lat, lng);
+		OsmNode osmNode = new OsmNode(id, latLng);
+		try {
+			osmNode.setPoint(grid.coordToTile(latLng));
+		} catch (IndexOutOfBoundsException e) {
+			// No se añade point
+		}
 		// If is extended Node:
 		if (node.getFirstChild() != null) {
 			// Is a special Place
@@ -153,13 +165,31 @@ public class GetOSMInfo {
 		ways.add(osmWay);
 		node = node.getFirstChild();
 		// Getting Nodes id to add way
+		boolean in = false;
+		boolean out = true;
 		while (node != null && !node.getNodeName().equalsIgnoreCase("tag")) {
 			if (node.getNodeName().equalsIgnoreCase("nd")) {
 				// es un nodo
 				long key = Long.parseLong(node.getAttributes().item(0)
 						.getNodeValue());
 				// Adding to way
-				osmWay.addToWay(osmNodes.get(key));
+				OsmNode aux = osmNodes.get(key);
+				if (aux.isIn()) {
+					osmWay.addToWay(aux);
+//					System.err.println("*****Dentro: " + aux.toString());
+					in = true;
+					out = false;
+				} else {
+					if (out) {
+						osmWay.setFirsNode(aux);
+//						System.err.println("Primero fuera: " + aux.toString());
+					}
+					if (in) {
+						osmWay.setLastNode(aux);
+//						System.err.println("Ultimo Fuera: " + aux.toString());
+						in = aux.isIn();
+					}
+				}
 			}
 			node = node.getNextSibling();
 		}

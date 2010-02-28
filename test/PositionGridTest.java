@@ -14,14 +14,14 @@ public class PositionGridTest {
 		
 		new DateAndTime(2000, 3, 15, 15, 3);
 		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953260, -90.088238, (short)10), new LatLng(
-				29.918075, -90.053707, (short)10), 100);
+				29.918075, -90.053707, (short)10), 20);
 		long err =0;
 		for (int x=0;x<grid.getDimX();x++){
 			for (int y=0;y<grid.getDimY();y++){
 				LatLng c =grid.tileToCoord(x, y);
 				Point p = grid.coordToTile(c);
 				if (x!=p.getX() || y!=p.getY()){
-//					System.err.println("["+x+","+y+"] != ["+p.getX()+","+p.getY()+"]");
+					System.err.println("["+x+","+y+"] != ["+p.getX()+","+p.getY()+"]");
 					err++;
 				}else{
 //					System.err.println("******["+x+","+y+"] == ["+p.getX()+","+p.getY()+"]");

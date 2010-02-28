@@ -1,5 +1,6 @@
 package test;
 
+import gui.VisorFrame;
 import jade.core.AID;
 import osm.GetOSMInfo;
 import osm.OsmMap;
@@ -8,12 +9,13 @@ import util.HexagonalGrid;
 import util.Snapshot;
 import util.jcoord.LatLng;
 
-public class OSMgetTest {
+public class OSMMapTest {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
 		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953, -90.088, (short)10), new LatLng(
 				29.940, -90.070, (short)10), (short) 10);
 		
@@ -25,11 +27,13 @@ public class OSMgetTest {
 		
 		OsmMap osmMap = osmInfo.getOsmMap();
 		
+		osmMap.setMapInfo(snapShot.getGrid());
 		//Mostando info por pantalla
-		System.err.println(osmMap);
+		//System.err.println(osmMap);
 		
+		VisorFrame v = new VisorFrame();
+		v.update(snapShot);
+		v.setVisible(true);
 	}
-	
-	
- 
+
 }
