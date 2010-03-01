@@ -22,16 +22,22 @@ import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Logger;
-import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
 import behaviours.AdjacentsGridBehav;
+import behaviours.InterGridBehav;
 import behaviours.QueryGridBehav;
+import behaviours.ReceiveScenarioBehav;
+import behaviours.RequestScenarioBehav;
 import behaviours.SyndicateBehav;
 import behaviours.flood.AddWaterBehav;
 import behaviours.flood.UpdateFloodGridBehav;
@@ -47,7 +53,6 @@ public class EnviromentAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		Scenario scen = Scenario.getCurrentScenario(); // TODO
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args.length == 5) {
@@ -55,52 +60,17 @@ public class EnviromentAgent extends Agent {
 					.parseDouble((String) args[1]));
 			LatLng SE = new LatLng(Double.parseDouble((String) args[2]), Double
 					.parseDouble((String) args[3]));
-			grid = new FloodHexagonalGrid(NW, SE, Integer
-					.parseInt((String) args[4]));
+			int tileSize = Integer.parseInt((String) args[4]);
+			grid = new FloodHexagonalGrid(NW, SE, 0, 0, tileSize); // TODO
+			// TODO grid.obtainTerrainElevation();
 			dateTime = new DateAndTime(2010, 2, 26, 20, 32);
 		} else {
 			logger.errorln(getLocalName() + " wrong arguments.");
 			doDelete();
 		}
 
-		String[] services;
-
-		// Si es una inundación
-		if (scen instanceof FloodScenario) {
-			services = new String[4];
-			FloodScenario fscen = (FloodScenario) scen;
-			addBehaviour(new AddWaterBehav((FloodHexagonalGrid) grid));
-
-			services[3] = "add-water";
-
-			// Mover agua por la rejilla
-			addBehaviour(new UpdateFloodGridBehav(this, fscen
-					.getFloodUpdateTime(), (FloodHexagonalGrid) grid));
-		} else {
-			services = new String[3];
-		}
-
-		// Añadir comportamientos
-		addBehaviour(new AdjacentsGridBehav(grid));
-		addBehaviour(new QueryGridBehav(grid));
-		addBehaviour(new SyndicateBehav(this, grid, dateTime));
-		services[0] = "adjacents-grid";
-		services[1] = "grid-querying";
-		services[2] = "syndicate";
-
-		// Registrarse con el agente DF
-		AgentHelper.register(this, services);
-
-		// Obtener agente creador
-		DFAgentDescription[] result = AgentHelper.search(this, "creator");
-		if (result.length != 1) {
-			logger.errorln("Error searching for the creator agent. Found "
-					+ result.length + " agents.");
-			doDelete();
-		}
-		AID creatorAID = result[0].getName();
-		// Mandar mensaje al agente creador
-		AgentHelper.send(this, creatorAID, ACLMessage.CONFIRM, null, null);
+		// Obtener Scenario
+		addBehaviour(new RequestScenarioBehav(new ContinueEnv()));
 	}
 
 	@Override
@@ -114,4 +84,57 @@ public class EnviromentAgent extends Agent {
 		logger.println("Enviroment-agent " + getAID().getName()
 				+ " terminating.");
 	}
+
+	protected class ContinueEnv extends ReceiveScenarioBehav {
+
+		@Override
+		public void action() {
+			List<String> services = new ArrayList<String>(5);
+
+			// Si es una inundación
+			if (scen instanceof FloodScenario) {
+				FloodScenario fscen = (FloodScenario) scen;
+				addBehaviour(new AddWaterBehav(myAgent,
+						(FloodHexagonalGrid) grid));
+				addBehaviour(new InterGridBehav(myAgent, grid));
+				services.add("add-water");
+				services.add("intergrid");
+
+				// Mover agua por la rejilla
+				myAgent
+						.addBehaviour(new UpdateFloodGridBehav(myAgent, fscen
+								.getFloodUpdateTime(), fscen,
+								(FloodHexagonalGrid) grid));
+			}
+
+			// Añadir comportamientos
+			myAgent.addBehaviour(new AdjacentsGridBehav(grid));
+			myAgent.addBehaviour(new QueryGridBehav(grid));
+			myAgent.addBehaviour(new SyndicateBehav(myAgent, grid, dateTime));
+			services.add("adjacents-grid");
+			services.add("grid-querying");
+			services.add("syndicate");
+
+			// Registrarse con el agente DF
+			AgentHelper.register(myAgent, services.toArray(new String[services
+					.size()]));
+
+			// Obtener agente creador
+			DFAgentDescription[] result = AgentHelper
+					.search(myAgent, "creator");
+			if (result.length != 1) {
+				logger.errorln("Error searching for the creator agent. Found "
+						+ result.length + " agents.");
+				doDelete();
+			}
+			AID creatorAID = result[0].getName();
+			// Mandar mensaje al agente creador
+			AgentHelper.send(myAgent, creatorAID, ACLMessage.CONFIRM, null,
+					null);
+
+			done = true;
+		}
+
+	}
+
 }

@@ -53,8 +53,6 @@ public class WaterSourceAgent extends Agent {
 	@SuppressWarnings("serial")
 	protected class ContinueWS extends ReceiveScenarioBehav {
 
-		boolean done = false;
-
 		@Override
 		public void action() {
 			String env = Integer.toString(scen.getEnviromentByCoord(coord));
@@ -75,11 +73,6 @@ public class WaterSourceAgent extends Agent {
 			myAgent.addBehaviour(new WaterSourceBehav(myAgent, rhythm, envAID,
 					coord, water));
 			done = true;
-		}
-
-		@Override
-		public boolean done() {
-			return done;
 		}
 
 	}

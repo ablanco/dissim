@@ -57,6 +57,8 @@ public class CreatorAgent extends Agent {
 
 		scen = Scenario.getCurrentScenario();
 		if (scen != null) {
+			// Lo primero es ofrecer el Scenario
+			addBehaviour(new SendScenarioBehav());
 			AgentHelper.register(this, "creator");
 
 			// Enviroments
@@ -121,7 +123,6 @@ public class CreatorAgent extends Agent {
 						"DefaultVisor", "agents.UpdateAgent", 1, arguments));
 				// FIN DEBUG
 
-				myAgent.addBehaviour(new SendScenarioBehav());
 				myAgent.removeBehaviour(this);
 			} else {
 				block();

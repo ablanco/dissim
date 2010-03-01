@@ -16,6 +16,7 @@
 
 package behaviours.flood;
 
+import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -31,7 +32,8 @@ public class AddWaterBehav extends CyclicBehaviour {
 
 	private FloodHexagonalGrid grid;
 
-	public AddWaterBehav(FloodHexagonalGrid grid) {
+	public AddWaterBehav(Agent agt, FloodHexagonalGrid grid) {
+		super(agt);
 		this.grid = grid;
 	}
 

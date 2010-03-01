@@ -16,16 +16,22 @@
 
 package behaviours.flood;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.lang.acl.ACLMessage;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import util.AgentHelper;
 import util.Logger;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
+import util.flood.FloodScenario;
+import util.jcoord.LatLng;
 
 public class UpdateFloodGridBehav extends TickerBehaviour {
 
@@ -33,11 +39,14 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 
 	private FloodHexagonalGrid grid;
 	private Logger logger = new Logger();
+	private FloodScenario scen;
 
-	public UpdateFloodGridBehav(Agent a, long period, FloodHexagonalGrid grid) {
+	public UpdateFloodGridBehav(Agent a, long period, FloodScenario scen,
+			FloodHexagonalGrid grid) {
 		super(a, period);
 		this.grid = grid;
-//		logger = Scenario.getCurrentScenario().getDefaultLogger();
+		this.scen = scen;
+		// logger = Scenario.getCurrentScenario().getDefaultLogger();
 	}
 
 	@Override
@@ -80,8 +89,9 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				// adyacente a la modificada
 				if (adjValue != value) {
 					short water = (short) ((adjValue - value) / 2);
-					water = grid.decreaseValue(adjCoord[0], adjCoord[1], water);
-					grid.increaseValue(coord[0], coord[1], water);
+					water = decrease(adjCoord[0], adjCoord[1], coord[0],
+							coord[1], water);
+					increase(coord[0], coord[1], water);
 				}
 				// ELSE Si no la hay es que no hay que hacer nada pues las
 				// alturas son las mismas
@@ -90,13 +100,65 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 			// modificada a la más baja
 			else {
 				short water = (short) ((value - adjValue) / 2);
-				water = grid.decreaseValue(coord[0], coord[1], water);
-				grid.increaseValue(adjCoord[0], adjCoord[1], water);
+				water = decrease(coord[0], coord[1], adjCoord[0], adjCoord[1],
+						water);
+				increase(adjCoord[0], adjCoord[1], water);
 			}
 		}
 
 		time = System.currentTimeMillis() - time;
 		logger.debugln("UpdateFloodGridBehav took " + time + " ms");
+	}
+
+	private short decrease(int x, int y, int ix, int iy, short w) {
+		AID env = getEnv(x, y);
+		if (env != null) {
+			String content = Integer.toString(x) + " " + Integer.toString(y)
+					+ " " + Short.toString(w) + " " + Integer.toString(ix)
+					+ " " + Integer.toString(iy);
+			AgentHelper.send(myAgent, env, ACLMessage.REQUEST, "intergrid",
+					content);
+			return 0;
+		} else {
+			return grid.decreaseValue(x, y, w);
+		}
+	}
+
+	private void increase(int x, int y, short w) {
+		AID env = getEnv(x, y);
+		if (env != null) {
+			String content = Integer.toString(x) + " " + Integer.toString(y)
+					+ " " + Short.toString(w);
+			AgentHelper.send(myAgent, env, ACLMessage.INFORM, "intergrid",
+					content);
+		} else {
+			grid.increaseValue(x, y, w);
+		}
+	}
+
+	private AID getEnv(int x, int y) {
+		// Comprobar si la casilla es de la corona y por lo tanto pertence a otro entorno
+		if (x < grid.getOffX() || x >= grid.getDimX() || y < grid.getOffY()
+				|| y >= grid.getDimY()) {
+			LatLng coord = grid.tileToCoord(x, y);
+			String env = Integer.toString(scen.getEnviromentByCoord(coord));
+
+			// Obtener agentes entorno
+			DFAgentDescription[] result = AgentHelper.search(myAgent,
+					"intergrid");
+			for (DFAgentDescription df : result) {
+				String name = df.getName().getLocalName();
+				name = name.substring(name.indexOf("-") + 1, name
+						.lastIndexOf("-"));
+				if (name.equals(env)) {
+					return df.getName();
+				}
+			}
+			
+			// TODO si no hay entorno es que el agua se tiene que "caer" del mapa
+		}
+
+		return null;
 	}
 
 }

@@ -37,8 +37,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	// TODO TreeSet no acaba de funcionar bien
 
-	public FloodHexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
-		super(NW, SE, tileSize);
+	public FloodHexagonalGrid(LatLng NW, LatLng SE, int offX, int offY, int tileSize) {
+		super(NW, SE, offX, offY, tileSize);
 		gridWater = new short[dimX][dimY];
 		northWater = new short[dimX + 2];
 		southWater = new short[dimX + 2];
@@ -48,6 +48,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	public short setWaterValue(int x, int y, short value) {
+		x -= offX;
+		y -= offY;
 		short old;
 		if (y == -1) {
 			old = northWater[x];
@@ -69,6 +71,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	public short getWaterValue(int x, int y) {
+		x -= offX;
+		y -= offY;
 		short value;
 		if (y == -1) {
 			value = northWater[x];

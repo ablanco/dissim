@@ -45,6 +45,8 @@ public class HexagonalGrid implements Serializable {
 	 */
 	protected int dimX;
 	protected int dimY;
+	protected int offX; // Index of the 0,0 tile
+	protected int offY;
 	protected short[][] gridTerrain;
 	/**
 	 * External border
@@ -54,9 +56,11 @@ public class HexagonalGrid implements Serializable {
 	protected short[] eastTerrain;
 	protected short[] westTerrain;
 
-	public HexagonalGrid(LatLng NW, LatLng SE, int tileSize) {
+	public HexagonalGrid(LatLng NW, LatLng SE, int offX, int offY, int tileSize) {
 		this.NW = NW;
 		this.SE = SE;
+		this.offX = offX;
+		this.offY = offY;
 
 		// Calcular el tamaño de la rejilla en función de la distancia real y el
 		// tamaño de los hexágonos
@@ -76,6 +80,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public short setTerrainValue(int x, int y, short value) {
+		x -= offX;
+		y -= offY;
 		short old;
 		if (y == -1) {
 			old = northTerrain[x];
@@ -97,6 +103,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public short getTerrainValue(int x, int y) {
+		x -= offX;
+		y -= offY;
 		short value;
 		if (y == -1) {
 			value = northTerrain[x];
@@ -134,6 +142,14 @@ public class HexagonalGrid implements Serializable {
 	public int getDimY() {
 		return dimY;
 	}
+	
+	public int getOffX() {
+		return offX;
+	}
+	
+	public int getOffY() {
+		return offY;
+	}
 
 	/**
 	 * Devuelve los índices de los hexágonos adyacentes al pedido (6 como
@@ -145,6 +161,8 @@ public class HexagonalGrid implements Serializable {
 	 *         adyacente (si valen -1 es que había menos de 6 adyacentes)
 	 */
 	public int[][] getAdjacentsIndexes(int x, int y) {
+		x -= offX;
+		y -= offY;
 		int[][] adjacents = new int[6][2];
 		int cont = 0;
 

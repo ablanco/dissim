@@ -24,8 +24,15 @@ public abstract class ReceiveScenarioBehav extends Behaviour {
 
 	protected Scenario scen = null;
 
+	protected boolean done = false;
+
 	public void setScenario(Scenario scen) {
 		this.scen = scen;
+	}
+
+	@Override
+	public boolean done() {
+		return done;
 	}
 
 }
