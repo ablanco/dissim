@@ -310,7 +310,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	/**
-	 * Calculate the surface distance in kilometres from the this LatLng to the
+	 * Calculate the surface distance in meters from the this LatLng to the
 	 * given LatLng.
 	 * 
 	 * @param ll
@@ -328,7 +328,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		double d = Math.acos(Math.sin(latFrom) * Math.sin(latTo)
 				+ Math.cos(latFrom) * Math.cos(latTo)
 				* Math.cos(lngTo - lngFrom))
-				* er;
+				* er * 1000;
 
 		return d;
 	}
@@ -418,6 +418,16 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		double lng = l.getLng();
 
 		return new LatLng(lat, lng, terrainValue);
+	}
+	
+	public int[] degreesToMeters(LatLng coord, int tileSize){	
+		//TODO otra chapuza que podría funcionar ...
+		UTMRef u = this.toUTMRef();
+		UTMRef nw = coord.toUTMRef();
+		int y = (int) ((nw.getEasting() - u.getEasting())/tileSize);
+		int x = (int) ((nw.getNorthing() - u.getNorthing())/ tileSize * 4/3) + 1;
+		int z = this.getAltitude();
+		return new int[] {x, y, z};
 	}
 
 	public boolean isContainedIn(LatLng NW, LatLng SE) {

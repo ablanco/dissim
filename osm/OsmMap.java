@@ -16,7 +16,6 @@
 
 package osm;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -62,7 +61,7 @@ public class OsmMap {
 		ways = new TreeSet<OsmWay>();
 		specialPlaces = new TreeSet<OsmNode>();
 	}
-	
+
 	public void setContinent(String continent) {
 		this.continent = continent;
 	}
@@ -70,11 +69,11 @@ public class OsmMap {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public void setPlace(String place) {
 		this.place = place;
 	}
-	
+
 	public void addWay(OsmWay way) {
 		ways.add(way);
 	}
@@ -88,9 +87,9 @@ public class OsmMap {
 		String name = "";
 		String type = "";
 		short key = 0;
-		while (node!=null){
+		while (node != null) {
 			if (node.getNodeName().equalsIgnoreCase("tag")) {
-				
+
 				type = node.getAttributes().item(0).getNodeValue();
 				// osmLog.debug("value: " + value + " | ");
 				// Getting Name
@@ -151,7 +150,7 @@ public class OsmMap {
 				} else if (type.equalsIgnoreCase("Geological")) {
 					value = node.getAttributes().item(1).getNodeValue();
 					key = Geological;
-				}else if (type.equalsIgnoreCase("Building")) {
+				} else if (type.equalsIgnoreCase("Building")) {
 					value = node.getAttributes().item(0).getNodeValue();
 					key = Building;
 				}
@@ -160,60 +159,61 @@ public class OsmMap {
 		}
 		return new OsmNodeExtendedInfo(key, name, value);
 	}
-	
+
 	@Override
 	public String toString() {
-		String result = continent +" "+place+" "+name+"\n";
-		for (OsmWay w : ways){
-			result += w.toString()+"\n";
+		String result = continent + " " + place + " " + name + "\n";
+		for (OsmWay w : ways) {
+			result += w.toString() + "\n";
 		}
-		
-		for (OsmNode n : specialPlaces){
-			result += n.toString()+"\n";
+
+		for (OsmNode n : specialPlaces) {
+			result += n.toString() + "\n";
 		}
 		return result;
 	}
-	
-	public void setMapInfo(HexagonalGrid infoGrid){
-		
-		for (OsmWay way : ways){
-			try{
-			aproximateWay(way,infoGrid);
-			}catch (IllegalArgumentException e) {
-				System.err.println("*****No tiene nodos!!! "+way.toString());
+
+	public void setMapInfo(HexagonalGrid infoGrid) {
+
+		for (OsmWay way : ways) {
+			try {
+				aproximateWay(way, infoGrid);
+			} catch (IllegalArgumentException e) {
+//				System.err.println("*****No tiene nodos!!! " + way.toString());
 			}
-		}		
-		for (OsmNode node : specialPlaces){
-			//System.err.println(node.toString());
+		}
+		for (OsmNode node : specialPlaces) {
+			// System.err.println(node.toString());
 			setMapInfoValue(infoGrid, node.coord, node.extendedInfo.getKey());
 		}
 	}
 
 	private void aproximateWay(OsmWay way, HexagonalGrid grid) {
-		if (way.getWay()==null){
-			throw new IllegalArgumentException("No puede haber un camino sin nodos");
-		}
 		List<OsmNode> nodeWay = way.getWay();
+		if (nodeWay.size() == 0) {
+			throw new IllegalArgumentException(
+					"No puede haber un camino sin nodos");
+		}
 		short key = way.getKey();
 		OsmNode b = nodeWay.get(0);
 		/*
-		if(way.getFirsNode()!=null){
-			aproximateWay(aproximateNode(way.getFirsNode(),grid),b,grid,key);
-		}*/
-		//Way from a to b
-		for (int x=1;x<nodeWay.size();x++){
+		 * if(way.getFirsNode()!=null){
+		 * aproximateWay(aproximateNode(way.getFirsNode(),grid),b,grid,key); }
+		 */
+		// Way from a to b
+		for (int x = 1; x < nodeWay.size(); x++) {
 			OsmNode a = b;
 			b = nodeWay.get(x);
-			aproximateWay(a,b,grid,key);
+			aproximateWay(a, b, grid, key);
 		}
 		/*
-		if(way.getLastNode()!=null){
-			aproximateWay(b, aproximateNode(way.getLastNode(),grid),grid,key);
-		}*/
+		 * if(way.getLastNode()!=null){ aproximateWay(b,
+		 * aproximateNode(way.getLastNode(),grid),grid,key); }
+		 */
 	}
 
-
-	private void aproximateWay(OsmNode a, OsmNode b, HexagonalGrid grid, short key) {
+	private void aproximateWay(OsmNode a, OsmNode b, HexagonalGrid grid,
+			short key) {
 		Point A = a.getPoint();
 		Point B = b.getPoint();
 		int x = A.getX();
@@ -222,40 +222,41 @@ public class OsmMap {
 		int bY = B.getY();
 		grid.setTerrainValue(bX, bY, key);
 		grid.setTerrainValue(x, y, key);
-		while (x != bX || y != bY){
-			if(x>bX){
+		while (x != bX || y != bY) {
+			if (x > bX) {
 				x--;
-			}else if (x<bX){
+			} else if (x < bX) {
 				x++;
-			}else{
-				//x==bX
+			} else {
+				// x==bX
 			}
-			
-			if(y>bY){
+
+			if (y > bY) {
 				y--;
-			}else if (y<bY){
+			} else if (y < bY) {
 				y++;
-			}else{
-				//y==bY
+			} else {
+				// y==bY
 			}
 			grid.setTerrainValue(x, y, key);
 		}
-		
 	}
 
-	private OsmNode aproximateNode(OsmNode firsNode, HexagonalGrid grid) {
-		// TODO Auto-generated method stub
+	private OsmNode aproximateNode(OsmNode outNode,OsmNode inNode, HexagonalGrid grid) {
+		
 		return null;
 	}
 
-	private void setMapInfoValue(HexagonalGrid infoGrid, LatLng coord, short value) {
-		try{
+	private void setMapInfoValue(HexagonalGrid infoGrid, LatLng coord,
+			short value) {
+		try {
 			Point point = infoGrid.coordToTile(coord);
 			infoGrid.setTerrainValue(point.getX(), point.getY(), value);
-//			System.err.println("Valor del grid cambiado con exito");
-		}catch (ArrayIndexOutOfBoundsException e) {
-			System.err.println("**************Intentando acceder fuera del array");
+			// System.err.println("Valor del grid cambiado con exito");
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.err
+					.println("**************Intentando acceder fuera del array");
 		}
-		
+
 	}
 }

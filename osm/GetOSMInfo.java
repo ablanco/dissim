@@ -89,7 +89,7 @@ public class GetOSMInfo {
 		osmMap = new OsmMap(id);
 		// Children has the info
 		NodeList mapInfoChilds = mapInfo.getChildNodes();
-		if (mapInfoChilds != null) {// First child has Continent name
+		if (mapInfo.getFirstChild() != null) {// First child has Continent name
 			attributes = mapInfoChilds.item(1).getAttributes();
 			osmMap.setContinent(attributes.item(1).getNodeValue());
 			// Second child has the name of the place
@@ -174,22 +174,26 @@ public class GetOSMInfo {
 						.getNodeValue());
 				// Adding to way
 				OsmNode aux = osmNodes.get(key);
-				if (aux.isIn()) {
-					osmWay.addToWay(aux);
-//					System.err.println("*****Dentro: " + aux.toString());
-					in = true;
-					out = false;
-				} else {
-					if (out) {
-						osmWay.setFirsNode(aux);
-//						System.err.println("Primero fuera: " + aux.toString());
+				if (aux != null) {
+					if (aux.isIn()) {
+						osmWay.addToWay(aux);
+						// System.err.println("*****Dentro: " + aux.toString());
+						in = true;
+						out = false;
+					} else {
+						if (out) {
+							osmWay.setFirsNode(aux);
+							// System.err.println("Primero fuera: " +
+							// aux.toString());
+						}
+						if (in) {
+							osmWay.setLastNode(aux);
+							// System.err.println("Ultimo Fuera: " +
+							// aux.toString());
+							in = aux.isIn();
+						}
 					}
-					if (in) {
-						osmWay.setLastNode(aux);
-//						System.err.println("Ultimo Fuera: " + aux.toString());
-						in = aux.isIn();
-					}
-				}
+				}//Buscamos un key que no existe ... wtf osm??
 			}
 			node = node.getNextSibling();
 		}

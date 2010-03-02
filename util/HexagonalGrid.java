@@ -66,9 +66,9 @@ public class HexagonalGrid implements Serializable {
 		// tamaño de los hexágonos
 		this.tileSize = tileSize;
 		double ts = tileSize;
-		int x = (int) (((NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000.0) - ((ts / 2.0) * Math
+		int x = (int) ((NW.distance(new LatLng(NW.getLat(), SE.getLng())) - ((ts / 2.0) * Math
 				.cos(Math.PI / 6.0))) / (((ts / 2.0) * Math.cos(Math.PI / 6.0)) * 2.0));
-		int y = (int) (((NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000.0) - (ts / 4.0)) / ((ts * 3.0) / 4.0));
+		int y = (int) ((NW.distance(new LatLng(SE.getLat(), NW.getLng())) - (ts / 4.0)) / ((ts * 3.0) / 4.0));
 
 		gridTerrain = new short[x][y];
 		northTerrain = new short[x + 2];
@@ -292,8 +292,8 @@ public class HexagonalGrid implements Serializable {
 					"The size of the tiles hasn't been defined yet.");
 
 		// Aproximacion
-		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) * 1000 / tileSize);
-		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) * 1000 / tileSize);
+		int x = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng()))/ tileSize);
+		int y = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng()))/ tileSize);
 		// Try to adjust aproximation errors. 7%
 		short z = 0;
 
