@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Set;
 
+import behaviours.InterGridBehav;
+
 import util.AgentHelper;
 import util.Logger;
 import util.Point;
@@ -111,35 +113,46 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	}
 
 	private short decrease(int x, int y, int ix, int iy, short w) {
-		AID env = getEnv(x, y);
+		Object env = getEnv(x, y);
 		if (env != null) {
-			String content = Integer.toString(x) + " " + Integer.toString(y)
-					+ " " + Short.toString(w) + " " + Integer.toString(ix)
-					+ " " + Integer.toString(iy);
-			AgentHelper.send(myAgent, env, ACLMessage.REQUEST, "intergrid",
-					content);
+			if (env instanceof AID) {
+				String content = InterGridBehav.WATER_REQUEST + " "
+						+ Integer.toString(x) + " " + Integer.toString(y) + " "
+						+ Short.toString(w) + " " + Integer.toString(ix) + " "
+						+ Integer.toString(iy);
+				AgentHelper.send(myAgent, (AID) env, ACLMessage.REQUEST,
+						"intergrid", content);
+				grid.decreaseValue(x, y, w);
+			}
 			return 0;
 		} else {
-			return grid.decreaseValue(x, y, w);
+			short result = grid.decreaseValue(x, y, w);
+			innerBorder(x, y, grid.getWaterValue(x, y));
+			return result;
 		}
 	}
 
 	private void increase(int x, int y, short w) {
-		AID env = getEnv(x, y);
+		Object env = getEnv(x, y);
 		if (env != null) {
-			String content = Integer.toString(x) + " " + Integer.toString(y)
-					+ " " + Short.toString(w);
-			AgentHelper.send(myAgent, env, ACLMessage.INFORM, "intergrid",
-					content);
+			if (env instanceof AID) {
+				String content = Integer.toString(x) + " "
+						+ Integer.toString(y) + " " + Short.toString(w);
+				AgentHelper.send(myAgent, (AID) env, ACLMessage.INFORM,
+						"intergrid", content);
+				grid.increaseValue(x, y, w);
+			}
 		} else {
 			grid.increaseValue(x, y, w);
+			innerBorder(x, y, grid.getWaterValue(x, y));
 		}
 	}
 
-	private AID getEnv(int x, int y) {
-		// Comprobar si la casilla es de la corona y por lo tanto pertence a otro entorno
-		if (x < grid.getOffX() || x >= grid.getDimX() || y < grid.getOffY()
-				|| y >= grid.getDimY()) {
+	private Object getEnv(int x, int y) {
+		// Comprobar si la casilla es de la corona y por lo tanto pertence a
+		// otro entorno
+		if (x < grid.getOffX() || (x - grid.getOffX()) >= grid.getDimX()
+				|| y < grid.getOffY() || (y - grid.getOffY()) >= grid.getDimY()) {
 			LatLng coord = grid.tileToCoord(x, y);
 			String env = Integer.toString(scen.getEnviromentByCoord(coord));
 
@@ -154,11 +167,39 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 					return df.getName();
 				}
 			}
-			
-			// TODO si no hay entorno es que el agua se tiene que "caer" del mapa
+
+			return new Object();
 		}
 
 		return null;
+	}
+
+	private void innerBorder(int x, int y, short w) {
+		int ix = x - grid.getOffX();
+		int iy = y - grid.getOffY();
+		if (ix == 0 || ix == (grid.getDimX() - 1) || iy == 0
+				|| iy == (grid.getDimY() - 1)) {
+			int cx = x;
+			int cy = y;
+			// Hay que avisar a otro entorno para que actualice su corona
+			if (ix == 0)
+				cx--;
+			if (iy == 0)
+				cy--;
+			if (ix == (grid.getDimX() - 1))
+				cx++;
+			if (iy == (grid.getDimY() - 1))
+				cy++;
+
+			Object env = getEnv(cx, cy);
+			if (env instanceof AID) {
+				String content = InterGridBehav.WATER_SET + " "
+						+ Integer.toString(x) + " " + Integer.toString(y) + " "
+						+ Short.toString(w);
+				AgentHelper.send(myAgent, (AID) env, ACLMessage.INFORM,
+						"intergrid", content);
+			}
+		}
 	}
 
 }
