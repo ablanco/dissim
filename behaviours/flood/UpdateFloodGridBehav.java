@@ -136,8 +136,9 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		Object env = getEnv(x, y);
 		if (env != null) {
 			if (env instanceof AID) {
-				String content = Integer.toString(x) + " "
-						+ Integer.toString(y) + " " + Short.toString(w);
+				String content = InterGridBehav.WATER_INCREASE + " "
+						+ Integer.toString(x) + " " + Integer.toString(y) + " "
+						+ Short.toString(w);
 				AgentHelper.send(myAgent, (AID) env, ACLMessage.INFORM,
 						"intergrid", content);
 				grid.increaseValue(x, y, w);

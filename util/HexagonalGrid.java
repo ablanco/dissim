@@ -64,11 +64,11 @@ public class HexagonalGrid implements Serializable {
 
 		// Calcular el tamaño de la rejilla en función de la distancia real y el
 		// tamaño de los hexágonos
-		this.tileSize=tileSize;
+		this.tileSize = tileSize;
 		double ts = tileSize;
-		int x = (int) ((NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000) / (((ts / 2.0) * Math
-				.cos(Math.PI / 6.0)) * 2.0));
-		int y = (int) (((NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000) - (ts / 4.0)) / ((ts * 3.0) / 4.0));
+		int x = (int) (((NW.distance(new LatLng(NW.getLat(), SE.getLng())) * 1000.0) - ((ts / 2.0) * Math
+				.cos(Math.PI / 6.0))) / (((ts / 2.0) * Math.cos(Math.PI / 6.0)) * 2.0));
+		int y = (int) (((NW.distance(new LatLng(SE.getLat(), NW.getLng())) * 1000.0) - (ts / 4.0)) / ((ts * 3.0) / 4.0));
 
 		gridTerrain = new short[x][y];
 		northTerrain = new short[x + 2];
@@ -142,11 +142,11 @@ public class HexagonalGrid implements Serializable {
 	public int getDimY() {
 		return dimY;
 	}
-	
+
 	public int getOffX() {
 		return offX;
 	}
-	
+
 	public int getOffY() {
 		return offY;
 	}
@@ -261,9 +261,10 @@ public class HexagonalGrid implements Serializable {
 	 * @return LatLng
 	 */
 	public LatLng tileToCoord(int x, int y) {
-		if (NW == null)
+		if (NW == null || SE == null)
 			throw new IllegalStateException(
 					"Simulation area hasn't been defined yet.");
+
 		double lng;
 		double lat = (tileSize * x * 3 / 4);
 
@@ -284,7 +285,8 @@ public class HexagonalGrid implements Serializable {
 	 * @return
 	 */
 	public Point coordToTile(LatLng coord) {
-		// TODO Mientras mayor es el tileSize mayor son los errores, para 100 metros = Errores =0.22858617131062953
+		// TODO Mientras mayor es el tileSize mayor son los errores, para 100
+		// metros = Errores =0.22858617131062953
 		if (tileSize < 0)
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
@@ -298,8 +300,8 @@ public class HexagonalGrid implements Serializable {
 		double distMin = coord.distance(tileToCoord(x, y));
 		boolean mejor = true;
 		// Dist ins given in kms, tilesize is diameter, so 1000/2=500
-//		System.err.print("[" + x + "," + y + "] Dist min :" + distMin * 2000
-//				+ " ? " + (short)tileSize);
+		// System.err.print("[" + x + "," + y + "] Dist min :" + distMin * 2000
+		// + " ? " + (short)tileSize);
 		while ((distMin * 2000) > tileSize && mejor) {
 			// Look for all adyacents
 			mejor = false;
@@ -315,9 +317,9 @@ public class HexagonalGrid implements Serializable {
 					mejor = true;
 				}
 			}
-//			System.err.print(" ," + distMin * 2000);
+			// System.err.print(" ," + distMin * 2000);
 		}
-//		System.err.println();
+		// System.err.println();
 		return new Point(x, y, z);
 	}
 
