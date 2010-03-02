@@ -38,6 +38,10 @@ import util.HexagonalGrid;
 
 public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8509235099644365808L;
 	private JFrame parent = null;
 	private HexagonalGrid grid = null;
 	private int radius = -1;
@@ -52,14 +56,15 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 
 	public MapPane(JFrame parent) {
 		super();
-		dim = parent.getSize();
+		dim = new Dimension();
 		this.parent = parent;
 	}
 
 	public void updateGrid(HexagonalGrid grid) {
 		this.grid = grid;
-		int sizeHeight = dim.height;
-		int sizeWidth = dim.width;
+		Dimension dimension = parent.getSize();
+		int sizeHeight = dimension.height;
+		int sizeWidth = dimension.width;
 		if (radius == -1) { // Primera vez que recibe un grid
 			// Calcular el radio de los hexágonos a representar
 			int radiusX = (sizeWidth / grid.getDimX()) / 2;
@@ -77,13 +82,10 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 			hexHeight = p.ypoints[1] - p.ypoints[3];
 			// Calcular el tamaño del panel
 			sizeWidth = (hexWidth * grid.getDimX()) + (hexWidth / 2);
-			sizeHeight = (radius * 2) + (hexHeight * (grid.getDimY() - 1));
-			setSize(sizeWidth, sizeHeight);
-			if (parent != null) {
-				parent.setSize(sizeWidth, sizeHeight);
-			}
-
-			setVisible(true);
+			sizeHeight = (radius * 2) + (hexHeight * (grid.getDimY() - 2));
+			dim = new Dimension(sizeWidth, sizeHeight);
+			setSize(dim);
+			System.err.println("wid: "+sizeWidth+", Hei: "+sizeHeight);
 		}
 	}
 
@@ -119,7 +121,12 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 					Polygon hex = new Hexagon2D(posX, posY, radius);
 					// Dibujar y colorear según la altura
 					int value = grid.getValue(i, j);
-					g2.setColor(new Color(value));
+					if (value != 0){
+						g2.setColor(new Color(value*1000));	
+					}else{
+						g2.setColor(Color.WHITE);
+					}
+					
 					g2.fillPolygon(hex);
 				}
 			}
@@ -141,7 +148,7 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 	}
 
 	public Dimension getPreferredSize() {
-		return new Dimension(800, 600);
+		return dim;
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {

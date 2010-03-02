@@ -1,5 +1,8 @@
 package test;
 
+import java.awt.Color;
+
+import gui.VisorFrame;
 import gui.Map.VisorMap;
 import jade.core.AID;
 import osm.GetOSMInfo;
@@ -34,6 +37,10 @@ public class OSMMapTest {
 		VisorMap v = new VisorMap();
 		v.update(snapShot);
 		v.setVisible(true);
+		
+		VisorFrame v2 = new VisorFrame();
+		v2.update(snapShot);
+		v2.setVisible(true);
 	}
 
 }

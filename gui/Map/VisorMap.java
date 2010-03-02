@@ -18,7 +18,7 @@ package gui.Map;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.Toolkit;
+import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -37,10 +37,11 @@ public class VisorMap extends JFrame implements Updateable {
 
 	public VisorMap() {
 
-		setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
+//		setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
+		setSize(new Dimension(800,600));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		MapPane mapPane = new MapPane(this);
+		mapPane = new MapPane(this);
 		c.add(new JScrollPane(mapPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.CENTER);
 
