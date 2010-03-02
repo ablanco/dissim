@@ -46,7 +46,7 @@ public class VisorMap extends JFrame implements Updateable {
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.CENTER);
 
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		this.setTitle("Visor de inundación"); // TODO Internacionalización
+		this.setTitle("Visor de Mapas"); // TODO Internacionalización
 	}
 
 	@Override

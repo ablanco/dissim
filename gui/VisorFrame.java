@@ -19,7 +19,6 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -33,13 +32,11 @@ public class VisorFrame extends JFrame implements Updateable {
 	private HexagonalGridPane pane = null;
 
 	public VisorFrame() {
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		int sizeWidth = (int) (dim.width * 0.9);
-		int sizeHeight = (int) (dim.height * 0.9);
 
+		setSize(new Dimension(800,600));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		pane = new HexagonalGridPane(sizeWidth, sizeHeight, this);
+		pane = new HexagonalGridPane(this);
 		c.add(new JScrollPane(pane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.CENTER);
 

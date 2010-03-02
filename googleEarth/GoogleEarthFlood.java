@@ -252,7 +252,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 				short altitude = newGrid.getTerrainValue(x, y);
 				// si son diferentes
 				Point p = new Point(x, y, altitude);
-				if (oldGrid.getTerrainValue(x, y) != altitude) {
+				if (oldGrid[x][y] != altitude) {
 					// System.out.print("!=, ");
 					if (newSnap.getGrid().isBorderPoint(p)) {
 						// Solo añadimos los bordes
@@ -293,7 +293,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 		return levelRegions.values();
 	}
 
-	public HexagonalGrid getOldGrid() {
+	public short[][] getOldGrid() {
 		return oldGrid;
 	}
 

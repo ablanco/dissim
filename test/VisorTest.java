@@ -16,14 +16,20 @@
 
 package test;
 
+import jade.core.AID;
 import gui.VisorFrame;
+import util.DateAndTime;
+import util.Snapshot;
 import util.flood.FloodHexagonalGrid;
+import util.jcoord.LatLng;
 
 public class VisorTest {
 
 	public static void main(String[] args) throws InterruptedException {
-		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3);
+		FloodHexagonalGrid grid = new FloodHexagonalGrid(new LatLng(30.093681, -90.446724, (short)10), new LatLng(
+				30.083244, -90.434048, (short)10),0,0, (short) 10);
 
+		Snapshot snap = new Snapshot(new AID(), grid, new DateAndTime(2000, 12, 15, 18, 55));
 		VisorFrame v = new VisorFrame();
 		grid.setTerrainValue(0, 0, (short) -20);
 		grid.setTerrainValue(0, 1, (short) -40);
@@ -38,13 +44,13 @@ public class VisorTest {
 		grid.setWaterValue(0, 1, (short) 60);
 		grid.setWaterValue(0, 2, (short) 60);
 		grid.setWaterValue(1, 0, (short) 100);
-		v.update(grid);
+		v.update(snap);
 		v.setVisible(true);
 
 		Thread.sleep(2000L);
 
 		grid.setWaterValue(1, 2, (short) 200);
-		v.update(grid);
+		v.update(snap);
 		
 		Thread.sleep(2000L);
 		v.dispose();

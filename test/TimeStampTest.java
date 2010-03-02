@@ -36,7 +36,7 @@ public class TimeStampTest {
 		 */
 		
 		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953260, -90.088238, (short) 10),
-				new LatLng(29.918075, -90.053707, (short) 10), (short) 600);
+				new LatLng(29.918075, -90.053707, (short) 10),  600);
 		Snapshot newOrleans = new Snapshot(new AID(), grid, new DateAndTime(2000, 3, 15, 15, 3));
 
 		GoogleEarthFlood k = new GoogleEarthFlood("TimeStamp Test","Move on");
