@@ -49,6 +49,10 @@ public class Scenario implements Serializable {
 	 */
 	private long updateKML = 5000L;
 	/**
+	 * Periodo de actualización de los agentes persona
+	 */
+	private long updatePeople = 300L;
+	/**
 	 * Coordinates of the North West point of the simulation area
 	 */
 	protected LatLng globalNW = null;
@@ -65,6 +69,7 @@ public class Scenario implements Serializable {
 	 */
 	private int numEnv = 1; // TODO unsigned
 	private ArrayList<LatLng[]> envAreas = null;
+	private ArrayList<int[]> envSizes = null;
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -162,18 +167,6 @@ public class Scenario implements Serializable {
 		return name;
 	}
 
-	// public void setDefaultLogger(Logger defaultLogger) {
-	// this.defaultLogger = defaultLogger;
-	// }
-	//
-	// public Logger getDefaultLogger() {
-	// return defaultLogger;
-	// }
-	//
-	// public void disableDefaultLogger() {
-	// defaultLogger.disable();
-	// }
-
 	public long getUpdateVisorPeriod() {
 		return updateVisor;
 	}
@@ -188,6 +181,14 @@ public class Scenario implements Serializable {
 
 	public void setUpdateKMLPeriod(long updateKML) {
 		this.updateKML = updateKML;
+	}
+	
+	public long getUpdatePeople() {
+		return updatePeople;
+	}
+	
+	public void setUpdatePeople(long updatePeople) {
+		this.updatePeople = updatePeople;
 	}
 
 	public int getNumEnv() {
@@ -214,9 +215,13 @@ public class Scenario implements Serializable {
 
 	private void divideAreaBetweenEnvs() {
 		envAreas = new ArrayList<LatLng[]>(numEnv);
+		envSizes = new ArrayList<int[]>(numEnv);
 
 		if (numEnv == 1) {
 			envAreas.add(new LatLng[] { globalNW, globalSE });
+			int[] size = HexagonalGrid.calculateSize(globalNW, globalSE,
+					tileSize);
+			envSizes.add(new int[] { size[0], size[1], 0, 0 });
 			return;
 		}
 
@@ -238,6 +243,9 @@ public class Scenario implements Serializable {
 					+ (diflng * Math.abs(i % mitt)));
 
 			envAreas.add(i, new LatLng[] { NW, SE });
+			int[] size = HexagonalGrid.calculateSize(NW, SE, tileSize);
+			envSizes.add(i, new int[] { size[0], size[1], 0, 0 }); // TODO
+																	// offset
 		}
 	}
 
@@ -249,6 +257,21 @@ public class Scenario implements Serializable {
 		int idx = 0;
 		for (LatLng[] envCoords : envAreas) {
 			if (coord.isContainedIn(envCoords[0], envCoords[1]))
+				return idx;
+			idx++;
+		}
+		return -1;
+	}
+
+	public int getEnviromentByPosition(int x, int y) {
+		if (envSizes == null)
+			throw new IllegalStateException(
+					"Enviroments haven't been initialized");
+
+		int idx = 0;
+		for (int[] envSize : envSizes) {
+			if (x < envSize[0] && x >= envSize[2] && y < envSize[1]
+					&& y >= envSize[3])
 				return idx;
 			idx++;
 		}

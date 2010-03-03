@@ -114,6 +114,7 @@ public class EnviromentAgent extends Agent {
 			services.add("adjacents-grid");
 			services.add("grid-querying");
 			services.add("syndicate");
+			services.add("people");
 
 			// Registrarse con el agente DF
 			AgentHelper.register(myAgent, services.toArray(new String[services

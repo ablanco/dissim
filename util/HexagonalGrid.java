@@ -76,14 +76,15 @@ public class HexagonalGrid implements Serializable {
 		this.SE = SE;
 		this.offX = offX;
 		this.offY = offY;
+		this.tileSize = tileSize;
 
 		// Calcular el tamaño de la rejilla en función de la distancia real y el
 		// tamaño de los hexágonos
-		this.tileSize = tileSize;
-		double ts = (double) tileSize;
-		hexWidth = ((ts / 2.0) * Math.cos(Math.PI / 6.0)) * 2.0;
-		int x = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) / hexWidth);
-		int y = (int) (NW.distance(new LatLng(SE.getLat(), NW.getLng())) / ((ts * 3.0) / 4.0));
+		int size[] = calculateSize(NW, SE, tileSize);
+		int x = size[0];
+		int y = size[1];
+
+		hexWidth = ((((double) tileSize) / 2.0) * Math.cos(Math.PI / 6.0)) * 2.0;
 
 		ilat = Math.abs(NW.getLat() - SE.getLat()) / x;
 		ilng = Math.abs(NW.getLng() - SE.getLng()) / y;
@@ -100,6 +101,14 @@ public class HexagonalGrid implements Serializable {
 		westStreets = new short[y];
 		dimX = x;
 		dimY = y;
+	}
+
+	public static int[] calculateSize(LatLng NW, LatLng SE, int tileSize) {
+		double ts = (double) tileSize;
+		double hexWidth = ((ts / 2.0) * Math.cos(Math.PI / 6.0)) * 2.0;
+		int x = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) / hexWidth);
+		int y = (int) (NW.distance(new LatLng(SE.getLat(), NW.getLng())) / ((ts * 3.0) / 4.0));
+		return new int[] { x, y };
 	}
 
 	public short setTerrainValue(int x, int y, short value) {
