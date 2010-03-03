@@ -126,7 +126,7 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 					if (value != 0){
 						g2.setColor(new Color(value*1000));	
 					}else{
-						g2.setColor(Color.RED);
+						g2.setColor(Color.WHITE);
 					}					
 					g2.fillPolygon(hex);
 				}

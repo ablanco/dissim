@@ -18,7 +18,6 @@ package gui.Map;
 
 import java.awt.Color;
 
-import javax.swing.JLabel;
 import javax.swing.table.AbstractTableModel;
 
 import osm.OsmMap;
@@ -43,9 +42,9 @@ public class Leyend extends AbstractTableModel{
 	}
 
 	private Object[][] getMapData() {
-		Object[][] data= {{"Raw Field", new JLabel("Color"), new Boolean(true)},
-				{"Highway", new JLabel("Color"), new Boolean(true)},
-				{"Barrier", new JLabel("Color"), new Boolean(true)},
+		Object[][] data= {{"Raw Field", new Color(OsmMap.Raw_Field *1000), new Boolean(true)},
+				{"Highway", new Color(OsmMap.Highway *1000), new Boolean(true)},
+				{"Barrier", new Color(OsmMap.Barrier *1000), new Boolean(true)},
 				{"Cycleway", new Color(OsmMap.Cycleway *1000), new Boolean(true)},
 				{"Tracktype", new Color(OsmMap.Tracktype *1000), new Boolean(true)},
 				{"Waterway", new Color(OsmMap.Waterway *1000), new Boolean(true)},
