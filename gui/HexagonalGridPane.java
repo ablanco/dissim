@@ -26,7 +26,6 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
@@ -38,7 +37,6 @@ import util.flood.FloodHexagonalGrid;
 @SuppressWarnings("serial")
 public class HexagonalGridPane extends JPanel implements Scrollable {
 
-	private JFrame parent = null;
 	private HexagonalGrid grid = null;
 	private int radius = -1;
 	private int hexWidth;
@@ -46,26 +44,26 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 	private short min;
 	private short max;
 	private int maxUnitIncrement = 1;
-	private Dimension dim;
+	private Dimension size = new Dimension(300, 300);
 
 	public HexagonalGridPane() {
 		this(null);
 	}
 
-	public HexagonalGridPane(JFrame parent) {
+	public HexagonalGridPane(Dimension size) {
 		super();
-		this.parent = parent;
+		if (size != null)
+			this.size = size;
+		setSize(this.size);
 	}
 
 	public void updateGrid(HexagonalGrid grid) {
 		this.grid = grid;
-		Dimension dimension = parent.getSize();
-		int sizeHeight = dimension.height;
-		int sizeWidth = dimension.width;
+		
 		if (radius == -1) { // Primera vez que recibe un grid
 			// Calcular el radio de los hexágonos a representar
-			int radiusX = (sizeWidth / grid.getDimX()) / 2;
-			int radiusY = (sizeHeight / grid.getDimY()) / 2;
+			int radiusX = (size.width / grid.getDimX()) / 2;
+			int radiusY = (size.height / grid.getDimY()) / 2;
 			if (radiusX < radiusY)
 				radius = radiusX;
 			else
@@ -77,14 +75,6 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			Polygon p = new Hexagon2D(0, 0, radius);
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
-			// Calcular el tamaño del panel
-			sizeWidth = (hexWidth * grid.getDimX()) + (hexWidth / 2);
-			sizeHeight = (radius * 2) + (hexHeight * (grid.getDimY() - 1));
-			dim = new Dimension(sizeWidth, sizeHeight);
-			setSize(dim);
-//			if (parent != null) {
-//				parent.setSize(sizeWidth, sizeHeight);
-//			}
 
 			// La escala de colores se calcula ahora (una única vez)
 			min = Short.MAX_VALUE;
@@ -99,7 +89,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 				}
 			}
 			max += 100; // TODO Sacar el max nivel del agua del scenario
-			System.err.println("wid: "+sizeWidth+", Hei: "+sizeHeight+"HexSize ["+hexHeight+","+hexWidth+"]");
+			// System.err.println("wid: "+sizeWidth+", Hei: "+sizeHeight+"HexSize ["+hexHeight+","+hexWidth+"]");
 			setVisible(true);
 		}
 
@@ -164,7 +154,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {
-		return dim;
+		return size;
 	}
 
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
