@@ -22,6 +22,7 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import util.Snapshot;
 import util.Updateable;
@@ -44,7 +45,8 @@ public class VisorMap extends JFrame implements Updateable {
 		mapPane = new MapPane(this);
 		c.add(new JScrollPane(mapPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.CENTER);
-
+		JTextArea textBox = new JTextArea("hola hola periquitos");
+		c.add(textBox);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.setTitle("Visor de Mapas"); // TODO Internacionalización
 	}

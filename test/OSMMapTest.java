@@ -38,9 +38,9 @@ public class OSMMapTest {
 		v.update(snapShot);
 		v.setVisible(true);
 		
-		VisorFrame v2 = new VisorFrame();
-		v2.update(snapShot);
-		v2.setVisible(true);
+//		VisorFrame v2 = new VisorFrame();
+//		v2.update(snapShot);
+//		v2.setVisible(true);
 	}
 
 }
