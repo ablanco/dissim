@@ -132,11 +132,12 @@ public class GetOSMInfo {
 			SortedMap<Long, OsmNode> osmNodes, SortedSet<OsmNode> specialPlaces) {
 		NamedNodeMap attributes = node.getAttributes();
 		// Getting attributes
-		long id = Long.parseLong(attributes.item(0).getNodeValue());
-		double lat = Double.parseDouble(attributes.item(1).getNodeValue());
-		double lng = Double.parseDouble(attributes.item(2).getNodeValue());
+		long id = Long.parseLong(attributes.item(1).getNodeValue());
+		double lat = Double.parseDouble(attributes.item(2).getNodeValue());
+		double lng = Double.parseDouble(attributes.item(3).getNodeValue());
 		LatLng latLng = new LatLng(lat, lng);
 		OsmNode osmNode = new OsmNode(id, latLng);
+//		System.err.println("Nodo leido: "+osmNode.toString()+" Coordenadas: "+latLng.toString()+" lat: "+lat+", lng; "+lng);
 		try {
 			osmNode.setPoint(grid.coordToTile(latLng));
 		} catch (IndexOutOfBoundsException e) {

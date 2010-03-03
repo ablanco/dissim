@@ -81,13 +81,14 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
 			// Calcular el tamaño del panel
-			sizeWidth = (int) ((hexWidth * grid.getDimX()) + (hexWidth / 2));
+			sizeWidth = (int) ((hexWidth * grid.getDimY()) + (hexWidth / 2));
 			//TODO el calculo de la altura no es muy bueno ....
-			sizeHeight = (int) ((hexHeight * (grid.getDimY() - 2))*0.9);
+			sizeHeight = (int) ((hexHeight * (grid.getDimX() - 1)));
 			dim = new Dimension(sizeWidth, sizeHeight);
 			setSize(dim);
 			System.err.println("wid: "+sizeWidth+", Hei: "+sizeHeight+", HexSize ["+hexHeight+","+hexWidth+"]");
 		}
+//		repaint();
 	}
 
 	@Override
@@ -125,7 +126,7 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 					if (value != 0){
 						g2.setColor(new Color(value*1000));	
 					}else{
-						g2.setColor(Color.WHITE);
+						g2.setColor(Color.RED);
 					}					
 					g2.fillPolygon(hex);
 				}

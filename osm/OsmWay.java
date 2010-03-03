@@ -73,10 +73,10 @@ public class OsmWay implements Comparable<OsmWay>{
 			result +=": "+extendedInfo.toString();
 		}
 		if(firsNode!=null){
-			result +="First Node: "+firsNode+", ";
+			result +=" *First Node: "+firsNode+"* ";
 		}
 		if (lastNode!=null){
-			result +="Last Node: "+lastNode+", ";
+			result +=" *Last Node: "+lastNode+"* ";
 		}
 		result += "| Nodes: ";
 		for (OsmNode n: way){

@@ -15,7 +15,7 @@ public class OSMgetTest {
 	 */
 	public static void main(String[] args) {
 		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953, -90.088, (short)10), new LatLng(
-				29.940, -90.070, (short)10), (short) 10);
+				29.940, -90.070, (short)10), 0,0,10);
 		
 //		HexagonalGrid grid = new HexagonalGrid(new LatLng(30.093681, -90.446724, (short)10), new LatLng(
 //				30.083244, -90.434048, (short)10), (short) 10);

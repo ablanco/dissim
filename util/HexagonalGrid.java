@@ -356,4 +356,11 @@ public class HexagonalGrid implements Serializable {
 			}
 		}
 	}
+	@Override
+	public String toString() {
+		String s ="Box: "+NW.toString()+", "+SE.toString()+", Diagonal: "+NW.distance(SE)+"m";
+		s += "\nDimensions: ["+dimX+","+dimY+"] ,width: "+NW.distance(new LatLng(NW.getLat(), SE.getLng()))+"m, height: "+NW.distance(new LatLng(SE.getLat(), NW.getLng()))+"m";
+		s+="\nTile size: "+tileSize+"m";
+		return s;
+	}
 }

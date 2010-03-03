@@ -17,23 +17,56 @@
 package gui.Map;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+
+import sun.beans.editors.ColorEditor;
 
 public class Visor {
-	  public void createAndShowGUI() {
-	        //Create and set up the window.
-	        JFrame frame = new JFrame("FrameDemo");
-	        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public static int MAP_GUI = 1;
 
-	        JLabel emptyLabel = new JLabel("");
-	        emptyLabel.setPreferredSize(new Dimension(175, 100));
-	        frame.getContentPane().add(emptyLabel, BorderLayout.CENTER);
+	public void createAndShowGUI(int key) {
+		// Create and set up the window.
+		switch (key) {
+		case 1:
+			createAndShowMapGui();
+			break;
 
-	        //Display the window.
-	        frame.pack();
-	        frame.setVisible(true);
-	    }
+		default:
+			break;
+		}
+	}
+
+	private void createAndShowMapGui() {
+		JFrame frame = new JFrame("Roads Map");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		JLabel emptyLabel = new JLabel("");
+		emptyLabel.setPreferredSize(new Dimension(800, 600));
+		Container contentPanel = frame.getContentPane();
+		contentPanel.add(emptyLabel, BorderLayout.CENTER);
+		
+		MapPane mapPane = new MapPane();
+		
+		JTable tableLeyend = new JTable(new Leyend(MAP_GUI)) ;
+		tableLeyend.setDefaultRenderer(Color.class,
+                 new ColorRenderer(true));
+		tableLeyend.setDefaultEditor(Color.class,
+               new ColorEditor());
+
+		JScrollPane scrolltableLeyend = new JScrollPane(tableLeyend);
+		tableLeyend.setFillsViewportHeight(true);
+		contentPanel.add(scrolltableLeyend);
+		
+		// Display the window.
+		frame.pack();
+		frame.setVisible(true);
+
+	}
 }
