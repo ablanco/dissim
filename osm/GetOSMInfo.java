@@ -44,7 +44,6 @@ import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
 import util.Logger;
-import util.Snapshot;
 import util.jcoord.LatLng;
 
 public class GetOSMInfo {
@@ -55,14 +54,15 @@ public class GetOSMInfo {
 	private OsmMap osmMap;
 
 	/** Creates a new instance of XmlParser */
-	public GetOSMInfo(Snapshot scene) {
+	public GetOSMInfo(HexagonalGrid grid) {
+		this.grid = grid;
+		LatLng NW = grid.getArea()[0];
+		LatLng SE = grid.getArea()[1];
 		// Open Streets Maps uses a differente mapBox, NE, SW
-		grid = scene.getGrid();
-		LatLng[] mapBox = grid.getArea();
 		osmLog = new Logger();
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
-		url += mapBox[0].getLng() + "," + mapBox[1].getLat();
-		url += "," + mapBox[1].getLng() + "," + mapBox[0].getLat();
+		url += NW.getLng() + "," + SE.getLat();
+		url += "," + SE.getLng() + "," + NW.getLat();
 		osmLog.println("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url);
 
@@ -142,13 +142,13 @@ public class GetOSMInfo {
 			//Weird error while parsin xml file
 			System.err.println("Are you at the etsii??");
 		}catch (Exception e) {
-			id = Long.parseLong(attributes.item(1).getNodeValue());
-			lat = Double.parseDouble(attributes.item(2).getNodeValue());
-			lng = Double.parseDouble(attributes.item(3).getNodeValue());
+			id = Long.parseLong(attributes.item(0).getNodeValue());
+			lat = Double.parseDouble(attributes.item(1).getNodeValue());
+			lng = Double.parseDouble(attributes.item(2).getNodeValue());
 		}
 		LatLng latLng = new LatLng(lat, lng);
 		OsmNode osmNode = new OsmNode(id, latLng);
-//		System.err.println("Nodo leido: "+osmNode.toString()+" Coordenadas: "+latLng.toString()+" lat: "+lat+", lng; "+lng);
+		// System.err.println("Nodo leido: "+osmNode.toString()+" Coordenadas: "+latLng.toString()+" lat: "+lat+", lng; "+lng);
 		try {
 			osmNode.setPoint(grid.coordToTile(latLng));
 		} catch (IndexOutOfBoundsException e) {
@@ -205,7 +205,7 @@ public class GetOSMInfo {
 							in = aux.isIn();
 						}
 					}
-				}//Buscamos un key que no existe ... wtf osm??
+				}// Buscamos un key que no existe ... wtf osm??
 			}
 			node = node.getNextSibling();
 		}
@@ -418,5 +418,9 @@ public class GetOSMInfo {
 
 	public OsmMap getOsmMap() {
 		return osmMap;
+	}
+
+	public void fillMatrix() {
+		osmMap.setMapInfo(grid);
 	}
 }

@@ -179,7 +179,8 @@ public class OsmMap {
 			try {
 				aproximateWay(way, infoGrid);
 			} catch (IllegalArgumentException e) {
-//				System.err.println("*****No tiene nodos!!! " + way.toString());
+				// System.err.println("*****No tiene nodos!!! " +
+				// way.toString());
 			}
 		}
 		for (OsmNode node : specialPlaces) {
@@ -220,8 +221,8 @@ public class OsmMap {
 		int y = A.getY();
 		int bX = B.getX();
 		int bY = B.getY();
-		grid.setTerrainValue(bX, bY, key);
-		grid.setTerrainValue(x, y, key);
+		grid.setStreetValue(bX, bY, key);
+		grid.setStreetValue(x, y, key);
 		while (x != bX || y != bY) {
 			if (x > bX) {
 				x--;
@@ -238,12 +239,13 @@ public class OsmMap {
 			} else {
 				// y==bY
 			}
-			grid.setTerrainValue(x, y, key);
+			grid.setStreetValue(x, y, key);
 		}
 	}
 
-	private OsmNode aproximateNode(OsmNode outNode,OsmNode inNode, HexagonalGrid grid) {
-		
+	private OsmNode aproximateNode(OsmNode outNode, OsmNode inNode,
+			HexagonalGrid grid) {
+
 		return null;
 	}
 
@@ -251,7 +253,7 @@ public class OsmMap {
 			short value) {
 		try {
 			Point point = infoGrid.coordToTile(coord);
-			infoGrid.setTerrainValue(point.getX(), point.getY(), value);
+			infoGrid.setStreetValue(point.getX(), point.getY(), value);
 			// System.err.println("Valor del grid cambiado con exito");
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.err

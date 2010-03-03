@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
+import osm.GetOSMInfo;
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
 
@@ -36,6 +37,11 @@ public class HexagonalGrid implements Serializable {
 	 * SE means South East point
 	 */
 	protected LatLng SE = null;
+	/**
+	 * Increment in degrees between hexagons
+	 */
+	protected double ilat;
+	protected double ilng;
 	/**
 	 * Diameter of the circunflex circle of the hexagon in meters
 	 */
@@ -57,10 +63,13 @@ public class HexagonalGrid implements Serializable {
 	protected short[] eastTerrain;
 	protected short[] westTerrain;
 	/**
-	 * Increment in degrees between hexagons
+	 * Streets data
 	 */
-	protected double ilat;
-	protected double ilng;
+	protected short[][] gridStreets;
+	private short[] northStreets;
+	private short[] southStreets;
+	private short[] eastStreets;
+	private short[] westStreets;
 
 	public HexagonalGrid(LatLng NW, LatLng SE, int offX, int offY, int tileSize) {
 		this.NW = NW;
@@ -84,6 +93,11 @@ public class HexagonalGrid implements Serializable {
 		southTerrain = new short[x + 2];
 		eastTerrain = new short[y];
 		westTerrain = new short[y];
+		gridStreets = new short[x][y];
+		northStreets = new short[x + 2];
+		southStreets = new short[x + 2];
+		eastStreets = new short[y];
+		westStreets = new short[y];
 		dimX = x;
 		dimY = y;
 	}
@@ -125,6 +139,47 @@ public class HexagonalGrid implements Serializable {
 			value = eastTerrain[y];
 		} else {
 			value = gridTerrain[x][y];
+		}
+		return value;
+	}
+
+	public short setStreetValue(int x, int y, short value) {
+		x -= offX;
+		y -= offY;
+		short old;
+		if (y == -1) {
+			old = northStreets[x];
+			northStreets[x] = value;
+		} else if (y == dimY) {
+			old = southStreets[x];
+			southStreets[x] = value;
+		} else if (x == -1) {
+			old = westStreets[y];
+			westStreets[y] = value;
+		} else if (x == dimX) {
+			old = eastStreets[y];
+			eastStreets[y] = value;
+		} else {
+			old = gridStreets[x][y];
+			gridStreets[x][y] = value;
+		}
+		return old;
+	}
+
+	public short getStreetValue(int x, int y) {
+		x -= offX;
+		y -= offY;
+		short value;
+		if (y == -1) {
+			value = northStreets[x];
+		} else if (y == dimY) {
+			value = southStreets[x];
+		} else if (x == -1) {
+			value = westStreets[y];
+		} else if (x == dimX) {
+			value = eastStreets[y];
+		} else {
+			value = gridStreets[x][y];
 		}
 		return value;
 	}
@@ -356,6 +411,11 @@ public class HexagonalGrid implements Serializable {
 				// " alturas\r");
 			}
 		}
+	}
+
+	public void obtainStreetInfo() {
+		GetOSMInfo osm = new GetOSMInfo(this);
+		osm.fillMatrix();
 	}
 
 	@Override
