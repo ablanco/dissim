@@ -122,7 +122,7 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 					// Generar hexágono
 					Polygon hex = new Hexagon2D(posX, posY, radius);
 					// Dibujar y colorear según la altura
-					int value = grid.getValue(i, j);
+					int value = grid.getStreetValue(i, j);
 					if (value != 0){
 						g2.setColor(new Color(value*1000));	
 					}else{

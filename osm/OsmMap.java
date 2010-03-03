@@ -243,8 +243,7 @@ public class OsmMap {
 		}
 	}
 
-	private OsmNode aproximateNode(OsmNode outNode, OsmNode inNode,
-			HexagonalGrid grid) {
+	private OsmNode aproximateNode(OsmNode outNode,OsmNode inNode, HexagonalGrid grid) {		
 
 		return null;
 	}
