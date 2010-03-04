@@ -19,6 +19,7 @@ package agents;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 import java.io.IOException;
 import java.util.ListIterator;
@@ -90,11 +91,10 @@ public class CreatorAgent extends Agent {
 
 		@Override
 		public void action() {
-			ACLMessage msg = myAgent.receive();
+			ACLMessage msg = myAgent.receive(MessageTemplate
+					.MatchPerformative(ACLMessage.CONFIRM));
 			if (msg != null) {
 				// Mensaje recibido, hay que procesarlo
-				if (msg.getPerformative() != ACLMessage.CONFIRM)
-					return;
 				count++;
 				// Esperar a que todos los entornos estén listos
 				if (count < scen.getNumEnv())
@@ -120,9 +120,13 @@ public class CreatorAgent extends Agent {
 				}
 
 				// TODO DEBUG
-				arguments = new Object[] { "gui.VisorFrame", "0" };
-				myAgent.addBehaviour(new CreateAgentBehav(myAgent,
-						"DefaultVisor", "agents.UpdateAgent", 1, arguments));
+				for (int i = 0; i < scen.getNumEnv(); i++) {
+					arguments = new Object[] { "gui.VisorFrame",
+							Integer.toString(i) };
+					myAgent.addBehaviour(new CreateAgentBehav(myAgent,
+							"DefaultVisor" + i, "agents.UpdateAgent", 1,
+							arguments));
+				}
 				// FIN DEBUG
 
 				myAgent.removeBehaviour(this);
@@ -137,10 +141,9 @@ public class CreatorAgent extends Agent {
 
 		@Override
 		public void action() {
-			ACLMessage msg = myAgent.receive();
+			ACLMessage msg = myAgent.receive(MessageTemplate
+					.MatchPerformative(ACLMessage.REQUEST));
 			if (msg != null) {
-				if (msg.getPerformative() != ACLMessage.REQUEST)
-					return;
 				ACLMessage reply = msg.createReply();
 				reply.setPerformative(ACLMessage.INFORM);
 				try {

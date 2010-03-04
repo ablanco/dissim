@@ -32,8 +32,8 @@ public class SimulationTest {
 			smallGrid();
 			break;
 		case 1:
-			randomGrid(Short
-					.parseShort(arguments[0]));
+			randomGrid(Integer.parseInt(arguments[0]), Integer
+					.parseInt(arguments[1]));
 			break;
 		}
 	}
@@ -46,32 +46,32 @@ public class SimulationTest {
 		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.9532,
 				-90.0882), scen.doubleToInner(4), 1500L));
 		System.out.println("Water Source dentro del área de simulación: " + ws);
-//		scen.obtainTerrainElevation();
+		// scen.obtainTerrainElevation();
 		scen.complete();
 	}
 
-	private static void randomGrid(short tileSize) {
+	private static void randomGrid(int tileSize, int numEnv) {
 		FloodScenario scen = new FloodScenario();
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), tileSize);
 		scen.setPrecision((short) 10);
 		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.94,
-				-90.07), scen.doubleToInner(30), 200L));
+				-90.07), scen.doubleToInner(30), 100L));
 		System.out.println("Water Source dentro del área de simulación: " + ws);
-//		HexagonalGrid grid = scen.getGrid();
-//		int x = grid.getDimX();
-//		int y = grid.getDimY();
-//		System.out.println("Tamaño del grid: " + x + "x" + y);
-//		Random rnd = new Random(System.currentTimeMillis());
-//		for (int i = 0; i < x; i++) {
-//			for (int j = 0; j < y; j++) {
-//				grid.setTerrainValue(i, j, (short) (rnd.nextInt(500) - 250));
-//			}
-//		}
-//		grid.setTerrainValue(x - 3, x - 3, (short) 260);
+		// HexagonalGrid grid = scen.getGrid();
+		// int x = grid.getDimX();
+		// int y = grid.getDimY();
+		// System.out.println("Tamaño del grid: " + x + "x" + y);
+		// Random rnd = new Random(System.currentTimeMillis());
+		// for (int i = 0; i < x; i++) {
+		// for (int j = 0; j < y; j++) {
+		// grid.setTerrainValue(i, j, (short) (rnd.nextInt(500) - 250));
+		// }
+		// }
+		// grid.setTerrainValue(x - 3, x - 3, (short) 260);
 		scen.setFloodUpdateTime(50);
-//		scen.disableDefaultLogger();
-		scen.setNumEnv(2);
+		// scen.disableDefaultLogger();
+		scen.setNumEnv(numEnv);
 		scen.complete();
 	}
 

@@ -409,8 +409,10 @@ public class HexagonalGrid implements Serializable {
 	public void obtainTerrainElevation() {
 		// int total = gridX * gridY;
 		int cont = 0;
-		for (int i = -1; i <= dimX; i++) {
-			for (int j = -1; j <= dimY; j++) {
+		int endX = offX + dimX;
+		int endY = offY + dimY;
+		for (int i = offX - 1; i <= endX; i++) {
+			for (int j = offY - 1; j <= endY; j++) {
 				LatLng coord = tileToCoord(i, j);
 				double value = AltitudeWS.getElevation(coord);
 				setTerrainValue(i, j, (short) value); // TODO

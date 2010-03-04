@@ -79,8 +79,10 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			// La escala de colores se calcula ahora (una única vez)
 			min = Short.MAX_VALUE;
 			max = Short.MIN_VALUE;
-			for (int i = 0; i < grid.getDimX(); i++) {
-				for (int j = 0; j < grid.getDimY(); j++) {
+			int endX = grid.getOffX() + grid.getDimX();
+			int endY = grid.getOffY() + grid.getDimY();
+			for (int i = grid.getOffX(); i < endX; i++) {
+				for (int j = grid.getOffY(); j < endY; j++) {
 					short value = grid.getValue(i, j);
 					if (value < min)
 						min = value;
@@ -120,8 +122,10 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			if (diff > 0)
 				inc = 256.0 / ((double) diff);
 
-			for (int i = 0; i < grid.getDimX(); i++) {
-				for (int j = 0; j < grid.getDimY(); j++) {
+			int endX = grid.getOffX() + grid.getDimX();
+			int endY = grid.getOffY() + grid.getDimY();
+			for (int i = grid.getOffX(); i < endX; i++) {
+				for (int j = grid.getOffY(); j < endY; j++) {
 					int posX;
 					if (i % 2 == 0) // Fila par
 						posX = (hexWidth / 2) + (j * hexWidth);

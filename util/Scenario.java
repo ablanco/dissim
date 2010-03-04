@@ -96,7 +96,7 @@ public class Scenario implements Serializable {
 	 * @param tileSize
 	 *            size of the tile terrain
 	 */
-	public void setGeoData(LatLng NW, LatLng SE, short tileSize) {
+	public void setGeoData(LatLng NW, LatLng SE, int tileSize) {
 		globalNW = NW;
 		globalSE = SE;
 		this.tileSize = tileSize;
@@ -236,6 +236,8 @@ public class Scenario implements Serializable {
 
 		double diflng = Math.abs(globalNW.getLng() - globalSE.getLng());
 		double diflat = Math.abs(globalNW.getLat() - globalSE.getLat());
+		
+		System.out.println("GLOBAL: NW " + globalNW.toString() + " SE " + globalSE.toString());
 
 		// TODO Mejorar
 		int mitt = numEnv / 2;
@@ -246,16 +248,18 @@ public class Scenario implements Serializable {
 		double lat = globalNW.getLat();
 		for (int i = 0; i < numEnv; i++) {
 			if (i == mitt) {
-				lat += diflat;
+				lat -= diflat;
 				offX = 0;
 				offY = envSizes.get(i - 1)[1];
 			}
 
 			LatLng NW = new LatLng(lat, globalNW.getLng()
 					+ (diflng * Math.abs(i % mitt)));
-			LatLng SE = new LatLng(lat + diflat, globalNW.getLng() + diflng
+			LatLng SE = new LatLng(lat - diflat, globalNW.getLng() + diflng
 					+ (diflng * Math.abs(i % mitt)));
 			int[] size = HexagonalGrid.calculateSize(NW, SE, tileSize);
+			
+			System.out.println("ENV" + i+ ": NW " + NW.toString() + " SE " + SE.toString());
 
 			envAreas.add(i, new LatLng[] { NW, SE });
 			envSizes.add(i, new int[] { size[0], size[1], offX, offY });
