@@ -71,6 +71,7 @@ public class SimulationTest {
 //		grid.setTerrainValue(x - 3, x - 3, (short) 260);
 		scen.setFloodUpdateTime(50);
 //		scen.disableDefaultLogger();
+		scen.setNumEnv(2);
 		scen.complete();
 	}
 

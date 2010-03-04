@@ -1,11 +1,8 @@
 package test;
 
-import jade.core.AID;
 import osm.GetOSMInfo;
 import osm.OsmMap;
-import util.DateAndTime;
 import util.HexagonalGrid;
-import util.Snapshot;
 import util.jcoord.LatLng;
 
 public class OSMgetTest {
@@ -19,9 +16,9 @@ public class OSMgetTest {
 		
 //		HexagonalGrid grid = new HexagonalGrid(new LatLng(30.093681, -90.446724, (short)10), new LatLng(
 //				30.083244, -90.434048, (short)10), (short) 10);
-		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
-		Snapshot snapShot = new Snapshot(new AID(), grid, dateTime);
-		GetOSMInfo osmInfo = new GetOSMInfo(snapShot);
+//		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
+//		Snapshot snapShot = new Snapshot(new AID(), grid, dateTime);
+		GetOSMInfo osmInfo = new GetOSMInfo(grid);
 		
 		OsmMap osmMap = osmInfo.getOsmMap();
 		

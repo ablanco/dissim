@@ -182,11 +182,11 @@ public class Scenario implements Serializable {
 	public void setUpdateKMLPeriod(long updateKML) {
 		this.updateKML = updateKML;
 	}
-	
+
 	public long getUpdatePeople() {
 		return updatePeople;
 	}
-	
+
 	public void setUpdatePeople(long updatePeople) {
 		this.updatePeople = updatePeople;
 	}
@@ -213,6 +213,15 @@ public class Scenario implements Serializable {
 		return envAreas.get(index);
 	}
 
+	public int[] getEnvSize(int index) {
+		if (globalNW == null || globalSE == null || tileSize < 0)
+			throw new IllegalStateException(
+					"Geographical data hasn't been initialized yet.");
+		if (envSizes == null)
+			divideAreaBetweenEnvs();
+		return envSizes.get(index);
+	}
+
 	private void divideAreaBetweenEnvs() {
 		envAreas = new ArrayList<LatLng[]>(numEnv);
 		envSizes = new ArrayList<int[]>(numEnv);
@@ -232,20 +241,26 @@ public class Scenario implements Serializable {
 		int mitt = numEnv / 2;
 		diflat = diflat / 2.0;
 		diflng = diflng / ((double) mitt);
+		int offX = 0;
+		int offY = 0;
 		double lat = globalNW.getLat();
 		for (int i = 0; i < numEnv; i++) {
-			if (i == mitt)
+			if (i == mitt) {
 				lat += diflat;
+				offX = 0;
+				offY = envSizes.get(i - 1)[1];
+			}
 
 			LatLng NW = new LatLng(lat, globalNW.getLng()
 					+ (diflng * Math.abs(i % mitt)));
 			LatLng SE = new LatLng(lat + diflat, globalNW.getLng() + diflng
 					+ (diflng * Math.abs(i % mitt)));
+			int[] size = HexagonalGrid.calculateSize(NW, SE, tileSize);
 
 			envAreas.add(i, new LatLng[] { NW, SE });
-			int[] size = HexagonalGrid.calculateSize(NW, SE, tileSize);
-			envSizes.add(i, new int[] { size[0], size[1], 0, 0 }); // TODO
-																	// offset
+			envSizes.add(i, new int[] { size[0], size[1], offX, offY });
+
+			offX += size[0];
 		}
 	}
 

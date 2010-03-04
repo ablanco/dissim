@@ -23,6 +23,7 @@ import java.util.TreeSet;
 
 import util.Point;
 import util.flood.FloodHexagonalGrid;
+import util.jcoord.LatLng;
 
 public class ModifiedTilesTest {
 
@@ -30,7 +31,9 @@ public class ModifiedTilesTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3);
+		FloodHexagonalGrid grid = new FloodHexagonalGrid(new LatLng(30.093681,
+				-90.446724), new LatLng(30.083244, -90.434048), 0, 0, 400);
+//		FloodHexagonalGrid grid = new FloodHexagonalGrid(3, 3);
 
 		grid.setTerrainValue(0, 0, (short) -2);
 		grid.setTerrainValue(0, 1, (short) -4);

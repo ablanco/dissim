@@ -64,12 +64,14 @@ public class CreatorAgent extends Agent {
 			// Enviroments
 			for (int i = 0; i < scen.getNumEnv(); i++) {
 				LatLng[] area = scen.getEnvArea(i);
+				int[] size = scen.getEnvSize(i);
 				Object[] arguments = new Object[] {
 						Double.toString(area[0].getLat()),
 						Double.toString(area[0].getLng()),
 						Double.toString(area[1].getLat()),
 						Double.toString(area[1].getLng()),
-						Integer.toString(scen.getTileSize()) };
+						Integer.toString(scen.getTileSize()),
+						Integer.toString(size[2]), Integer.toString(size[3]) };
 				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
 						"agents.EnviromentAgent", 1, arguments));
 			}

@@ -55,13 +55,15 @@ public class EnviromentAgent extends Agent {
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args.length == 5) {
+		if (args.length == 7) {
 			LatLng NW = new LatLng(Double.parseDouble((String) args[0]), Double
 					.parseDouble((String) args[1]));
 			LatLng SE = new LatLng(Double.parseDouble((String) args[2]), Double
 					.parseDouble((String) args[3]));
 			int tileSize = Integer.parseInt((String) args[4]);
-			grid = new FloodHexagonalGrid(NW, SE, 0, 0, tileSize); // TODO
+			int offX = Integer.parseInt((String) args[5]);
+			int offY = Integer.parseInt((String) args[6]);
+			grid = new FloodHexagonalGrid(NW, SE, offX, offY, tileSize); // TODO
 			// TODO grid.obtainTerrainElevation();
 			dateTime = new DateAndTime(2010, 2, 26, 20, 32);
 		} else {

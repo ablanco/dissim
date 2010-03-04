@@ -32,26 +32,28 @@ public class TimeStampTest {
 	public static void main(String[] args) {
 		/*
 		 * Nueva Orleans NW: 29.953260, -90.088238 SE: 29.918075, -90.053707 UTM
-		 * NW:  29.952869, -90.063764  SE:  29.952158, -90.062461
+		 * NW: 29.952869, -90.063764 SE: 29.952158, -90.062461
 		 */
-		
-		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953260, -90.088238, (short) 10),
-				new LatLng(29.918075, -90.053707, (short) 10),  600);
-		Snapshot newOrleans = new Snapshot(new AID(), grid, new DateAndTime(2000, 3, 15, 15, 3));
 
-		GoogleEarthFlood k = new GoogleEarthFlood("TimeStamp Test","Move on");
+		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953260,
+				-90.088238, (short) 10), new LatLng(29.918075, -90.053707,
+				(short) 10), 0, 0, 600);
+		Snapshot newOrleans = new Snapshot(new AID(), grid, new DateAndTime(
+				2000, 3, 15, 15, 3));
 
-		for (int rep=0;rep<6;rep++){
+		GoogleEarthFlood k = new GoogleEarthFlood("TimeStamp Test", "Move on");
+
+		for (int rep = 0; rep < 6; rep++) {
 			for (int i = 0; i < grid.getDimX(); i++) {
 				for (int j = 0; j < grid.getDimY(); j++) {
 					short x = (short) ((Math.random() * 100) % 64);
 					grid.setTerrainValue(i, j, x);
 				}
-			}	
+			}
 			k.update(newOrleans);
-	
+
 		}
-		GoogleEarthUtils.createKmzFile(k.getKml(),"TimeStamp Test");
+		GoogleEarthUtils.createKmzFile(k.getKml(), "TimeStamp Test");
 	}
 
 }

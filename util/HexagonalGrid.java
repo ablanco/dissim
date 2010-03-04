@@ -116,11 +116,11 @@ public class HexagonalGrid implements Serializable {
 		y -= offY;
 		short old;
 		if (y == -1) {
-			old = northTerrain[x];
-			northTerrain[x] = value;
+			old = northTerrain[x + 1];
+			northTerrain[x + 1] = value;
 		} else if (y == dimY) {
-			old = southTerrain[x];
-			southTerrain[x] = value;
+			old = southTerrain[x + 1];
+			southTerrain[x + 1] = value;
 		} else if (x == -1) {
 			old = westTerrain[y];
 			westTerrain[y] = value;
@@ -139,9 +139,9 @@ public class HexagonalGrid implements Serializable {
 		y -= offY;
 		short value;
 		if (y == -1) {
-			value = northTerrain[x];
+			value = northTerrain[x + 1];
 		} else if (y == dimY) {
-			value = southTerrain[x];
+			value = southTerrain[x + 1];
 		} else if (x == -1) {
 			value = westTerrain[y];
 		} else if (x == dimX) {
@@ -157,11 +157,11 @@ public class HexagonalGrid implements Serializable {
 		y -= offY;
 		short old;
 		if (y == -1) {
-			old = northStreets[x];
-			northStreets[x] = value;
+			old = northStreets[x + 1];
+			northStreets[x + 1] = value;
 		} else if (y == dimY) {
-			old = southStreets[x];
-			southStreets[x] = value;
+			old = southStreets[x + 1];
+			southStreets[x + 1] = value;
 		} else if (x == -1) {
 			old = westStreets[y];
 			westStreets[y] = value;
@@ -180,9 +180,9 @@ public class HexagonalGrid implements Serializable {
 		y -= offY;
 		short value;
 		if (y == -1) {
-			value = northStreets[x];
+			value = northStreets[x + 1];
 		} else if (y == dimY) {
-			value = southStreets[x];
+			value = southStreets[x + 1];
 		} else if (x == -1) {
 			value = westStreets[y];
 		} else if (x == dimX) {
