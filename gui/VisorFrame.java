@@ -63,8 +63,7 @@ public class VisorFrame extends JFrame implements Updateable {
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");
 
-		Snapshot snap = (Snapshot) obj;
-		pane.updateGrid(snap.getGrid());
+		pane.updateGrid((Snapshot) obj);
 	}
 
 	@Override

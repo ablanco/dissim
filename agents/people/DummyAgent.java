@@ -67,6 +67,8 @@ public class DummyAgent extends Agent {
 
 			myAgent.addBehaviour(new PacmanBehav(myAgent, scen
 					.getUpdatePeople(), envAID));
+			
+			done = true;
 		}
 
 	}

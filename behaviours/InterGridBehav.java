@@ -18,6 +18,7 @@ package behaviours;
 
 import util.AgentHelper;
 import util.HexagonalGrid;
+import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -35,10 +36,12 @@ public class InterGridBehav extends CyclicBehaviour {
 	private MessageTemplate mt = MessageTemplate
 			.MatchConversationId("intergrid");
 	private HexagonalGrid grid;
+	private Scenario scen;
 
-	public InterGridBehav(Agent agt, HexagonalGrid grid) {
+	public InterGridBehav(Agent agt, HexagonalGrid grid, Scenario scen) {
 		super(agt);
 		this.grid = grid;
+		this.scen = scen;
 	}
 
 	@Override
@@ -61,10 +64,22 @@ public class InterGridBehav extends CyclicBehaviour {
 					int sx = Integer.parseInt(data[3]);
 					int sy = Integer.parseInt(data[4]);
 					w = fgrid.decreaseValue(x, y, w);
-					String content = Integer.toString(sx) + " "
-							+ Integer.toString(sy) + " " + Short.toString(w);
-					AgentHelper.send(myAgent, msg.getSender(),
-							ACLMessage.INFORM, "intergrid", content);
+					String env = Integer.toString(scen.getEnviromentByPosition(
+							sx, sy));
+					String name = myAgent.getLocalName();
+					name = name.substring(name.indexOf("-") + 1, name
+							.lastIndexOf("-"));
+					if (env.equals(name)) {
+						fgrid.increaseValue(sx, sy, w);
+						// TODO Esquinas y WATER_SET
+					} else {
+						String content = WATER_INCREASE + " "
+								+ Integer.toString(sx) + " "
+								+ Integer.toString(sy) + " "
+								+ Short.toString(w);
+						AgentHelper.send(myAgent, msg.getSender(),
+								ACLMessage.INFORM, "intergrid", content);
+					}
 				}
 			}
 		} else {

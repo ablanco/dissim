@@ -260,8 +260,8 @@ public class HexagonalGrid implements Serializable {
 				// Comprobamos que el hexágono adyacente no está fuera de la
 				// rejilla
 				if (col >= -1 && col <= dimX && fila >= -1 && fila <= dimY) {
-					adjacents[cont][0] = col;
-					adjacents[cont][1] = fila;
+					adjacents[cont][0] = col + offX;
+					adjacents[cont][1] = fila + offY;
 					cont++;
 				}
 				if (fila == y && col == x - 1 && !par)
@@ -367,6 +367,8 @@ public class HexagonalGrid implements Serializable {
 		// Aproximación
 		int x = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) / hexWidth);
 		int y = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) / ((((double) tileSize) * 3.0) / 4.0));
+		x += offX;
+		y += offY;
 
 		double distMin = coord.distance(tileToCoord(x, y));
 		boolean mejor = true;

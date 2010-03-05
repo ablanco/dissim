@@ -236,8 +236,9 @@ public class Scenario implements Serializable {
 
 		double diflng = Math.abs(globalNW.getLng() - globalSE.getLng());
 		double diflat = Math.abs(globalNW.getLat() - globalSE.getLat());
-		
-		System.out.println("GLOBAL: NW " + globalNW.toString() + " SE " + globalSE.toString());
+
+		System.out.println("GLOBAL: NW " + globalNW.toString() + " SE "
+				+ globalSE.toString());
 
 		// TODO Mejorar
 		int mitt = numEnv / 2;
@@ -258,8 +259,9 @@ public class Scenario implements Serializable {
 			LatLng SE = new LatLng(lat - diflat, globalNW.getLng() + diflng
 					+ (diflng * Math.abs(i % mitt)));
 			int[] size = HexagonalGrid.calculateSize(NW, SE, tileSize);
-			
-			System.out.println("ENV" + i+ ": NW " + NW.toString() + " SE " + SE.toString());
+
+			System.out.println("ENV" + i + ": NW " + NW.toString() + " SE "
+					+ SE.toString());
 
 			envAreas.add(i, new LatLng[] { NW, SE });
 			envSizes.add(i, new int[] { size[0], size[1], offX, offY });
@@ -289,8 +291,11 @@ public class Scenario implements Serializable {
 
 		int idx = 0;
 		for (int[] envSize : envSizes) {
-			if (x < envSize[0] && x >= envSize[2] && y < envSize[1]
-					&& y >= envSize[3])
+			// System.out.println("x: " + x + " y: " + y + " sx: " + envSize[0]
+			// + " sy: " + envSize[1] + " ox: " + envSize[2] + " oy: "
+			// + envSize[3]);
+			if (x < (envSize[0] + envSize[2]) && x >= envSize[2]
+					&& y < (envSize[1] + envSize[3]) && y >= envSize[3])
 				return idx;
 			idx++;
 		}

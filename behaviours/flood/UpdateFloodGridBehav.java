@@ -23,17 +23,17 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
-
-import behaviours.InterGridBehav;
 
 import util.AgentHelper;
 import util.Logger;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
-import util.jcoord.LatLng;
+import behaviours.InterGridBehav;
 
 public class UpdateFloodGridBehav extends TickerBehaviour {
 
@@ -42,13 +42,15 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private FloodHexagonalGrid grid;
 	private Logger logger = new Logger();
 	private FloodScenario scen;
+	private Map<String, Object> envs = new Hashtable<String, Object>();
 
-	public UpdateFloodGridBehav(Agent a, long period, FloodScenario scen,
+	public UpdateFloodGridBehav(Agent a, FloodScenario scen,
 			FloodHexagonalGrid grid) {
-		super(a, period);
+		super(a, scen.getFloodUpdateTime());
 		this.grid = grid;
 		this.scen = scen;
 		// logger = Scenario.getCurrentScenario().getDefaultLogger();
+		logger.disable();
 	}
 
 	@Override
@@ -56,6 +58,7 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		long time = System.currentTimeMillis();
 
 		Set<Point> set = grid.getModCoordAndReset();
+		logger.debugln(myAgent.getLocalName());
 		logger.debugln("Modified tiles set size: " + set.size());
 		Iterator<Point> it = set.iterator();
 		// Por cada casilla modificada
@@ -154,22 +157,27 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		// otro entorno
 		if (x < grid.getOffX() || (x - grid.getOffX()) >= grid.getDimX()
 				|| y < grid.getOffY() || (y - grid.getOffY()) >= grid.getDimY()) {
-			LatLng coord = grid.tileToCoord(x, y);
-			String env = Integer.toString(scen.getEnviromentByCoord(coord));
+			String env = Integer.toString(scen.getEnviromentByPosition(x, y));
 
-			// Obtener agentes entorno
-			DFAgentDescription[] result = AgentHelper.search(myAgent,
-					"intergrid");
-			for (DFAgentDescription df : result) {
-				String name = df.getName().getLocalName();
-				name = name.substring(name.indexOf("-") + 1, name
-						.lastIndexOf("-"));
-				if (name.equals(env)) {
-					return df.getName();
+			Object returnObj = envs.get(env);
+			if (returnObj == null) {
+				// Obtener agentes entorno
+				DFAgentDescription[] result = AgentHelper.search(myAgent,
+						"intergrid");
+				for (DFAgentDescription df : result) {
+					String name = df.getName().getLocalName();
+					name = name.substring(name.indexOf("-") + 1, name
+							.lastIndexOf("-"));
+					if (name.equals(env)) {
+						envs.put(env, df.getName());
+						return df.getName();
+					}
 				}
-			}
 
-			return new Object();
+				returnObj = new Object();
+				envs.put(env, returnObj);
+			}
+			return returnObj;
 		}
 
 		return null;

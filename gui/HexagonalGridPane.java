@@ -32,6 +32,7 @@ import javax.swing.SwingConstants;
 
 import util.Hexagon2D;
 import util.HexagonalGrid;
+import util.Snapshot;
 import util.flood.FloodHexagonalGrid;
 
 @SuppressWarnings("serial")
@@ -57,9 +58,9 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 		setSize(this.size);
 	}
 
-	public void updateGrid(HexagonalGrid grid) {
-		this.grid = grid;
-		
+	public void updateGrid(Snapshot snap) {
+		this.grid = snap.getGrid();
+
 		if (radius == -1) { // Primera vez que recibe un grid
 			// Calcular el radio de los hexágonos a representar
 			int radiusX = (size.width / grid.getDimX()) / 2;
@@ -90,8 +91,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 						max = value;
 				}
 			}
-			max += 100; // TODO Sacar el max nivel del agua del scenario
-			// System.err.println("wid: "+sizeWidth+", Hei: "+sizeHeight+"HexSize ["+hexHeight+","+hexWidth+"]");
+			max += 100; // TODO Sacar el max nivel del agua del snapshot
 			setVisible(true);
 		}
 
@@ -127,11 +127,13 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			for (int i = grid.getOffX(); i < endX; i++) {
 				for (int j = grid.getOffY(); j < endY; j++) {
 					int posX;
-					if (i % 2 == 0) // Fila par
-						posX = (hexWidth / 2) + (j * hexWidth);
-					else
-						posX = hexWidth + (j * hexWidth); // Fila impar
-					int posY = radius + (i * hexHeight);
+					if (j % 2 == 0) { // Fila par
+						posX = (hexWidth / 2)
+								+ ((i - grid.getOffX()) * hexWidth);
+					} else { // Fila impar
+						posX = hexWidth + ((i - grid.getOffX()) * hexWidth);
+					}
+					int posY = radius + ((j - grid.getOffY()) * hexHeight);
 
 					// Generar hexágono
 					Polygon hex = new Hexagon2D(posX, posY, radius);
@@ -151,6 +153,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 							g2.setColor(new Color(0, 0, color));
 						}
 					}
+					g2.drawPolygon(hex);
 					g2.fillPolygon(hex);
 				}
 			}

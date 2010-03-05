@@ -18,6 +18,7 @@ package agents;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.ParallelBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -93,30 +94,40 @@ public class EnviromentAgent extends Agent {
 		public void action() {
 			List<String> services = new ArrayList<String>(5);
 
-			// Si es una inundación
-			if (scen instanceof FloodScenario) {
-				FloodScenario fscen = (FloodScenario) scen;
-				addBehaviour(new AddWaterBehav(myAgent,
-						(FloodHexagonalGrid) grid));
-				addBehaviour(new InterGridBehav(myAgent, grid));
-				services.add("add-water");
-				services.add("intergrid");
-
-				// Mover agua por la rejilla
-				myAgent
-						.addBehaviour(new UpdateFloodGridBehav(myAgent, fscen
-								.getFloodUpdateTime(), fscen,
-								(FloodHexagonalGrid) grid));
+			// TODO DEBUG
+			try {
+				Thread.sleep(10000L);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
+			// FIN DEBUG
 
+			ParallelBehaviour parallel = new ParallelBehaviour(
+					ParallelBehaviour.WHEN_ALL);
 			// Añadir comportamientos
-			myAgent.addBehaviour(new AdjacentsGridBehav(grid));
-			myAgent.addBehaviour(new QueryGridBehav(grid));
-			myAgent.addBehaviour(new SyndicateBehav(myAgent, grid, dateTime));
+			parallel.addSubBehaviour(new AdjacentsGridBehav(grid));
+			parallel.addSubBehaviour(new QueryGridBehav(grid));
+			parallel
+					.addSubBehaviour(new SyndicateBehav(myAgent, grid, dateTime));
+			parallel.addSubBehaviour(new InterGridBehav(myAgent, grid, scen));
+			myAgent.addBehaviour(parallel);
 			services.add("adjacents-grid");
 			services.add("grid-querying");
 			services.add("syndicate");
+			services.add("intergrid");
 			services.add("people");
+
+			// Si es una inundación
+			if (scen instanceof FloodScenario) {
+				FloodScenario fscen = (FloodScenario) scen;
+				myAgent.addBehaviour(new AddWaterBehav(myAgent,
+						(FloodHexagonalGrid) grid));
+				services.add("add-water");
+
+				// Mover agua por la rejilla
+				myAgent.addBehaviour(new UpdateFloodGridBehav(myAgent, fscen,
+						(FloodHexagonalGrid) grid));
+			}
 
 			// Registrarse con el agente DF
 			AgentHelper.register(myAgent, services.toArray(new String[services

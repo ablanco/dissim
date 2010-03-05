@@ -17,9 +17,9 @@
 package util.flood;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 import util.HexagonalGrid;
+import util.NoDuplicatesSet;
 import util.Point;
 import util.jcoord.LatLng;
 
@@ -33,9 +33,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	private short[] eastWater;
 	private short[] westWater;
 
-	private TreeSet<Point> modTiles = null;
-
-	// TODO TreeSet no acaba de funcionar bien
+	private Set<Point> modTiles = null;
 
 	public FloodHexagonalGrid(LatLng NW, LatLng SE, int offX, int offY,
 			int tileSize) {
@@ -45,7 +43,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		southWater = new short[dimX + 2];
 		eastWater = new short[dimY];
 		westWater = new short[dimY];
-		modTiles = new TreeSet<Point>();
+//		modTiles = new TreeSet<Point>();
+		modTiles = new NoDuplicatesSet();
 	}
 
 	public short setWaterValue(int x, int y, short value) {
@@ -119,8 +118,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	public Set<Point> getModCoordAndReset() {
-		TreeSet<Point> result = modTiles;
-		modTiles = new TreeSet<Point>();
+		Set<Point> result = modTiles;
+//		modTiles = new TreeSet<Point>();
+		modTiles = new NoDuplicatesSet();
 		return result;
 	}
 

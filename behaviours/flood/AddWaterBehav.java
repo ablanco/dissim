@@ -21,7 +21,9 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 
 import util.Point;
 import util.flood.FloodHexagonalGrid;
@@ -31,6 +33,7 @@ import util.jcoord.LatLng;
 public class AddWaterBehav extends CyclicBehaviour {
 
 	private FloodHexagonalGrid grid;
+	private Map<String, int[]> indexes = new Hashtable<String, int[]>();
 
 	public AddWaterBehav(Agent agt, FloodHexagonalGrid grid) {
 		super(agt);
@@ -49,9 +52,19 @@ public class AddWaterBehav extends CyclicBehaviour {
 			double lat = Double.parseDouble(data[0]);
 			double lng = Double.parseDouble(data[1]);
 			short water = Short.parseShort(data[2]);
-			Point p = grid.coordToTile(new LatLng(lat, lng));
-			int x = p.getX();
-			int y = p.getY();
+			LatLng coord = new LatLng(lat, lng);
+			int[] gridCoord = indexes.get(coord.toString());
+			if (gridCoord == null) {
+				Point p = grid.coordToTile(coord);
+				gridCoord = new int[] { p.getX(), p.getY() };
+				indexes.put(coord.toString(), gridCoord);
+
+				// TODO DEBUG
+				System.out.println("WS pos: " + gridCoord[0] + ","
+						+ gridCoord[1]);
+			}
+			int x = gridCoord[0];
+			int y = gridCoord[1];
 
 			// Máximo nivel que va a alcanzar el agua
 			short nivelMax = (short) (grid.getTerrainValue(x, y) + water);

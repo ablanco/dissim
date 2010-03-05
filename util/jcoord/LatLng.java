@@ -314,7 +314,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * given LatLng.
 	 * 
 	 * @param ll
-	 * @return the surface distance in km
+	 * @return the surface distance in meters
 	 * @since 1.0
 	 */
 	public double distance(LatLng ll) {
@@ -330,7 +330,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 				* Math.cos(lngTo - lngFrom))
 				* er * 1000;
 
-		return d;
+		return Math.abs(d);
 	}
 
 	/**
