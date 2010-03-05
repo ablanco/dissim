@@ -56,7 +56,7 @@ public class SimulationTest {
 				29.918075, -90.053707), tileSize);
 		scen.setPrecision((short) 10);
 		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.937,
-				-90.065), scen.doubleToInner(5), 100L));
+				-90.065), scen.doubleToInner(20), 20L));
 		System.out.println("Water Source dentro del área de simulación: " + ws);
 		// HexagonalGrid grid = scen.getGrid();
 		// int x = grid.getDimX();

@@ -93,6 +93,11 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				// Hay una adyacente más alta, hay que mover agua desde la
 				// adyacente a la modificada
 				if (adjValue != value) {
+
+					// System.out.println(myAgent.getLocalName()+" From " +
+					// adjCoord[0] + ","
+					// + adjCoord[1] + " to " + coord[0] + "," + coord[1]);
+
 					short water = (short) ((adjValue - value) / 2);
 					water = decrease(adjCoord[0], adjCoord[1], coord[0],
 							coord[1], water);
@@ -104,6 +109,11 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 			// Hay una adyacente más baja, hay que mover agua desde la
 			// modificada a la más baja
 			else {
+
+				// System.out.println(myAgent.getLocalName()+" From " + coord[0]
+				// + "," + coord[1] + " to "
+				// + adjCoord[0] + "," + adjCoord[1]);
+
 				short water = (short) ((value - adjValue) / 2);
 				water = decrease(coord[0], coord[1], adjCoord[0], adjCoord[1],
 						water);
@@ -118,19 +128,13 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private short decrease(int x, int y, int ix, int iy, short w) {
 		Object env = getEnv(x, y);
 		if (env != null) {
-			if (env instanceof AID) {
-				String content = InterGridBehav.WATER_REQUEST + " "
-						+ Integer.toString(x) + " " + Integer.toString(y) + " "
-						+ Short.toString(w) + " " + Integer.toString(ix) + " "
-						+ Integer.toString(iy);
-				AgentHelper.send(myAgent, (AID) env, ACLMessage.REQUEST,
-						"intergrid", content);
-				grid.decreaseValue(x, y, w);
-			}
+			// x,y pertene al grid de otro entorno y a la corona de éste
+			// La corona es parte del grid de otro entorno, así que se encargue
+			// dicho entorno de enviar agua al grid de éste
 			return 0;
 		} else {
 			short result = grid.decreaseValue(x, y, w);
-			innerBorder(x, y, grid.getWaterValue(x, y));
+			innerBorder(x, y);
 			return result;
 		}
 	}
@@ -138,7 +142,8 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private void increase(int x, int y, short w) {
 		Object env = getEnv(x, y);
 		if (env != null) {
-			if (env instanceof AID) {
+			if (env instanceof AID && w != 0) {
+				// x,y pertene al grid de otro entorno y a la corona de éste
 				String content = InterGridBehav.WATER_INCREASE + " "
 						+ Integer.toString(x) + " " + Integer.toString(y) + " "
 						+ Short.toString(w);
@@ -147,8 +152,10 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				grid.increaseValue(x, y, w);
 			}
 		} else {
-			grid.increaseValue(x, y, w);
-			innerBorder(x, y, grid.getWaterValue(x, y));
+			if (w != 0) {
+				grid.increaseValue(x, y, w);
+				innerBorder(x, y);
+			}
 		}
 	}
 
@@ -158,6 +165,8 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		if (x < grid.getOffX() || (x - grid.getOffX()) >= grid.getDimX()
 				|| y < grid.getOffY() || (y - grid.getOffY()) >= grid.getDimY()) {
 			String env = Integer.toString(scen.getEnviromentByPosition(x, y));
+
+			// System.out.println(myAgent.getLocalName()+" Bazinga! "+x+","+y);
 
 			Object returnObj = envs.get(env);
 			if (returnObj == null) {
@@ -183,7 +192,7 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		return null;
 	}
 
-	private void innerBorder(int x, int y, short w) {
+	private void innerBorder(int x, int y) {
 		int ix = x - grid.getOffX();
 		int iy = y - grid.getOffY();
 		if (ix == 0 || ix == (grid.getDimX() - 1) || iy == 0
@@ -204,7 +213,7 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 			if (env instanceof AID) {
 				String content = InterGridBehav.WATER_SET + " "
 						+ Integer.toString(x) + " " + Integer.toString(y) + " "
-						+ Short.toString(w);
+						+ Short.toString(grid.getWaterValue(x, y));
 				AgentHelper.send(myAgent, (AID) env, ACLMessage.INFORM,
 						"intergrid", content);
 			}

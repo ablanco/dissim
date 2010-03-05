@@ -16,14 +16,12 @@
 
 package behaviours;
 
-import util.AgentHelper;
-import util.HexagonalGrid;
-import util.Scenario;
-import util.flood.FloodHexagonalGrid;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import util.HexagonalGrid;
+import util.flood.FloodHexagonalGrid;
 
 @SuppressWarnings("serial")
 public class InterGridBehav extends CyclicBehaviour {
@@ -31,23 +29,28 @@ public class InterGridBehav extends CyclicBehaviour {
 	public static final String WATER = "w";
 	public static final String WATER_SET = "wset";
 	public static final String WATER_INCREASE = "winc";
-	public static final String WATER_REQUEST = "wreq";
+	// public static final String WATER_REQUEST = "wreq";
 
 	private MessageTemplate mt = MessageTemplate
 			.MatchConversationId("intergrid");
 	private HexagonalGrid grid;
-	private Scenario scen;
 
-	public InterGridBehav(Agent agt, HexagonalGrid grid, Scenario scen) {
+	public InterGridBehav(Agent agt, HexagonalGrid grid) {
 		super(agt);
 		this.grid = grid;
-		this.scen = scen;
 	}
 
 	@Override
 	public void action() {
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
+			// if (msg.getSender().getLocalName().startsWith("Env"))
+			// System.out
+			// .println("Message from "
+			// + msg.getSender().getLocalName() + " to "
+			// + myAgent.getLocalName() + " with: "
+			// + msg.getContent());
+
 			String[] data = msg.getContent().split(" ");
 			String comm = data[0];
 			if (comm.startsWith(WATER)) {
@@ -60,26 +63,6 @@ public class InterGridBehav extends CyclicBehaviour {
 					fgrid.setWaterValue(x, y, w);
 				} else if (comm.equals(WATER_INCREASE)) {
 					fgrid.increaseValue(x, y, w);
-				} else if (comm.equals(WATER_REQUEST)) {
-					int sx = Integer.parseInt(data[3]);
-					int sy = Integer.parseInt(data[4]);
-					w = fgrid.decreaseValue(x, y, w);
-					String env = Integer.toString(scen.getEnviromentByPosition(
-							sx, sy));
-					String name = myAgent.getLocalName();
-					name = name.substring(name.indexOf("-") + 1, name
-							.lastIndexOf("-"));
-					if (env.equals(name)) {
-						fgrid.increaseValue(sx, sy, w);
-						// TODO Esquinas y WATER_SET
-					} else {
-						String content = WATER_INCREASE + " "
-								+ Integer.toString(sx) + " "
-								+ Integer.toString(sy) + " "
-								+ Short.toString(w);
-						AgentHelper.send(myAgent, msg.getSender(),
-								ACLMessage.INFORM, "intergrid", content);
-					}
 				}
 			}
 		} else {

@@ -26,6 +26,7 @@ import jade.lang.acl.ACLMessage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import util.AgentHelper;
 import util.DateAndTime;
@@ -48,7 +49,7 @@ public class EnviromentAgent extends Agent {
 
 	private HexagonalGrid grid = null;
 	private Logger logger = new Logger(); // TODO
-	private DateAndTime dateTime;
+	private DateAndTime dateTime = null;
 
 	// TODO Calcular los valores de tiempo en función del agua que haya entrado
 
@@ -64,9 +65,18 @@ public class EnviromentAgent extends Agent {
 			int tileSize = Integer.parseInt((String) args[4]);
 			int offX = Integer.parseInt((String) args[5]);
 			int offY = Integer.parseInt((String) args[6]);
-			grid = new FloodHexagonalGrid(NW, SE, offX, offY, tileSize); // TODO
+			grid = new FloodHexagonalGrid(NW, SE, offX, offY, tileSize);
 			// TODO grid.obtainTerrainElevation();
-			dateTime = new DateAndTime(2010, 2, 26, 20, 32);
+			Random rnd = new Random(System.currentTimeMillis());
+			for (int i = -1 + grid.getOffX(); i <= (grid.getDimX() + grid
+					.getOffX()); i++) {
+				for (int j = -1 + grid.getOffY(); j <= (grid.getDimY() + grid
+						.getOffY()); j++) {
+					grid
+							.setTerrainValue(i, j,
+									(short) (rnd.nextInt(500) - 250));
+				}
+			}
 		} else {
 			logger.errorln(getLocalName() + " wrong arguments.");
 			doDelete();
@@ -92,15 +102,10 @@ public class EnviromentAgent extends Agent {
 
 		@Override
 		public void action() {
-			List<String> services = new ArrayList<String>(5);
+			// TODO sacar datetime del scenario
+			dateTime = new DateAndTime(2010, 2, 26, 20, 32);
 
-			// TODO DEBUG
-			try {
-				Thread.sleep(10000L);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			// FIN DEBUG
+			List<String> services = new ArrayList<String>(6);
 
 			ParallelBehaviour parallel = new ParallelBehaviour(
 					ParallelBehaviour.WHEN_ALL);
@@ -109,7 +114,7 @@ public class EnviromentAgent extends Agent {
 			parallel.addSubBehaviour(new QueryGridBehav(grid));
 			parallel
 					.addSubBehaviour(new SyndicateBehav(myAgent, grid, dateTime));
-			parallel.addSubBehaviour(new InterGridBehav(myAgent, grid, scen));
+			parallel.addSubBehaviour(new InterGridBehav(myAgent, grid));
 			myAgent.addBehaviour(parallel);
 			services.add("adjacents-grid");
 			services.add("grid-querying");
