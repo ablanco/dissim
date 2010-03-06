@@ -77,6 +77,7 @@ public class EnviromentAgent extends Agent {
 									(short) (rnd.nextInt(500) - 250));
 				}
 			}
+			// FIN GRID ALEATORIA
 		} else {
 			logger.errorln(getLocalName() + " wrong arguments.");
 			doDelete();

@@ -9,8 +9,10 @@ import java.io.Serializable;
  * 
  * Created on 11-02-2006
  * 
+ * Some changes by Manuel Gomar and Alejandro Blanco
+ * 
  * @author Jonathan Stott
- * @version 1.0
+ * @version 1.0 (modified)
  * @since 1.0
  * @license GPL
  */
@@ -54,7 +56,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 *            the longitude in degrees
 	 * @param altitude
 	 *            the altitude in decimeters
-	 * @since 1.0
 	 * @author Manuel Gomar Acosta
 	 */
 	public LatLng(double lat, double lng, short altitude) {
@@ -373,6 +374,11 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		this.altitude = altitude;
 	}
 
+	/**
+	 * Comparator
+	 * 
+	 * @author Manuel Gomar Acosta
+	 */
 	@Override
 	public int compareTo(LatLng o) {
 		// TODO good comparator to short properly the adyacent list
@@ -386,6 +392,11 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		}
 	}
 
+	/**
+	 * Equals
+	 * 
+	 * @author Manuel Gomar Acosta
+	 */
 	@Override
 	public boolean equals(Object coord) {
 		if (coord instanceof LatLng) {
@@ -397,6 +408,12 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		}
 	}
 
+	/**
+	 * @author Manuel Gomar Acosta
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public LatLng metersToDegrees(double x, double y) {
 		// TODO chapuza que puede funcionar
 		UTMRef u = this.toUTMRef();
@@ -409,6 +426,13 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		return new LatLng(lat, lng, altitude);
 	}
 
+	/**
+	 * @author Manuel Gomar Acosta
+	 * @param x
+	 * @param y
+	 * @param terrainValue
+	 * @return
+	 */
 	public LatLng metersToDegrees(double x, double y, short terrainValue) {
 		UTMRef u = this.toUTMRef();
 		u.addNorthingEasting(x, y);
@@ -419,17 +443,32 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 
 		return new LatLng(lat, lng, terrainValue);
 	}
-	
-	public int[] degreesToMeters(LatLng coord, int tileSize){	
-		//TODO otra chapuza que podría funcionar ...
+
+	/**
+	 * @author Manuel Gomar Acosta
+	 * @param coord
+	 * @param tileSize
+	 * @return
+	 */
+	public int[] degreesToMeters(LatLng coord, int tileSize) {
+		// TODO otra chapuza que podría funcionar ...
 		UTMRef u = this.toUTMRef();
 		UTMRef nw = coord.toUTMRef();
-		int y = (int) ((nw.getEasting() - u.getEasting())/tileSize);
-		int x = (int) ((nw.getNorthing() - u.getNorthing())/ tileSize * 4/3) + 1;
+		int y = (int) ((nw.getEasting() - u.getEasting()) / tileSize);
+		int x = (int) ((nw.getNorthing() - u.getNorthing()) / tileSize * 4 / 3) + 1;
 		int z = this.getAltitude();
-		return new int[] {x, y, z};
+		return new int[] { x, y, z };
 	}
 
+	/**
+	 * If this coordinates are contained in the area defined by the diagonal
+	 * defined by the parameters
+	 * 
+	 * @author Alejandro Blanco
+	 * @param NW
+	 * @param SE
+	 * @return
+	 */
 	public boolean isContainedIn(LatLng NW, LatLng SE) {
 		boolean blat = false;
 		boolean blng = false;

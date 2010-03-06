@@ -46,7 +46,6 @@ public class HexagonalGrid implements Serializable {
 	 * Diameter of the circunflex circle of the hexagon in meters
 	 */
 	private int tileSize;
-	private double hexWidth;
 	/**
 	 * Grid data
 	 */
@@ -83,8 +82,6 @@ public class HexagonalGrid implements Serializable {
 		int size[] = calculateSize(NW, SE, tileSize);
 		int x = size[0];
 		int y = size[1];
-
-		hexWidth = ((((double) tileSize) / 2.0) * Math.cos(Math.PI / 6.0)) * 2.0;
 
 		ilat = Math.abs(NW.getLat() - SE.getLat()) / x;
 		ilng = Math.abs(NW.getLng() - SE.getLng()) / y;
@@ -363,10 +360,14 @@ public class HexagonalGrid implements Serializable {
 		if (tileSize < 0)
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
+		if (!coord.isContainedIn(NW, SE))
+			throw new IndexOutOfBoundsException(
+					"Coordinates are outside of the simulation area.");
 
 		// Aproximación
-		int x = (int) (NW.distance(new LatLng(NW.getLat(), coord.getLng())) / hexWidth);
-		int y = (int) (NW.distance(new LatLng(coord.getLat(), NW.getLng())) / ((((double) tileSize) * 3.0) / 4.0));
+		int[] aprox = calculateSize(NW, coord, tileSize);
+		int x = aprox[0];
+		int y = aprox[1];
 		x += offX;
 		y += offY;
 

@@ -7,8 +7,10 @@ package util.jcoord;
  * 
  * Created on 11-Feb-2006
  * 
+ * Changes by Manuel Gomar
+ * 
  * @author Jonathan Stott
- * @version 1.0
+ * @version 1.0 (modified)
  * @since 1.0
  * @license GPL
  */
@@ -34,6 +36,9 @@ public class UTMRef {
 	 */
 	private int lngZone;
 
+	/**
+	 * Altitude
+	 */
 	private short altitude;
 
 	/**
@@ -56,6 +61,16 @@ public class UTMRef {
 		this.lngZone = lngZone;
 	}
 
+	/**
+	 * Create a new UTM reference object.
+	 * 
+	 * @author Manuel Gomar
+	 * @param easting
+	 * @param northing
+	 * @param latZone
+	 * @param lngZone
+	 * @param altitude
+	 */
 	public UTMRef(double easting, double northing, char latZone, int lngZone,
 			short altitude) {
 		this.easting = easting;
@@ -239,24 +254,37 @@ public class UTMRef {
 		return lngZone;
 	}
 
+	/**
+	 * Set the altitude
+	 * 
+	 * @author Manuel Gomar
+	 * @param altitude
+	 */
 	public void setAltitude(short altitude) {
 		this.altitude = altitude;
 	}
 
+	/**
+	 * Get the altitude
+	 * 
+	 * @author Manuel Gomar
+	 * @return
+	 */
 	public short getAltitude() {
 		return altitude;
 	}
-/**
- * Add meters to nording easting position
- * @param x
- * @param y
- */
+
+	/**
+	 * Add meters to nording easting position
+	 * 
+	 * @author Manuel Gomar
+	 * @param x
+	 * @param y
+	 */
 	public void addNorthingEasting(double x, double y) {
-		//TODO Problemas con los Limites de UTM
+		// TODO Problemas con los Limites de UTM
 		easting += y;
 		northing -= x;
-		
-		
 	}
 
 }

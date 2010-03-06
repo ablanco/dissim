@@ -26,7 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import sun.beans.editors.ColorEditor;
+//import sun.beans.editors.ColorEditor;
 
 public class Visor {
 	public static int MAP_GUI = 1;
@@ -57,8 +57,8 @@ public class Visor {
 		JTable tableLeyend = new JTable(new Leyend(MAP_GUI)) ;
 		tableLeyend.setDefaultRenderer(Color.class,
                  new ColorRenderer(true));
-		tableLeyend.setDefaultEditor(Color.class,
-               new ColorEditor());
+//		tableLeyend.setDefaultEditor(Color.class,
+//               new ColorEditor());
 
 		JScrollPane scrolltableLeyend = new JScrollPane(tableLeyend);
 		tableLeyend.setFillsViewportHeight(true);
