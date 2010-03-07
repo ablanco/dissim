@@ -171,6 +171,10 @@ public class HexagonalGrid implements Serializable {
 		}
 		return old;
 	}
+	
+	public short setStreetValue(Point p, short value){
+		return setStreetValue(p.getX(),p.getY(),value);
+	}
 
 	public short getStreetValue(int x, int y) {
 		x -= offX;
@@ -188,6 +192,10 @@ public class HexagonalGrid implements Serializable {
 			value = gridStreets[x][y];
 		}
 		return value;
+	}
+	
+	public short getStreetValue(Point p){
+		return getStreetValue(p.getX(),p.getY());
 	}
 
 	public void increaseValue(int x, int y, short increment) {

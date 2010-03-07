@@ -215,32 +215,15 @@ public class OsmMap {
 
 	private void aproximateWay(OsmNode a, OsmNode b, HexagonalGrid grid,
 			short key) {
-		Point A = a.getPoint();
-		Point B = b.getPoint();
-		int x = A.getX();
-		int y = A.getY();
-		int bX = B.getX();
-		int bY = B.getY();
-		grid.setStreetValue(bX, bY, key);
-		grid.setStreetValue(x, y, key);
-		while (x != bX || y != bY) {
-			if (x > bX) {
-				x--;
-			} else if (x < bX) {
-				x++;
-			} else {
-				// x==bX
-			}
-
-			if (y > bY) {
-				y--;
-			} else if (y < bY) {
-				y++;
-			} else {
-				// y==bY
-			}
-			grid.setStreetValue(x, y, key);
+		Point pA = a.getPoint();
+		Point pB = b.getPoint();
+		grid.setStreetValue(pA, key);
+		while (!pA.equals(pB)) {
+			System.err.println("Distintooo "+pA+","+pB);
+			pA = hexagonalMove(pA,pB);
+			grid.setStreetValue(pA, key);
 		}
+		grid.setStreetValue(pB, key);
 	}
 
 	private OsmNode aproximateNode(OsmNode outNode,OsmNode inNode, HexagonalGrid grid) {		
@@ -259,5 +242,64 @@ public class OsmMap {
 					.println("**************Intentando acceder fuera del array");
 		}
 
+	}
+	
+	private Point hexagonalMove(Point a, Point b){
+		int key = 6;
+		int col = a.getX()-b.getX();
+		int row = a.getY()-b.getY();
+		if (col ==0){
+			if(row > 0){
+				//Derecha Arriba
+				key= 2;		
+			}else{
+				//Derecha Abajo
+				key = 4;
+			}
+		}else if (col > 0){
+			if (row == 0){
+				//Izquierda
+				key = 0;
+			}else if(row > 0){
+				//Izquierda Arriba
+				key = 1;
+			}else{
+				//Izquierda Abajo
+				key = 5;
+			}
+		}else{
+			//Derecha
+			key = 3;
+		}
+		
+		int x = a.getX();
+		int y = a.getY();
+		
+		switch (key) {
+		case 0: //Izquierda
+			x--;
+			break;
+		case 1: //Izquierda Arriba
+			x--;
+			y--;
+			break;
+		case 2: //Derecha Arriba
+			y--;
+			break;
+		case 3: //Derecha
+			x++;
+			break;
+		case 4: //Derecha Abajo
+			y++;
+			break;
+		case 5: //Izquierda Abajo
+			x--;
+			y++;
+			break;
+		default:
+			System.err.println("Movimiento hexagonal no permitido");
+			break;
+		}
+		return new Point(x,y);
 	}
 }

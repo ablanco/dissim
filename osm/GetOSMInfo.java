@@ -68,7 +68,7 @@ public class GetOSMInfo {
 		url += mBox;
 		osmLog.println("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url);
-		System.err.println("Reading file: "+xmlFile.getAbsolutePath());
+//		System.err.println("Reading file: "+xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
 		doc = parseFile(xmlFile.getPath());
 		// get root node of xml tree structure

@@ -86,7 +86,7 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 			sizeHeight = (int) ((hexHeight * (grid.getDimX() - 1)));
 			dim = new Dimension(sizeWidth, sizeHeight);
 			setSize(dim);
-			System.err.println("wid: "+sizeWidth+", Hei: "+sizeHeight+", HexSize ["+hexHeight+","+hexWidth+"]");
+			System.err.println("["+grid.getDimX()+","+grid.getDimY()+"] wid: "+sizeWidth+", Hei: "+sizeHeight+", HexSize ["+hexHeight+","+hexWidth+"]");
 		}
 //		repaint();
 	}
@@ -124,7 +124,8 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 					// Dibujar y colorear según la altura
 					int value = grid.getStreetValue(i, j);
 					if (value != 0){
-						g2.setColor(new Color(value*1000));	
+						g2.setColor(new Color(value*1000));
+//						System.err.println("pintando en "+i+","+j+", ");
 					}else{
 						g2.setColor(Color.WHITE);
 					}					
