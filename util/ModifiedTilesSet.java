@@ -21,24 +21,51 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeSet;
 
-public class NoDuplicatesSet implements Set<Point>, Serializable {
+public class ModifiedTilesSet implements Set<Point>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private int initalCapacity;
+	private int x;
+	private int offX;
+	private int offY;
+	private int initialCapacity;
 	private ArrayList<Point> data;
 
-	public NoDuplicatesSet(int initialCapacity) {
-		this.initalCapacity = initialCapacity;
+	public ModifiedTilesSet(int x, int y, int offX, int offY) {
+		this.x = x;
+		this.offX = offX;
+		this.offY = offY;
+		initialCapacity = x * y;
+		newData();
+	}
+
+	private void newData() {
 		data = new ArrayList<Point>(initialCapacity);
+		for (int i = 0; i < initialCapacity; i++) {
+			data.add(null);
+		}
+	}
+
+	private int idx(Point p) {
+		return ((p.getY() + 1 - offY) * x) + (p.getX() + 1 - offX);
+	}
+
+	public Set<Point> withoutNulls() {
+		TreeSet<Point> result = new TreeSet<Point>();
+		for (Point p : data) {
+			if (p != null)
+				result.add(p);
+		}
+		return result;
 	}
 
 	@Override
 	public boolean add(Point e) {
 		if (contains(e))
 			return false;
-		data.add(e);
+		data.set(idx(e), e);
 		return true;
 	}
 
@@ -52,17 +79,14 @@ public class NoDuplicatesSet implements Set<Point>, Serializable {
 
 	@Override
 	public void clear() {
-		data = new ArrayList<Point>(initalCapacity);
+		newData();
 	}
 
 	@Override
 	public boolean contains(Object o) {
 		if (o instanceof Point) {
 			Point op = (Point) o;
-			for (Point p : data) {
-				if (p.equals(op))
-					return true;
-			}
+			return data.get(idx(op)) != null;
 		}
 		return false;
 	}

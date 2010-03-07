@@ -57,6 +57,10 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 					parallel.addSubBehaviour(new UpdateBehav(this.myAgent,
 							content));
 				} catch (UnreadableException e) {
+					System.err.println("Sender: "
+							+ msg.getSender().getLocalName() + " - Receiver: "
+							+ myAgent.getLocalName() + " - Client: "
+							+ client.getConversationId());
 					e.printStackTrace();
 				}
 			} else {
