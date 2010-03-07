@@ -38,7 +38,7 @@ public class VisorFrame extends JFrame implements Updateable {
 		setSize(new Dimension(800, 600));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		pane = new HexagonalGridPane(getSize());
+		pane = new HexagonalGridPane();//getSize());
 		scrollPane = new JScrollPane(pane,
 				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -70,7 +70,7 @@ public class VisorFrame extends JFrame implements Updateable {
 		if (gridLbl.getText().equals(""));
 			gridLbl.setText(snap.getGrid().toString());
 		
-		pane.updateGrid(snap);
+		pane.updateGrid(snap, getSize());
 	}
 
 	@Override

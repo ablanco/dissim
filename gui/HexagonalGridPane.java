@@ -46,25 +46,17 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 	private short max;
 	private int maxUnitIncrement = 1;
 	private Dimension size = new Dimension(300, 300);
+	private boolean firstTime = true;
 
-	public HexagonalGridPane() {
-		this(null);
-	}
-
-	public HexagonalGridPane(Dimension size) {
-		super();
-		if (size != null)
-			this.size = size;
-		setSize(this.size);
-	}
-
-	public void updateGrid(Snapshot snap) {
+	public void updateGrid(Snapshot snap, Dimension dim) {
 		this.grid = snap.getGrid();
 
-		if (radius == -1) { // Primera vez que recibe un grid
+		if (dim.height != size.height || dim.width != size.width || firstTime) {
+			size = dim;
+			setSize(size);
 			// Calcular el radio de los hexágonos a representar
-			int radiusX = (size.width / grid.getDimX()) / 2;
-			int radiusY = (size.height / grid.getDimY()) / 2;
+			int radiusX = (int) (((size.width / grid.getDimX()) / 2) * 1.1);
+			int radiusY = (int) (((size.height / grid.getDimY()) / 2) * 1.3);
 			if (radiusX < radiusY)
 				radius = radiusX;
 			else
@@ -76,7 +68,9 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			Polygon p = new Hexagon2D(0, 0, radius);
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
+		}
 
+		if (firstTime) { // Primera vez que recibe un grid
 			// La escala de colores se calcula ahora (una única vez)
 			min = Short.MAX_VALUE;
 			max = Short.MIN_VALUE;
@@ -93,6 +87,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			}
 			max += 100; // TODO Sacar el max nivel del agua del snapshot
 			setVisible(true);
+			firstTime = false;
 		}
 
 		repaint();
@@ -102,6 +97,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 	public void paint(Graphics g) {
 		if (grid != null) {
 			Graphics2D g2 = (Graphics2D) g;
+			g2.clearRect(0, 0, size.width, size.height);
 
 			// Preferencias para el renderizado, puede que en algunas
 			// plataformas se ignoren. Anteponemos velocidad a calidad.
