@@ -52,20 +52,23 @@ public class GetOSMInfo {
 	private Logger osmLog;
 	private HexagonalGrid grid;
 	private OsmMap osmMap;
+	private String fileName;
 
 	/** Creates a new instance of XmlParser */
 	public GetOSMInfo(HexagonalGrid grid) {
 		this.grid = grid;
 		LatLng NW = grid.getArea()[0];
 		LatLng SE = grid.getArea()[1];
+		
 		// Open Streets Maps uses a differente mapBox, NE, SW
 		osmLog = new Logger();
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
-		url += NW.getLng() + "," + SE.getLat();
-		url += "," + SE.getLng() + "," + NW.getLat();
+		String mBox =NW.getLng() + "," + SE.getLat() + "," + SE.getLng() + "," + NW.getLat();
+		fileName = "map?bbox="+mBox;
+		url += mBox;
 		osmLog.println("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url);
-
+		System.err.println("Reading file: "+xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
 		doc = parseFile(xmlFile.getPath());
 		// get root node of xml tree structure
@@ -223,23 +226,35 @@ public class GetOSMInfo {
 	protected File getOSMXmlFromURL(String url) {
 		File file = null;
 		try {
-			File f = File.createTempFile("OSM", "temp");
-			if (f.exists()) {
-				f.delete();
-			}
-			if (f.mkdir()) {
-				osmLog.debugln("New Directory in: " + f.getPath());
-			}
-
-			if (!Wget.wget(f.getPath(), url)) {
-				osmLog.debugln("Cannot obtain " + url + ", into :"
-						+ f.getPath());
-			}
-
+			File f = File.createTempFile("CatastrofesOpenStreetMaps", null);
+			String path = f.getAbsolutePath();
+			path = (String) path.subSequence(0, path.length()-f.getName().length());
+			path +="PFC-Catastrofes"+File.separator;
 			f.deleteOnExit();
-			File[] xmlFile = f.listFiles();
-
-			file = xmlFile[0];
+			f.delete();
+			
+			//Opens File Dir
+			File osmMap = new File(path);
+			
+			if (!osmMap.exists()){
+				osmMap.mkdir();
+//				osmLog.debugln("New Directory in: " + osmMap.getPath());
+			}
+			
+			file = new File(path+fileName);
+			if (!file.exists()){
+				if (!Wget.wget(path, url)) {
+//					osmLog.debugln("Cannot obtain " + url + ", into :"
+//							+ path);
+				}else{
+					System.err.println("Getting File info");
+					return new File(path+fileName);
+				}
+			}else{
+//				System.err.println("File info cached");
+				return file;
+			}
+						
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
