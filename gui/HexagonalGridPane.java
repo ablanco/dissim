@@ -153,8 +153,13 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 							g2.setColor(new Color(0, 0, color));
 						}
 					}
-					g2.drawPolygon(hex);
 					g2.fillPolygon(hex);
+
+					// Pintar el borde amarillo si hay calle (o algo)
+					if (grid.getStreetValue(i, j) != 0)
+						g2.setColor(Color.YELLOW);
+
+					g2.drawPolygon(hex);
 				}
 			}
 		}

@@ -21,6 +21,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
 import util.Snapshot;
@@ -31,6 +32,7 @@ public class VisorFrame extends JFrame implements Updateable {
 
 	private HexagonalGridPane pane = null;
 	private JScrollPane scrollPane;
+	private JLabel gridLbl = new JLabel();
 
 	public VisorFrame() {
 		setSize(new Dimension(800, 600));
@@ -43,6 +45,7 @@ public class VisorFrame extends JFrame implements Updateable {
 		scrollPane.setSize(getSize());
 		// TODO si añado scrollPane en vez de pane no se pinta nada
 		c.add(pane, BorderLayout.CENTER);
+		c.add(gridLbl, BorderLayout.NORTH);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.setTitle("Visor de inundación"); // TODO Internacionalización
 	}
@@ -58,12 +61,16 @@ public class VisorFrame extends JFrame implements Updateable {
 	}
 
 	@Override
-	public void update(Object obj) {
+	public void update(Object obj) throws IllegalArgumentException {
 		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");
-
-		pane.updateGrid((Snapshot) obj);
+		
+		Snapshot snap = (Snapshot) obj;
+		if (gridLbl.getText().equals(""));
+			gridLbl.setText(snap.getGrid().toString());
+		
+		pane.updateGrid(snap);
 	}
 
 	@Override
