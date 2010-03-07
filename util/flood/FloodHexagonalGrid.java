@@ -43,8 +43,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		southWater = new short[dimX + 2];
 		eastWater = new short[dimY];
 		westWater = new short[dimY];
-//		modTiles = new TreeSet<Point>();
-		modTiles = new NoDuplicatesSet();
+		// modTiles = new TreeSet<Point>();
+		modTiles = new NoDuplicatesSet((dimX + 2) * (dimY + 2));
 	}
 
 	public short setWaterValue(int x, int y, short value) {
@@ -119,8 +119,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	public Set<Point> getModCoordAndReset() {
 		Set<Point> result = modTiles;
-//		modTiles = new TreeSet<Point>();
-		modTiles = new NoDuplicatesSet();
+		// modTiles = new TreeSet<Point>();
+		modTiles = new NoDuplicatesSet((dimX + 2) * (dimY + 2));
 		return result;
 	}
 

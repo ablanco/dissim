@@ -22,11 +22,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
-public class NoDuplicatesSet implements Set<Point>,Serializable {
+public class NoDuplicatesSet implements Set<Point>, Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
-	ArrayList<Point> data = new ArrayList<Point>();
+
+	private int initalCapacity;
+	private ArrayList<Point> data;
+
+	public NoDuplicatesSet(int initialCapacity) {
+		this.initalCapacity = initialCapacity;
+		data = new ArrayList<Point>(initialCapacity);
+	}
 
 	@Override
 	public boolean add(Point e) {
@@ -46,7 +52,7 @@ public class NoDuplicatesSet implements Set<Point>,Serializable {
 
 	@Override
 	public void clear() {
-		data = new ArrayList<Point>();
+		data = new ArrayList<Point>(initalCapacity);
 	}
 
 	@Override
