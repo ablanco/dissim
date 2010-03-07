@@ -83,8 +83,8 @@ public class HexagonalGrid implements Serializable {
 		int x = size[0];
 		int y = size[1];
 
-		ilat = Math.abs(NW.getLat() - SE.getLat()) / x;
-		ilng = Math.abs(NW.getLng() - SE.getLng()) / y;
+		ilat = Math.abs(NW.getLat() - SE.getLat()) / y;
+		ilng = Math.abs(NW.getLng() - SE.getLng()) / x;
 
 		gridTerrain = new short[x][y];
 		northTerrain = new short[x + 2];
@@ -228,7 +228,7 @@ public class HexagonalGrid implements Serializable {
 	 * @param x
 	 * @param y
 	 * @return Una matriz cuyas filas representan las coordenadas de un hexágono
-	 *         adyacente (si valen -1 es que había menos de 6 adyacentes)
+	 *         adyacente
 	 */
 	public int[][] getAdjacentsIndexes(int x, int y) {
 		x -= offX;
@@ -257,8 +257,8 @@ public class HexagonalGrid implements Serializable {
 				// Comprobamos que el hexágono adyacente no está fuera de la
 				// rejilla
 				if (col >= -1 && col <= dimX && fila >= -1 && fila <= dimY) {
-					adjacents[cont][0] = col + offX;
-					adjacents[cont][1] = fila + offY;
+					adjacents[cont][0] = col;
+					adjacents[cont][1] = fila;
 					cont++;
 				}
 				if (fila == y && col == x - 1 && !par)
@@ -266,11 +266,12 @@ public class HexagonalGrid implements Serializable {
 			}
 		}
 
-		for (int i = cont; i < 6; i++) {
-			adjacents[i][0] = -1;
-			adjacents[i][1] = -1;
+		int[][] result = new int[cont][2];
+		for (int i = 0; i < cont; i++) {
+			result[i][0] = adjacents[i][0] + offX;
+			result[i][1] = adjacents[i][1] + offY;
 		}
-		return adjacents;
+		return result;
 	}
 
 	/**
@@ -285,14 +286,12 @@ public class HexagonalGrid implements Serializable {
 		ArrayList<int[]> result = new ArrayList<int[]>(6);
 		int[] adjacent;
 		int[][] indexes = getAdjacentsIndexes(x, y);
-		for (int i = 0; i < 6; i++) {
-			if (indexes[i][0] >= 0) {
-				adjacent = new int[3];
-				adjacent[0] = indexes[i][0];
-				adjacent[1] = indexes[i][1];
-				adjacent[2] = getValue(indexes[i][0], indexes[i][1]);
-				result.add(adjacent);
-			}
+		for (int i = 0; i < indexes.length; i++) {
+			adjacent = new int[3];
+			adjacent[0] = indexes[i][0];
+			adjacent[1] = indexes[i][1];
+			adjacent[2] = getValue(indexes[i][0], indexes[i][1]);
+			result.add(adjacent);
 		}
 		return result;
 	}
@@ -306,11 +305,13 @@ public class HexagonalGrid implements Serializable {
 	 * @return Set<Point> adjacents to p
 	 */
 	public Set<Point> getAdjacents(Point p) {
-		Set<Point> puntos = new TreeSet<Point>();
-		for (int[] a : getAdjacents(p.getX(), p.getY())) {
-			puntos.add(new Point(a[0], a[1], getValue(a[0], a[1])));
+		TreeSet<Point> result = new TreeSet<Point>();
+		int[][] indexes = getAdjacentsIndexes(p.getX(), p.getY());
+		for (int i = 0; i < indexes.length; i++) {
+			result.add(new Point(indexes[i][0], indexes[i][1], getValue(
+					indexes[i][0], indexes[i][1])));
 		}
-		return puntos;
+		return result;
 	}
 
 	public LatLng[] getArea() {
@@ -334,20 +335,23 @@ public class HexagonalGrid implements Serializable {
 		if (NW == null || SE == null)
 			throw new IllegalStateException(
 					"Simulation area hasn't been defined yet.");
+		x -= offX;
+		y -= offY;
 
 		double lat = NW.getLat();
 		double lng = NW.getLng();
 
 		if (y % 2 == 0) {
-			lat += ilat / 2.0;
+			lng += ilng / 2.0;
 		} else {
-			lat += ilat;
+			lng += ilng;
 		}
-		lat += ilat * x;
-		lng += (4.0 / 6.0) * ilng;
-		lng += ilng * y;
+		lat -= ilat * (2.0 / 3.0);
 
-		return new LatLng(lat, lng, getValue(x, y));
+		lng += ilng * x;
+		lat -= ilat * y;
+
+		return new LatLng(lat, lng, getValue(x + offX, y + offY));
 	}
 
 	/**
@@ -436,9 +440,9 @@ public class HexagonalGrid implements Serializable {
 	public String toString() {
 		String s = "Box: " + NW.toString() + ", " + SE.toString()
 				+ ", Diagonal: " + NW.distance(SE) + "m";
-		s += "\nDimensions: [" + dimX + "," + dimY + "] ,width: "
+		s += "\nDimensions: [" + dimX + "," + dimY + "], Width: "
 				+ NW.distance(new LatLng(NW.getLat(), SE.getLng()))
-				+ "m, height: "
+				+ "m, Height: "
 				+ NW.distance(new LatLng(SE.getLat(), NW.getLng())) + "m";
 		s += "\nTile size: " + tileSize + "m";
 		return s;

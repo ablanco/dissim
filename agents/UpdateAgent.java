@@ -58,26 +58,27 @@ public class UpdateAgent extends Agent {
 		// Obtener agentes entorno
 		DFAgentDescription[] result = AgentHelper.search(this, "syndicate");
 		envAID = new AID[envs.length];
-		int idx = 0;
-		for (DFAgentDescription df : result) {
-			String name = df.getName().getLocalName();
-			name = name.substring(name.indexOf("-") + 1, name.lastIndexOf("-"));
-			for (String e : envs) {
-				if (e.equals(name)) {
-					envAID[idx] = df.getName();
-					break;
+
+		for (int i = 0; i < envs.length; i++) {
+			String env = envs[i];
+			for (DFAgentDescription df : result) {
+				String name = df.getName().getLocalName();
+				name = name.substring(name.indexOf("-") + 1, name
+						.lastIndexOf("-"));
+				if (name.equals(env)) {
+					envAID[i] = df.getName();
 				}
 			}
 		}
-
-		// Sindicarse en el entorno
-		AgentHelper.send(this, envAID, ACLMessage.SUBSCRIBE, "syndicate-"
-				+ client.getConversationId(), getAID());
 
 		// Añadir comportamiento de actualización del objeto cliente
 		addBehaviour(new ReceiveUpdateBehav(this, client));
 
 		client.init();
+
+		// Sindicarse en el entorno
+		AgentHelper.send(this, envAID, ACLMessage.SUBSCRIBE, "syndicate-"
+				+ client.getConversationId(), getAID());
 	}
 
 	@Override

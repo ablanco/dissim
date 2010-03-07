@@ -43,7 +43,7 @@ public class SimulationTest {
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), (short) 800);
 		scen.setPrecision((short) 10);
-		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.93,
+		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.945,
 				-90.085), scen.doubleToInner(4), 1500L));
 		System.out.println("Water Source dentro del área de simulación: " + ws);
 		// scen.obtainTerrainElevation();

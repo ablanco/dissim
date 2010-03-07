@@ -16,14 +16,14 @@
 
 package behaviours;
 
+import jade.core.behaviours.CyclicBehaviour;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
 import util.HexagonalGrid;
-
-import jade.core.behaviours.CyclicBehaviour;
-import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 
 public class AdjacentsGridBehav extends CyclicBehaviour {
 
