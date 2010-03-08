@@ -44,6 +44,7 @@ import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
 import util.Logger;
+import util.Point;
 import util.jcoord.LatLng;
 
 public class GetOSMInfo {
@@ -59,16 +60,17 @@ public class GetOSMInfo {
 		this.grid = grid;
 		LatLng NW = grid.getArea()[0];
 		LatLng SE = grid.getArea()[1];
-		
+
 		// Open Streets Maps uses a differente mapBox, NE, SW
 		osmLog = new Logger();
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
-		String mBox =NW.getLng() + "," + SE.getLat() + "," + SE.getLng() + "," + NW.getLat();
-		fileName = "map?bbox="+mBox;
+		String mBox = NW.getLng() + "," + SE.getLat() + "," + SE.getLng() + ","
+				+ NW.getLat();
+		fileName = "map?bbox=" + mBox;
 		url += mBox;
 		osmLog.println("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url);
-//		System.err.println("Reading file: "+xmlFile.getAbsolutePath());
+		// System.err.println("Reading file: "+xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
 		doc = parseFile(xmlFile.getPath());
 		// get root node of xml tree structure
@@ -138,13 +140,13 @@ public class GetOSMInfo {
 		long id;
 		double lat;
 		double lng;
-		try{
+		try {
 			id = Long.parseLong(attributes.item(1).getNodeValue());
 			lat = Double.parseDouble(attributes.item(2).getNodeValue());
 			lng = Double.parseDouble(attributes.item(3).getNodeValue());
-			//Weird error while parsin xml file
+			// Weird error while parsin xml file
 			System.err.println("Are you at the etsii??");
-		}catch (Exception e) {
+		} catch (Exception e) {
 			id = Long.parseLong(attributes.item(0).getNodeValue());
 			lat = Double.parseDouble(attributes.item(1).getNodeValue());
 			lng = Double.parseDouble(attributes.item(2).getNodeValue());
@@ -152,11 +154,8 @@ public class GetOSMInfo {
 		LatLng latLng = new LatLng(lat, lng);
 		OsmNode osmNode = new OsmNode(id, latLng);
 		// System.err.println("Nodo leido: "+osmNode.toString()+" Coordenadas: "+latLng.toString()+" lat: "+lat+", lng; "+lng);
-		try {
-			osmNode.setPoint(grid.coordToTile(latLng));
-		} catch (IndexOutOfBoundsException e) {
-			// No se añade point
-		}
+		//Añadimos el punto del grid/punto aproximado del grid (mirar variable isIn)
+		osmNode.setPoint(grid.coordToTile(latLng));
 		// If is extended Node:
 		if (node.getFirstChild() != null) {
 			// Is a special Place
@@ -190,12 +189,18 @@ public class GetOSMInfo {
 				// Adding to way
 				OsmNode aux = osmNodes.get(key);
 				if (aux != null) {
+					// Tenemos el nodo que buscamos
 					if (aux.isIn()) {
+						// Esta dentro de las coordenadas
 						osmWay.addToWay(aux);
 						// System.err.println("*****Dentro: " + aux.toString());
 						in = true;
 						out = false;
 					} else {
+						// No esta dentro de las coordenadas, tenemos que buscar
+						// el primero y el ultimo que si que lo esten para poder
+						// interpolar la posición hasta el extremo al que
+						// debemos pintar
 						if (out) {
 							osmWay.setFirsNode(aux);
 							// System.err.println("Primero fuera: " +
@@ -228,33 +233,34 @@ public class GetOSMInfo {
 		try {
 			File f = File.createTempFile("CatastrofesOpenStreetMaps", null);
 			String path = f.getAbsolutePath();
-			path = (String) path.subSequence(0, path.length()-f.getName().length());
-			path +="PFC-Catastrofes"+File.separator;
+			path = (String) path.subSequence(0, path.length()
+					- f.getName().length());
+			path += "PFC-Catastrofes" + File.separator;
 			f.deleteOnExit();
 			f.delete();
-			
-			//Opens File Dir
+
+			// Opens File Dir
 			File osmMap = new File(path);
-			
-			if (!osmMap.exists()){
+
+			if (!osmMap.exists()) {
 				osmMap.mkdir();
-//				osmLog.debugln("New Directory in: " + osmMap.getPath());
+				// osmLog.debugln("New Directory in: " + osmMap.getPath());
 			}
-			
-			file = new File(path+fileName);
-			if (!file.exists()){
+
+			file = new File(path + fileName);
+			if (!file.exists()) {
 				if (!Wget.wget(path, url)) {
-//					osmLog.debugln("Cannot obtain " + url + ", into :"
-//							+ path);
-				}else{
+					// osmLog.debugln("Cannot obtain " + url + ", into :"
+					// + path);
+				} else {
 					System.err.println("Getting File info");
-					return new File(path+fileName);
+					return new File(path + fileName);
 				}
-			}else{
-//				System.err.println("File info cached");
+			} else {
+				// System.err.println("File info cached");
 				return file;
 			}
-						
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

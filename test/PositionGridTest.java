@@ -15,7 +15,7 @@ public class PositionGridTest {
 		new DateAndTime(2000, 3, 15, 15, 3);
 		HexagonalGrid grid = new HexagonalGrid(
 				new LatLng(29.953260, -90.088238), new LatLng(29.918075,
-						-90.053707), 0, 0, 50);
+						-90.053707), 0, 0, 10);
 		long err = 0;
 		System.out.println(grid.toString());
 

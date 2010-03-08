@@ -39,7 +39,11 @@ public class OsmNode implements Comparable<OsmNode> {
 	}
 	
 	public boolean isIn(){
-		return in;
+		return point.isIn();
+	}
+	
+	public void setIn(boolean in) {
+		this.in = in;
 	}
 
 	@Override

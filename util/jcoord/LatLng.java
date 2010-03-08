@@ -312,7 +312,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 
 	/**
 	 * Calculate the surface distance in meters from the this LatLng to the
-	 * given LatLng.
+	 * given LatLng. May give negative distances
 	 * 
 	 * @param ll
 	 * @return the surface distance in meters
@@ -331,7 +331,8 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 				* Math.cos(lngTo - lngFrom))
 				* er * 1000;
 
-		return Math.abs(d);
+		// return Math.abs(d);
+		return d;
 	}
 
 	/**
@@ -469,6 +470,8 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @param SE
 	 * @return
 	 */
+	// TODO tiene en cuenta los cambios de emisferios y tal??
+	// se podría arreglar con las distancias negativas y mayores que el tamaño
 	public boolean isContainedIn(LatLng NW, LatLng SE) {
 		boolean blat = false;
 		boolean blng = false;
@@ -482,4 +485,25 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		return blat && blng;
 	}
 
+	/**
+	 * Get into de box NW, SE the coord.
+	 * 
+	 * @author Manuel Gomar
+	 * @param NW
+	 * @param SE
+	 * @return
+	 */
+	// TODO quizas tenga problemas con los emisgerios no??
+	public void setLatLngIntoBox(LatLng NW, LatLng SE) {
+		if (lat > NW.getLat()) {
+			lat = NW.getLat();
+		} else if (lat < SE.getLat()) {
+			lat = SE.getLat();
+		}
+		if (lng < NW.getLng()) {
+			lng = NW.getLng();
+		} else if (lng > SE.getLng()) {
+			lng = SE.getLng();
+		}
+	}
 }

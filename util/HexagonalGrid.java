@@ -101,6 +101,15 @@ public class HexagonalGrid implements Serializable {
 		dimY = y;
 	}
 
+	/**
+	 * Calcula el tamaño en cuadrados desde NW a SE, cuidado puede devolver
+	 * distancias negativas
+	 * 
+	 * @param NW
+	 * @param SE
+	 * @param tileSize
+	 * @return
+	 */
 	public static int[] calculateSize(LatLng NW, LatLng SE, int tileSize) {
 		double ts = (double) tileSize;
 		double hexWidth = ((ts / 2.0) * Math.cos(Math.PI / 6.0)) * 2.0;
@@ -363,6 +372,10 @@ public class HexagonalGrid implements Serializable {
 		return new LatLng(lat, lng, getValue(x + offX, y + offY));
 	}
 
+	public LatLng tileToCoord(Point p) {
+		return tileToCoord(p.getX(), p.getY());
+	}
+
 	/**
 	 * Convert from a coordinate to the position in the grid
 	 * 
@@ -373,24 +386,29 @@ public class HexagonalGrid implements Serializable {
 		if (tileSize < 0)
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
-		if (!coord.isContainedIn(NW, SE))
-			throw new IndexOutOfBoundsException(
-					"Coordinates are outside of the simulation area.");
-
-		// Aproximación
+		boolean isIn = true;
+		if (!coord.isContainedIn(NW, SE)) {
+			isIn = false;
+			System.err.print(coord.toString() + " --> ");
+			coord.setLatLngIntoBox(NW, SE);
+			System.err.println(coord.toString() + " | " + NW.toString() + " "
+					+ SE.toString());
+		} else {
+			System.err.println("Ta dentro " + coord);
+		}
+		// Esta dentro de nuestro mapBox, no hay problema
 		int[] aprox = calculateSize(NW, coord, tileSize);
 		int x = aprox[0];
 		int y = aprox[1];
 		x += offX;
 		y += offY;
-
 		double distMin = coord.distance(tileToCoord(x, y));
 		boolean mejor = true;
 		while ((distMin * 2) > tileSize && mejor) {
 			// Consultamos todos los adyacentes
 			mejor = false;
 			for (Point point : getAdjacents(new Point(x, y))) {
-				LatLng aux = tileToCoord(point.getX(), point.getY());
+				LatLng aux = tileToCoord(point);
 				double dist = coord.distance(aux);
 				// Nos quedamos con el más cercano
 				if (dist < distMin) {
@@ -401,7 +419,46 @@ public class HexagonalGrid implements Serializable {
 				}
 			}
 		}
-		return new Point(x, y, getValue(x, y));
+		return getPoint(x, y, isIn);
+	}
+
+	/**
+	 * Returns a point Form the grid
+	 * 
+	 * @param x
+	 * @param y
+	 * @param isIn
+	 * @return
+	 */
+	private Point getPoint(int x, int y, boolean isIn) {
+		if (x < 0) {
+			x = 0;
+		} else if (x >= dimX) {
+			x = dimX - 1;
+		}
+
+		if (y < 0) {
+			y = 0;
+		} else if (y >= dimY) {
+			y = dimY - 1;
+		}
+		return new Point(x, y, getValue(x, y), isIn);
+	}
+
+	/**
+	 * Given an aoutside coord from BOX: NW,SE, gives an aproximate Point inside
+	 * the box
+	 * 
+	 * @param coord
+	 * @return
+	 */
+	public Point aproxCoordToTile(LatLng coord) {
+		int[] aprox = calculateSize(NW, coord, tileSize);
+		int x = aprox[0];
+		int y = aprox[1];
+		x += offX;
+		y += offY;
+		return new Point(x, y);
 	}
 
 	/**
@@ -465,19 +522,18 @@ public class HexagonalGrid implements Serializable {
 	public static int RIGTH_DOWN = 4;
 	public static int LEFT_DOWN = 5;
 
-	
-	public static List<Point> getLineBetweenPoints(Point a, Point b){
-		List<Point> line = new ArrayList<Point>();
-		
-		return line;
+	public static Point NearestHexagon(Point a, Point b) {
+		int key = HexagonalGrid.wichtHexagonalMove(a, b);
+		// movimiento(key);
+		return HexagonalGrid.hexagonalMoveTo(a, key);
 	}
-	
+
 	public static int wichtHexagonalMove(Point a, Point b) {
 		int col = a.getY() - b.getY();
 		int row = a.getX() - b.getX();
 		if (a.getY() % 2 == 0) {
-			//Even ROW
-			System.err.print(", even row: "+a.toString());
+			// Even ROW
+			// System.err.print(", even row: " + a.toString());
 			if (col == 0) {
 				if (row > 0) {
 					// Derecha Arriba
@@ -499,17 +555,17 @@ public class HexagonalGrid implements Serializable {
 				}
 			} else {
 				// Derecha
-				if(row > 0){
+				if (row > 0) {
 					return RIGTH_UP;
-				}else if (row < 0){
+				} else if (row < 0) {
 					return RIGTH_DOWN;
-				}else{
-					return RIGTH;	
+				} else {
+					return RIGTH;
 				}
 			}
 		} else {
-			//ODD ROW
-			System.err.print(", odd row"+a.toString());
+			// ODD ROW
+			// System.err.print(", odd row" + a.toString());
 			if (col == 0) {
 				if (row > 0) {
 					// Izq Arriba
@@ -530,13 +586,13 @@ public class HexagonalGrid implements Serializable {
 					return RIGTH_DOWN;
 				}
 			} else {
-				if(row > 0){
+				if (row > 0) {
 					return LEFT_UP;
-				}else if (row < 0){
+				} else if (row < 0) {
 					return LEFT_DOWN;
-				}else{
+				} else {
 					// Izq
-					return LEFT;	
+					return LEFT;
 				}
 			}
 		}

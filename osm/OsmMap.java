@@ -16,6 +16,7 @@
 
 package osm;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -177,7 +178,7 @@ public class OsmMap {
 
 		for (OsmWay way : ways) {
 			try {
-				aproximateWay(way, infoGrid);
+				setMapInfoWay(way, infoGrid);
 			} catch (IllegalArgumentException e) {
 				// System.err.println("*****No tiene nodos!!! " +
 				// way.toString());
@@ -189,47 +190,49 @@ public class OsmMap {
 		}
 	}
 
-	private void aproximateWay(OsmWay way, HexagonalGrid grid) {
+	private void setMapInfoWay(OsmWay way, HexagonalGrid grid) {
 		List<OsmNode> nodeWay = way.getWay();
 		if (nodeWay.size() == 0) {
 			throw new IllegalArgumentException(
 					"No puede haber un camino sin nodos");
 		}
-		short key = way.getKey();
+		List<Point> road = new ArrayList<Point>();
 		OsmNode b = nodeWay.get(0);
-		/*
-		 * if(way.getFirsNode()!=null){
-		 * aproximateWay(aproximateNode(way.getFirsNode(),grid),b,grid,key); }
-		 */
+		if (way.getFirsNode() != null) {
+			road.addAll(aproximateWayPoints(way.getFirsNode(), b));
+		}
 		// Way from a to b
 		for (int x = 1; x < nodeWay.size(); x++) {
 			OsmNode a = b;
 			b = nodeWay.get(x);
-			aproximateWay(a, b, grid, key);
+			road.addAll(aproximateWayPoints(a, b));
 		}
-		/*
-		 * if(way.getLastNode()!=null){ aproximateWay(b,
-		 * aproximateNode(way.getLastNode(),grid),grid,key); }
-		 */
+		if (way.getLastNode() != null) {
+			road.addAll(aproximateWayPoints(b, way.getLastNode()));
+		}
+		short key = way.getKey();
+		System.err.println(way.toString());
+		System.err.print("Way: "+way.getId()+", Nodes: ");
+		for (Point p : road) {
+			System.err.print(p.toString()+", ");
+			grid.setStreetValue(p, key);
+		}
+		System.err.println();
+
 	}
 
-	private void aproximateWay(OsmNode a, OsmNode b, HexagonalGrid grid,
-			short key) {
-		Point pA = a.getPoint();
-		Point pB = b.getPoint();
-		grid.setStreetValue(pA, key);
-		while (!pA.equals(pB)) {
-			System.err.print("Moviendo de" + pA + " a " + pB);
-			pA = hexagonalMove(pA, pB);
-			System.err.println(", Final " + pA);
-			grid.setStreetValue(pA, key);
+	private List<Point> aproximateWayPoints(OsmNode nodeA, OsmNode nodeB) {
+		List<Point> road = new ArrayList<Point>();
+		Point pointA = nodeA.getPoint();
+		Point pointB = nodeB.getPoint();
+		road.add(pointA);
+		while (!pointA.equals(pointB)) {
+			//Mientras no hayamos llegado al destino
+			pointA = HexagonalGrid.NearestHexagon(pointA, pointB);
+			//Añadimos punto a la carretera
+			road.add(pointA);
 		}
-	}
-
-	private OsmNode aproximateNode(OsmNode outNode, OsmNode inNode,
-			HexagonalGrid grid) {
-
-		return null;
+		return road; 
 	}
 
 	private void setMapInfoValue(HexagonalGrid infoGrid, LatLng coord,
@@ -243,37 +246,5 @@ public class OsmMap {
 					.println("**************Intentando acceder fuera del array");
 		}
 
-	}
-
-	private Point hexagonalMove(Point a, Point b) {
-		int key = HexagonalGrid.wichtHexagonalMove(a, b);
-		movimiento(key);
-		return HexagonalGrid.hexagonalMoveTo(a, key);
-	}
-
-	private void movimiento(int key) {
-		switch (key) {
-		case 0:
-			System.err.print(", Moviendo IZQ");
-			break;
-		case 1:
-			System.err.print(", Moviendo IZQ UP");
-			break;
-		case 2:
-			System.err.print(", Moviendo DER UP");
-			break;
-		case 3:
-			System.err.print(", Moviendo DER");
-			break;
-		case 4:
-			System.err.print(", Moviendo DER DWN");
-			break;
-		case 5:
-			System.err.print(", Moviendo IZQ DWN");
-			break;
-
-		default:
-			break;
-		}
 	}
 }

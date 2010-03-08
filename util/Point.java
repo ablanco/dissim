@@ -25,6 +25,7 @@ public class Point implements Comparable<Point>, Serializable {
 	private int x;
 	private int y;
 	private short z;
+	private boolean isIn = true;
 
 	public Point(int x, int y) {
 		this(x, y, (short) 0);
@@ -36,10 +37,23 @@ public class Point implements Comparable<Point>, Serializable {
 		this.z = z;
 	}
 	
+	public Point(int x, int y, short z, boolean isIn) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.isIn = isIn;
+	}
+	
 	public Point (int[] xyz){
 		x = xyz[0];
 		y = xyz[1];
 		z = (short)xyz[2];
+	}
+	
+	
+	
+	public boolean isIn(){
+		return isIn;
 	}
 
 	@Override
