@@ -18,6 +18,7 @@ package util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -171,9 +172,9 @@ public class HexagonalGrid implements Serializable {
 		}
 		return old;
 	}
-	
-	public short setStreetValue(Point p, short value){
-		return setStreetValue(p.getX(),p.getY(),value);
+
+	public short setStreetValue(Point p, short value) {
+		return setStreetValue(p.getX(), p.getY(), value);
 	}
 
 	public short getStreetValue(int x, int y) {
@@ -193,9 +194,9 @@ public class HexagonalGrid implements Serializable {
 		}
 		return value;
 	}
-	
-	public short getStreetValue(Point p){
-		return getStreetValue(p.getX(),p.getY());
+
+	public short getStreetValue(Point p) {
+		return getStreetValue(p.getX(), p.getY());
 	}
 
 	public void increaseValue(int x, int y, short increment) {
@@ -454,5 +455,152 @@ public class HexagonalGrid implements Serializable {
 				+ NW.distance(new LatLng(SE.getLat(), NW.getLng())) + "m";
 		s += "\nTile size: " + tileSize + "m";
 		return s;
+	}
+
+	// Relative positions from point
+	public static int LEFT = 0;
+	public static int LEFT_UP = 1;
+	public static int RIGTH_UP = 2;
+	public static int RIGTH = 3;
+	public static int RIGTH_DOWN = 4;
+	public static int LEFT_DOWN = 5;
+
+	
+	public static List<Point> getLineBetweenPoints(Point a, Point b){
+		List<Point> line = new ArrayList<Point>();
+		
+		return line;
+	}
+	
+	public static int wichtHexagonalMove(Point a, Point b) {
+		int col = a.getY() - b.getY();
+		int row = a.getX() - b.getX();
+		if (a.getY() % 2 == 0) {
+			//Even ROW
+			System.err.print(", even row: "+a.toString());
+			if (col == 0) {
+				if (row > 0) {
+					// Derecha Arriba
+					return RIGTH_UP;
+				} else {
+					// Derecha Abajo
+					return RIGTH_DOWN;
+				}
+			} else if (col > 0) {
+				if (row == 0) {
+					// Izquierda
+					return LEFT;
+				} else if (row > 0) {
+					// Izquierda Arriba
+					return LEFT_UP;
+				} else {
+					// Izquierda Abajo
+					return LEFT_DOWN;
+				}
+			} else {
+				// Derecha
+				if(row > 0){
+					return RIGTH_UP;
+				}else if (row < 0){
+					return RIGTH_DOWN;
+				}else{
+					return RIGTH;	
+				}
+			}
+		} else {
+			//ODD ROW
+			System.err.print(", odd row"+a.toString());
+			if (col == 0) {
+				if (row > 0) {
+					// Izq Arriba
+					return LEFT_UP;
+				} else {
+					// Izq Abajo
+					return LEFT_DOWN;
+				}
+			} else if (col < 0) {
+				if (row == 0) {
+					// Der
+					return RIGTH;
+				} else if (row > 0) {
+					// Der Arriba
+					return RIGTH_UP;
+				} else {
+					// Der Abajo
+					return RIGTH_DOWN;
+				}
+			} else {
+				if(row > 0){
+					return LEFT_UP;
+				}else if (row < 0){
+					return LEFT_DOWN;
+				}else{
+					// Izq
+					return LEFT;	
+				}
+			}
+		}
+	}
+
+	public static Point hexagonalMoveTo(Point a, int key) {
+		int y = a.getY();
+		int x = a.getX();
+
+		if (x % 2 == 0) {
+			// even row
+			switch (key) {
+			case 0: // Izquierda
+				y--;
+				break;
+			case 1: // Izquierda Arriba
+				y--;
+				x--;
+				break;
+			case 2: // Derecha Arriba
+				x--;
+				break;
+			case 3: // Derecha
+				y++;
+				break;
+			case 4: // Derecha Abajo
+				x++;
+				break;
+			case 5: // Izquierda Abajo
+				y--;
+				x++;
+				break;
+			default:
+				System.err.println("Movimiento hexagonal no permitido");
+				break;
+			}
+		} else {
+			// odd row
+			switch (key) {
+			case 0: // Izquierda
+				y--;
+				break;
+			case 1: // Izquierda Arriba
+				x--;
+				break;
+			case 2: // Derecha Arriba
+				x--;
+				y++;
+				break;
+			case 3: // Derecha
+				y++;
+				break;
+			case 4: // Derecha Abajo
+				x++;
+				y++;
+				break;
+			case 5: // Izquierda Abajo
+				x++;
+				break;
+			default:
+				System.err.println("Movimiento hexagonal no permitido");
+				break;
+			}
+		}
+		return new Point(x, y);
 	}
 }

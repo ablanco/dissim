@@ -219,14 +219,15 @@ public class OsmMap {
 		Point pB = b.getPoint();
 		grid.setStreetValue(pA, key);
 		while (!pA.equals(pB)) {
-			System.err.println("Distintooo "+pA+","+pB);
-			pA = hexagonalMove(pA,pB);
+			System.err.print("Moviendo de" + pA + " a " + pB);
+			pA = hexagonalMove(pA, pB);
+			System.err.println(", Final " + pA);
 			grid.setStreetValue(pA, key);
 		}
-		grid.setStreetValue(pB, key);
 	}
 
-	private OsmNode aproximateNode(OsmNode outNode,OsmNode inNode, HexagonalGrid grid) {		
+	private OsmNode aproximateNode(OsmNode outNode, OsmNode inNode,
+			HexagonalGrid grid) {
 
 		return null;
 	}
@@ -243,63 +244,36 @@ public class OsmMap {
 		}
 
 	}
-	
-	private Point hexagonalMove(Point a, Point b){
-		int key = 6;
-		int col = a.getX()-b.getX();
-		int row = a.getY()-b.getY();
-		if (col ==0){
-			if(row > 0){
-				//Derecha Arriba
-				key= 2;		
-			}else{
-				//Derecha Abajo
-				key = 4;
-			}
-		}else if (col > 0){
-			if (row == 0){
-				//Izquierda
-				key = 0;
-			}else if(row > 0){
-				//Izquierda Arriba
-				key = 1;
-			}else{
-				//Izquierda Abajo
-				key = 5;
-			}
-		}else{
-			//Derecha
-			key = 3;
-		}
-		
-		int x = a.getX();
-		int y = a.getY();
-		
+
+	private Point hexagonalMove(Point a, Point b) {
+		int key = HexagonalGrid.wichtHexagonalMove(a, b);
+		movimiento(key);
+		return HexagonalGrid.hexagonalMoveTo(a, key);
+	}
+
+	private void movimiento(int key) {
 		switch (key) {
-		case 0: //Izquierda
-			x--;
+		case 0:
+			System.err.print(", Moviendo IZQ");
 			break;
-		case 1: //Izquierda Arriba
-			x--;
-			y--;
+		case 1:
+			System.err.print(", Moviendo IZQ UP");
 			break;
-		case 2: //Derecha Arriba
-			y--;
+		case 2:
+			System.err.print(", Moviendo DER UP");
 			break;
-		case 3: //Derecha
-			x++;
+		case 3:
+			System.err.print(", Moviendo DER");
 			break;
-		case 4: //Derecha Abajo
-			y++;
+		case 4:
+			System.err.print(", Moviendo DER DWN");
 			break;
-		case 5: //Izquierda Abajo
-			x--;
-			y++;
+		case 5:
+			System.err.print(", Moviendo IZQ DWN");
 			break;
+
 		default:
-			System.err.println("Movimiento hexagonal no permitido");
 			break;
 		}
-		return new Point(x,y);
 	}
 }
