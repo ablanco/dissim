@@ -24,7 +24,6 @@ public class VisorTest2 {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		Visor v = new Visor();
 		v.createAndShowGUI(1);
 	}

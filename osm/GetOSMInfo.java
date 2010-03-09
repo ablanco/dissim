@@ -44,7 +44,6 @@ import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
 import util.Logger;
-import util.Point;
 import util.jcoord.LatLng;
 
 public class GetOSMInfo {
@@ -262,7 +261,6 @@ public class GetOSMInfo {
 			}
 
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return file;

@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import util.DateAndTime;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
@@ -34,10 +35,12 @@ public class AddWaterBehav extends CyclicBehaviour {
 
 	private FloodHexagonalGrid grid;
 	private Map<String, int[]> indexes = new Hashtable<String, int[]>();
+	private DateAndTime dateTime;
 
-	public AddWaterBehav(Agent agt, FloodHexagonalGrid grid) {
+	public AddWaterBehav(Agent agt, FloodHexagonalGrid grid, DateAndTime dateTime) {
 		super(agt);
 		this.grid = grid;
+		this.dateTime = dateTime;
 	}
 
 	@Override
@@ -52,20 +55,19 @@ public class AddWaterBehav extends CyclicBehaviour {
 			double lat = Double.parseDouble(data[0]);
 			double lng = Double.parseDouble(data[1]);
 			short water = Short.parseShort(data[2]);
+			long period = Long.parseLong(data[3]);
 			LatLng coord = new LatLng(lat, lng);
 			int[] gridCoord = indexes.get(coord.toString());
 			if (gridCoord == null) {
 				Point p = grid.coordToTile(coord);
 				gridCoord = new int[] { p.getX(), p.getY() };
 				indexes.put(coord.toString(), gridCoord);
-
-				// TODO DEBUG
-				System.out.println("WS pos: " + gridCoord[0] + ","
-						+ gridCoord[1]);
 			}
 			int x = gridCoord[0];
 			int y = gridCoord[1];
-
+			
+			// TODO Actualizar tiempo dateTime
+			
 			// Máximo nivel que va a alcanzar el agua
 			short nivelMax = (short) (grid.getTerrainValue(x, y) + water);
 			Iterator<int[]> it = grid.getAdjacents(x, y).iterator();

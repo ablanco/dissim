@@ -382,7 +382,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 */
 	@Override
 	public int compareTo(LatLng o) {
-		// TODO good comparator to short properly the adyacent list
 		if (o.getLat() == lat && o.getLng() == lng) {
 			return 0;
 		} else {
@@ -416,15 +415,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @return
 	 */
 	public LatLng metersToDegrees(double x, double y) {
-		// TODO chapuza que puede funcionar
-		UTMRef u = this.toUTMRef();
-		u.addNorthingEasting(x, y);
-
-		LatLng l = u.toLatLng();
-		double lat = l.getLat();
-		double lng = l.getLng();
-
-		return new LatLng(lat, lng, altitude);
+		return metersToDegrees(lat, lng, altitude);
 	}
 
 	/**
@@ -435,6 +426,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @return
 	 */
 	public LatLng metersToDegrees(double x, double y, short terrainValue) {
+		// TODO chapuza que puede funcionar
 		UTMRef u = this.toUTMRef();
 		u.addNorthingEasting(x, y);
 
@@ -455,9 +447,11 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		// TODO otra chapuza que podría funcionar ...
 		UTMRef u = this.toUTMRef();
 		UTMRef nw = coord.toUTMRef();
+
 		int y = (int) ((nw.getEasting() - u.getEasting()) / tileSize);
 		int x = (int) ((nw.getNorthing() - u.getNorthing()) / tileSize * 4 / 3) + 1;
 		int z = this.getAltitude();
+
 		return new int[] { x, y, z };
 	}
 
@@ -470,8 +464,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @param SE
 	 * @return
 	 */
-	// TODO tiene en cuenta los cambios de hemisferios y tal??
-	// se podría arreglar con las distancias negativas y mayores que el tamaño
 	public boolean isContainedIn(LatLng NW, LatLng SE) {
 		boolean blat = false;
 		boolean blng = false;
@@ -486,20 +478,21 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	/**
-	 * Get into de box NW, SE the coord.
+	 * Transform the coordinates to the nearest (orthogonally) that is contained
+	 * in the box defined by params
 	 * 
 	 * @author Manuel Gomar
 	 * @param NW
 	 * @param SE
 	 * @return
 	 */
-	// TODO quizas tenga problemas con los hemisferios no??
 	public void setLatLngIntoBox(LatLng NW, LatLng SE) {
 		if (lat > NW.getLat()) {
 			lat = NW.getLat();
 		} else if (lat < SE.getLat()) {
 			lat = SE.getLat();
 		}
+
 		if (lng < NW.getLng()) {
 			lng = NW.getLng();
 		} else if (lng > SE.getLng()) {

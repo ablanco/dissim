@@ -31,6 +31,10 @@ public class DateAndTime implements Serializable{
 		g = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute, 0);
 	}
 
+	/**
+	 * Increase the date and time in given minutes
+	 * @param minutes
+	 */
 	public void updateTime(int minutes) {
 		g.add(Calendar.MINUTE, minutes);
 	}

@@ -67,7 +67,7 @@ public class Scenario implements Serializable {
 	/**
 	 * Number of enviroment agents
 	 */
-	private int numEnv = 1; // TODO unsigned
+	private int numEnv = 1;
 	private ArrayList<LatLng[]> envAreas = null;
 	private ArrayList<int[]> envSizes = null;
 
