@@ -18,7 +18,6 @@ package util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -515,20 +514,20 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	// Relative positions from point
-	public static int LEFT = 0;
-	public static int LEFT_UP = 1;
-	public static int RIGTH_UP = 2;
-	public static int RIGTH = 3;
-	public static int RIGTH_DOWN = 4;
-	public static int LEFT_DOWN = 5;
+	public static final int LEFT = 0;
+	public static final int LEFT_UP = 1;
+	public static final int RIGHT_UP = 2;
+	public static final int RIGHT = 3;
+	public static final int RIGHT_DOWN = 4;
+	public static final int LEFT_DOWN = 5;
 
 	public static Point NearestHexagon(Point a, Point b) {
-		int key = HexagonalGrid.wichtHexagonalMove(a, b);
+		int key = HexagonalGrid.whichHexagonalMove(a, b);
 		// movimiento(key);
 		return HexagonalGrid.hexagonalMoveTo(a, key);
 	}
 
-	public static int wichtHexagonalMove(Point a, Point b) {
+	public static int whichHexagonalMove(Point a, Point b) {
 		int col = a.getY() - b.getY();
 		int row = a.getX() - b.getX();
 		if (a.getY() % 2 == 0) {
@@ -537,10 +536,10 @@ public class HexagonalGrid implements Serializable {
 			if (col == 0) {
 				if (row > 0) {
 					// Derecha Arriba
-					return RIGTH_UP;
+					return RIGHT_UP;
 				} else {
 					// Derecha Abajo
-					return RIGTH_DOWN;
+					return RIGHT_DOWN;
 				}
 			} else if (col > 0) {
 				if (row == 0) {
@@ -556,11 +555,11 @@ public class HexagonalGrid implements Serializable {
 			} else {
 				// Derecha
 				if (row > 0) {
-					return RIGTH_UP;
+					return RIGHT_UP;
 				} else if (row < 0) {
-					return RIGTH_DOWN;
+					return RIGHT_DOWN;
 				} else {
-					return RIGTH;
+					return RIGHT;
 				}
 			}
 		} else {
@@ -577,13 +576,13 @@ public class HexagonalGrid implements Serializable {
 			} else if (col < 0) {
 				if (row == 0) {
 					// Der
-					return RIGTH;
+					return RIGHT;
 				} else if (row > 0) {
 					// Der Arriba
-					return RIGTH_UP;
+					return RIGHT_UP;
 				} else {
 					// Der Abajo
-					return RIGTH_DOWN;
+					return RIGHT_DOWN;
 				}
 			} else {
 				if (row > 0) {
@@ -605,23 +604,23 @@ public class HexagonalGrid implements Serializable {
 		if (x % 2 == 0) {
 			// even row
 			switch (key) {
-			case 0: // Izquierda
+			case LEFT: // Izquierda
 				y--;
 				break;
-			case 1: // Izquierda Arriba
+			case LEFT_UP: // Izquierda Arriba
 				y--;
 				x--;
 				break;
-			case 2: // Derecha Arriba
+			case RIGHT_UP: // Derecha Arriba
 				x--;
 				break;
-			case 3: // Derecha
+			case RIGHT: // Derecha
 				y++;
 				break;
-			case 4: // Derecha Abajo
+			case RIGHT_DOWN: // Derecha Abajo
 				x++;
 				break;
-			case 5: // Izquierda Abajo
+			case LEFT_DOWN: // Izquierda Abajo
 				y--;
 				x++;
 				break;
@@ -632,24 +631,24 @@ public class HexagonalGrid implements Serializable {
 		} else {
 			// odd row
 			switch (key) {
-			case 0: // Izquierda
+			case LEFT: // Izquierda
 				y--;
 				break;
-			case 1: // Izquierda Arriba
+			case LEFT_UP: // Izquierda Arriba
 				x--;
 				break;
-			case 2: // Derecha Arriba
+			case RIGHT_UP: // Derecha Arriba
 				x--;
 				y++;
 				break;
-			case 3: // Derecha
+			case RIGHT: // Derecha
 				y++;
 				break;
-			case 4: // Derecha Abajo
+			case RIGHT_DOWN: // Derecha Abajo
 				x++;
 				y++;
 				break;
-			case 5: // Izquierda Abajo
+			case LEFT_DOWN: // Izquierda Abajo
 				x++;
 				break;
 			default:

@@ -470,7 +470,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @param SE
 	 * @return
 	 */
-	// TODO tiene en cuenta los cambios de emisferios y tal??
+	// TODO tiene en cuenta los cambios de hemisferios y tal??
 	// se podría arreglar con las distancias negativas y mayores que el tamaño
 	public boolean isContainedIn(LatLng NW, LatLng SE) {
 		boolean blat = false;
@@ -493,7 +493,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @param SE
 	 * @return
 	 */
-	// TODO quizas tenga problemas con los emisgerios no??
+	// TODO quizas tenga problemas con los hemisferios no??
 	public void setLatLngIntoBox(LatLng NW, LatLng SE) {
 		if (lat > NW.getLat()) {
 			lat = NW.getLat();
