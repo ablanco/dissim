@@ -21,9 +21,10 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.TreeSet;
 
 import util.HexagonalGrid;
+import util.Point;
 
 public class AdjacentsGridBehav extends CyclicBehaviour {
 
@@ -44,8 +45,24 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 			// Mensaje CFP recibido, hay que procesarlo
 			String pos = msg.getContent();
 			String[] coord = pos.split(" ");
-			ArrayList<int[]> adjacents = grid.getAdjacents(Integer
-					.parseInt(coord[0]), Integer.parseInt(coord[1]));
+			TreeSet<Point> adjacents = null;
+			int x = Integer.parseInt(coord[0]);
+			int y = Integer.parseInt(coord[1]);
+			int d = 1;
+			if (coord.length > 2)
+				d = Integer.parseInt(coord[2]);
+
+			adjacents = grid.getAdjacents(new Point(x, y));
+			TreeSet<Point> adj1 = adjacents;
+			while (d > 1) {
+				TreeSet<Point> adj2 = new TreeSet<Point>();
+				for (Point pt : adj1) {
+					adj2.addAll(grid.getAdjacents(pt));
+				}
+				adjacents.addAll(adj2);
+				adj1 = adj2;
+				d--;
+			}
 
 			ACLMessage reply = msg.createReply();
 			reply.setPerformative(ACLMessage.INFORM);

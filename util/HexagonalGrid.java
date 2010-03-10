@@ -18,7 +18,6 @@ package util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.TreeSet;
 
 import osm.GetOSMInfo;
@@ -319,9 +318,9 @@ public class HexagonalGrid implements Serializable {
 	 * @param p
 	 *            Point
 	 * 
-	 * @return Set<Point> adjacents to p
+	 * @return TreeSet<Point> adjacents to p
 	 */
-	public Set<Point> getAdjacents(Point p) {
+	public TreeSet<Point> getAdjacents(Point p) {
 		TreeSet<Point> result = new TreeSet<Point>();
 		int[][] indexes = getAdjacentsIndexes(p.getX(), p.getY());
 		for (int i = 0; i < indexes.length; i++) {
@@ -445,8 +444,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Given an aoutside coord from BOX: NW,SE, gives an aproximate Point inside
-	 * the box
+	 * Given an outside coord from the BOX: NW,SE, returns an aproximate Point
+	 * inside the box
 	 * 
 	 * @param coord
 	 * @return
@@ -522,9 +521,9 @@ public class HexagonalGrid implements Serializable {
 	public static final int LEFT_DOWN = 5;
 
 	public static Point NearestHexagon(Point a, Point b) {
-		int key = HexagonalGrid.whichHexagonalMove(a, b);
+		int key = whichHexagonalMove(a, b);
 		// movimiento(key);
-		return HexagonalGrid.hexagonalMoveTo(a, key);
+		return hexagonalMoveTo(a, key);
 	}
 
 	public static int whichHexagonalMove(Point a, Point b) {

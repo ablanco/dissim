@@ -71,10 +71,11 @@ public class ModifiedTilesSet implements Set<Point>, Serializable {
 
 	@Override
 	public boolean addAll(Collection<? extends Point> c) {
+		boolean result = false;
 		for (Point p : c) {
-			add(p);
+			result = result || add(p);
 		}
-		return false;
+		return result;
 	}
 
 	@Override

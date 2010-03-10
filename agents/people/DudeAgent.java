@@ -25,18 +25,20 @@ import behaviours.RequestScenarioBehav;
 import behaviours.people.PacmanBehav;
 
 @SuppressWarnings("serial")
-public class DummyAgent extends Agent {
+public class DudeAgent extends Agent {
 
 	private int x;
 	private int y;
+	private int d;
 
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args.length == 2) {
+		if (args.length == 3) {
 			x = Integer.parseInt((String) args[0]);
 			y = Integer.parseInt((String) args[1]);
+			d = Integer.parseInt((String) args[2]);
 		} else {
 			throw new IllegalArgumentException(getLocalName()
 					+ " - Wrong number of arguments: " + args.length);
@@ -53,7 +55,7 @@ public class DummyAgent extends Agent {
 
 			// Obtener agentes entorno
 			DFAgentDescription[] result = AgentHelper.search(myAgent,
-					"add-water");
+					"adjacents-grid");
 			AID envAID = null;
 			for (DFAgentDescription df : result) {
 				String name = df.getName().getLocalName();
@@ -66,8 +68,8 @@ public class DummyAgent extends Agent {
 			}
 
 			myAgent.addBehaviour(new PacmanBehav(myAgent, scen
-					.getUpdatePeople(), envAID));
-			
+					.getUpdatePeople(), envAID, x, y, d));
+
 			done = true;
 		}
 

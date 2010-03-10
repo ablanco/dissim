@@ -17,6 +17,7 @@
 package util.flood;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import util.HexagonalGrid;
 import util.ModifiedTilesSet;
@@ -115,6 +116,19 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	@Override
 	public short getValue(int x, int y) {
 		return (short) (getTerrainValue(x, y) + getWaterValue(x, y));
+	}
+
+	@Override
+	public TreeSet<Point> getAdjacents(Point p) {
+		TreeSet<Point> result = new TreeSet<Point>();
+		int[][] indexes = getAdjacentsIndexes(p.getX(), p.getY());
+		for (int i = 0; i < indexes.length; i++) {
+			int[] tile = indexes[i];
+			Point adj = new Point(tile[0], tile[1], getValue(tile[0], tile[1]),
+					getWaterValue(tile[0], tile[1]));
+			result.add(adj);
+		}
+		return result;
 	}
 
 	public Set<Point> getModCoordAndReset() {
