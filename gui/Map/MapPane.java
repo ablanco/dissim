@@ -42,33 +42,20 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = 8509235099644365808L;
-	private JFrame parent = null;
 	private HexagonalGrid grid = null;
 	private int radius = -1;
 	private int hexWidth;
 	private int hexHeight;
-	private Dimension dim;
 	private int maxUnitIncrement = 1;
+	private Dimension size;
 
-	public MapPane() {
-		this(null);
-	}
 
-	public MapPane(JFrame parent) {
-		super();
-//		dim = new Dimension();
-		this.parent = parent;
-	}
-
-	public void updateGrid(HexagonalGrid grid) {
-		this.grid = grid;
-		Dimension dimension = parent.getSize();
-		int sizeHeight = dimension.height;
-		int sizeWidth = dimension.width;
-		if (radius == -1) { // Primera vez que recibe un grid
+	public void updateGrid(HexagonalGrid grid, Dimension dim) {
+			size = dim;
+			setSize(size);
 			// Calcular el radio de los hexágonos a representar
-			int radiusX = (sizeWidth / grid.getDimX()) / 2;
-			int radiusY = (sizeHeight / grid.getDimY()) / 2;
+			int radiusX = (int) (((size.width / grid.getDimX()) / 2) * 1.1);
+			int radiusY = (int) (((size.height / grid.getDimY()) / 2) * 1.3);
 			if (radiusX < radiusY)
 				radius = radiusX;
 			else
@@ -80,21 +67,16 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 			Polygon p = new Hexagon2D(0, 0, radius);
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
-			// Calcular el tamaño del panel
-			sizeWidth = (int) ((hexWidth * grid.getDimY()) + (hexWidth / 2));
-			//TODO el calculo de la altura no es muy bueno ....
-			sizeHeight = (int) ((hexHeight * (grid.getDimX() - 1)));
-			dim = new Dimension(sizeWidth, sizeHeight);
-			setSize(dim);
-			System.err.println("["+grid.getDimX()+","+grid.getDimY()+"] wid: "+sizeWidth+", Hei: "+sizeHeight+", HexSize ["+hexHeight+","+hexWidth+"]");
-		}
-//		repaint();
-	}
+			// La escala de colores se calcula ahora (una única vez)
+			System.err.println("Size: "+size.width+"x"+size.height+" tamaño hexagono: "+hexWidth+"x"+hexHeight);
+			setVisible(true);
+			}
 
 	@Override
 	public void paint(Graphics g) {
 		if (grid != null) {
 			Graphics2D g2 = (Graphics2D) g;
+			g2.clearRect(0, 0, size.width, size.height);
 
 			// Preferencias para el renderizado, puede que en algunas
 			// plataformas se ignoren. Anteponemos velocidad a calidad.
@@ -113,12 +95,13 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 			for (int i = 0; i < grid.getDimX(); i++) {
 				for (int j = 0; j < grid.getDimY(); j++) {
 					int posX;
-					if (i % 2 == 0) // Fila par
-						posX = (hexWidth / 2) + (j * hexWidth);
-					else
-						posX = hexWidth + (j * hexWidth); // Fila impar
-					int posY = radius + (i * hexHeight);
-
+					if (j % 2 == 0) { // Fila par
+						posX = (hexWidth / 2)
+								+ ((i - grid.getOffX()) * hexWidth);
+					} else { // Fila impar
+						posX = hexWidth + ((i - grid.getOffX()) * hexWidth);
+					}
+					int posY = radius + ((j - grid.getOffY()) * hexHeight);
 					// Generar hexágono
 					Polygon hex = new Hexagon2D(posX, posY, radius);
 					// Dibujar y colorear según la altura
@@ -150,7 +133,7 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 	}
 
 	public Dimension getPreferredSize() {
-		return dim;
+		return size;
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {

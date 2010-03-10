@@ -211,13 +211,13 @@ public class OsmMap {
 			road.addAll(aproximateWayPoints(b, way.getLastNode()));
 		}
 		short key = way.getKey();
-		System.err.println(way.toString());
-		System.err.print("Way: "+way.getId()+", Nodes: ");
+//		System.err.println(way.toString());
+//		System.err.print("Way: "+way.getId()+", Nodes: ");
 		for (Point p : road) {
-			System.err.print(p.toString()+", ");
+//			System.err.print(p.toString()+", ");
 			grid.setStreetValue(p, key);
 		}
-		System.err.println();
+//		System.err.println();
 
 	}
 

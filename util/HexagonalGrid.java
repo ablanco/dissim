@@ -386,20 +386,17 @@ public class HexagonalGrid implements Serializable {
 					"The size of the tiles hasn't been defined yet.");
 		boolean isIn = true;
 		if (!coord.isContainedIn(NW, SE)) {
+			//Si no esta contenida en el BOX hay que corregirlo para que lo pueda aproximar
 			isIn = false;
-			System.err.print(coord.toString() + " --> ");
 			coord.setLatLngIntoBox(NW, SE);
-			System.err.println(coord.toString() + " | " + NW.toString() + " "
-					+ SE.toString());
-		} else {
-			System.err.println("Ta dentro " + coord);
-		}
+		} 
 		// Esta dentro de nuestro mapBox, no hay problema
 		int[] aprox = calculateSize(NW, coord, tileSize);
 		int x = aprox[0];
 		int y = aprox[1];
 		x += offX;
 		y += offY;
+		//Buscamos la minima distancia
 		double distMin = coord.distance(tileToCoord(x, y));
 		boolean mejor = true;
 		while ((distMin * 2) > tileSize && mejor) {
@@ -421,11 +418,11 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Returns a point Form the grid
+	 * Returns a valid point Form the grid
 	 * 
 	 * @param x
 	 * @param y
-	 * @param isIn
+	 * @param isIn explicit declaration if was into the box or not
 	 * @return
 	 */
 	private Point getPoint(int x, int y, boolean isIn) {
@@ -434,7 +431,6 @@ public class HexagonalGrid implements Serializable {
 		} else if (x >= dimX) {
 			x = dimX - 1;
 		}
-
 		if (y < 0) {
 			y = 0;
 		} else if (y >= dimY) {
