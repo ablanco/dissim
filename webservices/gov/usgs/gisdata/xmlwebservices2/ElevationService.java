@@ -4,6 +4,7 @@ package webservices.gov.usgs.gisdata.xmlwebservices2;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
+
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
 import javax.xml.ws.WebEndpoint;

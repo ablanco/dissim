@@ -16,12 +16,12 @@
 
 package behaviours.flood;
 
-import util.AgentHelper;
-import util.jcoord.LatLng;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
+import util.AgentHelper;
+import util.jcoord.LatLng;
 
 @SuppressWarnings("serial")
 public class WaterSourceBehav extends TickerBehaviour {

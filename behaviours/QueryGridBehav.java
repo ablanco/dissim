@@ -16,10 +16,10 @@
 
 package behaviours;
 
-import util.HexagonalGrid;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import util.HexagonalGrid;
 
 public class QueryGridBehav extends CyclicBehaviour {
 

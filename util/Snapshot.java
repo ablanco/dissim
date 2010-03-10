@@ -16,9 +16,9 @@
 
 package util;
 
-import java.io.Serializable;
-
 import jade.core.AID;
+
+import java.io.Serializable;
 
 public class Snapshot implements Serializable {
 

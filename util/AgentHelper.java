@@ -16,9 +16,6 @@
 
 package util;
 
-import java.io.IOException;
-import java.io.Serializable;
-
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.DFService;
@@ -27,6 +24,9 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
+import java.io.IOException;
+import java.io.Serializable;
 
 public class AgentHelper {
 

@@ -425,8 +425,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @param terrainValue
 	 * @return
 	 */
-	public LatLng metersToDegrees(double x, double y, short terrainValue) {
-		// TODO chapuza que puede funcionar
+	public LatLng metersToDegrees(double x, double y, short terrainValue){
 		UTMRef u = this.toUTMRef();
 		u.addNorthingEasting(x, y);
 
@@ -444,7 +443,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @return
 	 */
 	public int[] degreesToMeters(LatLng coord, int tileSize) {
-		// TODO otra chapuza que podría funcionar ...
 		UTMRef u = this.toUTMRef();
 		UTMRef nw = coord.toUTMRef();
 

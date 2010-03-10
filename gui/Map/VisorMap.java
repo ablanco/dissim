@@ -21,6 +21,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 
 import util.Snapshot;
 import util.Updateable;
@@ -40,14 +41,11 @@ public class VisorMap extends JFrame implements Updateable {
 		setSize(new Dimension(800,600));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		mapPane = new MapPane();
-//		c.add(new JScrollPane(mapPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-//				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.CENTER);
-		
-		c.add(mapPane, BorderLayout.CENTER);
+		mapPane = new MapPane(this);
+		c.add(new JScrollPane(mapPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.CENTER);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.setTitle("Visor de Mapas"); // TODO Internacionalización
-		mapPane.repaint();
 	}
 
 	@Override
@@ -67,7 +65,8 @@ public class VisorMap extends JFrame implements Updateable {
 					"Object is not an instance of Snapshot");
 		
 		Snapshot snap = (Snapshot) obj;
-		mapPane.updateGrid(snap.getGrid(),getSize());
+		//TODO pasar solo short[][]
+		mapPane.updateGrid(snap.getGrid());
 	}
 
 	@Override

@@ -474,17 +474,18 @@ public class HexagonalGrid implements Serializable {
 	 * Call a webservice to obtain the elevation of all tiles of the grid
 	 */
 	public void obtainTerrainElevation() {
+		//TODO eye-candy
 		// int total = gridX * gridY;
-		int cont = 0;
+//		int cont = 0;
 		int endX = offX + dimX;
 		int endY = offY + dimY;
 		for (int i = offX - 1; i <= endX; i++) {
 			for (int j = offY - 1; j <= endY; j++) {
 				LatLng coord = tileToCoord(i, j);
 				double value = AltitudeWS.getElevation(coord);
-				setTerrainValue(i, j, (short) value); // TODO
+				setTerrainValue(i, j, (short) value); 
 				// doubleToInner(value));
-				cont++;
+//				cont++;
 				// System.out.println("Obtenidas " + cont + " de " + total +
 				// " alturas\r");
 			}
