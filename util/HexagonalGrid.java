@@ -663,19 +663,28 @@ public class HexagonalGrid implements Serializable {
 	public static int distance(int col1, int row1, int col2, int row2) {
 		int dist = 0;
 		int incC = 1;
-		if (col2 < col2)
+		if (col2 < col1)
 			incC = -1;
 		int incR = 1;
 		if (row2 < row1)
 			incR = -1;
 
-		while (col1 != col2 && row1 != row2) {
-			// TODO
+		while (col1 != col2 || row1 != row2) {
+			if (row1 == row2) {
+				col1 += incC;
+			} else {
+				boolean parR = (row1 % 2 == 0);
+				row1 += incR;
+				if (parR && incC < 0 && col1 != col2) {
+					col1 += incC;
+				} else if (!parR && incC > 0 && col1 != col2) {
+					col1 += incC;
+				}
+			}
 
 			dist++;
 		}
 
 		return dist;
 	}
-
 }
