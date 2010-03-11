@@ -25,7 +25,7 @@ import behaviours.RequestScenarioBehav;
 import behaviours.people.PacmanBehav;
 
 @SuppressWarnings("serial")
-public class DudeAgent extends Agent {
+public class PedestrianAgent extends Agent {
 
 	private int x;
 	private int y;
@@ -44,10 +44,10 @@ public class DudeAgent extends Agent {
 					+ " - Wrong number of arguments: " + args.length);
 		}
 
-		addBehaviour(new RequestScenarioBehav(new ContinueDA()));
+		addBehaviour(new RequestScenarioBehav(new ContinuePA()));
 	}
 
-	protected class ContinueDA extends ReceiveScenarioBehav {
+	protected class ContinuePA extends ReceiveScenarioBehav {
 
 		@Override
 		public void action() {

@@ -386,17 +386,18 @@ public class HexagonalGrid implements Serializable {
 					"The size of the tiles hasn't been defined yet.");
 		boolean isIn = true;
 		if (!coord.isContainedIn(NW, SE)) {
-			//Si no esta contenida en el BOX hay que corregirlo para que lo pueda aproximar
+			// Si no esta contenida en el BOX hay que corregirlo para que lo
+			// pueda aproximar
 			isIn = false;
 			coord.setLatLngIntoBox(NW, SE);
-		} 
+		}
 		// Esta dentro de nuestro mapBox, no hay problema
 		int[] aprox = calculateSize(NW, coord, tileSize);
 		int col = aprox[0];
 		int row = aprox[1];
 		col += offX;
 		row += offY;
-		//Buscamos la minima distancia
+		// Buscamos la minima distancia
 		double distMin = coord.distance(tileToCoord(col, row));
 		boolean mejor = true;
 		while ((distMin * 2) > tileSize && mejor) {
@@ -422,7 +423,8 @@ public class HexagonalGrid implements Serializable {
 	 * 
 	 * @param col
 	 * @param row
-	 * @param isIn explicit declaration if was into the box or not
+	 * @param isIn
+	 *            explicit declaration if was into the box or not
 	 * @return
 	 */
 	private Point getPoint(int col, int row, boolean isIn) {
@@ -474,18 +476,18 @@ public class HexagonalGrid implements Serializable {
 	 * Call a webservice to obtain the elevation of all tiles of the grid
 	 */
 	public void obtainTerrainElevation() {
-		//TODO eye-candy
+		// TODO eye-candy
 		// int total = gridX * gridY;
-//		int cont = 0;
+		// int cont = 0;
 		int endX = offX + columns;
 		int endY = offY + rows;
 		for (int i = offX - 1; i <= endX; i++) {
 			for (int j = offY - 1; j <= endY; j++) {
 				LatLng coord = tileToCoord(i, j);
 				double value = AltitudeWS.getElevation(coord);
-				setTerrainValue(i, j, (short) value); 
+				setTerrainValue(i, j, (short) value);
 				// doubleToInner(value));
-//				cont++;
+				// cont++;
 				// System.out.println("Obtenidas " + cont + " de " + total +
 				// " alturas\r");
 			}
@@ -500,14 +502,17 @@ public class HexagonalGrid implements Serializable {
 	@Override
 	public String toString() {
 		String s = "Box: " + NW.toString() + ", " + SE.toString()
-				+ ", Diagonal: " + (int)NW.distance(SE) + " m ";
+				+ ", Diagonal: " + (int) NW.distance(SE) + " m ";
 		s += "\nDimensions: " + columns + "x" + rows + ", Width: "
-				+ (int)NW.distance(new LatLng(NW.getLat(), SE.getLng()))
+				+ (int) NW.distance(new LatLng(NW.getLat(), SE.getLng()))
 				+ " m, Height: "
-				+ (int)NW.distance(new LatLng(SE.getLat(), NW.getLng())) + " m";
+				+ (int) NW.distance(new LatLng(SE.getLat(), NW.getLng()))
+				+ " m";
 		s += "\nTile size: " + tileSize + "m";
 		return s;
 	}
+
+	// STATIC DATA AND METHODS
 
 	// Relative positions from point
 	public static final int LEFT = 0;
@@ -654,4 +659,23 @@ public class HexagonalGrid implements Serializable {
 		}
 		return new Point(col, row);
 	}
+
+	public static int distance(int col1, int row1, int col2, int row2) {
+		int dist = 0;
+		int incC = 1;
+		if (col2 < col2)
+			incC = -1;
+		int incR = 1;
+		if (row2 < row1)
+			incR = -1;
+
+		while (col1 != col2 && row1 != row2) {
+			// TODO
+
+			dist++;
+		}
+
+		return dist;
+	}
+
 }

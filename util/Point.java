@@ -27,6 +27,7 @@ public class Point implements Comparable<Point>, Serializable {
 	private short z;
 	private boolean isIn = true;
 	private short w = 0;
+	private short s = 0;
 
 	public Point(int col, int row) {
 		this(col, row, (short) 0);
@@ -48,9 +49,10 @@ public class Point implements Comparable<Point>, Serializable {
 		this.isIn = isIn;
 	}
 
-	public Point(int col, int row, short z, short w) {
+	public Point(int col, int row, short z, short w, short s) {
 		this(col, row, z);
 		this.w = w;
+		this.s = s;
 	}
 
 	public boolean isIn() {
@@ -99,5 +101,9 @@ public class Point implements Comparable<Point>, Serializable {
 
 	public short getW() {
 		return w;
+	}
+
+	public short getS() {
+		return s;
 	}
 }

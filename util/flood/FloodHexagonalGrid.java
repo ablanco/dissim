@@ -125,7 +125,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		for (int i = 0; i < indexes.length; i++) {
 			int[] tile = indexes[i];
 			Point adj = new Point(tile[0], tile[1], getValue(tile[0], tile[1]),
-					getWaterValue(tile[0], tile[1]));
+					getWaterValue(tile[0], tile[1]), getStreetValue(tile[0],
+							tile[1]));
 			result.add(adj);
 		}
 		return result;

@@ -70,6 +70,7 @@ public class PacmanBehav extends CyclicBehaviour {
 					Set<Point> adjacents = (Set<Point>) msg.getContentObject();
 					for (Point pt : adjacents) {
 						// TODO Buscar hacia dnd moverse
+						
 					}
 					// TODO Informar al entorno del movimiento
 					step = 0;
