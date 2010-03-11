@@ -16,6 +16,8 @@ import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 
+import osm.OsmInf;
+
 import util.Hexagon2D;
 import util.HexagonalGrid;
 
@@ -99,9 +101,9 @@ public class MapPane extends JPanel implements Scrollable{
 					// Generar hexágono
 					Polygon hex = new Hexagon2D(posX, posY, radius);
 					// Dibujar y colorear según la altura
-					int value = grid.getStreetValue(i, j);
-					if (value != 0) {
-						g2.setColor(new Color(value * 1000));
+					short value = grid.getStreetValue(i, j);
+					if (value != OsmInf.Raw_Field) {
+						g2.setColor(OsmInf.witchColor(value));
 						// System.err.println("pintando en "+i+","+j+", ");
 					} else {
 						g2.setColor(Color.WHITE);

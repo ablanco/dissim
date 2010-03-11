@@ -158,10 +158,15 @@ public class GetOSMInfo {
 		// If is extended Node:
 		if (node.getFirstChild() != null) {
 			// Is a special Place
-			osmNode.setExtendedInfo(OsmMap
+			osmNode.setExtendedInfo(OsmInf
 					.getExtendedInfo(node.getFirstChild()));
 			// Adding to Special Places
-			specialPlaces.add(osmNode);
+			if (osmNode.getExtendedInfo().getKey() != OsmInf.Undefined){
+				specialPlaces.add(osmNode);
+				
+			}else{
+				System.err.println("Undefinde node: "+osmNode);
+			}
 		} else {
 			// Adding node to map of nodes
 			osmNodes.put(id, osmNode);
@@ -217,7 +222,7 @@ public class GetOSMInfo {
 			node = node.getNextSibling();
 		}
 		// Obtaining extended info
-		osmWay.setExtendedInfo(OsmMap.getExtendedInfo(node));
+		osmWay.setExtendedInfo(OsmInf.getExtendedInfo(node));
 		// osmLog.debugln(osmWay.toString());
 	}
 

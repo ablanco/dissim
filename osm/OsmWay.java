@@ -3,7 +3,7 @@ package osm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OsmWay implements Comparable<OsmWay> {
+public class OsmWay implements Comparable<OsmWay>{
 	/**
 	 * Contains OsmNodes in a certain orden that especify the road
 	 */
@@ -78,21 +78,12 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	@Override
-	public int compareTo(OsmWay w) {
-		if (id == w.id)
-			return 0;
-		if (id > w.id) {
-			return (int) (id - w.id);
-		} else {
-			return (int) (w.id - id);
-		}
-	}
-
 	public boolean equals(Object o) {
 		OsmWay way = (OsmWay) o;
 		return id == way.id;
 	}
 
+	@Override
 	public String toString() {
 		String result = "Way Id: " + id;
 		if (extendedInfo != null) {
@@ -113,5 +104,11 @@ public class OsmWay implements Comparable<OsmWay> {
 
 	public void setExtendedInfo(OsmNodeExtendedInfo extendedInfo) {
 		this.extendedInfo = extendedInfo;
+		priority = extendedInfo.getKey();
+	}
+
+	@Override
+	public int compareTo(OsmWay o) {
+		return (int) (id - o.id);
 	}
 }

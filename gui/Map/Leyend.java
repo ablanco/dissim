@@ -42,27 +42,28 @@ public class Leyend extends AbstractTableModel{
 	}
 
 	private Object[][] getMapData() {
-		Object[][] data= {{"Raw Field", new Color(OsmMap.Raw_Field *1000), new Boolean(true)},
-				{"Highway", new Color(OsmMap.Highway *1000), new Boolean(true)},
-				{"Barrier", new Color(OsmMap.Barrier *1000), new Boolean(true)},
-				{"Cycleway", new Color(OsmMap.Cycleway *1000), new Boolean(true)},
-				{"Tracktype", new Color(OsmMap.Tracktype *1000), new Boolean(true)},
-				{"Waterway", new Color(OsmMap.Waterway *1000), new Boolean(true)},
-				{"Railway", new Color(OsmMap.Railway *1000), new Boolean(true)},
-				{"Aeroway", new Color(OsmMap.Aeroway *1000), new Boolean(true)},
-				{"Aerialway", new Color(OsmMap.Aerialway *1000), new Boolean(true)},
-				{"Power", new Color(OsmMap.Power *1000), new Boolean(true)},
-				{"Man Made", new Color(OsmMap.Man_Made *1000), new Boolean(true)},
-				{"Leisure", new Color(OsmMap.Leisure *1000), new Boolean(true)},
-				{"Amenity", new Color(OsmMap.Amenity *1000), new Boolean(true)},
-				{"Shop", new Color(OsmMap.Shop *1000), new Boolean(true)},
-				{"Tourism", new Color(OsmMap.Tourism *1000), new Boolean(true)},
-				{"Historic", new Color(OsmMap.Historic *1000), new Boolean(true)},
-				{"Landuse", new Color(OsmMap.Landuse *1000), new Boolean(true)},
-				{"Military", new Color(OsmMap.Military *1000), new Boolean(true)},
-				{"Natural", new Color(OsmMap.Natural *1000), new Boolean(true)},
-				{"Geological", new Color(OsmMap.Geological *1000), new Boolean(true)},
-				{"Building", new Color(OsmMap.Building *1000), new Boolean(true)}
+		Object[][] data= {
+//				{"Raw Field", new Color(OsmMap.Raw_Field *1000), new Boolean(true)},
+//				{"Highway", new Color(OsmMap.Highway *1000), new Boolean(true)},
+//				{"Barrier", new Color(OsmMap.Barrier *1000), new Boolean(true)},
+//				{"Cycleway", new Color(OsmMap.Cycleway *1000), new Boolean(true)},
+//				{"Tracktype", new Color(OsmMap.Tracktype *1000), new Boolean(true)},
+//				{"Waterway", new Color(OsmMap.Waterway *1000), new Boolean(true)},
+//				{"Railway", new Color(OsmMap.Railway *1000), new Boolean(true)},
+//				{"Aeroway", new Color(OsmMap.Aeroway *1000), new Boolean(true)},
+//				{"Aerialway", new Color(OsmMap.Aerialway *1000), new Boolean(true)},
+//				{"Power", new Color(OsmMap.Power *1000), new Boolean(true)},
+//				{"Man Made", new Color(OsmMap.Man_Made *1000), new Boolean(true)},
+//				{"Leisure", new Color(OsmMap.Leisure *1000), new Boolean(true)},
+//				{"Amenity", new Color(OsmMap.Amenity *1000), new Boolean(true)},
+//				{"Shop", new Color(OsmMap.Shop *1000), new Boolean(true)},
+//				{"Tourism", new Color(OsmMap.Tourism *1000), new Boolean(true)},
+//				{"Historic", new Color(OsmMap.Historic *1000), new Boolean(true)},
+//				{"Landuse", new Color(OsmMap.Landuse *1000), new Boolean(true)},
+//				{"Military", new Color(OsmMap.Military *1000), new Boolean(true)},
+//				{"Natural", new Color(OsmMap.Natural *1000), new Boolean(true)},
+//				{"Geological", new Color(OsmMap.Geological *1000), new Boolean(true)},
+//				{"Building", new Color(OsmMap.Building *1000), new Boolean(true)}
 		};
 	return data;	
 	}

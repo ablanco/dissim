@@ -22,7 +22,6 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
 
 import util.Snapshot;
 import util.Updateable;
