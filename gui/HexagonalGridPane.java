@@ -25,6 +25,8 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
@@ -36,7 +38,7 @@ import util.Snapshot;
 import util.flood.FloodHexagonalGrid;
 
 @SuppressWarnings("serial")
-public class HexagonalGridPane extends JPanel implements Scrollable {
+public class HexagonalGridPane extends JPanel implements Scrollable{
 
 	private HexagonalGrid grid = null;
 	private int radius = -1;
@@ -48,12 +50,12 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 	private Dimension size = new Dimension(300, 300);
 	private boolean firstTime = true;
 
+	
 	public void updateGrid(Snapshot snap, Dimension dim) {
 		this.grid = snap.getGrid();
 
 		if (dim.height != size.height || dim.width != size.width || firstTime) {
 			size = dim;
-			setSize(size);
 			// Calcular el radio de los hexágonos a representar
 			int radiusX = (int) (((size.width / grid.getColumns()) / 2) * 1.1);
 			int radiusY = (int) (((size.height / grid.getRows()) / 2) * 1.3);
@@ -68,6 +70,13 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			Polygon p = new Hexagon2D(0, 0, radius);
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
+			
+			//TODO intento de arreglarlo para scroll pane pero nada
+			int width = ((hexWidth * grid.getColumns())  + (hexWidth /2 ));
+			int height = (hexHeight * grid.getRows());
+			
+			size =  new Dimension(width, height);
+			setSize(size);
 		}
 
 		if (firstTime) { // Primera vez que recibe un grid

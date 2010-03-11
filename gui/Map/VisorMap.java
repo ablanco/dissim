@@ -21,6 +21,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
 import util.Snapshot;
@@ -33,15 +34,17 @@ public class VisorMap extends JFrame implements Updateable {
 	 */
 	private static final long serialVersionUID = 6824786165438558551L;
 	private MapPane mapPane = null;
+	private JLabel gridLbl = new JLabel();
 
 
 	public VisorMap() {
 		setSize(new Dimension(800,600));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		mapPane = new MapPane(this);
+		mapPane = new MapPane();
 		c.add(new JScrollPane(mapPane, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.CENTER);
+		c.add(gridLbl, BorderLayout.NORTH);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		this.setTitle("Visor de Mapas"); // TODO Internacionalización
 	}
@@ -63,7 +66,8 @@ public class VisorMap extends JFrame implements Updateable {
 					"Object is not an instance of Snapshot");
 		
 		Snapshot snap = (Snapshot) obj;
-		//TODO pasar solo short[][]
+		gridLbl.setText(snap.getGrid().toString());
+		//Necesito hexagonalGrid para poder escribir los valores en el
 		mapPane.updateGrid(snap.getGrid(), getSize());
 	}
 

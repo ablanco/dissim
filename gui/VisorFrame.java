@@ -31,19 +31,20 @@ import util.Updateable;
 public class VisorFrame extends JFrame implements Updateable {
 
 	private HexagonalGridPane pane = null;
-	private JScrollPane scrollPane;
+	// private JScrollPane scrollPane;
 	private JLabel gridLbl = new JLabel();
 
 	public VisorFrame() {
 		setSize(new Dimension(800, 600));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
-		pane = new HexagonalGridPane();//getSize());
-		scrollPane = new JScrollPane(pane,
-				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setSize(getSize());
+		pane = new HexagonalGridPane();// getSize());
 		// TODO si añado scrollPane en vez de pane no se pinta nada
+//		scrollPane = new JScrollPane(pane,
+//				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+//				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+//		scrollPane.setSize(getSize());
+
 		c.add(pane, BorderLayout.CENTER);
 		c.add(gridLbl, BorderLayout.NORTH);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -65,11 +66,12 @@ public class VisorFrame extends JFrame implements Updateable {
 		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");
-		
+
 		Snapshot snap = (Snapshot) obj;
-		if (gridLbl.getText().equals(""));
-			gridLbl.setText(snap.getGrid().toString());
-		
+		if (gridLbl.getText().equals(""))
+			;
+		gridLbl.setText(snap.getGrid().toString());
+
 		pane.updateGrid(snap, getSize());
 	}
 

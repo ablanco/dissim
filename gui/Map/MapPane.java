@@ -11,10 +11,7 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
@@ -22,35 +19,25 @@ import javax.swing.SwingConstants;
 import util.Hexagon2D;
 import util.HexagonalGrid;
 
-public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
+public class MapPane extends JPanel implements Scrollable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8509235099644365808L;
-	private JFrame parent = null;
 	private HexagonalGrid grid = null;
 	private int radius = -1;
 	private int hexWidth;
 	private int hexHeight;
-	private Dimension size = new Dimension(300, 300);
+	private Dimension size;
 	private int maxUnitIncrement = 1;
 
-
-	public MapPane() {
-		this(null);
-	}
-
-	public MapPane(JFrame parent) {
-		super();
-		// dim = new Dimension();
-		this.parent = parent;
-	}
-
-	public void updateGrid(HexagonalGrid grid, Dimension dim) {
-//		size = dim;
-//		this.grid = grid;
+	public Dimension updateGrid(HexagonalGrid grid, Dimension dim) {
+		size = dim;
+		this.grid = grid;
 //		setSize(size);
+		
+		
 		// Calcular el radio de los hexágonos a representar
 		int radiusX = (int) (((size.width / grid.getColumns()) / 2) * 1.1);
 		int radiusY = (int) (((size.height / grid.getRows()) / 2) * 1.3);
@@ -66,10 +53,12 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 		this.hexWidth = p.xpoints[4] - p.xpoints[2];
 		this.hexHeight = p.ypoints[1] - p.ypoints[3];
 
-		int width = ((hexWidth * (grid.getColumns()) + 1) + (hexWidth /2 ));
-		int height = (hexHeight * (grid.getRows()+ 1));
-		size = new Dimension(width, height);
+		int width = ((hexWidth * grid.getColumns())  + (hexWidth /2 ));
+		int height = (hexHeight * grid.getRows());
+		
+		size =  new Dimension(width, height);
 		setSize(size);
+		return size;
 		// repaint();
 	}
 
@@ -123,15 +112,6 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 		}
 	}
 
-	// Methods required by the MouseMotionListener interface:
-	public void mouseMoved(MouseEvent e) {
-	}
-
-	public void mouseDragged(MouseEvent e) {
-		// The user is dragging us, so scroll!
-		Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
-		scrollRectToVisible(r);
-	}
 
 	public void setGrid(HexagonalGrid grid) {
 		this.grid = grid;

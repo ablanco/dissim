@@ -500,11 +500,11 @@ public class HexagonalGrid implements Serializable {
 	@Override
 	public String toString() {
 		String s = "Box: " + NW.toString() + ", " + SE.toString()
-				+ ", Diagonal: " + NW.distance(SE) + "m";
-		s += "\nDimensions: [" + columns + "," + rows + "], Width: "
-				+ NW.distance(new LatLng(NW.getLat(), SE.getLng()))
-				+ "m, Height: "
-				+ NW.distance(new LatLng(SE.getLat(), NW.getLng())) + "m";
+				+ ", Diagonal: " + (int)NW.distance(SE) + " m ";
+		s += "\nDimensions: " + columns + "x" + rows + ", Width: "
+				+ (int)NW.distance(new LatLng(NW.getLat(), SE.getLng()))
+				+ " m, Height: "
+				+ (int)NW.distance(new LatLng(SE.getLat(), NW.getLng())) + " m";
 		s += "\nTile size: " + tileSize + "m";
 		return s;
 	}
