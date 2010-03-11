@@ -29,7 +29,7 @@ public class VisorTest {
 		FloodHexagonalGrid grid = new FloodHexagonalGrid(new LatLng(30.093681,
 				-90.446724), new LatLng(30.083244, -90.434048), 0, 0, 400);
 		
-		System.out.println("Grid: " + grid.getDimX() + "x" + grid.getDimY());
+		System.out.println("Grid: " + grid.getColumns() + "x" + grid.getRows());
 
 		Snapshot snap = new Snapshot(new AID(), grid, new DateAndTime(2000, 12,
 				15, 18, 55));

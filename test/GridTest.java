@@ -33,7 +33,7 @@ public class GridTest {
 		HexagonalGrid grid = new FloodHexagonalGrid(new LatLng(30.093681,
 				-90.446724), new LatLng(30.083244, -90.434048), 0, 0, 350);
 		// HexagonalGrid grid = new HexagonalGrid(4, 4);
-		System.out.println(grid.getDimX() + " x " + grid.getDimY() + " GRID\n");
+		System.out.println(grid.getColumns() + " x " + grid.getRows() + " GRID\n");
 
 		System.out.println("(0,0) Expected: (1,0) (0,1)");
 		System.out.print("     Generated: ");

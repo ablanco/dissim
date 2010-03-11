@@ -60,7 +60,7 @@ public class AddWaterBehav extends CyclicBehaviour {
 			int[] gridCoord = indexes.get(coord.toString());
 			if (gridCoord == null) {
 				Point p = grid.coordToTile(coord);
-				gridCoord = new int[] { p.getX(), p.getY() };
+				gridCoord = new int[] { p.getCol(), p.getRow() };
 				indexes.put(coord.toString(), gridCoord);
 			}
 			int x = gridCoord[0];

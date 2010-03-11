@@ -19,12 +19,12 @@ public class PositionGridTest {
 		long err = 0;
 		System.out.println(grid.toString());
 
-		for (int x = 0; x < grid.getDimX(); x++) {
-			for (int y = 0; y < grid.getDimY(); y++) {
+		for (int x = 0; x < grid.getColumns(); x++) {
+			for (int y = 0; y < grid.getRows(); y++) {
 				LatLng c = grid.tileToCoord(x, y);
 				try {
 					Point p = grid.coordToTile(c);
-					if (x != p.getX() || y != p.getY()) {
+					if (x != p.getCol() || y != p.getRow()) {
 						System.err.println(c.toString() + " [" + x + "," + y
 								+ "] != " + p.toString());
 						err++;
@@ -38,7 +38,7 @@ public class PositionGridTest {
 		}
 
 		System.err.println("*** Errores = " + ((double) err)
-				/ ((double) grid.getDimX() * grid.getDimY()));
+				/ ((double) grid.getColumns() * grid.getRows()));
 	}
 
 }

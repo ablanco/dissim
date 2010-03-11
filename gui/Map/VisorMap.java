@@ -36,8 +36,6 @@ public class VisorMap extends JFrame implements Updateable {
 
 
 	public VisorMap() {
-
-//		setPreferredSize(Toolkit.getDefaultToolkit().getScreenSize());
 		setSize(new Dimension(800,600));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
@@ -66,7 +64,7 @@ public class VisorMap extends JFrame implements Updateable {
 		
 		Snapshot snap = (Snapshot) obj;
 		//TODO pasar solo short[][]
-		mapPane.updateGrid(snap.getGrid());
+		mapPane.updateGrid(snap.getGrid(), getSize());
 	}
 
 	@Override

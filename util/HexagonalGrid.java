@@ -48,8 +48,8 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Grid data
 	 */
-	protected int dimX;
-	protected int dimY;
+	protected int columns;
+	protected int rows;
 	protected int offX; // Index of the 0,0 tile
 	protected int offY;
 	protected short[][] gridTerrain;
@@ -79,24 +79,24 @@ public class HexagonalGrid implements Serializable {
 		// Calcular el tamaño de la rejilla en función de la distancia real y el
 		// tamaño de los hexágonos
 		int size[] = calculateSize(NW, SE, tileSize);
-		int x = size[0];
-		int y = size[1];
+		int col = size[0];
+		int row = size[1];
 
-		ilat = Math.abs(NW.getLat() - SE.getLat()) / y;
-		ilng = Math.abs(NW.getLng() - SE.getLng()) / x;
+		ilat = Math.abs(NW.getLat() - SE.getLat()) / row;
+		ilng = Math.abs(NW.getLng() - SE.getLng()) / col;
 
-		gridTerrain = new short[x][y];
-		northTerrain = new short[x + 2];
-		southTerrain = new short[x + 2];
-		eastTerrain = new short[y];
-		westTerrain = new short[y];
-		gridStreets = new short[x][y];
-		northStreets = new short[x + 2];
-		southStreets = new short[x + 2];
-		eastStreets = new short[y];
-		westStreets = new short[y];
-		dimX = x;
-		dimY = y;
+		gridTerrain = new short[col][row];
+		northTerrain = new short[col + 2];
+		southTerrain = new short[col + 2];
+		eastTerrain = new short[row];
+		westTerrain = new short[row];
+		gridStreets = new short[col][row];
+		northStreets = new short[col + 2];
+		southStreets = new short[col + 2];
+		eastStreets = new short[row];
+		westStreets = new short[row];
+		columns = col;
+		rows = row;
 	}
 
 	/**
@@ -116,94 +116,94 @@ public class HexagonalGrid implements Serializable {
 		return new int[] { x, y };
 	}
 
-	public short setTerrainValue(int x, int y, short value) {
-		x -= offX;
-		y -= offY;
+	public short setTerrainValue(int col, int row, short value) {
+		col -= offX;
+		row -= offY;
 		short old;
-		if (y == -1) {
-			old = northTerrain[x + 1];
-			northTerrain[x + 1] = value;
-		} else if (y == dimY) {
-			old = southTerrain[x + 1];
-			southTerrain[x + 1] = value;
-		} else if (x == -1) {
-			old = westTerrain[y];
-			westTerrain[y] = value;
-		} else if (x == dimX) {
-			old = eastTerrain[y];
-			eastTerrain[y] = value;
+		if (row == -1) {
+			old = northTerrain[col + 1];
+			northTerrain[col + 1] = value;
+		} else if (row == rows) {
+			old = southTerrain[col + 1];
+			southTerrain[col + 1] = value;
+		} else if (col == -1) {
+			old = westTerrain[row];
+			westTerrain[row] = value;
+		} else if (col == columns) {
+			old = eastTerrain[row];
+			eastTerrain[row] = value;
 		} else {
-			old = gridTerrain[x][y];
-			gridTerrain[x][y] = value;
+			old = gridTerrain[col][row];
+			gridTerrain[col][row] = value;
 		}
 		return old;
 	}
 
-	public short getTerrainValue(int x, int y) {
-		x -= offX;
-		y -= offY;
+	public short getTerrainValue(int col, int row) {
+		col -= offX;
+		row -= offY;
 		short value;
-		if (y == -1) {
-			value = northTerrain[x + 1];
-		} else if (y == dimY) {
-			value = southTerrain[x + 1];
-		} else if (x == -1) {
-			value = westTerrain[y];
-		} else if (x == dimX) {
-			value = eastTerrain[y];
+		if (row == -1) {
+			value = northTerrain[col + 1];
+		} else if (row == rows) {
+			value = southTerrain[col + 1];
+		} else if (col == -1) {
+			value = westTerrain[row];
+		} else if (col == columns) {
+			value = eastTerrain[row];
 		} else {
-			value = gridTerrain[x][y];
+			value = gridTerrain[col][row];
 		}
 		return value;
 	}
 
-	public short setStreetValue(int x, int y, short value) {
-		x -= offX;
-		y -= offY;
+	public short setStreetValue(int col, int row, short value) {
+		col -= offX;
+		row -= offY;
 		short old;
-		if (y == -1) {
-			old = northStreets[x + 1];
-			northStreets[x + 1] = value;
-		} else if (y == dimY) {
-			old = southStreets[x + 1];
-			southStreets[x + 1] = value;
-		} else if (x == -1) {
-			old = westStreets[y];
-			westStreets[y] = value;
-		} else if (x == dimX) {
-			old = eastStreets[y];
-			eastStreets[y] = value;
+		if (row == -1) {
+			old = northStreets[col + 1];
+			northStreets[col + 1] = value;
+		} else if (row == rows) {
+			old = southStreets[col + 1];
+			southStreets[col + 1] = value;
+		} else if (col == -1) {
+			old = westStreets[row];
+			westStreets[row] = value;
+		} else if (col == columns) {
+			old = eastStreets[row];
+			eastStreets[row] = value;
 		} else {
-			old = gridStreets[x][y];
-			gridStreets[x][y] = value;
+			old = gridStreets[col][row];
+			gridStreets[col][row] = value;
 		}
 		return old;
 	}
 
 	public short setStreetValue(Point p, short value) {
-		return setStreetValue(p.getX(), p.getY(), value);
+		return setStreetValue(p.getCol(), p.getRow(), value);
 	}
 
-	public short getStreetValue(int x, int y) {
-		x -= offX;
-		y -= offY;
+	public short getStreetValue(int col, int row) {
+		col -= offX;
+		row -= offY;
 		short value;
-		if (y == -1) {
-			value = northStreets[x + 1];
-		} else if (y == dimY) {
-			value = southStreets[x + 1];
-		} else if (x == -1) {
-			value = westStreets[y];
-		} else if (x == dimX) {
-			value = eastStreets[y];
+		if (row == -1) {
+			value = northStreets[col + 1];
+		} else if (row == rows) {
+			value = southStreets[col + 1];
+		} else if (col == -1) {
+			value = westStreets[row];
+		} else if (col == columns) {
+			value = eastStreets[row];
 		} else {
-			value = gridStreets[x][y];
+			value = gridStreets[col][row];
 		}
 		return value;
 	}
 
 	public short getStreetValue(Point p) {
-		return getStreetValue(p.getX(), p.getY());
+		return getStreetValue(p.getCol(), p.getRow());
 	}
 
 	public void increaseValue(int x, int y, short increment) {
@@ -221,12 +221,12 @@ public class HexagonalGrid implements Serializable {
 		return getTerrainValue(x, y);
 	}
 
-	public int getDimX() {
-		return dimX;
+	public int getColumns() {
+		return columns;
 	}
 
-	public int getDimY() {
-		return dimY;
+	public int getRows() {
+		return rows;
 	}
 
 	public int getOffX() {
@@ -272,7 +272,7 @@ public class HexagonalGrid implements Serializable {
 				}
 				// Comprobamos que el hexágono adyacente no está fuera de la
 				// rejilla
-				if (col >= -1 && col <= dimX && fila >= -1 && fila <= dimY) {
+				if (col >= -1 && col <= columns && fila >= -1 && fila <= rows) {
 					adjacents[cont][0] = col;
 					adjacents[cont][1] = fila;
 					cont++;
@@ -322,7 +322,7 @@ public class HexagonalGrid implements Serializable {
 	 */
 	public TreeSet<Point> getAdjacents(Point p) {
 		TreeSet<Point> result = new TreeSet<Point>();
-		int[][] indexes = getAdjacentsIndexes(p.getX(), p.getY());
+		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
 		for (int i = 0; i < indexes.length; i++) {
 			result.add(new Point(indexes[i][0], indexes[i][1], getValue(
 					indexes[i][0], indexes[i][1])));
@@ -341,37 +341,37 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Convert [x,y] to the corresponding LatLng Coordinate (with altitude)
 	 * 
-	 * @param x
+	 * @param col
 	 *            lat
-	 * @param y
+	 * @param row
 	 *            lng
 	 * @return LatLng
 	 */
-	public LatLng tileToCoord(int x, int y) {
+	public LatLng tileToCoord(int col, int row) {
 		if (NW == null || SE == null)
 			throw new IllegalStateException(
 					"Simulation area hasn't been defined yet.");
-		x -= offX;
-		y -= offY;
+		col -= offX;
+		row -= offY;
 
 		double lat = NW.getLat();
 		double lng = NW.getLng();
 
-		if (y % 2 == 0) {
+		if (row % 2 == 0) {
 			lng += ilng / 2.0;
 		} else {
 			lng += ilng;
 		}
 		lat -= ilat * (2.0 / 3.0);
 
-		lng += ilng * x;
-		lat -= ilat * y;
+		lng += ilng * col;
+		lat -= ilat * row;
 
-		return new LatLng(lat, lng, getValue(x + offX, y + offY));
+		return new LatLng(lat, lng, getValue(col + offX, row + offY));
 	}
 
 	public LatLng tileToCoord(Point p) {
-		return tileToCoord(p.getX(), p.getY());
+		return tileToCoord(p.getCol(), p.getRow());
 	}
 
 	/**
@@ -392,51 +392,51 @@ public class HexagonalGrid implements Serializable {
 		} 
 		// Esta dentro de nuestro mapBox, no hay problema
 		int[] aprox = calculateSize(NW, coord, tileSize);
-		int x = aprox[0];
-		int y = aprox[1];
-		x += offX;
-		y += offY;
+		int col = aprox[0];
+		int row = aprox[1];
+		col += offX;
+		row += offY;
 		//Buscamos la minima distancia
-		double distMin = coord.distance(tileToCoord(x, y));
+		double distMin = coord.distance(tileToCoord(col, row));
 		boolean mejor = true;
 		while ((distMin * 2) > tileSize && mejor) {
 			// Consultamos todos los adyacentes
 			mejor = false;
-			for (Point point : getAdjacents(new Point(x, y))) {
+			for (Point point : getAdjacents(new Point(col, row))) {
 				LatLng aux = tileToCoord(point);
 				double dist = coord.distance(aux);
 				// Nos quedamos con el más cercano
 				if (dist < distMin) {
 					distMin = dist;
-					x = point.getX();
-					y = point.getY();
+					col = point.getCol();
+					row = point.getRow();
 					mejor = true;
 				}
 			}
 		}
-		return getPoint(x, y, isIn);
+		return getPoint(col, row, isIn);
 	}
 
 	/**
 	 * Returns a valid point Form the grid
 	 * 
-	 * @param x
-	 * @param y
+	 * @param col
+	 * @param row
 	 * @param isIn explicit declaration if was into the box or not
 	 * @return
 	 */
-	private Point getPoint(int x, int y, boolean isIn) {
-		if (x < 0) {
-			x = 0;
-		} else if (x >= dimX) {
-			x = dimX - 1;
+	private Point getPoint(int col, int row, boolean isIn) {
+		if (col < 0) {
+			col = 0;
+		} else if (col >= columns) {
+			col = columns - 1;
 		}
-		if (y < 0) {
-			y = 0;
-		} else if (y >= dimY) {
-			y = dimY - 1;
+		if (row < 0) {
+			row = 0;
+		} else if (row >= rows) {
+			row = rows - 1;
 		}
-		return new Point(x, y, getValue(x, y), isIn);
+		return new Point(col, row, getValue(col, row), isIn);
 	}
 
 	/**
@@ -462,7 +462,7 @@ public class HexagonalGrid implements Serializable {
 	 * @return true is border, false if not
 	 */
 	public boolean isBorderPoint(Point p) {
-		for (int[] a : getAdjacents(p.getX(), p.getY())) {
+		for (int[] a : getAdjacents(p.getCol(), p.getRow())) {
 			if (p.getZ() != getValue(a[0], a[1])) {
 				return true;
 			}
@@ -477,8 +477,8 @@ public class HexagonalGrid implements Serializable {
 		//TODO eye-candy
 		// int total = gridX * gridY;
 //		int cont = 0;
-		int endX = offX + dimX;
-		int endY = offY + dimY;
+		int endX = offX + columns;
+		int endY = offY + rows;
 		for (int i = offX - 1; i <= endX; i++) {
 			for (int j = offY - 1; j <= endY; j++) {
 				LatLng coord = tileToCoord(i, j);
@@ -501,7 +501,7 @@ public class HexagonalGrid implements Serializable {
 	public String toString() {
 		String s = "Box: " + NW.toString() + ", " + SE.toString()
 				+ ", Diagonal: " + NW.distance(SE) + "m";
-		s += "\nDimensions: [" + dimX + "," + dimY + "], Width: "
+		s += "\nDimensions: [" + columns + "," + rows + "], Width: "
 				+ NW.distance(new LatLng(NW.getLat(), SE.getLng()))
 				+ "m, Height: "
 				+ NW.distance(new LatLng(SE.getLat(), NW.getLng())) + "m";
@@ -524,9 +524,9 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public static int whichHexagonalMove(Point a, Point b) {
-		int col = a.getY() - b.getY();
-		int row = a.getX() - b.getX();
-		if (a.getY() % 2 == 0) {
+		int col = a.getCol() - b.getCol();
+		int row = a.getRow() - b.getRow();
+		if (a.getRow() % 2 == 0) {
 			// Even ROW
 			// System.err.print(", even row: " + a.toString());
 			if (col == 0) {
@@ -594,31 +594,31 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public static Point hexagonalMoveTo(Point a, int key) {
-		int y = a.getY();
-		int x = a.getX();
+		int col = a.getCol();
+		int row = a.getRow();
 
-		if (x % 2 == 0) {
+		if (row % 2 == 0) {
 			// even row
 			switch (key) {
 			case LEFT: // Izquierda
-				y--;
+				col--;
 				break;
 			case LEFT_UP: // Izquierda Arriba
-				y--;
-				x--;
+				col--;
+				row--;
 				break;
 			case RIGHT_UP: // Derecha Arriba
-				x--;
+				row--;
 				break;
 			case RIGHT: // Derecha
-				y++;
+				col++;
 				break;
 			case RIGHT_DOWN: // Derecha Abajo
-				x++;
+				row++;
 				break;
 			case LEFT_DOWN: // Izquierda Abajo
-				y--;
-				x++;
+				col--;
+				row++;
 				break;
 			default:
 				System.err.println("Movimiento hexagonal no permitido");
@@ -628,30 +628,30 @@ public class HexagonalGrid implements Serializable {
 			// odd row
 			switch (key) {
 			case LEFT: // Izquierda
-				y--;
+				col--;
 				break;
 			case LEFT_UP: // Izquierda Arriba
-				x--;
+				row--;
 				break;
 			case RIGHT_UP: // Derecha Arriba
-				x--;
-				y++;
+				row--;
+				col++;
 				break;
 			case RIGHT: // Derecha
-				y++;
+				col++;
 				break;
 			case RIGHT_DOWN: // Derecha Abajo
-				x++;
-				y++;
+				row++;
+				col++;
 				break;
 			case LEFT_DOWN: // Izquierda Abajo
-				x++;
+				row++;
 				break;
 			default:
 				System.err.println("Movimiento hexagonal no permitido");
 				break;
 			}
 		}
-		return new Point(x, y);
+		return new Point(col, row);
 	}
 }

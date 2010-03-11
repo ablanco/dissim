@@ -239,7 +239,7 @@ public class OsmMap {
 			short value) {
 		try {
 			Point point = infoGrid.coordToTile(coord);
-			infoGrid.setStreetValue(point.getX(), point.getY(), value);
+			infoGrid.setStreetValue(point.getCol(), point.getRow(), value);
 			// System.err.println("Valor del grid cambiado con exito");
 		} catch (IndexOutOfBoundsException e) {
 			System.err

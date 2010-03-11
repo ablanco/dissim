@@ -68,9 +68,9 @@ public class EnviromentAgent extends Agent {
 			grid = new FloodHexagonalGrid(NW, SE, offX, offY, tileSize);
 			// TODO grid.obtainTerrainElevation();
 			Random rnd = new Random(System.currentTimeMillis());
-			for (int i = -1 + grid.getOffX(); i <= (grid.getDimX() + grid
+			for (int i = -1 + grid.getOffX(); i <= (grid.getColumns() + grid
 					.getOffX()); i++) {
-				for (int j = -1 + grid.getOffY(); j <= (grid.getDimY() + grid
+				for (int j = -1 + grid.getOffY(); j <= (grid.getRows() + grid
 						.getOffY()); j++) {
 					grid
 							.setTerrainValue(i, j,

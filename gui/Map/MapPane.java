@@ -33,8 +33,9 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 	private int radius = -1;
 	private int hexWidth;
 	private int hexHeight;
-	private Dimension dim;
+	private Dimension size = new Dimension(300, 300);
 	private int maxUnitIncrement = 1;
+
 
 	public MapPane() {
 		this(null);
@@ -42,42 +43,37 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 
 	public MapPane(JFrame parent) {
 		super();
-//		dim = new Dimension();
+		// dim = new Dimension();
 		this.parent = parent;
 	}
 
-	public void updateGrid(HexagonalGrid grid) {
-		this.grid = grid;
-		Dimension dimension = parent.getSize();
-		int sizeHeight = dimension.height;
-		int sizeWidth = dimension.width;
-		if (radius == -1) { // Primera vez que recibe un grid
-			// Calcular el radio de los hexágonos a representar
-			int radiusX = (sizeWidth / grid.getDimX()) / 2;
-			int radiusY = (sizeHeight / grid.getDimY()) / 2;
-			if (radiusX < radiusY)
-				radius = radiusX;
-			else
-				radius = radiusY;
-			if (radius < 6)
-				radius = 6;
+	public void updateGrid(HexagonalGrid grid, Dimension dim) {
+//		size = dim;
+//		this.grid = grid;
+//		setSize(size);
+		// Calcular el radio de los hexágonos a representar
+		int radiusX = (int) (((size.width / grid.getColumns()) / 2) * 1.1);
+		int radiusY = (int) (((size.height / grid.getRows()) / 2) * 1.3);
+		if (radiusX < radiusY)
+			radius = radiusX;
+		else
+			radius = radiusY;
+		if (radius < 6)
+			radius = 6;
 
-			// Calcular las distancias de referencia de los hexágonos
-			Polygon p = new Hexagon2D(0, 0, radius);
-			hexWidth = p.xpoints[4] - p.xpoints[2];
-			hexHeight = p.ypoints[1] - p.ypoints[3];
-			// Calcular el tamaño del panel
-			sizeWidth = (int) ((hexWidth * grid.getDimY()) + (hexWidth / 2));
-			//TODO el calculo de la altura no es muy bueno ....
-			sizeHeight = (int) ((hexHeight * (grid.getDimX() - 1)));
-			dim = new Dimension(sizeWidth, sizeHeight);
-			setSize(dim);
-			System.err.println("["+grid.getDimX()+","+grid.getDimY()+"] wid: "+sizeWidth+", Hei: "+sizeHeight+", HexSize ["+hexHeight+","+hexWidth+"]");
-		}
-//		repaint();
+		// Calcular las distancias de referencia de los hexágonos
+		Polygon p = new Hexagon2D(0, 0, radius);
+		this.hexWidth = p.xpoints[4] - p.xpoints[2];
+		this.hexHeight = p.ypoints[1] - p.ypoints[3];
+
+		int width = ((hexWidth * (grid.getColumns()) + 1) + (hexWidth /2 ));
+		int height = (hexHeight * (grid.getRows()+ 1));
+		size = new Dimension(width, height);
+		setSize(size);
+		// repaint();
 	}
 
-	//TODO Rotar
+	// TODO Rotar
 	@Override
 	public void paint(Graphics g) {
 		if (grid != null) {
@@ -97,25 +93,30 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 					BasicStroke.JOIN_ROUND);
 			g2.setStroke(stroke);
 
-			for (int i = 0; i < grid.getDimX(); i++) {
-				for (int j = 0; j < grid.getDimY(); j++) {
+			
+			int endX = grid.getOffX() + grid.getColumns();
+			int endY = grid.getOffY() + grid.getRows();
+			for (int i = grid.getOffX(); i < endX; i++) {
+				for (int j = grid.getOffY(); j < endY; j++) {
 					int posX;
-					if (i % 2 == 0) // Fila par
-						posX = (hexWidth / 2) + (j * hexWidth);
-					else
-						posX = hexWidth + (j * hexWidth); // Fila impar
-					int posY = radius + (i * hexHeight);
+					if (j % 2 == 0) { // Fila par
+						posX = (hexWidth / 2)
+								+ ((i - grid.getOffX()) * hexWidth);
+					} else { // Fila impar
+						posX = hexWidth + ((i - grid.getOffX()) * hexWidth);
+					}
+					int posY = radius + ((j - grid.getOffY()) * hexHeight);
 
 					// Generar hexágono
 					Polygon hex = new Hexagon2D(posX, posY, radius);
 					// Dibujar y colorear según la altura
 					int value = grid.getStreetValue(i, j);
-					if (value != 0){
-						g2.setColor(new Color(value*1000));
-//						System.err.println("pintando en "+i+","+j+", ");
-					}else{
+					if (value != 0) {
+						g2.setColor(new Color(value * 1000));
+						// System.err.println("pintando en "+i+","+j+", ");
+					} else {
 						g2.setColor(Color.WHITE);
-					}					
+					}
 					g2.fillPolygon(hex);
 				}
 			}
@@ -137,7 +138,7 @@ public class MapPane extends JPanel implements Scrollable, MouseMotionListener {
 	}
 
 	public Dimension getPreferredSize() {
-		return dim;
+		return size;
 	}
 
 	public Dimension getPreferredScrollableViewportSize() {

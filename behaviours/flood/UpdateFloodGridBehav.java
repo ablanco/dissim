@@ -64,7 +64,7 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		// Por cada casilla modificada
 		while (it.hasNext()) {
 			Point p = it.next();
-			int[] coord = new int[] { p.getX(), p.getY() };
+			int[] coord = new int[] { p.getCol(), p.getRow() };
 			ArrayList<int[]> adjacents = grid.getAdjacents(coord[0], coord[1]);
 			short value = grid.getValue(coord[0], coord[1]);
 
@@ -162,8 +162,8 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private Object getEnv(int x, int y) {
 		// Comprobar si la casilla es de la corona y por lo tanto pertence a
 		// otro entorno
-		if (x < grid.getOffX() || (x - grid.getOffX()) >= grid.getDimX()
-				|| y < grid.getOffY() || (y - grid.getOffY()) >= grid.getDimY()) {
+		if (x < grid.getOffX() || (x - grid.getOffX()) >= grid.getColumns()
+				|| y < grid.getOffY() || (y - grid.getOffY()) >= grid.getRows()) {
 			String env = Integer.toString(scen.getEnviromentByPosition(x, y));
 
 			// System.out.println(myAgent.getLocalName()+" Bazinga! "+x+","+y);
@@ -195,8 +195,8 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private void innerBorder(int x, int y) {
 		int ix = x - grid.getOffX();
 		int iy = y - grid.getOffY();
-		if (ix == 0 || ix == (grid.getDimX() - 1) || iy == 0
-				|| iy == (grid.getDimY() - 1)) {
+		if (ix == 0 || ix == (grid.getColumns() - 1) || iy == 0
+				|| iy == (grid.getRows() - 1)) {
 			int cx = x;
 			int cy = y;
 			// Hay que avisar a otro entorno para que actualice su corona
@@ -204,9 +204,9 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				cx--;
 			if (iy == 0)
 				cy--;
-			if (ix == (grid.getDimX() - 1))
+			if (ix == (grid.getColumns() - 1))
 				cx++;
-			if (iy == (grid.getDimY() - 1))
+			if (iy == (grid.getRows() - 1))
 				cy++;
 
 			Object env = getEnv(cx, cy);

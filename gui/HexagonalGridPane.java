@@ -55,8 +55,8 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			size = dim;
 			setSize(size);
 			// Calcular el radio de los hexágonos a representar
-			int radiusX = (int) (((size.width / grid.getDimX()) / 2) * 1.1);
-			int radiusY = (int) (((size.height / grid.getDimY()) / 2) * 1.3);
+			int radiusX = (int) (((size.width / grid.getColumns()) / 2) * 1.1);
+			int radiusY = (int) (((size.height / grid.getRows()) / 2) * 1.3);
 			if (radiusX < radiusY)
 				radius = radiusX;
 			else
@@ -74,8 +74,8 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			// La escala de colores se calcula ahora (una única vez)
 			min = Short.MAX_VALUE;
 			max = Short.MIN_VALUE;
-			int endX = grid.getOffX() + grid.getDimX();
-			int endY = grid.getOffY() + grid.getDimY();
+			int endX = grid.getOffX() + grid.getColumns();
+			int endY = grid.getOffY() + grid.getRows();
 			for (int i = grid.getOffX(); i < endX; i++) {
 				for (int j = grid.getOffY(); j < endY; j++) {
 					short value = grid.getValue(i, j);
@@ -118,8 +118,8 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			if (diff > 0)
 				inc = 256.0 / ((double) diff);
 
-			int endX = grid.getOffX() + grid.getDimX();
-			int endY = grid.getOffY() + grid.getDimY();
+			int endX = grid.getOffX() + grid.getColumns();
+			int endY = grid.getOffY() + grid.getRows();
 			for (int i = grid.getOffX(); i < endX; i++) {
 				for (int j = grid.getOffY(); j < endY; j++) {
 					int posX;

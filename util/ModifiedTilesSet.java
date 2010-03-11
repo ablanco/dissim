@@ -49,7 +49,7 @@ public class ModifiedTilesSet implements Set<Point>, Serializable {
 	}
 
 	private int idx(Point p) {
-		return ((p.getY() + 1 - offY) * x) + (p.getX() + 1 - offX);
+		return ((p.getRow() + 1 - offY) * x) + (p.getCol() + 1 - offX);
 	}
 
 	public Set<Point> withoutNulls() {

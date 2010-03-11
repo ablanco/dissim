@@ -44,8 +44,8 @@ public class TimeStampTest {
 		GoogleEarthFlood k = new GoogleEarthFlood("TimeStamp Test", "Move on");
 
 		for (int rep = 0; rep < 6; rep++) {
-			for (int i = 0; i < grid.getDimX(); i++) {
-				for (int j = 0; j < grid.getDimY(); j++) {
+			for (int i = 0; i < grid.getColumns(); i++) {
+				for (int j = 0; j < grid.getRows(); j++) {
 					short x = (short) ((Math.random() * 100) % 64);
 					grid.setTerrainValue(i, j, x);
 				}

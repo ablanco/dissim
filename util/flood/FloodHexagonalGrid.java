@@ -39,13 +39,13 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	public FloodHexagonalGrid(LatLng NW, LatLng SE, int offX, int offY,
 			int tileSize) {
 		super(NW, SE, offX, offY, tileSize);
-		gridWater = new short[dimX][dimY];
-		northWater = new short[dimX + 2];
-		southWater = new short[dimX + 2];
-		eastWater = new short[dimY];
-		westWater = new short[dimY];
+		gridWater = new short[columns][rows];
+		northWater = new short[columns + 2];
+		southWater = new short[columns + 2];
+		eastWater = new short[rows];
+		westWater = new short[rows];
 		// modTiles = new TreeSet<Point>();
-		modTiles = new ModifiedTilesSet(dimX + 2, dimY + 2, offX, offY);
+		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offX, offY);
 	}
 
 	public short setWaterValue(int x, int y, short value) {
@@ -55,13 +55,13 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		if (y == -1) {
 			old = northWater[x + 1];
 			northWater[x + 1] = value;
-		} else if (y == dimY) {
+		} else if (y == rows) {
 			old = southWater[x + 1];
 			southWater[x + 1] = value;
 		} else if (x == -1) {
 			old = westWater[y];
 			westWater[y] = value;
-		} else if (x == dimX) {
+		} else if (x == columns) {
 			old = eastWater[y];
 			eastWater[y] = value;
 		} else {
@@ -77,11 +77,11 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		short value;
 		if (y == -1) {
 			value = northWater[x + 1];
-		} else if (y == dimY) {
+		} else if (y == rows) {
 			value = southWater[x + 1];
 		} else if (x == -1) {
 			value = westWater[y];
-		} else if (x == dimX) {
+		} else if (x == columns) {
 			value = eastWater[y];
 		} else {
 			value = gridWater[x][y];
@@ -121,7 +121,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	@Override
 	public TreeSet<Point> getAdjacents(Point p) {
 		TreeSet<Point> result = new TreeSet<Point>();
-		int[][] indexes = getAdjacentsIndexes(p.getX(), p.getY());
+		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
 		for (int i = 0; i < indexes.length; i++) {
 			int[] tile = indexes[i];
 			Point adj = new Point(tile[0], tile[1], getValue(tile[0], tile[1]),
@@ -134,7 +134,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	public Set<Point> getModCoordAndReset() {
 		ModifiedTilesSet result = modTiles;
 		// modTiles = new TreeSet<Point>();
-		modTiles = new ModifiedTilesSet(dimX + 2, dimY + 2, offX, offY);
+		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offX, offY);
 		return result.withoutNulls();
 	}
 

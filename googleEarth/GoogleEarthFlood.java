@@ -92,8 +92,8 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 		HexagonalGrid g = snap.getGrid();
 
 		// For each tile who has changed ever, creates hexagon
-		for (int x = 0; x < g.getDimX(); x++) {
-			for (int y = 0; y < g.getDimY(); y++) {
+		for (int x = 0; x < g.getColumns(); x++) {
+			for (int y = 0; y < g.getRows(); y++) {
 				short z = (short) (g.getTerrainValue(x, y) - oldGrid[x][y]);
 				if (z != 0) {
 					drawWaterHexagon("HEX" + cont, snap.getGrid().tileToCoord(
@@ -108,9 +108,9 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	protected void setOldGrid(HexagonalGrid grid) {
 		if (!initialized) {
 			// First Grid to compare
-			oldGrid = new short[grid.getDimX()][grid.getDimY()];
-			for (int x = 0; x < grid.getDimX(); x++) {
-				for (int y = 0; y < grid.getDimY(); y++) {
+			oldGrid = new short[grid.getColumns()][grid.getRows()];
+			for (int x = 0; x < grid.getColumns(); x++) {
+				for (int y = 0; y < grid.getRows(); y++) {
 					oldGrid[x][y]= grid.getTerrainValue(x, y);
 				}
 			}
@@ -189,14 +189,14 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 			while (!adyList.isEmpty()) {
 				p = adyList.get(0);
 				borderLine.add(newSnap.getGrid()
-						.tileToCoord(p.getX(), p.getY()));
+						.tileToCoord(p.getCol(), p.getRow()));
 				adyList.remove(p);
 				Set<Point> s = newSnap.getGrid().getAdjacents(p);
 				for (Point b : region) {
 					// could be more than one each time
 					if (s.contains(b)) {
-						borderLine.add(newSnap.getGrid().tileToCoord(b.getX(),
-								b.getY()));
+						borderLine.add(newSnap.getGrid().tileToCoord(b.getCol(),
+								b.getRow()));
 						adyList.add(b);
 					}
 				}

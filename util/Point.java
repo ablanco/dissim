@@ -22,19 +22,19 @@ public class Point implements Comparable<Point>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private int x;
-	private int y;
+	private int col;
+	private int row;
 	private short z;
 	private boolean isIn = true;
 	private short w = 0;
 
-	public Point(int x, int y) {
-		this(x, y, (short) 0);
+	public Point(int col, int row) {
+		this(col, row, (short) 0);
 	}
 
-	public Point(int x, int y, short z) {
-		this.x = x;
-		this.y = y;
+	public Point(int col, int row, short z) {
+		this.col = col;
+		this.row = row;
 		this.z = z;
 	}
 
@@ -43,13 +43,13 @@ public class Point implements Comparable<Point>, Serializable {
 	}
 
 	// Optional data constructors
-	public Point(int x, int y, short z, boolean isIn) {
-		this(x, y, z);
+	public Point(int col, int row, short z, boolean isIn) {
+		this(col, row, z);
 		this.isIn = isIn;
 	}
 
-	public Point(int x, int y, short z, short w) {
-		this(x, y, z);
+	public Point(int col, int row, short z, short w) {
+		this(col, row, z);
 		this.w = w;
 	}
 
@@ -59,11 +59,11 @@ public class Point implements Comparable<Point>, Serializable {
 
 	@Override
 	public int compareTo(Point o) {
-		if (o.x == x && o.y == y)
+		if (o.col == col && o.row == row)
 			return 0;
 
-		if (o.x > x)
-			if (o.y > y)
+		if (o.col > col)
+			if (o.row > row)
 				return 2;
 			else
 				return 1;
@@ -74,7 +74,7 @@ public class Point implements Comparable<Point>, Serializable {
 	public boolean equals(Object o) {
 		if (o instanceof Point) {
 			Point p = (Point) o;
-			return (p.x == x) && (p.y == y);
+			return (p.col == col) && (p.row == row);
 		} else {
 			return false;
 		}
@@ -82,15 +82,15 @@ public class Point implements Comparable<Point>, Serializable {
 
 	@Override
 	public String toString() {
-		return "[(" + x + "," + y + ") " + z + "]";
+		return "[(" + col + "," + row + ") " + z + "]";
 	}
 
-	public int getX() {
-		return x;
+	public int getCol() {
+		return col;
 	}
 
-	public int getY() {
-		return y;
+	public int getRow() {
+		return row;
 	}
 
 	public short getZ() {
