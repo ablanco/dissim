@@ -64,6 +64,11 @@ public class OsmInf {
 	// Others
 	public static final short Boundary = -2;
 
+	/**
+	 * Given a Node Returns a Full of Info Node
+	 * @param node
+	 * @return
+	 */
 	public static OsmNodeExtendedInfo getExtendedInfo(Node node) {
 		String value = null;
 		String name = null;
@@ -170,6 +175,12 @@ public class OsmInf {
 		return 0;
 	}
 
+	/**
+	 * Given a highway Type Returns a Proper value for this kind of Highway
+	 * @param type
+	 * @param value
+	 * @return 
+	 */
 	private static short getHighway(String type, String value) {
 		short key = Highway;
 		if (type.equalsIgnoreCase("highway")) {
@@ -220,6 +231,11 @@ public class OsmInf {
 		return Highway;
 	}
 
+	/**
+	 * Given a type, returns Parent Type
+	 * @param type
+	 * @return Parent Type
+	 */
 	public static short getType(short type) {
 		if (type < Raw_Field) {
 			return Undefined;
@@ -270,14 +286,19 @@ public class OsmInf {
 		}
 	}
 
+	/**
+	 * Given a type returns the proper color. 
+	 * @param type
+	 * @return
+	 */
 	public static Color getColor(short type) {
 		short key = getType(type);
 		int brigther = (type - key) * 10;
 		if (key < Raw_Field) {
-			//Undefined or Not important
+			// Undefined or Not important
 			return new Color(Color.GRAY.getRGB() + brigther);
 		} else if (key < Land) {
-			//Tipes of land
+			// Tipes of land
 			switch (key) {
 			case Waterway:
 				return new Color(Color.BLUE.getRGB() + brigther);
@@ -287,7 +308,7 @@ public class OsmInf {
 				return new Color(Color.CYAN.getRGB() + brigther);
 			}
 		} else if (key < Roads) {
-			//types of roads
+			// types of roads
 			switch (key) {
 			case Highway:
 				return new Color(Color.RED.getRGB() + brigther);
@@ -297,11 +318,18 @@ public class OsmInf {
 				return new Color(Color.MAGENTA.getRGB() + brigther);
 			}
 		} else {
-			//Types of safe Places
-			return new Color(Color.GREEN.getRGB() + brigther);
+			// Types of safe Places
+			// hay muchos tipos de safe place si le ponemos brighter se sale del
+			// verde
+			return new Color(Color.GREEN.getRGB());
 		}
 	}
 
+	/**
+	 * Given a Type returns the parents type Name
+	 * @param type
+	 * @return Parent Type Name
+	 */
 	public static String getName(short type) {
 		short key = getType(type);
 		switch (key) {
