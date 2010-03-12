@@ -100,7 +100,7 @@ public class OsmInf {
 					key = witchWaterway(value);
 				} else if (type.equalsIgnoreCase("Railway")) {
 					value = node.getAttributes().item(1).getNodeValue();
-					key = Railway;
+					key = witchRailway(value);
 				} else if (type.equalsIgnoreCase("Aerialway")) {
 					value = node.getAttributes().item(1).getNodeValue();
 					key = Aerialway;
@@ -136,6 +136,19 @@ public class OsmInf {
 	}
 
 	
+	private static short witchRailway(String value) {
+		short key = Railway;
+		key++;
+		if (value.equalsIgnoreCase("rail"))
+			return  key;
+		key++;
+		if (value.equalsIgnoreCase("tram"))
+			return  key;
+		
+		return Railway;
+	}
+
+
 	private static short witchWaterway(String value) {
 		short key = Waterway;
 		if (value.equalsIgnoreCase("riverbank"))
@@ -148,6 +161,8 @@ public class OsmInf {
 		short key = Highway;
 		if (type.equalsIgnoreCase("highway")) {
 			//Higways
+			if (value.equalsIgnoreCase("footway"))
+				return  key;
 			if (value.equalsIgnoreCase("path"))
 				return  key;
 			key++;
@@ -157,13 +172,22 @@ public class OsmInf {
 			if (value.equalsIgnoreCase("cycleway"))
 				return key;
 			key++;
-			if (value.equalsIgnoreCase("residential"))
+			if (value.equalsIgnoreCase("residential") || value.contains("parking"))
 				return key;
 			key++;
-			if (value.equalsIgnoreCase("road"))
+			if (value.equalsIgnoreCase("road") || value.equalsIgnoreCase("pedestrian"))
 				return key;
 			key++;
 			if (value.equalsIgnoreCase("service"))
+				return  key;
+			key++;		
+			if (value.equalsIgnoreCase("tertiary"))
+				return  key;
+			key++;	
+			if (value.equalsIgnoreCase("secondary"))
+				return  key;
+			key++;	
+			if (value.equalsIgnoreCase("primary"))
 				return  key;
 			key++;
 			if (value.contains("trunk"))
@@ -232,14 +256,24 @@ public class OsmInf {
 	
 	public static Color witchColor(short type){
 		short key = whatType(type);
-		int darker = (type - key)*50;
+		int darker = (type - key);
 		switch (key) {
 		case Highway:
 			return new Color (Color.RED.getRGB() + darker );
 		case Waterway:
 			return new Color (Color.BLUE.getRGB() + darker);
+		case Building:
+			return new Color (Color.GREEN.getRGB() + darker);
+		case Aeroway:
+			return new Color (Color.GREEN.getRGB() + darker);
+		case Military:
+			return new Color (Color.GREEN.getRGB() + darker);
+		case Historic:
+			return new Color (Color.GREEN.getRGB() + darker);	
+		case Railway:
+			return new Color (Color.cyan.getRGB() + darker);
 		default:
-			return new Color(type*1000);
+			return new Color(Color.GRAY.getRGB() + darker);
 		}
 	}
 }

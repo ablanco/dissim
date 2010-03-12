@@ -162,8 +162,7 @@ public class GetOSMInfo {
 					.getExtendedInfo(node.getFirstChild()));
 			// Adding to Special Places
 			if (osmNode.getExtendedInfo().getKey() != OsmInf.Undefined){
-				specialPlaces.add(osmNode);
-				
+				specialPlaces.add(osmNode);				
 			}else{
 				System.err.println("Undefinde node: "+osmNode);
 			}

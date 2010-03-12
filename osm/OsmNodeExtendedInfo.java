@@ -25,7 +25,13 @@ public class OsmNodeExtendedInfo {
 		return key;
 	}
 	
+	@Override
 	public String toString(){
-		return " Name: "+name+" is a "+value;
+		String result = "Type "+key+" ";
+		if (value!=null)
+			result += "is a "+value+" ";
+		if (name!=null)
+			result += "Named: "+name;
+		return result;
 	}
 }
