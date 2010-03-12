@@ -25,13 +25,16 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Logger;
+import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
@@ -43,6 +46,7 @@ import behaviours.RequestScenarioBehav;
 import behaviours.SyndicateBehav;
 import behaviours.flood.AddWaterBehav;
 import behaviours.flood.UpdateFloodGridBehav;
+import behaviours.people.RegisterPeopleBehav;
 
 @SuppressWarnings("serial")
 public class EnviromentAgent extends Agent {
@@ -50,6 +54,7 @@ public class EnviromentAgent extends Agent {
 	private HexagonalGrid grid = null;
 	private Logger logger = new Logger(); // TODO
 	private DateAndTime dateTime = null;
+	private Map<String, Point> people = new Hashtable<String, Point>();
 
 	// TODO Calcular los valores de tiempo en función del agua que haya entrado
 
@@ -107,22 +112,24 @@ public class EnviromentAgent extends Agent {
 			// TODO sacar datetime del scenario
 			dateTime = new DateAndTime(2010, 2, 26, 20, 32);
 
-			List<String> services = new ArrayList<String>(6);
+			List<String> services = new ArrayList<String>(10);
 
 			ParallelBehaviour parallel = new ParallelBehaviour(
 					ParallelBehaviour.WHEN_ALL);
 			// Añadir comportamientos
 			parallel.addSubBehaviour(new AdjacentsGridBehav(grid));
 			parallel.addSubBehaviour(new QueryGridBehav(grid));
-			parallel
-					.addSubBehaviour(new SyndicateBehav(myAgent, grid, dateTime));
-			parallel.addSubBehaviour(new InterGridBehav(myAgent, grid));
+			parallel.addSubBehaviour(new SyndicateBehav(myAgent, grid,
+					dateTime, scen, people));
+			parallel.addSubBehaviour(new InterGridBehav(myAgent, grid, people));
+			parallel.addSubBehaviour(new RegisterPeopleBehav(myAgent, scen,
+					people));
 			myAgent.addBehaviour(parallel);
 			services.add("adjacents-grid");
 			services.add("grid-querying");
 			services.add("syndicate");
 			services.add("intergrid");
-			services.add("people");
+			// services.add("people");
 
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {

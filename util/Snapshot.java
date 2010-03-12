@@ -19,19 +19,23 @@ package util;
 import jade.core.AID;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class Snapshot implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private HexagonalGrid grid;
 	private DateAndTime dateTime;
 	private AID envAid;
+	private Map<String, Point> people;
 
-	public Snapshot(AID envAid, HexagonalGrid grid, DateAndTime dateTime) {
+	public Snapshot(AID envAid, HexagonalGrid grid, DateAndTime dateTime,
+			Map<String, Point> people) {
 		this.envAid = envAid;
 		this.grid = grid;
 		this.dateTime = dateTime;
+		this.people = people;
 	}
 
 	public AID getEnvAid() {
@@ -44,6 +48,10 @@ public class Snapshot implements Serializable {
 
 	public DateAndTime getDateTime() {
 		return dateTime;
+	}
+
+	public Map<String, Point> getPeople() {
+		return people;
 	}
 
 }

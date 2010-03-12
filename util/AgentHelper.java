@@ -162,6 +162,8 @@ public class AgentHelper {
 			int performative, String convId, Object content) {
 		ACLMessage msg = new ACLMessage(performative);
 		for (AID aid : receivers) {
+			if (aid == null)
+				return null;
 			msg.addReceiver(aid);
 		}
 		if (convId != null)

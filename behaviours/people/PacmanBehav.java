@@ -24,15 +24,17 @@ import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
 import java.util.Set;
+import java.util.TreeSet;
 
 import util.AgentHelper;
+import util.HexagonalGrid;
 import util.Point;
 
 @SuppressWarnings("serial")
 public class PacmanBehav extends CyclicBehaviour {
 
 	private AID env;
-	private int x; // Initial position
+	private int x; // Posición
 	private int y;
 	private int d; // Distancia de visión
 	private long period;
@@ -55,11 +57,12 @@ public class PacmanBehav extends CyclicBehaviour {
 	@Override
 	public void action() {
 		ACLMessage msg;
+		String content;
 		switch (step) {
 		case 0:
 			// Pedir adyacentes
-			String content = Integer.toString(x) + " " + Integer.toString(y)
-					+ " " + Integer.toString(d);
+			content = Integer.toString(x) + " " + Integer.toString(y) + " "
+					+ Integer.toString(d);
 			mt = AgentHelper.send(myAgent, env, ACLMessage.REQUEST,
 					"adjacents-grid", content);
 			step = 1;
@@ -68,12 +71,44 @@ public class PacmanBehav extends CyclicBehaviour {
 			if (msg != null) {
 				try {
 					Set<Point> adjacents = (Set<Point>) msg.getContentObject();
+
+					// Separar casillas inundadas de las secas
+					Set<Point> water = new TreeSet<Point>();
+					Set<Point> dry = new TreeSet<Point>();
 					for (Point pt : adjacents) {
-						// TODO Buscar hacia dnd moverse
-						
+						if (pt.getW() > 0)
+							water.add(pt);
+						else
+							dry.add(pt);
 					}
-					// TODO Informar al entorno del movimiento
-					step = 0;
+
+					if (water.size() > 0) {
+						// Buscar la casilla seca más alejada de las inundadas
+						int dmejor = Integer.MIN_VALUE;
+						Point pmejor = null;
+						for (Point pt : dry) {
+							int dist = 0;
+							for (Point w : water) {
+								dist += HexagonalGrid.distance(pt, w);
+							}
+							dist /= water.size();
+							if (dist > dmejor)
+								pmejor = pt;
+						}
+						x = pmejor.getCol();
+						y = pmejor.getRow();
+
+						// Informamos al entorno del movimiento
+						content = myAgent.getLocalName() + " "
+								+ Integer.toString(x) + " "
+								+ Integer.toString(y);
+						mt = AgentHelper.send(myAgent, env, ACLMessage.INFORM,
+								"register-people", content);
+						step = 2;
+					} else {
+						// Si no ve agua no se mueve
+						step = 0;
+					}
 				} catch (UnreadableException e) {
 					e.printStackTrace();
 					step = 0;
@@ -82,11 +117,22 @@ public class PacmanBehav extends CyclicBehaviour {
 				block();
 			}
 			break;
+		case 2:
+			msg = myAgent.receive(mt);
+			if (msg != null) {
+				if (msg.getPerformative() == ACLMessage.INFORM) {
+					try {
+						env = (AID) msg.getContentObject();
+					} catch (UnreadableException e) {
+						e.printStackTrace();
+					}
+				}
+				step = 0;
+			} else {
+				block();
+			}
+			break;
 		}
-	}
-
-	public void setEnv(AID env) {
-		this.env = env;
 	}
 
 }

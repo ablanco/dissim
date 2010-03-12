@@ -16,9 +16,12 @@
 
 package test;
 
+import java.util.Hashtable;
+
 import gui.VisorFrame;
 import jade.core.AID;
 import util.DateAndTime;
+import util.Point;
 import util.Snapshot;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
@@ -32,7 +35,7 @@ public class VisorTest {
 		System.out.println("Grid: " + grid.getColumns() + "x" + grid.getRows());
 
 		Snapshot snap = new Snapshot(new AID(), grid, new DateAndTime(2000, 12,
-				15, 18, 55));
+				15, 18, 55), new Hashtable<String, Point>());
 		VisorFrame v = new VisorFrame();
 		grid.setTerrainValue(0, 0, (short) -20);
 		grid.setTerrainValue(0, 1, (short) -40);

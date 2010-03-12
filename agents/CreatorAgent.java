@@ -120,6 +120,11 @@ public class CreatorAgent extends Agent {
 				}
 
 				// TODO DEBUG
+				arguments = new Object[] { Integer.toString(3),
+						Integer.toString(10), Integer.toString(2) };
+				myAgent.addBehaviour(new CreateAgentBehav(myAgent, "Dude",
+						"agents.people.PedestrianAgent", 1, arguments));
+
 				for (int i = 0; i < scen.getNumEnv(); i++) {
 					arguments = new Object[] { "gui.VisorFrame",
 							Integer.toString(i) };

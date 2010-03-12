@@ -25,6 +25,9 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
+import java.util.Hashtable;
+import java.util.Map;
 
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
@@ -32,13 +35,15 @@ import javax.swing.SwingConstants;
 
 import util.Hexagon2D;
 import util.HexagonalGrid;
+import util.Point;
 import util.Snapshot;
 import util.flood.FloodHexagonalGrid;
 
 @SuppressWarnings("serial")
-public class HexagonalGridPane extends JPanel implements Scrollable{
+public class HexagonalGridPane extends JPanel implements Scrollable {
 
 	private HexagonalGrid grid = null;
+	private Map<String, Point> people;
 	private int radius = -1;
 	private int hexWidth;
 	private int hexHeight;
@@ -48,9 +53,9 @@ public class HexagonalGridPane extends JPanel implements Scrollable{
 	private Dimension size = new Dimension(300, 300);
 	private boolean firstTime = true;
 
-	
 	public void updateGrid(Snapshot snap, Dimension dim) {
-		this.grid = snap.getGrid();
+		grid = snap.getGrid();
+		people = snap.getPeople();
 
 		if (dim.height != size.height || dim.width != size.width || firstTime) {
 			size = dim;
@@ -68,12 +73,12 @@ public class HexagonalGridPane extends JPanel implements Scrollable{
 			Polygon p = new Hexagon2D(0, 0, radius);
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
-			
-			//TODO intento de arreglarlo para scroll pane pero nada
-			int width = ((hexWidth * grid.getColumns())  + (hexWidth /2 ));
+
+			// TODO intento de arreglarlo para scroll pane pero nada
+			int width = ((hexWidth * grid.getColumns()) + (hexWidth / 2));
 			int height = (hexHeight * grid.getRows());
-			
-			size =  new Dimension(width, height);
+
+			size = new Dimension(width, height);
 			setSize(size);
 		}
 
@@ -103,6 +108,9 @@ public class HexagonalGridPane extends JPanel implements Scrollable{
 	@Override
 	public void paint(Graphics g) {
 		if (grid != null) {
+			if (people == null)
+				people = new Hashtable<String, Point>(1);
+
 			Graphics2D g2 = (Graphics2D) g;
 			g2.clearRect(0, 0, size.width, size.height);
 
@@ -163,6 +171,15 @@ public class HexagonalGridPane extends JPanel implements Scrollable{
 						g2.setColor(Color.YELLOW);
 
 					g2.drawPolygon(hex);
+
+					// Pintar personas
+					Point p = new Point(i, j);
+					if (people.containsValue(p)) {
+						g2.setColor(Color.RED);
+						Ellipse2D.Float circle = new Ellipse2D.Float();
+						circle.setFrame(hex.getBounds2D());
+						g2.fill(circle);
+					}
 				}
 			}
 		}

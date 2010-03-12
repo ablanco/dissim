@@ -687,4 +687,8 @@ public class HexagonalGrid implements Serializable {
 
 		return dist;
 	}
+
+	public static int distance(Point p1, Point p2) {
+		return distance(p1.getCol(), p1.getRow(), p2.getCol(), p2.getRow());
+	}
 }

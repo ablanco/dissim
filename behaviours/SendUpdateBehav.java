@@ -21,11 +21,13 @@ import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
+import java.util.Map;
 import java.util.Set;
 
 import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
+import util.Point;
 import util.Snapshot;
 
 @SuppressWarnings("serial")
@@ -35,21 +37,23 @@ public class SendUpdateBehav extends TickerBehaviour {
 	private String convId;
 	private HexagonalGrid grid;
 	private DateAndTime dateTime;
+	private Map<String, Point> people;
 
 	public SendUpdateBehav(Agent a, long period, Set<AID> to, String convId,
-			HexagonalGrid grid, DateAndTime dateTime) {
+			HexagonalGrid grid, DateAndTime dateTime, Map<String, Point> people) {
 		super(a, period);
 		this.to = to;
 		this.convId = convId;
 		this.grid = grid;
 		this.dateTime = dateTime;
+		this.people = people;
 	}
 
 	@Override
 	protected void onTick() {
 		AID[] receivers = new AID[to.size()];
 		AgentHelper.send(myAgent, to.toArray(receivers), ACLMessage.INFORM,
-				convId, new Snapshot(myAgent.getAID(), grid, dateTime));
+				convId, new Snapshot(myAgent.getAID(), grid, dateTime, people));
 	}
 
 }

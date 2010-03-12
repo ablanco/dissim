@@ -2,10 +2,14 @@ package test;
 
 import gui.Map.VisorMap;
 import jade.core.AID;
+
+import java.util.Hashtable;
+
 import osm.GetOSMInfo;
 import osm.OsmMap;
 import util.DateAndTime;
 import util.HexagonalGrid;
+import util.Point;
 import util.Snapshot;
 import util.jcoord.LatLng;
 
@@ -34,7 +38,7 @@ public class OSMMapTest {
 		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0,0,20);
 			
 		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
-		Snapshot snapShot = new Snapshot(new AID(), grid, dateTime);
+		Snapshot snapShot = new Snapshot(new AID(), grid, dateTime, new Hashtable<String, Point>());
 		GetOSMInfo osmInfo = new GetOSMInfo(grid);
 
 		OsmMap osmMap = osmInfo.getOsmMap();

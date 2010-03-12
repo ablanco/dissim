@@ -20,7 +20,11 @@ import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+
+import java.util.Map;
+
 import util.HexagonalGrid;
+import util.Point;
 import util.flood.FloodHexagonalGrid;
 
 @SuppressWarnings("serial")
@@ -30,27 +34,25 @@ public class InterGridBehav extends CyclicBehaviour {
 	public static final String WATER_SET = "wset";
 	public static final String WATER_INCREASE = "winc";
 	// public static final String WATER_REQUEST = "wreq";
+	public static final String PEOPLE = "p";
+	public static final String PEOPLE_SET = "pset";
 
 	private MessageTemplate mt = MessageTemplate
 			.MatchConversationId("intergrid");
 	private HexagonalGrid grid;
+	private Map<String, Point> people;
 
-	public InterGridBehav(Agent agt, HexagonalGrid grid) {
+	public InterGridBehav(Agent agt, HexagonalGrid grid,
+			Map<String, Point> people) {
 		super(agt);
 		this.grid = grid;
+		this.people = people;
 	}
 
 	@Override
 	public void action() {
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
-			// if (msg.getSender().getLocalName().startsWith("Env"))
-			// System.out
-			// .println("Message from "
-			// + msg.getSender().getLocalName() + " to "
-			// + myAgent.getLocalName() + " with: "
-			// + msg.getContent());
-
 			String[] data = msg.getContent().split(" ");
 			String comm = data[0];
 			if (comm.startsWith(WATER)) {
@@ -64,6 +66,13 @@ public class InterGridBehav extends CyclicBehaviour {
 				} else if (comm.equals(WATER_INCREASE)) {
 					fgrid.increaseValue(x, y, w);
 				}
+			} else if (comm.startsWith(PEOPLE)) {
+				// Movimiento de personas
+				String id = data[1];
+				int x = Integer.parseInt(data[2]);
+				int y = Integer.parseInt(data[3]);
+				if (comm.equals(PEOPLE_SET))
+					people.put(id, new Point(x, y));
 			}
 		} else {
 			block();

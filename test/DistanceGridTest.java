@@ -41,6 +41,9 @@ public class DistanceGridTest {
 		
 		d = HexagonalGrid.distance(0, 0, 1, 5);
 		System.out.println("Distance 0,0 a 1,5 | Expected 5 | Generated " + d);
+		
+		d = HexagonalGrid.distance(1, 5, 0, 0);
+		System.out.println("Distance 1,5 a 0,0 | Expected 5 | Generated " + d);
 	}
 
 }

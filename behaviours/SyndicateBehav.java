@@ -31,20 +31,25 @@ import java.util.TreeSet;
 
 import util.DateAndTime;
 import util.HexagonalGrid;
+import util.Point;
 import util.Scenario;
 
 @SuppressWarnings("serial")
 public class SyndicateBehav extends CyclicBehaviour {
 
-	private Scenario scen = Scenario.getCurrentScenario();
+	private Scenario scen;
 	private Map<String, Object[]> subscribers = new Hashtable<String, Object[]>();
 	private HexagonalGrid grid;
 	private DateAndTime dateTime;
+	private Map<String, Point> people;
 
-	public SyndicateBehav(Agent a, HexagonalGrid grid, DateAndTime dateTime) {
+	public SyndicateBehav(Agent a, HexagonalGrid grid, DateAndTime dateTime,
+			Scenario scen, Map<String, Point> people) {
 		super(a);
 		this.grid = grid;
 		this.dateTime = dateTime;
+		this.scen = scen;
+		this.people = people;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -110,10 +115,10 @@ public class SyndicateBehav extends CyclicBehaviour {
 		Behaviour behav = null;
 		if (convId.equals("syndicate-visor")) {
 			behav = new SendUpdateBehav(myAgent, scen.getUpdateVisorPeriod(),
-					receivers, convId, grid, dateTime);
+					receivers, convId, grid, dateTime, people);
 		} else if (convId.equals("syndicate-kml")) {
 			behav = new SendUpdateBehav(myAgent, scen.getUpdateKMLPeriod(),
-					receivers, convId, grid, dateTime);
+					receivers, convId, grid, dateTime, people);
 		}
 		return behav;
 	}
