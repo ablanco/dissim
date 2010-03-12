@@ -25,43 +25,52 @@ public class OsmInf {
 	private static final short smallClass = 10;
 	private static final short mediumClass = 50;
 	private static final short bigClass = 100;
-	
+
 	public static final short Undefined = -1;
 	// Land
 	public static final short Raw_Field = 0;
-	public static final short Waterway = 1*smallClass;
-	public static final short Barrier = 2*smallClass;
-	public static final short Natural = 3*smallClass;
-	public static final short Landuse = 4*smallClass;
-	public static final short Geological = 5*smallClass;
-	public static final short Tourism = 6*smallClass;
-	public static final short Power = 7*smallClass;
-	public static final short Man_Made = 8*smallClass;
-	public static final short Leisure = 9*smallClass;
-	public static final short Amenity = 10*smallClass;
-	public static final short Shop = 11*smallClass;
+	public static final short Waterway = Raw_Field + smallClass;
+	public static final short Barrier = Waterway + smallClass;
+	public static final short Natural = Barrier + smallClass;
+	public static final short Landuse = Natural + smallClass;
+	public static final short Geological = Landuse + smallClass;
+	public static final short Land = 200;
+	// End Land Types
 	// Roads
+	public static final short Tracktype = Land + mediumClass;
+	public static final short Cycleway = Tracktype + mediumClass;
+	public static final short Aerialway = Tracktype + mediumClass;
+	public static final short Railway = Aerialway + mediumClass;
+	public static final short Highway = Railway + bigClass;
 	private static final short Roads = 600;
-	public static final short Cycleway = Roads + mediumClass;
-	public static final short Tracktype = Roads + mediumClass *2 ;
-	public static final short Aerialway = Roads + mediumClass *3;
-	public static final short Railway = Roads + mediumClass * 4;
-	public static final short Highway = Roads + mediumClass * 5;
-	// safePoints
-	private static final short SafePoint = 1000; 
-	public static final short Historic = SafePoint;
-	public static final short Military = SafePoint + mediumClass *1;
-	public static final short Building = SafePoint + mediumClass *2;
-	public static final short Aeroway = SafePoint + mediumClass *3;
+	// End Roads
+	// Safe Points
+	// Big Places
+	public static final short Man_Made = Roads + smallClass;
+	public static final short Shop = Man_Made + smallClass;
+	public static final short Tourism = Shop + smallClass;
+	public static final short Power = Tourism + smallClass;
+	public static final short Leisure = Man_Made + mediumClass;
+	public static final short Amenity = Leisure + mediumClass;
+
+	// Goverment
+	public static final short Historic = Amenity + smallClass;
+	public static final short Military = Historic + smallClass;
+	public static final short Building = Military + mediumClass * 4;
+	public static final short Aeroway = Building + mediumClass * 5;
+
+	private static final short SafePoint = 1000;
+	// End Safe Points
+	// Others
+	public static final short Boundary = -2;
 
 	public static OsmNodeExtendedInfo getExtendedInfo(Node node) {
-		String value = "";
-		String name = "";
-		String type = "";
+		String value = null;
+		String name = null;
+		String type = null;
 		short key = Undefined;
 		while (node != null) {
 			if (node.getNodeName().equalsIgnoreCase("tag")) {
-
 				type = node.getAttributes().item(0).getNodeValue();
 				// osmLog.debug("value: " + value + " | ");
 				// Getting Name
@@ -74,7 +83,8 @@ public class OsmInf {
 				} else if (type.equalsIgnoreCase("historic")) {
 					value = node.getAttributes().item(1).getNodeValue();
 					key = Historic;
-				} else if (type.equalsIgnoreCase("leisure")) {
+				} else if (type.equalsIgnoreCase("leisure")
+						|| type.equalsIgnoreCase("sport")) {
 					value = node.getAttributes().item(1).getNodeValue();
 					key = Leisure;
 				} else if (type.equalsIgnoreCase("aeroway")) {
@@ -85,7 +95,7 @@ public class OsmInf {
 						|| type.equalsIgnoreCase("traffic_calming")
 						|| type.equalsIgnoreCase("service")) {
 					value = node.getAttributes().item(1).getNodeValue();
-					key = witchHighway(type, value);
+					key = getHighway(type, value);
 				} else if (type.equalsIgnoreCase("Barrier")) {
 					value = node.getAttributes().item(1).getNodeValue();
 					key = Barrier;
@@ -97,10 +107,10 @@ public class OsmInf {
 					key = Tracktype;
 				} else if (type.equalsIgnoreCase("Waterway")) {
 					value = node.getAttributes().item(1).getNodeValue();
-					key = witchWaterway(value);
+					key = getWaterway(value);
 				} else if (type.equalsIgnoreCase("Railway")) {
 					value = node.getAttributes().item(1).getNodeValue();
-					key = witchRailway(value);
+					key = getRailway(value);
 				} else if (type.equalsIgnoreCase("Aerialway")) {
 					value = node.getAttributes().item(1).getNodeValue();
 					key = Aerialway;
@@ -128,43 +138,46 @@ public class OsmInf {
 				} else if (type.equalsIgnoreCase("Building")) {
 					value = node.getAttributes().item(0).getNodeValue();
 					key = Building;
-				} 
+				} else if (type.equalsIgnoreCase("Landuse")) {
+					value = node.getAttributes().item(0).getNodeValue();
+					key = Landuse;
+				} else if (type.equalsIgnoreCase("boundary")) {
+					value = node.getAttributes().item(0).getNodeValue();
+					key = Boundary;
+				}
+
 			}
 			node = node.getNextSibling();
 		}
 		return new OsmNodeExtendedInfo(key, name, value);
 	}
 
-	
-	private static short witchRailway(String value) {
+	private static short getRailway(String value) {
 		short key = Railway;
 		key++;
 		if (value.equalsIgnoreCase("rail"))
-			return  key;
+			return key;
 		key++;
 		if (value.equalsIgnoreCase("tram"))
-			return  key;
-		
+			return key;
 		return Railway;
 	}
 
-
-	private static short witchWaterway(String value) {
+	private static short getWaterway(String value) {
 		short key = Waterway;
 		if (value.equalsIgnoreCase("riverbank"))
 			return key;
 		return 0;
 	}
 
-
-	private static short witchHighway(String type, String value) {
+	private static short getHighway(String type, String value) {
 		short key = Highway;
 		if (type.equalsIgnoreCase("highway")) {
-			//Higways
+			// Higways
 			if (value.equalsIgnoreCase("footway"))
-				return  key;
+				return key;
 			if (value.equalsIgnoreCase("path"))
-				return  key;
+				return key;
 			key++;
 			if (value.equalsIgnoreCase("track"))
 				return key;
@@ -172,41 +185,45 @@ public class OsmInf {
 			if (value.equalsIgnoreCase("cycleway"))
 				return key;
 			key++;
-			if (value.equalsIgnoreCase("residential") || value.contains("parking"))
+			if (value.equalsIgnoreCase("residential")
+					|| value.contains("parking"))
 				return key;
 			key++;
-			if (value.equalsIgnoreCase("road") || value.equalsIgnoreCase("pedestrian"))
+			if (value.equalsIgnoreCase("road")
+					|| value.equalsIgnoreCase("pedestrian"))
 				return key;
 			key++;
 			if (value.equalsIgnoreCase("service"))
-				return  key;
-			key++;		
+				return key;
+			key++;
 			if (value.equalsIgnoreCase("tertiary"))
-				return  key;
-			key++;	
+				return key;
+			key++;
 			if (value.equalsIgnoreCase("secondary"))
-				return  key;
-			key++;	
+				return key;
+			key++;
 			if (value.equalsIgnoreCase("primary"))
-				return  key;
+				return key;
 			key++;
 			if (value.contains("trunk"))
-				return  key;
+				return key;
 			key++;
 			if (value.contains("motorway"))
-				return  key;
-		}else if (type.equalsIgnoreCase("junction")) {
+				return key;
+		} else if (type.equalsIgnoreCase("junction")) {
 
-		}else if (type.equalsIgnoreCase("traffic_calming")) {
+		} else if (type.equalsIgnoreCase("traffic_calming")) {
 
-		}else {
+		} else {
 			// service
 		}
 		return Highway;
 	}
 
-	public static short whatType(short type) {
-		if (type < Cycleway) {
+	public static short getType(short type) {
+		if (type < Raw_Field) {
+			return Undefined;
+		} else if (type < Land) {
 			// Land Type
 			if (type < Waterway)
 				return Raw_Field;
@@ -218,30 +235,29 @@ public class OsmInf {
 				return Natural;
 			if (type < Geological)
 				return Landuse;
-			if (type < Tourism)
-				return Geological;
-			if (type < Power)
-				return Tourism;
-			if (type < Man_Made)
-				return Power;
-			if (type < Leisure)
-				return Man_Made;
-			if (type < Amenity)
-				return Leisure;
-			if (type < Shop)
-				return Amenity;
-			return Shop;
-		} else if (type < Historic) {
-			// Road type
-			if (type < Tracktype)
-				return Cycleway;
-			if (type < Aerialway)
+			return Geological;
+		} else if (type < Roads) {
+			if (type < Cycleway)
 				return Tracktype;
+			if (type < Aerialway)
+				return Cycleway;
 			if (type < Railway)
 				return Aerialway;
 			if (type < Highway)
 				return Railway;
 			return Highway;
+		} else if (type < SafePoint) {
+			if (type < Shop)
+				return Man_Made;
+			if (type < Tourism)
+				return Shop;
+			if (type < Power)
+				return Tourism;
+			if (type < Leisure)
+				return Power;
+			if (type < Amenity)
+				return Leisure;
+			return Amenity;
 		} else {
 			// Infrastructura
 			if (type < Military)
@@ -253,27 +269,58 @@ public class OsmInf {
 			return Aeroway;
 		}
 	}
-	
-	public static Color witchColor(short type){
-		short key = whatType(type);
-		int darker = (type - key);
-		switch (key) {
-		case Highway:
-			return new Color (Color.RED.getRGB() + darker );
-		case Waterway:
-			return new Color (Color.BLUE.getRGB() + darker);
-		case Building:
-			return new Color (Color.GREEN.getRGB() + darker);
-		case Aeroway:
-			return new Color (Color.GREEN.getRGB() + darker);
-		case Military:
-			return new Color (Color.GREEN.getRGB() + darker);
-		case Historic:
-			return new Color (Color.GREEN.getRGB() + darker);	
-		case Railway:
-			return new Color (Color.cyan.getRGB() + darker);
-		default:
-			return new Color(Color.GRAY.getRGB() + darker);
+
+	public static Color getColor(short type) {
+		short key = getType(type);
+		int brigther = (type - key) * 10;
+		if (key < Raw_Field) {
+			//Undefined or Not important
+			return new Color(Color.GRAY.getRGB() + brigther);
+		} else if (key < Land) {
+			//Tipes of land
+			switch (key) {
+			case Waterway:
+				return new Color(Color.BLUE.getRGB() + brigther);
+			case Landuse:
+				return new Color(Color.YELLOW.getRGB() + brigther);
+			default:
+				return new Color(Color.CYAN.getRGB() + brigther);
+			}
+		} else if (key < Roads) {
+			//types of roads
+			switch (key) {
+			case Highway:
+				return new Color(Color.RED.getRGB() + brigther);
+			case Railway:
+				return new Color(Color.ORANGE.getRGB() + brigther);
+			default:
+				return new Color(Color.MAGENTA.getRGB() + brigther);
+			}
+		} else {
+			//Types of safe Places
+			return new Color(Color.GREEN.getRGB() + brigther);
 		}
+	}
+
+	public static String getName(short type) {
+		short key = getType(type);
+		switch (key) {
+		case Boundary:
+			return "Boundary Limit";
+		case Highway:
+			return "Highway";
+		case Railway:
+			return "Rail Way";
+		case Waterway:
+			return "Water Way";
+		case Landuse:
+			return "Land Use";
+		default:
+			if (key > Roads) {
+				return "Safe Point";
+			}
+			return "Undefined " + type;
+		}
+
 	}
 }

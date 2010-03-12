@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -81,6 +83,14 @@ public class GetOSMInfo {
 		osmLog.println("... end of statement");
 	}
 
+	/**
+	 * Dado el nodo root del xml de OSM nos devuelve OsmMap con toda la
+	 * información que necesitamos
+	 * 
+	 * @param root
+	 *            Root element de un xml obtenido de OSM
+	 * @return Clase con toda la información que necesitamos de OSM
+	 */
 	protected OsmMap xmlToStreets(Node root) {
 		OsmMap osmMap = null;
 		// Skips osm and bounds
@@ -108,32 +118,55 @@ public class GetOSMInfo {
 		SortedMap<Long, OsmNode> osmNodes = new TreeMap<Long, OsmNode>();
 		// When this methods finised we've shuld have the first way
 		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes, osmMap);
-		adaptNodesMap();
-		// osmLog.debugln(osmMap.toString());
+		// Now we sort the list
+		Collections.sort(osmMap.ways, new WaysComparator());
 		return osmMap;
 	}
 
-	private void adaptNodesMap() {
-
-	}
-
+	/**
+	 * Dado un nodo lo clasifica y lo añade a un OsmMap
+	 * 
+	 * @param node
+	 *            Nodo Root de un xml de OSM
+	 * @param osmNodes
+	 *            Map con todos los nodos
+	 * @param osmMap
+	 *            Clase donde tendremos toda la informacion que necesitamos de
+	 *            OSM
+	 */
 	protected void getNodeInfo(Node node, SortedMap<Long, OsmNode> osmNodes,
 			OsmMap osmMap) {
 		while (node != null) {
+			// Hasta llegar al final del XML
 			String nodeName = node.getNodeName();
 			if (nodeName.equalsIgnoreCase("node")) {
+				// Es un nodo, de informacion o de sitio especial
 				getNodeInfoNode(node, osmNodes, osmMap.specialPlaces);
 			} else if (nodeName.equalsIgnoreCase("way")) {
+				// Forma parte de un Way
 				getNodeInfoWay(node, osmNodes, osmMap.ways);
 			} else {
+				// Informacion que no nos interesa, que es member???
 				// Skipping
 			}
 			node = node.getNextSibling();
 		}
 	}
 
+	/**
+	 * Dado un Nodo Node, que son los puntos del mapa, extraemos toda su
+	 * información. Pueden ser de tod tipos, nodos normales o nodos especiales
+	 * (edificios, aeropuertos ...)
+	 * 
+	 * @param node
+	 *            Nodo que queremos analizar
+	 * @param osmNodes
+	 *            Map con todos los nodos
+	 * @param specialPlaces
+	 *            Set con los nodos especiales.
+	 */
 	protected void getNodeInfoNode(Node node,
-			SortedMap<Long, OsmNode> osmNodes, SortedSet<OsmNode> specialPlaces) {
+			SortedMap<Long, OsmNode> osmNodes, List<OsmNode> specialPlaces) {
 		NamedNodeMap attributes = node.getAttributes();
 		// Getting attributes
 		long id;
@@ -153,7 +186,8 @@ public class GetOSMInfo {
 		LatLng latLng = new LatLng(lat, lng);
 		OsmNode osmNode = new OsmNode(id, latLng);
 		// System.err.println("Nodo leido: "+osmNode.toString()+" Coordenadas: "+latLng.toString()+" lat: "+lat+", lng; "+lng);
-		//Añadimos el punto del grid/punto aproximado del grid (mirar variable isIn)
+		// Añadimos el punto del grid/punto aproximado del grid (mirar variable
+		// isIn)
 		osmNode.setPoint(grid.coordToTile(latLng));
 		// If is extended Node:
 		if (node.getFirstChild() != null) {
@@ -161,25 +195,37 @@ public class GetOSMInfo {
 			osmNode.setExtendedInfo(OsmInf
 					.getExtendedInfo(node.getFirstChild()));
 			// Adding to Special Places
-			if (osmNode.getExtendedInfo().getKey() != OsmInf.Undefined){
-				specialPlaces.add(osmNode);				
-			}else{
-				System.err.println("Undefinde node: "+osmNode);
+			if (osmNode.getExtendedInfo().getKey() != OsmInf.Undefined) {
+				specialPlaces.add(osmNode);
+			} else {
+				System.err.println("Undefinde node: " + osmNode);
 			}
 		} else {
 			// Adding node to map of nodes
 			osmNodes.put(id, osmNode);
 		}
-		// osmLog.debugln(osmNode.toString());
 	}
 
+	/**
+	 * Dado un Nodo WAY extrae su información y lo añade a la lista de Ways y le
+	 * añade todos los nodos contenidos en el Map. No los elemina porque se ha
+	 * dado el caso que un nodo puede estar en varios Ways
+	 * 
+	 * @param node
+	 *            nodo del xml que estamos reconociendo
+	 * @param osmNodes
+	 *            Map con todos los nodos reconocidos esperando a ser asignados
+	 *            a un way
+	 * @param ways
+	 *            Acumulador de Ways que hemos ido reconociendo
+	 */
 	protected void getNodeInfoWay(Node node, SortedMap<Long, OsmNode> osmNodes,
-			SortedSet<OsmWay> ways) {
+			List<OsmWay> ways) {
 		// Getting IDattributes
 		long id = Long.parseLong(node.getAttributes().item(0).getNodeValue());
 		// Creating the way and adding to map
 		OsmWay osmWay = new OsmWay(id);
-		ways.add(osmWay);
+
 		node = node.getFirstChild();
 		// Getting Nodes id to add way
 		boolean in = false;
@@ -196,7 +242,6 @@ public class GetOSMInfo {
 					if (aux.isIn()) {
 						// Esta dentro de las coordenadas
 						osmWay.addToWay(aux);
-						// System.err.println("*****Dentro: " + aux.toString());
 						in = true;
 						out = false;
 					} else {
@@ -206,13 +251,11 @@ public class GetOSMInfo {
 						// debemos pintar
 						if (out) {
 							osmWay.setFirsNode(aux);
-							// System.err.println("Primero fuera: " +
-							// aux.toString());
+							// Primero fuera:
 						}
 						if (in) {
 							osmWay.setLastNode(aux);
-							// System.err.println("Ultimo Fuera: " +
-							// aux.toString());
+							// "Ultimo Fuera: "
 							in = aux.isIn();
 						}
 					}
@@ -220,9 +263,10 @@ public class GetOSMInfo {
 			}
 			node = node.getNextSibling();
 		}
-		// Obtaining extended info
+		// Obtaining extended info and Priority
 		osmWay.setExtendedInfo(OsmInf.getExtendedInfo(node));
-		// osmLog.debugln(osmWay.toString());
+		// Ahora que tenemos la prioridad añadimos el Way
+		ways.add(osmWay);
 	}
 
 	/**

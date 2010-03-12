@@ -35,7 +35,7 @@ public class OSMMapTest {
 //		SE =new LatLng(	29.940, -90.070, (short)10);
 
 		 
-		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0,0,20);
+		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0,0,30);
 			
 		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
 		Snapshot snapShot = new Snapshot(new AID(), grid, dateTime, new Hashtable<String, Point>());
@@ -45,8 +45,8 @@ public class OSMMapTest {
 
 		osmMap.setMapInfo(grid);
 		// Mostando info por pantalla
-		System.err.println(grid.toString());
-		System.err.println(osmMap.toString());
+		System.out.println(grid.toString());
+//		System.out.println(osmMap.toString());
 
 		VisorMap v = new VisorMap();
 		v.update(snapShot);

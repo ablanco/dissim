@@ -18,8 +18,6 @@ package osm;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import util.HexagonalGrid;
 import util.Point;
@@ -32,13 +30,13 @@ public class OsmMap {
 	protected String name;
 	protected String place;
 	protected long id;
-	protected SortedSet<OsmWay> ways;
-	protected SortedSet<OsmNode> specialPlaces;
+	protected List<OsmWay> ways;
+	protected List<OsmNode> specialPlaces;
 
 	public OsmMap(long id) {
 		this.id = id;
-		ways = new TreeSet<OsmWay>(new WaysComparator());
-		specialPlaces = new TreeSet<OsmNode>();
+		ways = new ArrayList<OsmWay>();
+		specialPlaces = new ArrayList<OsmNode>();
 	}
 
 	public void setContinent(String continent) {
@@ -74,6 +72,7 @@ public class OsmMap {
 		for (OsmWay w : ways) {
 			result += w.toString() + "\n";
 		}
+		
 		for (OsmNode n : specialPlaces) {
 			result += n.toString() + "\n";
 		}

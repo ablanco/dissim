@@ -102,10 +102,12 @@ public class MapPane extends JPanel implements Scrollable{
 					Polygon hex = new Hexagon2D(posX, posY, radius);
 					// Dibujar y colorear según la altura
 					short value = grid.getStreetValue(i, j);
-					if (value != OsmInf.Raw_Field) {
-						g2.setColor(OsmInf.witchColor(value));
+					if (value > OsmInf.Raw_Field) {
+						//Pintamos todos los elementos relevantes
+						g2.setColor(OsmInf.getColor(value));
 						// System.err.println("pintando en "+i+","+j+", ");
 					} else {
+						//No pintamos lo que es menor que Raw_File porque esas cosas de momento no las reconocemos
 						g2.setColor(Color.WHITE);
 					}
 					g2.fillPolygon(hex);
