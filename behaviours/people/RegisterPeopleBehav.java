@@ -51,52 +51,59 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 				.MatchConversationId("register-people");
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
-			String[] pos = msg.getContent().split(" ");
-			String id = pos[0];
-			Point p = new Point(Integer.parseInt(pos[1]), Integer
-					.parseInt(pos[2]));
-
-			ACLMessage reply = msg.createReply();
-
-			int env = isOutsideArea(p);
-			if (env >= 0) {
-				// Ha cambiado de entorno
-				people.remove(id);
-
-				// Obtener agentes entorno
-				DFAgentDescription[] result = AgentHelper.search(myAgent,
-						"intergrid");
-				AID envAID = null;
-				for (DFAgentDescription df : result) {
-					String name = df.getName().getLocalName();
-					name = name.substring(name.indexOf("-") + 1, name
-							.lastIndexOf("-"));
-					if (name.equals(Integer.toString(env))) {
-						envAID = df.getName();
-						break;
-					}
-				}
-
-				// Avisar a entorno de que se le envía una persona
-				String content = InterGridBehav.PEOPLE_SET + " " + id + " "
-						+ Integer.toString(p.getCol()) + " "
-						+ Integer.toString(p.getRow());
-				AgentHelper.send(myAgent, envAID, ACLMessage.INFORM,
-						"intergrid", content);
-
-				// Avisar al agente humano de cuál es su nuevo entorno
-				try {
-					reply.setContentObject(envAID);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				reply.setPerformative(ACLMessage.INFORM);
+			if (msg.getPerformative() == ACLMessage.CANCEL) {
+				String id = msg.getContent();
+				Point p = people.remove(id);
+				if (p != null) // TODO Debug
+					System.out.println(id + " died at " + p.toString());
 			} else {
-				people.put(id, p);
-				reply.setPerformative(ACLMessage.CONFIRM);
-			}
+				String[] pos = msg.getContent().split(" ");
+				String id = pos[0];
+				Point p = new Point(Integer.parseInt(pos[1]), Integer
+						.parseInt(pos[2]));
 
-			myAgent.send(reply);
+				ACLMessage reply = msg.createReply();
+
+				int env = isOutsideArea(p);
+				if (env >= 0) {
+					// Ha cambiado de entorno
+					people.remove(id);
+
+					// Obtener agentes entorno
+					DFAgentDescription[] result = AgentHelper.search(myAgent,
+							"intergrid");
+					AID envAID = null;
+					for (DFAgentDescription df : result) {
+						String name = df.getName().getLocalName();
+						name = name.substring(name.indexOf("-") + 1, name
+								.lastIndexOf("-"));
+						if (name.equals(Integer.toString(env))) {
+							envAID = df.getName();
+							break;
+						}
+					}
+
+					// Avisar a entorno de que se le envía una persona
+					String content = InterGridBehav.PEOPLE_SET + " " + id + " "
+							+ Integer.toString(p.getCol()) + " "
+							+ Integer.toString(p.getRow());
+					AgentHelper.send(myAgent, envAID, ACLMessage.INFORM,
+							"intergrid", content);
+
+					// Avisar al agente humano de cuál es su nuevo entorno
+					try {
+						reply.setContentObject(envAID);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					reply.setPerformative(ACLMessage.INFORM);
+				} else {
+					people.put(id, p);
+					reply.setPerformative(ACLMessage.CONFIRM);
+				}
+
+				myAgent.send(reply);
+			}
 		} else {
 			block();
 		}

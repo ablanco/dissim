@@ -20,15 +20,16 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import util.AgentHelper;
+import util.jcoord.LatLng;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
-import behaviours.people.PacmanBehav;
+import behaviours.people.RunawayBehav;
 
 @SuppressWarnings("serial")
 public class PedestrianAgent extends Agent {
 
-	private int x;
-	private int y;
+	private double lat;
+	private double lng;
 	private int d;
 
 	@Override
@@ -36,8 +37,8 @@ public class PedestrianAgent extends Agent {
 		// Obtener argumentos
 		Object[] args = getArguments();
 		if (args.length == 3) {
-			x = Integer.parseInt((String) args[0]);
-			y = Integer.parseInt((String) args[1]);
+			lat = Double.parseDouble((String) args[0]);
+			lng = Double.parseDouble((String) args[1]);
 			d = Integer.parseInt((String) args[2]);
 		} else {
 			throw new IllegalArgumentException(getLocalName()
@@ -46,12 +47,13 @@ public class PedestrianAgent extends Agent {
 
 		addBehaviour(new RequestScenarioBehav(new ContinuePA()));
 	}
-
+	
 	protected class ContinuePA extends ReceiveScenarioBehav {
 
 		@Override
 		public void action() {
-			String env = Integer.toString(scen.getEnviromentByPosition(x, y));
+			String env = Integer.toString(scen.getEnviromentByCoord(new LatLng(
+					lat, lng)));
 
 			// Obtener agentes entorno
 			DFAgentDescription[] result = AgentHelper.search(myAgent,
@@ -67,8 +69,8 @@ public class PedestrianAgent extends Agent {
 				}
 			}
 
-			myAgent.addBehaviour(new PacmanBehav(myAgent, scen
-					.getUpdatePeople(), envAID, x, y, d));
+			myAgent.addBehaviour(new RunawayBehav(myAgent, scen
+					.getUpdatePeople(), envAID, lat, lng, d));
 
 			done = true;
 		}

@@ -43,9 +43,9 @@ public class SimulationTest {
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), (short) 800);
 		scen.setPrecision((short) 10);
-		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.945,
-				-90.085), scen.doubleToInner(4), 1500L));
-		System.out.println("Water Source dentro del área de simulación: " + ws);
+		scen.addWaterSource(new WaterSource(new LatLng(29.945, -90.085), scen
+				.doubleToInner(4), 1500L));
+		scen.addPeople(new LatLng(29.946, -90.085));
 		// scen.obtainTerrainElevation();
 		scen.complete();
 	}
@@ -55,21 +55,11 @@ public class SimulationTest {
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), tileSize);
 		scen.setPrecision((short) 10);
-		boolean ws = scen.addWaterSource(new WaterSource(new LatLng(29.937,
-				-90.065), scen.doubleToInner(20), 20L));
-		System.out.println("Water Source dentro del área de simulación: " + ws);
-		// HexagonalGrid grid = scen.getGrid();
-		// int x = grid.getDimX();
-		// int y = grid.getDimY();
-		// System.out.println("Tamaño del grid: " + x + "x" + y);
-		// Random rnd = new Random(System.currentTimeMillis());
-		// for (int i = 0; i < x; i++) {
-		// for (int j = 0; j < y; j++) {
-		// grid.setTerrainValue(i, j, (short) (rnd.nextInt(500) - 250));
-		// }
-		// }
-		// grid.setTerrainValue(x - 3, x - 3, (short) 260);
+		scen.addWaterSource(new WaterSource(new LatLng(29.937, -90.065), scen
+				.doubleToInner(20), 20L));
+		scen.addPeople(new LatLng(29.937, -90.068));
 		scen.setFloodUpdateTime(50);
+		scen.setUpdatePeople(50);
 		// scen.disableDefaultLogger();
 		scen.setNumEnv(numEnv);
 		scen.complete();

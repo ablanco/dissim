@@ -23,46 +23,65 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+
+import behaviours.AdjacentsGridBehav;
 
 import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
 
 @SuppressWarnings("serial")
-public class PacmanBehav extends CyclicBehaviour {
+public class RunawayBehav extends CyclicBehaviour {
 
 	private AID env;
-	private int x; // Posición
+	private double lat; // Posición en coordenadas
+	private double lng;
+	private int x; // Posición en columna y fila
 	private int y;
 	private int d; // Distancia de visión
+	private String type = AdjacentsGridBehav.LAT_LNG;
 	private long period;
+	private long previous;
 	private int step = 0;
 	private MessageTemplate mt = MessageTemplate.MatchAll();
 
-	public PacmanBehav(Agent a, long period, AID env, int x, int y, int d) {
+	public RunawayBehav(Agent a, long period, AID env, double lat, double lng,
+			int d) {
 		super(a);
 		if (env == null)
 			throw new IllegalArgumentException(
 					"The enviroment AID cannot be null");
 		this.env = env;
 		this.period = period;
-		this.x = x;
-		this.y = y;
+		this.lat = lat;
+		this.lng = lng;
 		this.d = d;
+		previous = System.currentTimeMillis();
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
+		if ((System.currentTimeMillis() - previous) < period)
+			return; // TODO Ugly
+
+		previous = System.currentTimeMillis();
 		ACLMessage msg;
 		String content;
 		switch (step) {
 		case 0:
+			content = type + " ";
 			// Pedir adyacentes
-			content = Integer.toString(x) + " " + Integer.toString(y) + " "
-					+ Integer.toString(d);
+			if (type.equals(AdjacentsGridBehav.LAT_LNG)) {
+				content += Double.toString(lat) + " " + Double.toString(lng)
+						+ " " + Integer.toString(d);
+			} else {
+				content += Integer.toString(x) + " " + Integer.toString(y)
+						+ " " + Integer.toString(d);
+			}
 			mt = AgentHelper.send(myAgent, env, ACLMessage.REQUEST,
 					"adjacents-grid", content);
 			step = 1;
@@ -82,6 +101,21 @@ public class PacmanBehav extends CyclicBehaviour {
 							dry.add(pt);
 					}
 
+					// Por si no ve agua, que no se mueva
+					step = 0;
+
+					// Si no tiene casillas secas a su alrededor está rodeado y
+					// se ahoga
+					if (dry.size() == 0) {
+						// TODO Mejorar sistema para detectar ahogamiento
+						System.out.println(myAgent.getLocalName()
+								+ ": Me ahogo!!");
+						AgentHelper.send(myAgent, env, ACLMessage.CANCEL,
+								"register-people", myAgent.getLocalName());
+						myAgent.doDelete();
+						return;
+					}
+
 					if (water.size() > 0) {
 						// Buscar la casilla seca más alejada de las inundadas
 						int dmejor = Integer.MIN_VALUE;
@@ -95,19 +129,28 @@ public class PacmanBehav extends CyclicBehaviour {
 							if (dist > dmejor)
 								pmejor = pt;
 						}
+
+						// Si no se ha encontrado una mejor se mueve a una seca
+						// al azar
+						if (pmejor != null) {
+							Point[] arrdry = new Point[dry.size()];
+							arrdry = dry.toArray(arrdry);
+							Random rnd = new Random(System.currentTimeMillis());
+							pmejor = arrdry[rnd.nextInt(arrdry.length)];
+						}
+
 						x = pmejor.getCol();
 						y = pmejor.getRow();
+						type = AdjacentsGridBehav.POSITION;
 
 						// Informamos al entorno del movimiento
 						content = myAgent.getLocalName() + " "
 								+ Integer.toString(x) + " "
 								+ Integer.toString(y);
+						// System.out.println(content); // TODO DEBUG
 						mt = AgentHelper.send(myAgent, env, ACLMessage.INFORM,
 								"register-people", content);
 						step = 2;
-					} else {
-						// Si no ve agua no se mueve
-						step = 0;
 					}
 				} catch (UnreadableException e) {
 					e.printStackTrace();

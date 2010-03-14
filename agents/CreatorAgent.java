@@ -22,6 +22,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.ListIterator;
 
 import test.SimulationTest;
@@ -119,13 +120,22 @@ public class CreatorAgent extends Agent {
 					}
 				}
 
-				// TODO DEBUG
-				arguments = new Object[] { Integer.toString(3),
-						Integer.toString(10), Integer.toString(2) };
-				myAgent.addBehaviour(new CreateAgentBehav(myAgent, "Dude",
-						"agents.people.PedestrianAgent", 1, arguments));
+				// Agentes humanos
+				Iterator<LatLng> people = scen.getPeopleIterator();
+				int i = 0;
+				while (people.hasNext()) {
+					LatLng pos = people.next();
+					arguments = new Object[] { Double.toString(pos.getLat()),
+							Double.toString(pos.getLng()), Integer.toString(1) };
+					myAgent
+							.addBehaviour(new CreateAgentBehav(myAgent, "Dude"
+									+ i, "agents.people.PedestrianAgent", 1,
+									arguments));
+					i++;
+				}
 
-				for (int i = 0; i < scen.getNumEnv(); i++) {
+				// TODO DEBUG
+				for (i = 0; i < scen.getNumEnv(); i++) {
 					arguments = new Object[] { "gui.VisorFrame",
 							Integer.toString(i) };
 					myAgent.addBehaviour(new CreateAgentBehav(myAgent,

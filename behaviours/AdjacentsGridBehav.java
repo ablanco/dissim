@@ -25,10 +25,14 @@ import java.util.TreeSet;
 
 import util.HexagonalGrid;
 import util.Point;
+import util.jcoord.LatLng;
 
 public class AdjacentsGridBehav extends CyclicBehaviour {
 
 	private static final long serialVersionUID = 150073372111848766L;
+
+	public static final String LAT_LNG = "latlng";
+	public static final String POSITION = "pos";
 
 	private HexagonalGrid grid;
 
@@ -44,13 +48,24 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 		if (msg != null) {
 			// Mensaje CFP recibido, hay que procesarlo
 			String pos = msg.getContent();
-			String[] coord = pos.split(" ");
+			String[] data = pos.split(" ");
+			String type = data[0];
 			TreeSet<Point> adjacents = null;
-			int x = Integer.parseInt(coord[0]);
-			int y = Integer.parseInt(coord[1]);
+			int x;
+			int y;
+			if (type.equals(LAT_LNG)) {
+				double lat = Double.parseDouble(data[1]);
+				double lng = Double.parseDouble(data[2]);
+				Point p = grid.coordToTile(new LatLng(lat, lng));
+				x = p.getCol();
+				y = p.getRow();
+			} else {
+				x = Integer.parseInt(data[1]);
+				y = Integer.parseInt(data[2]);
+			}
 			int d = 1;
-			if (coord.length > 2)
-				d = Integer.parseInt(coord[2]);
+			if (data.length > 3)
+				d = Integer.parseInt(data[3]);
 
 			adjacents = grid.getAdjacents(new Point(x, y));
 			TreeSet<Point> adj1 = adjacents;

@@ -18,6 +18,8 @@ package util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import util.jcoord.LatLng;
 
@@ -70,6 +72,9 @@ public class Scenario implements Serializable {
 	private int numEnv = 1;
 	private ArrayList<LatLng[]> envAreas = null;
 	private ArrayList<int[]> envSizes = null;
+
+	// TODO Mejorar, demasiado limitado
+	private LinkedList<LatLng> people = new LinkedList<LatLng>();
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -300,6 +305,17 @@ public class Scenario implements Serializable {
 			idx++;
 		}
 		return -1;
+	}
+
+	public boolean addPeople(LatLng pos) {
+		boolean result = false;
+		if (pos.isContainedIn(globalNW, globalSE))
+			result = people.add(pos);
+		return result;
+	}
+
+	public Iterator<LatLng> getPeopleIterator() {
+		return people.iterator();
 	}
 
 }

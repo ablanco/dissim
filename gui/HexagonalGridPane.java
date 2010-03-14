@@ -176,8 +176,9 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 					Point p = new Point(i, j);
 					if (people.containsValue(p)) {
 						g2.setColor(Color.RED);
-						Ellipse2D.Float circle = new Ellipse2D.Float();
-						circle.setFrame(hex.getBounds2D());
+						Ellipse2D.Float circle = new Ellipse2D.Float(posX
+								- (radius / 2), posY - (radius / 2), radius,
+								radius);
 						g2.fill(circle);
 					}
 				}
