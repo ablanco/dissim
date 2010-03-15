@@ -47,12 +47,16 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	/**
 	 * Begin time of the simulation step
 	 */
-	protected String beginTime=null;
+	protected String beginTime = null;
 	/**
 	 * End time of the simulation step
 	 */
-	protected String endTime=null;
+	protected String endTime = null;
 	protected Logger kmlLog = new Logger();
+
+	public GoogleEarthFlood() {
+		this(null, null);
+	}
 
 	public GoogleEarthFlood(String name, String description) {
 		super(name, description);
@@ -81,7 +85,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 					"Object is not an instance of Snapshot");
 		Snapshot snap = (Snapshot) obj;
 		HexagonalGrid grid = snap.getGrid();
-		GoogleEarthUtils.tileSize= grid.getTileSize();
+		GoogleEarthUtils.tileSize = grid.getTileSize();
 		setOldGrid(grid);
 		// Now we update the time for each update call
 		beginTime = endTime;
@@ -111,7 +115,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 			oldGrid = new short[grid.getColumns()][grid.getRows()];
 			for (int x = 0; x < grid.getColumns(); x++) {
 				for (int y = 0; y < grid.getRows(); y++) {
-					oldGrid[x][y]= grid.getTerrainValue(x, y);
+					oldGrid[x][y] = grid.getTerrainValue(x, y);
 				}
 			}
 			initialized = true;
@@ -175,6 +179,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	 * @param newSnap
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private List<LatLng> regionToPoligon(SortedSet<Point> region,
 			Snapshot newSnap) {
 		List<LatLng> borderLine = new ArrayList<LatLng>();
@@ -188,15 +193,15 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 			region.remove(p);
 			while (!adyList.isEmpty()) {
 				p = adyList.get(0);
-				borderLine.add(newSnap.getGrid()
-						.tileToCoord(p.getCol(), p.getRow()));
+				borderLine.add(newSnap.getGrid().tileToCoord(p.getCol(),
+						p.getRow()));
 				adyList.remove(p);
 				Set<Point> s = newSnap.getGrid().getAdjacents(p);
 				for (Point b : region) {
 					// could be more than one each time
 					if (s.contains(b)) {
-						borderLine.add(newSnap.getGrid().tileToCoord(b.getCol(),
-								b.getRow()));
+						borderLine.add(newSnap.getGrid().tileToCoord(
+								b.getCol(), b.getRow()));
 						adyList.add(b);
 					}
 				}
@@ -242,6 +247,7 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	 * @param newSnap
 	 * @return a Collection whit all regions
 	 */
+	@SuppressWarnings("unused")
 	private Collection<List<SortedSet<Point>>> getBorderRegions(Snapshot newSnap) {
 		HashMap<Short, List<SortedSet<Point>>> levelRegions = new HashMap<Short, List<SortedSet<Point>>>();
 		HexagonalGrid newGrid = newSnap.getGrid();
