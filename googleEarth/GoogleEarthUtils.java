@@ -52,7 +52,7 @@ public class GoogleEarthUtils {
 	 */
 	public static void createKmlFile(Kml kml, String fileName) {
 		try {
-			kml.marshal(new File(fileName + ".kml"));
+			kml.marshal(new File("GoogleEarth" + File.separatorChar +fileName + ".kml"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -65,7 +65,8 @@ public class GoogleEarthUtils {
 	 */
 	public static void createKmzFile(Kml kml, String fileName) {
 		try {
-			kml.marshalAsKmz(fileName + ".kmz");
+			kml.marshalAsKmz("GoogleEarth" + File.separatorChar + fileName
+					+ ".kmz");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -78,6 +79,10 @@ public class GoogleEarthUtils {
 	public static Folder newFolder(Kml kml, String name, String description) {
 		return kml.createAndSetFolder().withName(name).withOpen(true)
 				.withDescription(description);
+	}
+
+	public static Folder newFolder(Kml kml) {
+		return kml.createAndSetFolder().withOpen(true);
 	}
 
 	/**
@@ -174,13 +179,14 @@ public class GoogleEarthUtils {
 	 * 
 	 * @param placeMark
 	 */
-	protected static void setTimeSpan(Placemark placeMark, String beginTime, String endTime) {
+	protected static void setTimeSpan(Placemark placeMark, String beginTime,
+			String endTime) {
 		TimeSpan t = new TimeSpan();
-		if (beginTime != null){
-			t.setBegin(beginTime);	
+		if (beginTime != null) {
+			t.setBegin(beginTime);
 		}
-		if (endTime != null){
-			t.setEnd(endTime);	
+		if (endTime != null) {
+			t.setEnd(endTime);
 		}
 		placeMark.setTimePrimitive(t);
 	}

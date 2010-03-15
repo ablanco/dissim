@@ -16,6 +16,7 @@
 
 package googleEarth;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,7 +56,9 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	protected Logger kmlLog = new Logger();
 
 	public GoogleEarthFlood() {
-		this(null, null);
+		super();
+		initialized = false;
+		altitudes = new TreeSet<Short>();
 	}
 
 	public GoogleEarthFlood(String name, String description) {
@@ -72,6 +75,9 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	@Override
 	public void finish() {
 		// Código de finalización
+		//Aqui escribimos el archivo kml
+		GoogleEarthUtils.createKmlFile(kml, folder.getName());
+		GoogleEarthUtils.createKmzFile(kml, folder.getName());
 	}
 
 	/**
@@ -315,16 +321,21 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 	}
 
 	protected void createWaterStyleAndColor(short z) {
-
 		if (!altitudes.contains(z)) {
+			//Si no tenemos este color/altura definido
 			Style style = new Style();
 			folder.getStyleSelector().add(style);
 			style.setId("BLUE" + z);
-
+			//Creamos un nuevo estilo con ese color/altura
 			PolyStyle polyStyle = new PolyStyle();
 			style.setPolyStyle(polyStyle);
-			// TODO por ahora solo permite 64 tonalizades de azul
-			polyStyle.setColor("ffff" + Integer.toHexString(z * 4) + "00");
+			Color c = new Color(Color.blue.getRGB());
+			//Mientras mas profunda sea el agua, mas ocuro es el azul.
+			for (int i=0;i<z;i++){
+				c.darker();
+			}
+			//Para las transparecias igual, con un minimo de 128, esto tiene un maximo de 30 metros de profundidad
+			polyStyle.setColor(Integer.toHexString(z*4 + 128) + Integer.toHexString(c.getRGB()));
 			polyStyle.setColorMode(ColorMode.NORMAL);
 			altitudes.add(z);
 		}

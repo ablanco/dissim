@@ -29,7 +29,22 @@ public class GoogleEarth {
 		folder = GoogleEarthUtils.newFolder(kml, name, description);
 	}
 	
+	public GoogleEarth(){
+		kml = new Kml();
+		folder = GoogleEarthUtils.newFolder(kml);
+	}
+	
+	public void setName(String name){
+		folder.setName(name);
+	}
+	
+	public void setDescription(String description){
+		folder.setDescription(description);
+	}
+	
 	public Kml getKml(){
 		return kml;
 	}
+	
+	
 }
