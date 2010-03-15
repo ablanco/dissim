@@ -38,7 +38,6 @@ public class FloodScenario extends Scenario {
 	public FloodScenario() {
 		super();
 		waterSources = new LinkedList<WaterSource>();
-		Scenario.current = this;
 	}
 
 	public boolean addWaterSource(WaterSource ws) {

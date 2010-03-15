@@ -54,10 +54,9 @@ public class CreatorAgent extends Agent {
 				strArgs[i - 1] = (String) agtArgs[i];
 			}
 		}
-		SimulationTest.generateScenario(opt, strArgs);
+		scen = SimulationTest.generateScenario(opt, strArgs);
 		// FIN DEBUG
 
-		scen = Scenario.getCurrentScenario();
 		if (scen != null) {
 			// Lo primero es ofrecer el Scenario
 			addBehaviour(new SendScenarioBehav());

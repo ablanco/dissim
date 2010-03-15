@@ -16,6 +16,7 @@
 
 package test;
 
+import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
 import util.jcoord.LatLng;
@@ -26,19 +27,21 @@ public class SimulationTest {
 		generateScenario(0, new String[] { Boolean.toString(false) });
 	}
 
-	public static void generateScenario(int option, String[] arguments) {
+	public static Scenario generateScenario(int option, String[] arguments) {
+		Scenario scen = null;
 		switch (option) {
 		case 0:
-			smallGrid();
+			scen = smallGrid();
 			break;
 		case 1:
-			randomGrid(Integer.parseInt(arguments[0]), Integer
+			scen = randomGrid(Integer.parseInt(arguments[0]), Integer
 					.parseInt(arguments[1]));
 			break;
 		}
+		return scen;
 	}
 
-	private static void smallGrid() {
+	private static Scenario smallGrid() {
 		FloodScenario scen = new FloodScenario();
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), (short) 800);
@@ -48,9 +51,10 @@ public class SimulationTest {
 		scen.addPeople(new LatLng(29.946, -90.085));
 		// scen.obtainTerrainElevation();
 		scen.complete();
+		return scen;
 	}
 
-	private static void randomGrid(int tileSize, int numEnv) {
+	private static Scenario randomGrid(int tileSize, int numEnv) {
 		FloodScenario scen = new FloodScenario();
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), tileSize);
@@ -63,6 +67,7 @@ public class SimulationTest {
 		// scen.disableDefaultLogger();
 		scen.setNumEnv(numEnv);
 		scen.complete();
+		return scen;
 	}
 
 }

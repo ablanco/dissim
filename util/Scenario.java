@@ -38,11 +38,6 @@ public class Scenario implements Serializable {
 	 */
 	private short precision = 10;
 	/**
-	 * Current Scenario showed on GUI If a Scenario is loaded (from a file), or
-	 * a new one is created, this reference MUST change
-	 */
-	protected static Scenario current = null;
-	/**
 	 * Periodo de actualización de los visores
 	 */
 	private long updateVisor = 1000L;
@@ -79,16 +74,7 @@ public class Scenario implements Serializable {
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
 	protected Scenario() {
-		current = this;
-	}
-
-	public static Scenario getCurrentScenario() {
-		Scenario instance = null;
-		if (current != null) {
-			if (current.isComplete())
-				instance = current;
-		}
-		return instance;
+		// Usar clases hijas
 	}
 
 	/**
