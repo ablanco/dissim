@@ -1,7 +1,6 @@
 package test;
 
 import gui.Map.VisorMap;
-import jade.core.AID;
 
 import java.util.Hashtable;
 

@@ -18,9 +18,9 @@ package test;
 
 import java.util.Hashtable;
 
-import googleEarth.GoogleEarthFlood;
-import googleEarth.GoogleEarthUtils;
 import jade.core.AID;
+import kml.KmlFlood;
+import kml.KmlUtils;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Point;
@@ -45,7 +45,7 @@ public class TimeStampTest {
 				grid, new DateAndTime(2000, 3, 15, 15, 3),
 				new Hashtable<String, Point>());
 
-		GoogleEarthFlood k = new GoogleEarthFlood("TimeStamp Test", "Move on");
+		KmlFlood k = new KmlFlood("TimeStamp Test", "Move on");
 
 		for (int rep = 0; rep < 6; rep++) {
 			for (int i = 0; i < grid.getColumns(); i++) {
@@ -57,7 +57,7 @@ public class TimeStampTest {
 			k.update(newOrleans);
 
 		}
-		GoogleEarthUtils.createKmzFile(k.getKml(), "TimeStamp Test");
+		KmlUtils.createKmzFile(k.getKml(), "TimeStamp Test");
 	}
 
 }

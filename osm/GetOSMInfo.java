@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -46,12 +45,12 @@ import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
 import util.Logger;
+import util.Util;
 import util.jcoord.LatLng;
 
 public class GetOSMInfo {
 	private Document doc;
 	private Node root;
-	private Logger osmLog;
 	private HexagonalGrid grid;
 	private OsmMap osmMap;
 	private String fileName;
@@ -63,13 +62,12 @@ public class GetOSMInfo {
 		LatLng SE = grid.getArea()[1];
 
 		// Open Streets Maps uses a differente mapBox, NE, SW
-		osmLog = new Logger();
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
 		String mBox = NW.getLng() + "," + SE.getLat() + "," + SE.getLng() + ","
 				+ NW.getLat();
 		fileName = "map?bbox=" + mBox;
 		url += mBox;
-		osmLog.println("Obtaining info from :" + url);
+//		("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url);
 		// System.err.println("Reading file: "+xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
@@ -77,10 +75,8 @@ public class GetOSMInfo {
 		// get root node of xml tree structure
 		root = doc.getDocumentElement();
 		// write node and its child nodes into System.out
-		osmLog.println("Statemend of XML document...");
 		// writeDocumentToLog(root, 0);
 		osmMap = xmlToStreets(root);
-		osmLog.println("... end of statement");
 	}
 
 	/**
@@ -278,147 +274,27 @@ public class GetOSMInfo {
 	protected File getOSMXmlFromURL(String url) {
 		File file = null;
 		try {
-			File f = File.createTempFile("CatastrofesOpenStreetMaps", null);
-			String path = f.getAbsolutePath();
-			path = (String) path.subSequence(0, path.length()
-					- f.getName().length());
-			path += "PFC-Catastrofes" + File.separator;
-			f.deleteOnExit();
-			f.delete();
-
-			// Opens File Dir
-			File osmMap = new File(path);
-
-			if (!osmMap.exists()) {
-				osmMap.mkdir();
-				// osmLog.debugln("New Directory in: " + osmMap.getPath());
-			}
-
-			file = new File(path + fileName);
+			//Directorio temporal
+			File dir = Util.getDefaultTempDir();
+			//Miramos si ya lo tenemos
+			file = new File(dir.getPath() + fileName);
 			if (!file.exists()) {
-				if (!Wget.wget(path, url)) {
-					// osmLog.debugln("Cannot obtain " + url + ", into :"
-					// + path);
-				} else {
-					System.err.println("Getting File info");
-					return new File(path + fileName);
+				if (!Wget.wget(dir.getPath(), url)) {
+					System.err.println("No se ha podido descargar la informacion");
+					return null;
+				}else{
+					//Si se ha descargado devolvemos el fichero
+					file = new File(dir.getPath() + fileName);
 				}
 			} else {
-				// System.err.println("File info cached");
+				// Fichero ya descargado, lo devolvemos
 				return file;
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return file;
-	}
-
-	/**
-	 * Returns element value
-	 * 
-	 * @param elem
-	 *            element (it is XML tag)
-	 * @return Element value otherwise empty String
-	 */
-	protected final static String getElementValue(Node elem) {
-		Node kid;
-		if (elem != null) {
-			if (elem.hasChildNodes()) {
-				for (kid = elem.getFirstChild(); kid != null; kid = kid
-						.getNextSibling()) {
-					if (kid.getNodeType() == Node.TEXT_NODE) {
-						return kid.getNodeValue();
-					}
-				}
-			}
-		}
-		return "";
-	}
-
-	private String getIndentSpaces(int indent) {
-		StringBuffer buffer = new StringBuffer();
-		for (int i = 0; i < indent; i++) {
-			buffer.append(" ");
-		}
-		return buffer.toString();
-	}
-
-	/**
-	 * Writes node and all child nodes into System.out
-	 * 
-	 * @param node
-	 *            XML node from from XML tree wrom which will output statement
-	 *            start
-	 * @param indent
-	 *            number of spaces used to indent output
-	 */
-	protected void writeDocumentToLog(Node node, int indent) {
-		// get element name
-		String nodeName = node.getNodeName();
-		// get element value
-		String nodeValue = getElementValue(node);
-		// get attributes of element
-		NamedNodeMap attributes = node.getAttributes();
-		osmLog.debugln(getIndentSpaces(indent) + "NodeName: " + nodeName
-				+ ", NodeValue: " + nodeValue);
-		for (int i = 0; i < attributes.getLength(); i++) {
-			Node attribute = attributes.item(i);
-			osmLog.debugln(getIndentSpaces(indent + 2) + "AttributeName: "
-					+ attribute.getNodeName() + ", attributeValue: "
-					+ attribute.getNodeValue());
-		}
-		// write all child nodes recursively
-		NodeList children = node.getChildNodes();
-		for (int i = 0; i < children.getLength(); i++) {
-			Node child = children.item(i);
-			if (child.getNodeType() == Node.ELEMENT_NODE) {
-				writeDocumentToLog(child, indent + 2);
-			}
-		}
-	}
-
-	/**
-	 * Saves XML Document into XML file.
-	 * 
-	 * @param fileName
-	 *            XML file name
-	 * @param doc
-	 *            XML document to save
-	 * @return <B>true</B> if method success <B>false</B> otherwise
-	 */
-	protected boolean saveXMLDocument(String fileName, Document doc) {
-		System.out.println("Saving XML file... " + fileName);
-		// open output stream where XML Document will be saved
-		File xmlOutputFile = new File(fileName);
-		FileOutputStream fos;
-		Transformer transformer;
-		try {
-			fos = new FileOutputStream(xmlOutputFile);
-		} catch (FileNotFoundException e) {
-			System.out.println("Error occured: " + e.getMessage());
-			return false;
-		}
-		// Use a Transformer for output
-		TransformerFactory transformerFactory = TransformerFactory
-				.newInstance();
-		try {
-			transformer = transformerFactory.newTransformer();
-		} catch (TransformerConfigurationException e) {
-			System.out.println("Transformer configuration error: "
-					+ e.getMessage());
-			return false;
-		}
-		DOMSource source = new DOMSource(doc);
-		StreamResult result = new StreamResult(fos);
-		// transform source into result will do save
-		try {
-			transformer.transform(source, result);
-		} catch (TransformerException e) {
-			System.out.println("Error transform: " + e.getMessage());
-		}
-		System.out.println("XML file saved.");
-		return true;
+		return null;
 	}
 
 	/**
