@@ -115,10 +115,12 @@ public class SyndicateBehav extends CyclicBehaviour {
 		Behaviour behav = null;
 		if (convId.equals("syndicate-visor")) {
 			behav = new SendUpdateBehav(myAgent, scen.getUpdateVisorPeriod(),
-					receivers, convId, grid, dateTime, people);
+					receivers, convId, grid, dateTime, people, scen.getName(),
+					scen.getDescription());
 		} else if (convId.equals("syndicate-kml")) {
 			behav = new SendUpdateBehav(myAgent, scen.getUpdateKMLPeriod(),
-					receivers, convId, grid, dateTime, people);
+					receivers, convId, grid, dateTime, people, scen.getName(),
+					scen.getDescription());
 		}
 		return behav;
 	}

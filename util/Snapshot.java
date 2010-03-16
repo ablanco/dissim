@@ -29,13 +29,17 @@ public class Snapshot implements Serializable {
 	private DateAndTime dateTime;
 	private AID envAid;
 	private Map<String, Point> people;
+	private String name;
+	private String description;
 
-	public Snapshot(AID envAid, HexagonalGrid grid, DateAndTime dateTime,
-			Map<String, Point> people) {
+	public Snapshot(String name, String description, AID envAid,
+			HexagonalGrid grid, DateAndTime dateTime, Map<String, Point> people) {
 		this.envAid = envAid;
 		this.grid = grid;
 		this.dateTime = dateTime;
 		this.people = people;
+		this.name = name;
+		this.description = description;
 	}
 
 	public AID getEnvAid() {
@@ -52,6 +56,14 @@ public class Snapshot implements Serializable {
 
 	public Map<String, Point> getPeople() {
 		return people;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 }
