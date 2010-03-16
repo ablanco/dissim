@@ -100,6 +100,18 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 		kmlLog.println("Simulation state at: " + endTime);
 
 		HexagonalGrid g = snap.getGrid();
+		
+		//Seting name and description
+		String name=snap.getName(); 
+		if (name == null){
+			System.err.println("Asignando nombre por defecto al escenario");
+			setName("EscenarioUnamed");
+		}else{
+			setName(name);
+			if (snap.getDescription() != null)
+			setDescription(snap.getDescription());
+		}
+		
 
 		// For each tile who has changed ever, creates hexagon
 		for (int x = 0; x < g.getColumns(); x++) {
@@ -335,7 +347,12 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 				c.darker();
 			}
 			//Para las transparecias igual, con un minimo de 128, esto tiene un maximo de 30 metros de profundidad
-			polyStyle.setColor(Integer.toHexString(z*4 + 128) + Integer.toHexString(c.getRGB()));
+			if((z*4+128) < 255){
+				polyStyle.setColor(Integer.toHexString(z*4 + 128) + Integer.toHexString(c.getRGB()));	
+			}else{
+				polyStyle.setColor("ff" + Integer.toHexString(c.getRGB()));
+			}
+			
 			polyStyle.setColorMode(ColorMode.NORMAL);
 			altitudes.add(z);
 		}
