@@ -522,7 +522,7 @@ public class HexagonalGrid implements Serializable {
 	public static final int RIGHT_DOWN = 4;
 	public static final int LEFT_DOWN = 5;
 
-	public static Point NearestHexagon(Point a, Point b) {
+	public static Point nearestHexagon(Point a, Point b) {
 		int key = whichHexagonalMove(a, b);
 		// movimiento(key);
 		return hexagonalMoveTo(a, key);

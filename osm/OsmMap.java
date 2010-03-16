@@ -133,7 +133,7 @@ public class OsmMap {
 		road.add(pointA);
 		while (!pointA.equals(pointB)) {
 			//Mientras no hayamos llegado al destino
-			pointA = HexagonalGrid.NearestHexagon(pointA, pointB);
+			pointA = HexagonalGrid.nearestHexagon(pointA, pointB);
 			//Añadimos punto a la carretera
 			road.add(pointA);
 		}
