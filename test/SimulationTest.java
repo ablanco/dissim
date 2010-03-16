@@ -56,6 +56,8 @@ public class SimulationTest {
 
 	private static Scenario randomGrid(int tileSize, int numEnv) {
 		FloodScenario scen = new FloodScenario();
+		scen.setName("AlturasAleatorias");
+		scen.setDescription("Test con alturas del terreno aleatorias");
 		scen.setGeoData(new LatLng(29.953260, -90.088238), new LatLng(
 				29.918075, -90.053707), tileSize);
 		scen.setPrecision((short) 10);

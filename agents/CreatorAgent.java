@@ -124,8 +124,9 @@ public class CreatorAgent extends Agent {
 				int i = 0;
 				while (people.hasNext()) {
 					LatLng pos = people.next();
+					// TODO sacar distancia de visión de algún lado
 					arguments = new Object[] { Double.toString(pos.getLat()),
-							Double.toString(pos.getLng()), Integer.toString(1) };
+							Double.toString(pos.getLng()), Integer.toString(2) };
 					myAgent
 							.addBehaviour(new CreateAgentBehav(myAgent, "Dude"
 									+ i, "agents.people.PedestrianAgent", 1,

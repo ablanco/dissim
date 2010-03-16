@@ -139,6 +139,12 @@ public class RunawayBehav extends CyclicBehaviour {
 							pmejor = arrdry[rnd.nextInt(arrdry.length)];
 						}
 
+						// El agente avanza una casilla aunque tenga una
+						// distancia de visión mayor
+						if (type.equals(AdjacentsGridBehav.POSITION))
+							pmejor = HexagonalGrid.nearestHexagon(new Point(x,
+									y), pmejor);
+
 						x = pmejor.getCol();
 						y = pmejor.getRow();
 						type = AdjacentsGridBehav.POSITION;

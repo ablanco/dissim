@@ -32,11 +32,11 @@ public class VisorTest {
 		FloodHexagonalGrid grid = new FloodHexagonalGrid(new LatLng(30.093681,
 				-90.446724), new LatLng(30.083244, -90.434048), 0, 0, 400);
 		Hashtable<String, Point> people = new Hashtable<String, Point>();
-		
+
 		System.out.println("Grid: " + grid.getColumns() + "x" + grid.getRows());
 
-		Snapshot snap = new Snapshot(new AID(), grid, new DateAndTime(2000, 12,
-				15, 18, 55), people);
+		Snapshot snap = new Snapshot("VisorTest", "", new AID(), grid,
+				new DateAndTime(2000, 12, 15, 18, 55), people);
 		VisorFrame v = new VisorFrame();
 		grid.setTerrainValue(0, 0, (short) -20);
 		grid.setTerrainValue(0, 1, (short) -40);
