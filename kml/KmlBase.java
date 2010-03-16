@@ -14,7 +14,6 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 package kml;
 
 import de.micromata.opengis.kml.v_2_2_0.Folder;
@@ -23,28 +22,39 @@ import de.micromata.opengis.kml.v_2_2_0.Kml;
 public class KmlBase {
 	protected Kml kml;
 	protected Folder folder;
-	
-	public KmlBase(String name, String description){
+
+	public KmlBase(String name, String description) {
 		kml = new Kml();
 		folder = KmlUtils.newFolder(kml, name, description);
 	}
-	
-	public KmlBase(){
+
+	public KmlBase() {
 		kml = new Kml();
 		folder = KmlUtils.newFolder(kml);
 	}
-	
-	public void setName(String name){
+
+	public void setName(String name) {
 		folder.setName(name);
 	}
-	
-	public void setDescription(String description){
+
+	public void setDescription(String description) {
 		folder.setDescription(description);
 	}
-	
-	public Kml getKml(){
+
+	public Kml getKml() {
 		return kml;
 	}
-	
-	
+
+	public String getName() {
+		if (folder.getName() != null && folder.getName().length() != 0)
+			return folder.getName();
+		return "DefaultName";
+	}
+
+	public String getDescription() {
+		if (folder.getDescription() != null
+				&& folder.getDescription().length() != 0)
+			return folder.getDescription();
+		return "DefaultDescriptor";
+	}
 }

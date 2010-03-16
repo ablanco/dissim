@@ -498,6 +498,14 @@ public class HexagonalGrid implements Serializable {
 		GetOSMInfo osm = new GetOSMInfo(this);
 		osm.fillMatrix();
 	}
+	
+	/**
+	 * Returns degree increments lat, long
+	 * @return
+	 */
+	public double[] getIncs(){
+		return new double[]{ilat,ilng};
+	}
 
 	@Override
 	public String toString() {

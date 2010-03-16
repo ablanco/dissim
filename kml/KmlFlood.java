@@ -40,7 +40,7 @@ import de.micromata.opengis.kml.v_2_2_0.Style;
 public class KmlFlood extends KmlBase implements Updateable {
 	private long cont = 0;
 	private Set<Short> altitudes;
-	private boolean initialized;
+	private boolean initialized = false;
 	/**
 	 * Copy of First Grid, we need it to see changes through time
 	 */
@@ -57,27 +57,25 @@ public class KmlFlood extends KmlBase implements Updateable {
 
 	public KmlFlood() {
 		super();
-		initialized = false;
 		altitudes = new TreeSet<Short>();
 	}
 
 	public KmlFlood(String name, String description) {
 		super(name, description);
-		initialized = false;
 		altitudes = new TreeSet<Short>();
 	}
 
 	@Override
 	public void init() {
 		// Código de inicialización
+		initialized = false;
 	}
 
 	@Override
 	public void finish() {
 		// Código de finalización
-		//Aqui escribimos el archivo kml
-		KmlUtils.createKmlFile(kml, folder.getName());
-		KmlUtils.createKmzFile(kml, folder.getName());
+		// Aqui escribimos el archivo kml
+		KmlUtils.createKmzFile(kml, getName());
 	}
 
 	/**
@@ -91,35 +89,35 @@ public class KmlFlood extends KmlBase implements Updateable {
 					"Object is not an instance of Snapshot");
 		Snapshot snap = (Snapshot) obj;
 		HexagonalGrid grid = snap.getGrid();
-		KmlUtils.tileSize = grid.getTileSize();
-		setOldGrid(grid);
+		KmlUtils.setIncs(grid.getIncs());
+		if (!initialized) {
+			setOldGrid(grid);
+			initialized = true;
+		}
 		// Now we update the time for each update call
 		beginTime = endTime;
 		endTime = snap.getDateTime().toString();
 
 		kmlLog.println("Simulation state at: " + endTime);
 
-		HexagonalGrid g = snap.getGrid();
-		
-		//Seting name and description
-		if (snap.getName() != null && snap.getName().length() != 0){
+		// Seting name and description
+		if (snap.getName() != null && snap.getName().length() != 0) {
 			setName(snap.getName());
-			if (snap.getDescription() != null && snap.getDescription().length() != 0)
-			setDescription(snap.getDescription());
-		}else{
+			if (snap.getDescription() != null
+					&& snap.getDescription().length() != 0)
+				setDescription(snap.getDescription());
+		} else {
 			System.err.println("Asignando nombre por defecto al escenario");
 			setName("EscenarioUnamed");
-			
-		}
-		
 
+		}
 		// For each tile who has changed ever, creates hexagon
-		for (int x = 0; x < g.getColumns(); x++) {
-			for (int y = 0; y < g.getRows(); y++) {
-				short z = (short) (g.getTerrainValue(x, y) - oldGrid[x][y]);
+		for (int x = 0; x < grid.getColumns(); x++) {
+			for (int y = 0; y < grid.getRows(); y++) {
+				short z = (short) (grid.getTerrainValue(x, y) - oldGrid[x][y]);
 				if (z != 0) {
-					drawWaterHexagon("HEX" + cont, snap.getGrid().tileToCoord(
-							x, y), z);
+					drawWaterHexagon("HEX[" + x + "," + y + "]", grid
+							.tileToCoord(x, y), (short) Math.abs(z));
 					cont++;
 				}
 
@@ -334,25 +332,29 @@ public class KmlFlood extends KmlBase implements Updateable {
 
 	protected void createWaterStyleAndColor(short z) {
 		if (!altitudes.contains(z)) {
-			//Si no tenemos este color/altura definido
+			// Si no tenemos este color/altura definido
 			Style style = new Style();
 			folder.getStyleSelector().add(style);
 			style.setId("BLUE" + z);
-			//Creamos un nuevo estilo con ese color/altura
+			// Creamos un nuevo estilo con ese color/altura
 			PolyStyle polyStyle = new PolyStyle();
 			style.setPolyStyle(polyStyle);
 			Color c = new Color(Color.blue.getRGB());
-			//Mientras mas profunda sea el agua, mas ocuro es el azul.
-			for (int i=0;i<z;i++){
+			// Mientras mas profunda sea el agua, mas ocuro es el azul.
+			for (int i = 0; i < z; i++) {
 				c.darker();
 			}
-			//Para las transparecias igual, con un minimo de 128, esto tiene un maximo de 30 metros de profundidad
-			if((z*4+128) < 255){
-				polyStyle.setColor(Integer.toHexString(z*4 + 128) + Integer.toHexString(c.getRGB()));	
-			}else{
-				polyStyle.setColor("ff" + Integer.toHexString(c.getRGB()));
+			// Para las transparecias igual, con un minimo de 128, esto tiene un
+			// maximo de 30 metros de profundidad
+			String alpha = "ff";
+			// Kml uses aabbggrr
+			String bgr = "ff0000";
+			if (((z * 4) + 128) < 255) {
+				alpha = Integer.toHexString(z * 4 + 128);
 			}
-			
+			System.out.println("Color: " + alpha + "+" + bgr);
+			polyStyle.setColor(alpha + bgr);
+
 			polyStyle.setColorMode(ColorMode.NORMAL);
 			altitudes.add(z);
 		}

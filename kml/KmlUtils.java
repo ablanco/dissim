@@ -17,7 +17,6 @@
 package kml;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,32 +36,24 @@ public class KmlUtils {
 	 */
 	protected static long cont = 0;
 	/**
-	 * Size in meters of the circunflex circle of the hexagon
+	 * Size of the hexagons in degrees
 	 */
-	protected static int tileSize;
-	public static String folderName = "Kml";
-
-	public static void setTileSize(int tileSize) {
-		KmlUtils.tileSize = tileSize;
-	}
-
+	protected static double ilat;
+	protected static double ilng;
 	/**
-	 * New kml file of the current kml
-	 * 
-	 * @param fileName
+	 * Default folder name for kmls
 	 */
-	public static void createKmlFile(Kml kml, String fileName) {
-		try {
-			File f = newDir();
-			kml.marshal(new File(f.getPath() + File.separatorChar + fileName
-					+ ".kml"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	public final static String folderName = "Kml";
+
+	public static void setIncs(double[] incs) {
+		//Undo transformation
+		ilat = (incs[0] * 4)/6;
+		ilng = incs[1]/2;
 	}
 
 	/**
 	 * Creates default Directory for KML
+	 * 
 	 * @return
 	 */
 	public static File newDir() {
@@ -80,9 +71,11 @@ public class KmlUtils {
 	 */
 	public static void createKmzFile(Kml kml, String fileName) {
 		try {
-			File f = newDir();
-			kml.marshalAsKmz(f.getPath() + File.separatorChar + fileName
-					+ ".kmz");
+			File f = new File(fileName + ".kmz");
+			kml.marshalAsKmz(f.getPath());
+			// For debugg
+			kml.marshal(new File(fileName + ".kml"));
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -143,7 +136,7 @@ public class KmlUtils {
 	 * @param borderLine
 	 *            coord of the hexagon
 	 */
-	public void drawHexagon(Folder folder, String name, LatLng borderLine) {
+	public static void drawHexagon(Folder folder, String name, LatLng borderLine) {
 		Polygon polygon = newPolygon(newPlaceMark(folder, name));
 		drawHexagonBorders(polygon, borderLine);
 	}
@@ -153,20 +146,13 @@ public class KmlUtils {
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
-		l.addToCoordinates(coord.metersToDegrees(tileSize / 2, 0)
-				.toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(tileSize / 4, tileSize / 2)
-				.toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(-tileSize / 4, tileSize / 2)
-				.toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(-tileSize / 2, 0)
-				.toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(-tileSize / 4, -tileSize / 2)
-				.toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(tileSize / 4, -tileSize / 2)
-				.toGoogleString());
-		l.addToCoordinates(coord.metersToDegrees(tileSize / 2, 0)
-				.toGoogleString());
+		l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
+		l.addToCoordinates(coord.addIncs(ilat / 2, ilng).toKmlString());
+		l.addToCoordinates(coord.addIncs(-ilat / 2, ilng).toKmlString());
+		l.addToCoordinates(coord.addIncs(-ilat, 0).toKmlString());
+		l.addToCoordinates(coord.addIncs(-ilat / 2, -ilng).toKmlString());
+		l.addToCoordinates(coord.addIncs(ilat / 2, -ilng).toKmlString());
+		l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
 	}
 
 	/**
@@ -185,9 +171,9 @@ public class KmlUtils {
 				.createAndSetLinearRing();
 		LatLng z = borderLine.get(0);
 		for (LatLng c : borderLine) {
-			l.addToCoordinates(c.toGoogleString());
+			l.addToCoordinates(c.toKmlString());
 		}
-		l.addToCoordinates(z.toGoogleString());
+		l.addToCoordinates(z.toKmlString());
 	}
 
 	/**

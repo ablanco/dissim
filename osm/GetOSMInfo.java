@@ -17,8 +17,6 @@
 package osm;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -28,12 +26,6 @@ import java.util.TreeMap;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import openwfe.org.misc.Wget;
 
@@ -44,7 +36,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
-import util.Logger;
 import util.Util;
 import util.jcoord.LatLng;
 
@@ -67,11 +58,11 @@ public class GetOSMInfo {
 				+ NW.getLat();
 		fileName = "map?bbox=" + mBox;
 		url += mBox;
-//		("Obtaining info from :" + url);
+		// ("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url);
 		// System.err.println("Reading file: "+xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
-		doc = parseFile(xmlFile.getPath());
+		doc = parseFile(xmlFile);
 		// get root node of xml tree structure
 		root = doc.getDocumentElement();
 		// write node and its child nodes into System.out
@@ -272,28 +263,32 @@ public class GetOSMInfo {
 	 * @return
 	 */
 	protected File getOSMXmlFromURL(String url) {
-		File file = null;
 		try {
-			//Directorio temporal
+			// creamos un fichero en el directorio temporal
 			File dir = Util.getDefaultTempDir();
-			//Miramos si ya lo tenemos
-			file = new File(dir.getPath() + fileName);
+			File file = new File(dir, fileName);
 			if (!file.exists()) {
-				if (!Wget.wget(dir.getPath(), url)) {
-					System.err.println("No se ha podido descargar la informacion");
+				if (!Wget.wget(Util.getTempPath(), url)) {
+					System.err
+							.println("No se ha podido descargar la informacion");
 					return null;
-				}else{
-					//Si se ha descargado devolvemos el fichero
-					file = new File(dir.getPath() + fileName);
+				} else {
+					// Si se ha descargado devolvemos el fichero
+					file = new File(dir, fileName);
+					System.out.println("Se ha descargado el archivo "
+							+ file.getPath());
+					return file;
 				}
 			} else {
 				// Fichero ya descargado, lo devolvemos
+				System.out.println("Peticion ya en disco " + file.getName());
 				return file;
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		// Unrecheable
 		return null;
 	}
 
@@ -304,8 +299,8 @@ public class GetOSMInfo {
 	 *            XML file to parse
 	 * @return XML document or <B>null</B> if error occured
 	 */
-	public Document parseFile(String fileName) {
-		System.out.println("Parsing XML file... " + fileName);
+	public Document parseFile(File sourceFile) {
+		System.out.println("Parsing XML file... " + sourceFile.getName());
 		DocumentBuilder docBuilder;
 		Document doc = null;
 		DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
@@ -317,7 +312,6 @@ public class GetOSMInfo {
 			System.out.println("Wrong parser configuration: " + e.getMessage());
 			return null;
 		}
-		File sourceFile = new File(fileName);
 		try {
 			doc = docBuilder.parse(sourceFile);
 		} catch (SAXException e) {

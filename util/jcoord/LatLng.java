@@ -81,7 +81,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @author Manuel Gomar Acosta
 	 * @return a String KML friendly representation of this LatLng object
 	 */
-	public String toGoogleString() {
+	public String toKmlString() {
 		return this.lng + ", " + this.lat + ", " + this.altitude;
 	}
 
@@ -408,32 +408,8 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		}
 	}
 
-	/**
-	 * @author Manuel Gomar Acosta
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public LatLng metersToDegrees(double x, double y) {
-		return metersToDegrees(lat, lng, altitude);
-	}
-
-	/**
-	 * @author Manuel Gomar Acosta
-	 * @param x
-	 * @param y
-	 * @param terrainValue
-	 * @return
-	 */
-	public LatLng metersToDegrees(double x, double y, short terrainValue){
-		UTMRef u = this.toUTMRef();
-		u.addNorthingEasting(x, y);
-
-		LatLng l = u.toLatLng();
-		double lat = l.getLat();
-		double lng = l.getLng();
-
-		return new LatLng(lat, lng, terrainValue);
+	public LatLng addIncs(double lat, double lng){
+		return new LatLng(this.lat+lat, this.lng+lng);
 	}
 
 	/**
