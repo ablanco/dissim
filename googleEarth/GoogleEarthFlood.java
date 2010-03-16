@@ -102,14 +102,14 @@ public class GoogleEarthFlood extends GoogleEarth implements Updateable {
 		HexagonalGrid g = snap.getGrid();
 		
 		//Seting name and description
-		String name=snap.getName(); 
-		if (name == null){
+		if (snap.getName() != null && snap.getName().length() != 0){
+			setName(snap.getName());
+			if (snap.getDescription() != null && snap.getDescription().length() != 0)
+			setDescription(snap.getDescription());
+		}else{
 			System.err.println("Asignando nombre por defecto al escenario");
 			setName("EscenarioUnamed");
-		}else{
-			setName(name);
-			if (snap.getDescription() != null)
-			setDescription(snap.getDescription());
+			
 		}
 		
 
