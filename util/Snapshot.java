@@ -66,4 +66,7 @@ public class Snapshot implements Serializable {
 		return description;
 	}
 
+	public DateAndTime updateTime(int minutes){		
+		return dateTime.updateTime(minutes);
+	}
 }

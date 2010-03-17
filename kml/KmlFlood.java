@@ -26,7 +26,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import util.HexagonalGrid;
-import util.Logger;
 import util.Point;
 import util.Snapshot;
 import util.Updateable;
@@ -34,7 +33,6 @@ import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
-import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 
 public class KmlFlood extends KmlBase implements Updateable {
@@ -53,7 +51,7 @@ public class KmlFlood extends KmlBase implements Updateable {
 	 * End time of the simulation step
 	 */
 	protected String endTime = null;
-	protected Logger kmlLog = new Logger();
+	protected final String water="Water:";
 
 	public KmlFlood() {
 		super();
@@ -75,7 +73,7 @@ public class KmlFlood extends KmlBase implements Updateable {
 	public void finish() {
 		// Código de finalización
 		// Aqui escribimos el archivo kml
-		KmlUtils.createKmzFile(kml, getName());
+		createKmzFile(kml, getName());
 	}
 
 	/**
@@ -89,35 +87,39 @@ public class KmlFlood extends KmlBase implements Updateable {
 					"Object is not an instance of Snapshot");
 		Snapshot snap = (Snapshot) obj;
 		HexagonalGrid grid = snap.getGrid();
-		KmlUtils.setIncs(grid.getIncs());
+		//incs for this snapshot
+		double[] incs =grid.getIncs();
 		if (!initialized) {
+			System.out.println("inicializando");
+			//Setting old grid for comparations
 			setOldGrid(grid);
+			//No need to do this anymore
 			initialized = true;
+			// Seting name and description
+			if (snap.getName() != null && snap.getName().length() != 0) {
+				setName(snap.getName());
+				if (snap.getDescription() != null
+						&& snap.getDescription().length() != 0)
+					setDescription(snap.getDescription());
+			} else {
+				System.err.println("Asignando nombre por defecto al escenario");
+				setName("EscenarioUnamed");
+
+			}
 		}
 		// Now we update the time for each update call
 		beginTime = endTime;
 		endTime = snap.getDateTime().toString();
 
-		kmlLog.println("Simulation state at: " + endTime);
+		System.out.println("Simulation state at: " + endTime);
 
-		// Seting name and description
-		if (snap.getName() != null && snap.getName().length() != 0) {
-			setName(snap.getName());
-			if (snap.getDescription() != null
-					&& snap.getDescription().length() != 0)
-				setDescription(snap.getDescription());
-		} else {
-			System.err.println("Asignando nombre por defecto al escenario");
-			setName("EscenarioUnamed");
-
-		}
 		// For each tile who has changed ever, creates hexagon
 		for (int x = 0; x < grid.getColumns(); x++) {
 			for (int y = 0; y < grid.getRows(); y++) {
 				short z = (short) (grid.getTerrainValue(x, y) - oldGrid[x][y]);
 				if (z != 0) {
-					drawWaterHexagon("HEX[" + x + "," + y + "]", grid
-							.tileToCoord(x, y), (short) Math.abs(z));
+					drawWaterPolygon("HEX[" + x + "," + y + "]", grid
+							.tileToCoord(x, y), (short) Math.abs(z), incs);
 					cont++;
 				}
 
@@ -125,6 +127,10 @@ public class KmlFlood extends KmlBase implements Updateable {
 		}
 	}
 
+	/**
+	 * Sets grid wich compares from the terrein not flooded, only if not initializad
+	 * @param grid
+	 */
 	protected void setOldGrid(HexagonalGrid grid) {
 		if (!initialized) {
 			// First Grid to compare
@@ -134,7 +140,6 @@ public class KmlFlood extends KmlBase implements Updateable {
 					oldGrid[x][y] = grid.getTerrainValue(x, y);
 				}
 			}
-			initialized = true;
 		}
 	}
 
@@ -148,43 +153,27 @@ public class KmlFlood extends KmlBase implements Updateable {
 	 * @param z
 	 *            amount of water over the ground
 	 */
-	public void drawWaterPolygon(String name, List<LatLng> borderLine, short z) {
-		Placemark placeMark = KmlUtils.newPlaceMark(folder, name);
-		KmlUtils.setTimeSpan(placeMark, beginTime, endTime);
+	public void drawWaterPolygon(String name, List<LatLng> borderLine, short z,
+			double[] incs) {
+		Placemark placeMark = newPlaceMark(folder, name);
+		setTimeSpan(placeMark, beginTime, endTime);
 		setWaterColorToPlaceMark(placeMark, z);
-
-		Polygon polygon = KmlUtils.newPolygon(placeMark);
-
-		switch (borderLine.size()) {
-		case 0:
-			throw new IllegalArgumentException("Poligon canot be empty");
-		case 1:
-			KmlUtils.drawHexagonBorders(polygon, borderLine.get(0));
-			break;
-		default:
-			KmlUtils.drawPolygon(folder, name, borderLine);
-			break;
-		}
+		drawPolygon(placeMark, borderLine, incs);
 	}
 
 	/**
-	 * New Water Hexagon to the kml file
 	 * 
-	 * @param name
-	 *            of the polygon
-	 * @param borderLine
-	 *            borders of the polygon
-	 * @param z
-	 *            amount of water over the ground
+	 * @param name  of the polygon
+	 * @param borderLine  borders of the polygon
+	 * @param z  amount of water over the ground
+	 * @param incs
 	 */
-	public void drawWaterHexagon(String name, LatLng borderLine, short z) {
-		Placemark placeMark = KmlUtils.newPlaceMark(folder, name);
+	public void drawWaterPolygon(String name, LatLng borderLine, short z,
+			double[] incs) {
+		Placemark placeMark = newPlaceMark(folder, name);
+		setTimeSpan(placeMark, beginTime, endTime);
 		setWaterColorToPlaceMark(placeMark, z);
-		KmlUtils.setTimeSpan(placeMark, beginTime, endTime);
-
-		Polygon polygon = KmlUtils.newPolygon(placeMark);
-
-		KmlUtils.drawHexagonBorders(polygon, borderLine);
+		drawPolygon(placeMark, borderLine, incs);
 	}
 
 	/**
@@ -327,7 +316,7 @@ public class KmlFlood extends KmlBase implements Updateable {
 	protected void setWaterColorToPlaceMark(Placemark placeMark, short z) {
 		// Adding to BLUE
 		createWaterStyleAndColor(z);
-		placeMark.setStyleUrl("BLUE" + z);
+		placeMark.setStyleUrl(water + z);
 	}
 
 	protected void createWaterStyleAndColor(short z) {
@@ -335,7 +324,7 @@ public class KmlFlood extends KmlBase implements Updateable {
 			// Si no tenemos este color/altura definido
 			Style style = new Style();
 			folder.getStyleSelector().add(style);
-			style.setId("BLUE" + z);
+			style.setId(water + z);
 			// Creamos un nuevo estilo con ese color/altura
 			PolyStyle polyStyle = new PolyStyle();
 			style.setPolyStyle(polyStyle);
@@ -348,13 +337,14 @@ public class KmlFlood extends KmlBase implements Updateable {
 			// maximo de 30 metros de profundidad
 			String alpha = "ff";
 			// Kml uses aabbggrr
-			String bgr = "ff0000";
+			
 			if (((z * 4) + 128) < 255) {
 				alpha = Integer.toHexString(z * 4 + 128);
 			}
-			System.out.println("Color: " + alpha + "+" + bgr);
+			//le doy el mismo color de azul que transparencia
+			String bgr = alpha+"5500";
+//			System.out.println("Setting color: "+alpha+bgr);
 			polyStyle.setColor(alpha + bgr);
-
 			polyStyle.setColorMode(ColorMode.NORMAL);
 			altitudes.add(z);
 		}

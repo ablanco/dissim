@@ -35,8 +35,10 @@ public class DateAndTime implements Serializable{
 	 * Increase the date and time in given minutes
 	 * @param minutes
 	 */
-	public void updateTime(int minutes) {
+	public DateAndTime updateTime(int minutes) {
+		GregorianCalendar previous = (GregorianCalendar) g.clone();
 		g.add(Calendar.MINUTE, minutes);
+		return new DateAndTime(previous.get(Calendar.YEAR), previous.get(Calendar.MONTH),previous.get(Calendar.DAY_OF_MONTH),previous.get(Calendar.HOUR_OF_DAY), previous.get(Calendar.MINUTE));
 	}
 
 	@Override

@@ -16,11 +16,12 @@
 
 package test;
 
+import jade.core.AID;
+
 import java.util.Hashtable;
 
-import jade.core.AID;
+import kml.KmlBase;
 import kml.KmlFlood;
-import kml.KmlUtils;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Point;
@@ -40,7 +41,7 @@ public class TimeStampTest {
 
 		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953260,
 				-90.088238, (short) 10), new LatLng(29.918075, -90.053707,
-				(short) 10), 0, 0, 600);
+				(short) 10), 0, 0, 500);
 		Snapshot newOrleans = new Snapshot("TimeStampTest", "", new AID(),
 				grid, new DateAndTime(2000, 3, 15, 15, 3),
 				new Hashtable<String, Point>());
@@ -50,14 +51,14 @@ public class TimeStampTest {
 		for (int rep = 0; rep < 6; rep++) {
 			for (int i = 0; i < grid.getColumns(); i++) {
 				for (int j = 0; j < grid.getRows(); j++) {
-					short x = (short) ((Math.random() * 100) % 64);
+					short x = (short) ((Math.random() * 100) % 24);
 					grid.setTerrainValue(i, j, x);
 				}
 			}
 			k.update(newOrleans);
-
+			newOrleans.updateTime(30);
 		}
-		KmlUtils.createKmzFile(k.getKml(), "TimeStamp Test");
+		KmlBase.createKmzFile(k.getKml(), "TimeStamp Test");
 	}
 
 }
