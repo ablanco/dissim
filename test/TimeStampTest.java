@@ -46,7 +46,9 @@ public class TimeStampTest {
 				grid, new DateAndTime(2000, 3, 15, 15, 3),
 				new Hashtable<String, Point>());
 
-		KmlFlood k = new KmlFlood("TimeStamp Test", "Move on");
+		KmlBase kBase=new KmlBase("TimeStampTest", "Lets flood");
+		
+		KmlFlood k = new KmlFlood(kBase);
 
 		for (int rep = 0; rep < 6; rep++) {
 			for (int i = 0; i < grid.getColumns(); i++) {
@@ -58,7 +60,7 @@ public class TimeStampTest {
 			k.update(newOrleans);
 			newOrleans.updateTime(30);
 		}
-		KmlBase.createKmzFile(k.getKml(), "TimeStamp Test");
+		KmlBase.createKmzFile(kBase.getKml(), "TimeStamp Test");
 	}
 
 }

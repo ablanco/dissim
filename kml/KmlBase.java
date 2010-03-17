@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import util.Updateable;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
@@ -29,7 +30,7 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 
-public class KmlBase {
+public class KmlBase implements Updateable{
 	public final static String folderName = "Kml";
 	protected Kml kml;
 	protected Folder folder;
@@ -44,6 +45,33 @@ public class KmlBase {
 		folder = newFolder(kml);
 	}
 
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		if(folder.getName()!= null && folder.getName().length()!=0){
+			createKmzFile(kml, folder.getName());
+		}else{
+			createKmzFile(kml, "UnamedKml");
+		}		
+	}
+
+	@Override
+	public String getConversationId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public void update(Object obj) throws IllegalArgumentException {
+		// TODO Auto-generated method stub
+		
+	}
+
 	public void setName(String name) {
 		folder.setName(name);
 	}
@@ -54,6 +82,10 @@ public class KmlBase {
 
 	public Kml getKml() {
 		return kml;
+	}
+	
+	public Folder getFolder(){
+		return folder;
 	}
 
 	public String getName() {

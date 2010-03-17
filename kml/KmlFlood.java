@@ -31,11 +31,12 @@ import util.Snapshot;
 import util.Updateable;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
+import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 
-public class KmlFlood extends KmlBase implements Updateable {
+public class KmlFlood implements Updateable {
 	private long cont = 0;
 	private Set<Short> altitudes;
 	private boolean initialized = false;
@@ -52,15 +53,17 @@ public class KmlFlood extends KmlBase implements Updateable {
 	 */
 	protected String endTime = null;
 	protected final String water="Water:";
+	private Folder folder;
 
-	public KmlFlood() {
-		super();
-		altitudes = new TreeSet<Short>();
-	}
+//	public KmlFlood() {
+//		altitudes = new TreeSet<Short>();
+//		folder = new Folder();
+//		
+//	}
 
-	public KmlFlood(String name, String description) {
-		super(name, description);
+	public KmlFlood(KmlBase base) {
 		altitudes = new TreeSet<Short>();
+		folder = base.getFolder().createAndAddFolder().withName("Flood");
 	}
 
 	@Override
@@ -72,8 +75,6 @@ public class KmlFlood extends KmlBase implements Updateable {
 	@Override
 	public void finish() {
 		// Código de finalización
-		// Aqui escribimos el archivo kml
-		createKmzFile(kml, getName());
 	}
 
 	/**
@@ -95,17 +96,6 @@ public class KmlFlood extends KmlBase implements Updateable {
 			setOldGrid(grid);
 			//No need to do this anymore
 			initialized = true;
-			// Seting name and description
-			if (snap.getName() != null && snap.getName().length() != 0) {
-				setName(snap.getName());
-				if (snap.getDescription() != null
-						&& snap.getDescription().length() != 0)
-					setDescription(snap.getDescription());
-			} else {
-				System.err.println("Asignando nombre por defecto al escenario");
-				setName("EscenarioUnamed");
-
-			}
 		}
 		// Now we update the time for each update call
 		beginTime = endTime;
@@ -155,10 +145,10 @@ public class KmlFlood extends KmlBase implements Updateable {
 	 */
 	public void drawWaterPolygon(String name, List<LatLng> borderLine, short z,
 			double[] incs) {
-		Placemark placeMark = newPlaceMark(folder, name);
-		setTimeSpan(placeMark, beginTime, endTime);
+		Placemark placeMark = KmlBase.newPlaceMark(folder, name);
+		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
 		setWaterColorToPlaceMark(placeMark, z);
-		drawPolygon(placeMark, borderLine, incs);
+		KmlBase.drawPolygon(placeMark, borderLine, incs);
 	}
 
 	/**
@@ -170,10 +160,10 @@ public class KmlFlood extends KmlBase implements Updateable {
 	 */
 	public void drawWaterPolygon(String name, LatLng borderLine, short z,
 			double[] incs) {
-		Placemark placeMark = newPlaceMark(folder, name);
-		setTimeSpan(placeMark, beginTime, endTime);
+		Placemark placeMark = KmlBase.newPlaceMark(folder, name);
+		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
 		setWaterColorToPlaceMark(placeMark, z);
-		drawPolygon(placeMark, borderLine, incs);
+		KmlBase.drawPolygon(placeMark, borderLine, incs);
 	}
 
 	/**
