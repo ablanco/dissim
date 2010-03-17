@@ -52,14 +52,15 @@ public class KmlFlood implements Updateable {
 	 * End time of the simulation step
 	 */
 	protected String endTime = null;
-	protected final String water="Water:";
+	//no poner : que se ralla :D
+	protected final String water="Water";
 	private Folder folder;
 
-//	public KmlFlood() {
-//		altitudes = new TreeSet<Short>();
-//		folder = new Folder();
-//		
-//	}
+	public KmlFlood() {
+		altitudes = new TreeSet<Short>();
+		folder = null;
+		
+	}
 
 	public KmlFlood(KmlBase base) {
 		altitudes = new TreeSet<Short>();
@@ -95,6 +96,9 @@ public class KmlFlood implements Updateable {
 			//Setting old grid for comparations
 			setOldGrid(grid);
 			//No need to do this anymore
+			if(folder==null){
+			folder = snap.getKml().getFolder().createAndAddFolder().withName("Flood");
+			}
 			initialized = true;
 		}
 		// Now we update the time for each update call
@@ -161,8 +165,8 @@ public class KmlFlood implements Updateable {
 	public void drawWaterPolygon(String name, LatLng borderLine, short z,
 			double[] incs) {
 		Placemark placeMark = KmlBase.newPlaceMark(folder, name);
-		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
 		setWaterColorToPlaceMark(placeMark, z);
+		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
 		KmlBase.drawPolygon(placeMark, borderLine, incs);
 	}
 
@@ -304,7 +308,7 @@ public class KmlFlood implements Updateable {
 	}
 
 	protected void setWaterColorToPlaceMark(Placemark placeMark, short z) {
-		// Adding to BLUE
+		// Adding Color
 		createWaterStyleAndColor(z);
 		placeMark.setStyleUrl(water + z);
 	}
@@ -332,9 +336,9 @@ public class KmlFlood implements Updateable {
 				alpha = Integer.toHexString(z * 4 + 128);
 			}
 			//le doy el mismo color de azul que transparencia
-			String bgr = alpha+"5500";
-//			System.out.println("Setting color: "+alpha+bgr);
-			polyStyle.setColor(alpha + bgr);
+			String abgr = alpha+alpha+"5500";
+//			System.out.println("Setting color: "+abgr);
+			polyStyle.setColor(abgr);
 			polyStyle.setColorMode(ColorMode.NORMAL);
 			altitudes.add(z);
 		}

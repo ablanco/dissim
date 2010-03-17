@@ -4,6 +4,7 @@ import kml.KmlBase;
 import kml.KmlFlood;
 import gui.VisorFrame;
 import util.Scenario;
+import util.Snapshot;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
 
@@ -23,10 +24,7 @@ public class KmlPolygonExpander {
 		System.out.println(newOrleans.toString());
 
 		// FloodHexagonalGrid grid = (FloodHexagonalGrid) newOrleans.getGrid();
-
-		KmlBase kBase = new KmlBase();
 		
-		KmlFlood k = new KmlFlood(kBase);
 
 		// for (int i = 0; i < newOrleans.getGridSize()[0]; i++) {
 		// for (int j = 0; j < newOrleans.getGridSize()[1]; j++) {
@@ -39,6 +37,5 @@ public class KmlPolygonExpander {
 		// v1.update(grid);
 		v1.setVisible(true);
 
-		k.update(newOrleans);
 	}
 }

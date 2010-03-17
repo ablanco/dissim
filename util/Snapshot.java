@@ -21,6 +21,8 @@ import jade.core.AID;
 import java.io.Serializable;
 import java.util.Map;
 
+import kml.KmlBase;
+
 public class Snapshot implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -31,6 +33,7 @@ public class Snapshot implements Serializable {
 	private Map<String, Point> people;
 	private String name;
 	private String description;
+	private KmlBase kBase;
 
 	public Snapshot(String name, String description, AID envAid,
 			HexagonalGrid grid, DateAndTime dateTime, Map<String, Point> people) {
@@ -40,8 +43,17 @@ public class Snapshot implements Serializable {
 		this.people = people;
 		this.name = name;
 		this.description = description;
+		kBase = new KmlBase(name, grid.toString());
 	}
 
+	/**
+	 * Kml to write all information
+	 * @return
+	 */
+	public KmlBase getKml() {
+		return kBase;
+	}
+	
 	public AID getEnvAid() {
 		return envAid;
 	}
@@ -68,5 +80,15 @@ public class Snapshot implements Serializable {
 
 	public DateAndTime updateTime(int minutes){		
 		return dateTime.updateTime(minutes);
+	}
+
+	public void writeKml() {
+		String fileName = kBase.getFolder().getName();
+		if(fileName!= null && fileName.length()!=0){
+			KmlBase.createKmzFile(kBase.getKml(), fileName);
+		}else{
+			KmlBase.createKmzFile(kBase.getKml(), "UnamedKml");
+		}		
+		
 	}
 }

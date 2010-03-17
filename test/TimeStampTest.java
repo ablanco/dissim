@@ -20,7 +20,6 @@ import jade.core.AID;
 
 import java.util.Hashtable;
 
-import kml.KmlBase;
 import kml.KmlFlood;
 import util.DateAndTime;
 import util.HexagonalGrid;
@@ -46,9 +45,8 @@ public class TimeStampTest {
 				grid, new DateAndTime(2000, 3, 15, 15, 3),
 				new Hashtable<String, Point>());
 
-		KmlBase kBase=new KmlBase("TimeStampTest", "Lets flood");
 		
-		KmlFlood k = new KmlFlood(kBase);
+		KmlFlood k = new KmlFlood(newOrleans.getKml());
 
 		for (int rep = 0; rep < 6; rep++) {
 			for (int i = 0; i < grid.getColumns(); i++) {
@@ -60,7 +58,7 @@ public class TimeStampTest {
 			k.update(newOrleans);
 			newOrleans.updateTime(30);
 		}
-		KmlBase.createKmzFile(kBase.getKml(), "TimeStamp Test");
+		newOrleans.writeKml();
 	}
 
 }
