@@ -47,9 +47,13 @@ public class SimulationTest {
 				29.918075, -90.053707), (short) 800);
 		scen.setPrecision((short) 10);
 		scen.addWaterSource(new WaterSource(new LatLng(29.945, -90.085), scen
-				.doubleToInner(4), 1500L));
+				.doubleToInner(4)));
+		scen.setFloodUpdateTime(100L);
+		scen.setWaterSourceUpdateTime(200L);
+		scen.setWaterSourceMinutes(5);
 		scen.addPeople(new LatLng(29.946, -90.085));
 		// scen.obtainTerrainElevation();
+		scen.setStartTime(2010, 2, 26, 20, 32);
 		scen.complete();
 		return scen;
 	}
@@ -62,12 +66,15 @@ public class SimulationTest {
 				29.918075, -90.053707), tileSize);
 		scen.setPrecision((short) 10);
 		scen.addWaterSource(new WaterSource(new LatLng(29.937, -90.065), scen
-				.doubleToInner(20), 20L));
+				.doubleToInner(20)));
 		scen.addPeople(new LatLng(29.937, -90.068));
 		scen.setFloodUpdateTime(50);
-		scen.setUpdatePeople(50);
+		scen.setPeopleUpdateTime(50);
+		scen.setWaterSourceUpdateTime(20L);
+		scen.setWaterSourceMinutes(10);
 		// scen.disableDefaultLogger();
 		scen.setNumEnv(numEnv);
+		scen.setStartTime(2010, 2, 26, 20, 32);
 		scen.complete();
 		return scen;
 	}

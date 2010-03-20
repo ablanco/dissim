@@ -67,6 +67,10 @@ public class Scenario implements Serializable {
 	private int numEnv = 1;
 	private ArrayList<LatLng[]> envAreas = null;
 	private ArrayList<int[]> envSizes = null;
+	/**
+	 * Simulation start time and date
+	 */
+	private DateAndTime simTime = null;
 
 	// TODO Mejorar, demasiado limitado
 	private LinkedList<LatLng> people = new LinkedList<LatLng>();
@@ -110,7 +114,8 @@ public class Scenario implements Serializable {
 	}
 
 	public void complete() {
-		if (globalNW == null || globalSE == null || tileSize < 0)
+		if (globalNW == null || globalSE == null || tileSize < 0
+				|| simTime == null)
 			throw new IllegalStateException(
 					"There are mandatory parameters that hasn't been defined yet.");
 
@@ -174,11 +179,11 @@ public class Scenario implements Serializable {
 		this.updateKML = updateKML;
 	}
 
-	public long getUpdatePeople() {
+	public long getPeopleUpdateTime() {
 		return updatePeople;
 	}
 
-	public void setUpdatePeople(long updatePeople) {
+	public void setPeopleUpdateTime(long updatePeople) {
 		this.updatePeople = updatePeople;
 	}
 
@@ -231,7 +236,7 @@ public class Scenario implements Serializable {
 		System.out.println("GLOBAL: NW " + globalNW.toString() + " SE "
 				+ globalSE.toString());
 
-		// TODO Mejorar
+		// TODO Mejorar división en entornos
 		int mitt = numEnv / 2;
 		diflat = diflat / 2.0;
 		diflng = diflng / ((double) mitt);
@@ -302,6 +307,15 @@ public class Scenario implements Serializable {
 
 	public Iterator<LatLng> getPeopleIterator() {
 		return people.iterator();
+	}
+
+	public void setStartTime(int year, int month, int dayOfMonth,
+			int hourOfDay, int minute) {
+		simTime = new DateAndTime(year, month, dayOfMonth, hourOfDay, minute);
+	}
+
+	public DateAndTime getStartTime() {
+		return simTime;
 	}
 
 }

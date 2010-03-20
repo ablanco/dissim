@@ -26,9 +26,9 @@ public class DrawPeopleTest {
 				grid, new DateAndTime(2000, 3, 15, 15, 3),
 				new Hashtable<String, Point>());
 
-		KmlPeople k = new KmlPeople(newOrleans.getKml());
-		k.update(newOrleans);
-		newOrleans.writeKml();
+//		KmlPeople k = new KmlPeople(newOrleans.getKml());
+//		k.update(newOrleans);
+//		newOrleans.writeKml();
 	}
 
 }

@@ -58,6 +58,10 @@ public class CreatorAgent extends Agent {
 		// FIN DEBUG
 
 		if (scen != null) {
+			if (!scen.isComplete())
+				throw new IllegalArgumentException(
+						"There is mandatory information missing in the scenario.");
+
 			// Lo primero es ofrecer el Scenario
 			addBehaviour(new SendScenarioBehav());
 			AgentHelper.register(this, "creator");
@@ -79,6 +83,8 @@ public class CreatorAgent extends Agent {
 
 			// Esperar a que los entornos estén inicializados
 			addBehaviour(new WaitForReadyBehav());
+		} else {
+			throw new IllegalArgumentException("The scenario is null.");
 		}
 	}
 
@@ -112,7 +118,7 @@ public class CreatorAgent extends Agent {
 								Double.toString(coord.getLat()),
 								Double.toString(coord.getLng()),
 								Short.toString(ws.getWater()),
-								Long.toString(ws.getRhythm()) };
+								Long.toString(fscen.getWaterSourceUpdateTime()) };
 						myAgent.addBehaviour(new CreateAgentBehav(myAgent,
 								"WaterSource", "agents.flood.WaterSourceAgent",
 								1, arguments));

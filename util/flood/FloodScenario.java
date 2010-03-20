@@ -27,17 +27,34 @@ public class FloodScenario extends Scenario {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Entradas de agua
+	 * Points where enters water into the simulation
 	 */
 	private LinkedList<WaterSource> waterSources;
 	/**
-	 * Representa los ms entre cada actualización de la posición del agua
+	 * Milliseconds between every update of the flooded water position
 	 */
-	private long floodUpdateTime = 500L;
+	private long floodUpdateTime = 50L;
+	/**
+	 * Milliseconds between messages from water sources
+	 */
+	private long waterSourceUpdateTime = 75L;
+	/**
+	 * Real time (minutes) that the water
+	 */
+	private int waterSourceMinutes = -1;
 
 	public FloodScenario() {
 		super();
 		waterSources = new LinkedList<WaterSource>();
+	}
+
+	@Override
+	public void complete() {
+		if (waterSourceMinutes < 0)
+			throw new IllegalStateException(
+					"There are mandatory parameters that hasn't been defined yet.");
+
+		super.complete();
 	}
 
 	public boolean addWaterSource(WaterSource ws) {
@@ -68,6 +85,26 @@ public class FloodScenario extends Scenario {
 
 	public long getFloodUpdateTime() {
 		return floodUpdateTime;
+	}
+
+	public long getWaterSourceUpdateTime() {
+		return waterSourceUpdateTime;
+	}
+
+	public void setWaterSourceUpdateTime(long waterSourceUpdateTime) {
+		this.waterSourceUpdateTime = waterSourceUpdateTime;
+	}
+
+	public int getWaterSourceMinutes() {
+		return waterSourceMinutes;
+	}
+
+	public void setWaterSourceMinutes(int waterSourceMinutes) {
+		if (waterSourceMinutes <= 0)
+			throw new IllegalArgumentException(
+					"Time between water entrance cannot be zero or negative");
+
+		this.waterSourceMinutes = waterSourceMinutes;
 	}
 
 }

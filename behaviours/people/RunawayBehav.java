@@ -153,7 +153,6 @@ public class RunawayBehav extends CyclicBehaviour {
 						content = myAgent.getLocalName() + " "
 								+ Integer.toString(x) + " "
 								+ Integer.toString(y);
-						// System.out.println(content); // TODO DEBUG
 						mt = AgentHelper.send(myAgent, env, ACLMessage.INFORM,
 								"register-people", content);
 						step = 2;

@@ -97,7 +97,7 @@ public class KmlFlood implements Updateable {
 			setOldGrid(grid);
 			//No need to do this anymore
 			if(folder==null){
-			folder = snap.getKml().getFolder().createAndAddFolder().withName("Flood");
+//	TODO	folder = snap.getKml().getFolder().createAndAddFolder().withName("Flood");
 			}
 			initialized = true;
 		}

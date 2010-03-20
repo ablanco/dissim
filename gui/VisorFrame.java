@@ -39,10 +39,10 @@ public class VisorFrame extends JFrame implements Updateable {
 		c.setLayout(new BorderLayout());
 		pane = new HexagonalGridPane();// getSize());
 		// TODO si añado scrollPane en vez de pane no se pinta nada
-//		scrollPane = new JScrollPane(pane,
-//				JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-//				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-//		scrollPane.setSize(getSize());
+		// scrollPane = new JScrollPane(pane,
+		// JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+		// JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		// scrollPane.setSize(getSize());
 
 		c.add(pane, BorderLayout.CENTER);
 		c.add(gridLbl, BorderLayout.NORTH);
@@ -67,9 +67,8 @@ public class VisorFrame extends JFrame implements Updateable {
 					"Object is not an instance of Snapshot");
 
 		Snapshot snap = (Snapshot) obj;
-		if (gridLbl.getText().equals(""))
-			;
-		gridLbl.setText(snap.getGrid().toString());
+		gridLbl.setText(snap.getDateTime().toString() + " "
+				+ snap.getGrid().toString());
 
 		pane.updateGrid(snap, getSize());
 	}

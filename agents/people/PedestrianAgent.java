@@ -70,7 +70,7 @@ public class PedestrianAgent extends Agent {
 			}
 
 			myAgent.addBehaviour(new RunawayBehav(myAgent, scen
-					.getUpdatePeople(), envAID, lat, lng, d));
+					.getPeopleUpdateTime(), envAID, lat, lng, d));
 
 			done = true;
 		}

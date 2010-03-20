@@ -46,19 +46,19 @@ public class TimeStampTest {
 				new Hashtable<String, Point>());
 
 		
-		KmlFlood k = new KmlFlood(newOrleans.getKml());
-
-		for (int rep = 0; rep < 6; rep++) {
-			for (int i = 0; i < grid.getColumns(); i++) {
-				for (int j = 0; j < grid.getRows(); j++) {
-					short x = (short) ((Math.random() * 100) % 24);
-					grid.setTerrainValue(i, j, x);
-				}
-			}
-			k.update(newOrleans);
-			newOrleans.updateTime(30);
-		}
-		newOrleans.writeKml();
+//		KmlFlood k = new KmlFlood(newOrleans.getKml());
+//
+//		for (int rep = 0; rep < 6; rep++) {
+//			for (int i = 0; i < grid.getColumns(); i++) {
+//				for (int j = 0; j < grid.getRows(); j++) {
+//					short x = (short) ((Math.random() * 100) % 24);
+//					grid.setTerrainValue(i, j, x);
+//				}
+//			}
+//			k.update(newOrleans);
+//			newOrleans.updateTime(30);
+//		}
+//		newOrleans.writeKml();
 	}
 
 }

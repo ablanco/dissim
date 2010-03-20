@@ -29,15 +29,10 @@ public class WaterSource implements Serializable {
 	 * Cantidad de agua que entra en ese punto
 	 */
 	private short water;
-	/**
-	 * Periodo en milisegundos entre cada entrada de agua
-	 */
-	private long rhythm;
-
-	public WaterSource(LatLng coord, short water, long rhythm) {
+	
+	public WaterSource(LatLng coord, short water) {
 		this.coord = coord;
 		this.water = water;
-		this.rhythm = rhythm;
 	}
 
 	public LatLng getCoord() {
@@ -46,10 +41,6 @@ public class WaterSource implements Serializable {
 
 	public short getWater() {
 		return water;
-	}
-
-	public long getRhythm() {
-		return rhythm;
 	}
 
 }

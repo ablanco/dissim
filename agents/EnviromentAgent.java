@@ -56,8 +56,6 @@ public class EnviromentAgent extends Agent {
 	private DateAndTime dateTime = null;
 	private Map<String, Point> people = new Hashtable<String, Point>();
 
-	// TODO Calcular los valores de tiempo en función del agua que haya entrado
-
 	@Override
 	protected void setup() {
 		// Obtener argumentos
@@ -109,8 +107,7 @@ public class EnviromentAgent extends Agent {
 
 		@Override
 		public void action() {
-			// TODO sacar datetime del scenario
-			dateTime = new DateAndTime(2010, 2, 26, 20, 32);
+			dateTime = scen.getStartTime();
 
 			List<String> services = new ArrayList<String>(10);
 
@@ -129,13 +126,13 @@ public class EnviromentAgent extends Agent {
 			services.add("grid-querying");
 			services.add("syndicate");
 			services.add("intergrid");
-			// services.add("people");
 
 			// Si es una inundación
 			if (scen instanceof FloodScenario) {
 				FloodScenario fscen = (FloodScenario) scen;
 				myAgent.addBehaviour(new AddWaterBehav(myAgent,
-						(FloodHexagonalGrid) grid, dateTime));
+						(FloodHexagonalGrid) grid, dateTime, fscen
+								.getWaterSourceMinutes()));
 				services.add("add-water");
 
 				// Mover agua por la rejilla

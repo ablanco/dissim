@@ -29,7 +29,6 @@ public class WaterSourceBehav extends TickerBehaviour {
 	private LatLng coord;
 	private short water;
 	private AID envAID;
-	private long period;
 
 	public WaterSourceBehav(Agent a, long period, AID envAID, LatLng coord,
 			short water) {
@@ -37,15 +36,13 @@ public class WaterSourceBehav extends TickerBehaviour {
 		this.envAID = envAID;
 		this.coord = coord;
 		this.water = water;
-		this.period = period;
 	}
 
 	@Override
 	protected void onTick() {
 		// Inundar casilla
 		String content = Double.toString(coord.getLat()) + " "
-				+ Double.toString(coord.getLng()) + " " + Short.toString(water)
-				+ " " + Long.toString(period);
+				+ Double.toString(coord.getLng()) + " " + Short.toString(water);
 		AgentHelper.send(myAgent, envAID, ACLMessage.PROPOSE, "add-water",
 				content);
 	}

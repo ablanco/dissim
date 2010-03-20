@@ -35,13 +35,16 @@ public class AddWaterBehav extends CyclicBehaviour {
 
 	private FloodHexagonalGrid grid;
 	private Map<String, int[]> indexes = new Hashtable<String, int[]>();
-	private Map<String, DateAndTime> times = new Hashtable<String, DateAndTime>();
+	private String timesReference = null;
 	private DateAndTime dateTime;
+	private int minutes;
 
-	public AddWaterBehav(Agent agt, FloodHexagonalGrid grid, DateAndTime dateTime) {
+	public AddWaterBehav(Agent agt, FloodHexagonalGrid grid,
+			DateAndTime dateTime, int minutes) {
 		super(agt);
 		this.grid = grid;
 		this.dateTime = dateTime;
+		this.minutes = minutes;
 	}
 
 	@Override
@@ -56,8 +59,7 @@ public class AddWaterBehav extends CyclicBehaviour {
 			double lat = Double.parseDouble(data[0]);
 			double lng = Double.parseDouble(data[1]);
 			short water = Short.parseShort(data[2]);
-			long period = Long.parseLong(data[3]);
-			
+
 			// Calcular posición
 			LatLng coord = new LatLng(lat, lng);
 			int[] gridCoord = indexes.get(coord.toString());
@@ -68,13 +70,16 @@ public class AddWaterBehav extends CyclicBehaviour {
 			}
 			int x = gridCoord[0];
 			int y = gridCoord[1];
-			
+
 			// Actualizar tiempo pasado en la simulación
-			long now = System.currentTimeMillis();
-						
-			// TODO Actualizar tiempo dateTime correctamente
-			dateTime.updateTime((int) period);
-			
+			// La primera entrada de agua en mandar un mensaje será la que
+			// marque el tiempo de la simulación
+			if (timesReference == null)
+				timesReference = coord.toString();
+
+			if (timesReference.equals(coord.toString()))
+				dateTime.updateTime(minutes);
+
 			// Máximo nivel que va a alcanzar el agua
 			short nivelMax = (short) (grid.getTerrainValue(x, y) + water);
 			Iterator<int[]> it = grid.getAdjacents(x, y).iterator();
