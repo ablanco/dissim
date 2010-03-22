@@ -80,6 +80,8 @@ public class CreatorAgent extends Agent {
 				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
 						"agents.EnviromentAgent", 1, arguments));
 			}
+			
+			addBehaviour(new ChooseClockEnviroment());
 
 			// Esperar a que los entornos estén inicializados
 			addBehaviour(new WaitForReadyBehav());
@@ -173,6 +175,39 @@ public class CreatorAgent extends Agent {
 				} catch (IOException e) {
 					e.printStackTrace(logger.getError());
 				}
+			} else {
+				block();
+			}
+		}
+
+	}
+
+	protected class ChooseClockEnviroment extends CyclicBehaviour {
+
+		private boolean clockEnviroment = false;
+		private int numEnvs = 0;
+
+		@Override
+		public void action() {
+			ACLMessage msg = myAgent.receive(MessageTemplate
+					.MatchPerformative(ACLMessage.PROPOSE));
+			if (msg != null) {
+				int perf = ACLMessage.REJECT_PROPOSAL;
+				// Sólo se le responde que sí al primero
+				if (!clockEnviroment) {
+					perf = ACLMessage.ACCEPT_PROPOSAL;
+					clockEnviroment = true;
+				}
+
+				ACLMessage reply = msg.createReply();
+				reply.setPerformative(perf);
+				myAgent.send(reply);
+
+				// Si todos los enviroments ya se han propuesto como reloj no
+				// es necesario este comportamiento
+				numEnvs++;
+				if (numEnvs == scen.getNumEnv())
+					myAgent.removeBehaviour(this);
 			} else {
 				block();
 			}

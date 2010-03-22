@@ -16,8 +16,10 @@
 
 package behaviours.flood;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -25,6 +27,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import util.AgentHelper;
 import util.DateAndTime;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
@@ -35,7 +38,21 @@ public class AddWaterBehav extends CyclicBehaviour {
 
 	private FloodHexagonalGrid grid;
 	private Map<String, int[]> indexes = new Hashtable<String, int[]>();
+	/**
+	 * The water source that is the times reference
+	 */
 	private String timesReference = null;
+	/**
+	 * True if the enviroment is the clock reference
+	 */
+	private boolean iAmClock = false;
+	/**
+	 * Other enviroments AIDs
+	 */
+	private AID[] otherEnvs = null;
+	/**
+	 * Simulation date and time
+	 */
 	private DateAndTime dateTime;
 	private int minutes;
 
@@ -74,11 +91,39 @@ public class AddWaterBehav extends CyclicBehaviour {
 			// Actualizar tiempo pasado en la simulación
 			// La primera entrada de agua en mandar un mensaje será la que
 			// marque el tiempo de la simulación
-			if (timesReference == null)
+			if (timesReference == null) {
 				timesReference = coord.toString();
+				// Ofrecernos como entorno reloj
+				DFAgentDescription[] result = AgentHelper.search(myAgent,
+						"creator");
+				AID creator = result[0].getName();
+				MessageTemplate mt2 = AgentHelper.send(myAgent, creator,
+						ACLMessage.PROPOSE, null, null);
+				myAgent.addBehaviour(new WaitForClockConfirm(myAgent, mt2));
+			}
 
-			if (timesReference.equals(coord.toString()))
+			// Si se trata de agua enviada por la entrada de agua que es la
+			// referencia, y si somos el entorno reloj
+			if (timesReference.equals(coord.toString()) && iAmClock) {
+				if (otherEnvs == null) {
+					DFAgentDescription[] result = AgentHelper.search(myAgent,
+							"add-water");
+					int j = 0;
+					for (int i = 0; i < result.length; i++) {
+						DFAgentDescription df = result[i];
+						if (!df.getName().getLocalName().equals(
+								myAgent.getLocalName())) {
+							otherEnvs[j] = df.getName();
+							j++;
+						}
+					}
+				}
+
+				AgentHelper.send(myAgent, otherEnvs, ACLMessage.INFORM,
+						"update-time", null);
+
 				dateTime.updateTime(minutes);
+			}
 
 			// Máximo nivel que va a alcanzar el agua
 			short nivelMax = (short) (grid.getTerrainValue(x, y) + water);
@@ -100,5 +145,48 @@ public class AddWaterBehav extends CyclicBehaviour {
 		} else {
 			block();
 		}
+	}
+
+	protected class WaitForClockConfirm extends CyclicBehaviour {
+
+		private MessageTemplate mt;
+
+		public WaitForClockConfirm(Agent agt, MessageTemplate mt) {
+			super(agt);
+			this.mt = mt;
+		}
+
+		@Override
+		public void action() {
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL)
+					iAmClock = true;
+				else
+					myAgent.addBehaviour(new WaitForTimeUpdate());
+
+				myAgent.removeBehaviour(this);
+			} else {
+				block();
+			}
+		}
+
+	}
+
+	protected class WaitForTimeUpdate extends CyclicBehaviour {
+
+		private MessageTemplate mt = MessageTemplate
+				.MatchConversationId("update-time");
+
+		@Override
+		public void action() {
+			ACLMessage msg = myAgent.receive(mt);
+			if (msg != null) {
+				dateTime.updateTime(minutes);
+			} else {
+				block();
+			}
+		}
+
 	}
 }
