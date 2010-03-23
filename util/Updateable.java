@@ -16,12 +16,14 @@
 
 package util;
 
+import jade.core.AID;
+
 public interface Updateable {
-	
+
 	public void init();
-	
-	public void update(Object obj) throws IllegalArgumentException;
-	
+
+	public void update(Object obj, AID sender) throws IllegalArgumentException;
+
 	public void finish();
 
 	public String getConversationId();

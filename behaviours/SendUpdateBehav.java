@@ -57,9 +57,10 @@ public class SendUpdateBehav extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		AID[] receivers = new AID[to.size()];
-		AgentHelper.send(myAgent, to.toArray(receivers), ACLMessage.INFORM,
-				convId, new Snapshot(name, description, myAgent.getAID(), grid,
-						dateTime, people));
+		AgentHelper
+				.send(myAgent, to.toArray(receivers), ACLMessage.INFORM,
+						convId, new Snapshot(name, description, grid, dateTime,
+								people));
 	}
 
 }

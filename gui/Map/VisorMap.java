@@ -16,6 +16,8 @@
 
 package gui.Map;
 
+import jade.core.AID;
+
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -60,7 +62,7 @@ public class VisorMap extends JFrame implements Updateable {
 	}
 
 	@Override
-	public void update(Object obj) {
+	public void update(Object obj, AID sender) {
 		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");

@@ -35,7 +35,7 @@ public class VisorTest {
 
 		System.out.println("Grid: " + grid.getColumns() + "x" + grid.getRows());
 
-		Snapshot snap = new Snapshot("VisorTest", "", new AID(), grid,
+		Snapshot snap = new Snapshot("VisorTest", "", grid,
 				new DateAndTime(2000, 12, 15, 18, 55), people);
 		VisorFrame v = new VisorFrame();
 		grid.setTerrainValue(0, 0, (short) -20);
@@ -52,13 +52,13 @@ public class VisorTest {
 		grid.setWaterValue(0, 2, (short) 60);
 		grid.setWaterValue(1, 0, (short) 100);
 		people.put("Johnny", new Point(1, 1));
-		v.update(snap);
+		v.update(snap, new AID());
 		v.setVisible(true);
 
 		Thread.sleep(2000L);
 
 		grid.setWaterValue(1, 2, (short) 200);
-		v.update(snap);
+		v.update(snap, new AID());
 
 		Thread.sleep(2000L);
 		v.dispose();

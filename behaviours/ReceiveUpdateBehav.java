@@ -16,6 +16,7 @@
 
 package behaviours;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -55,7 +56,7 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 					// para que no se quede pillado el comportamiento de recibir
 					// mensajes
 					parallel.addSubBehaviour(new UpdateBehav(this.myAgent,
-							content));
+							content, msg.getSender()));
 				} catch (UnreadableException e) {
 					System.err.println("Sender: "
 							+ msg.getSender().getLocalName() + " - Receiver: "
@@ -73,15 +74,17 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 	protected class UpdateBehav extends OneShotBehaviour {
 
 		Object content;
+		AID sender;
 
-		public UpdateBehav(Agent a, Object content) {
+		public UpdateBehav(Agent a, Object content, AID sender) {
 			super(a);
 			this.content = content;
+			this.sender = sender;
 		}
 
 		@Override
 		public void action() {
-			client.update(content);
+			client.update(content, sender);
 		}
 
 	}

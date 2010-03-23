@@ -16,8 +16,6 @@
 
 package util;
 
-import jade.core.AID;
-
 import java.io.Serializable;
 import java.util.Map;
 
@@ -27,23 +25,17 @@ public class Snapshot implements Serializable {
 
 	private HexagonalGrid grid;
 	private DateAndTime dateTime;
-	private AID envAid;
 	private Map<String, Point> people;
 	private String name;
 	private String description;
 
-	public Snapshot(String name, String description, AID envAid,
-			HexagonalGrid grid, DateAndTime dateTime, Map<String, Point> people) {
-		this.envAid = envAid;
+	public Snapshot(String name, String description, HexagonalGrid grid,
+			DateAndTime dateTime, Map<String, Point> people) {
 		this.grid = grid;
 		this.dateTime = dateTime;
 		this.people = people;
 		this.name = name;
 		this.description = description;
-	}
-
-	public AID getEnvAid() {
-		return envAid;
 	}
 
 	public HexagonalGrid getGrid() {
@@ -66,7 +58,7 @@ public class Snapshot implements Serializable {
 		return description;
 	}
 
-	public DateAndTime updateTime(int minutes){		
+	public DateAndTime updateTime(int minutes) {
 		return dateTime.updateTime(minutes);
 	}
 
