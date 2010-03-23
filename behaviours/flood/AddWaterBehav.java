@@ -19,6 +19,7 @@ package behaviours.flood;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.ParallelBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -55,13 +56,24 @@ public class AddWaterBehav extends CyclicBehaviour {
 	 */
 	private DateAndTime dateTime;
 	private int minutes;
+	/**
+	 * Behaviour that receives the messages from the clock enviroment
+	 */
+	private WaitForTimeUpdate timeUpdates = new WaitForTimeUpdate();
+	/**
+	 * Parallel behaviour of the enviroment that processes almost all of the
+	 * messages sended to the enviroment
+	 */
+	private ParallelBehaviour parallel;
 
 	public AddWaterBehav(Agent agt, FloodHexagonalGrid grid,
-			DateAndTime dateTime, int minutes) {
+			DateAndTime dateTime, int minutes, ParallelBehaviour parallel) {
 		super(agt);
 		this.grid = grid;
 		this.dateTime = dateTime;
 		this.minutes = minutes;
+		this.parallel = parallel;
+		parallel.addSubBehaviour(timeUpdates);
 	}
 
 	@Override
@@ -98,7 +110,7 @@ public class AddWaterBehav extends CyclicBehaviour {
 						"creator");
 				AID creator = result[0].getName();
 				MessageTemplate mt2 = AgentHelper.send(myAgent, creator,
-						ACLMessage.PROPOSE, null, null);
+						ACLMessage.PROPOSE, "clock-env", null);
 				myAgent.addBehaviour(new WaitForClockConfirm(myAgent, mt2));
 			}
 
@@ -108,6 +120,7 @@ public class AddWaterBehav extends CyclicBehaviour {
 				if (otherEnvs == null) {
 					DFAgentDescription[] result = AgentHelper.search(myAgent,
 							"add-water");
+					otherEnvs = new AID[result.length - 1];
 					int j = 0;
 					for (int i = 0; i < result.length; i++) {
 						DFAgentDescription df = result[i];
@@ -121,7 +134,6 @@ public class AddWaterBehav extends CyclicBehaviour {
 
 				AgentHelper.send(myAgent, otherEnvs, ACLMessage.INFORM,
 						"update-time", null);
-
 				dateTime.updateTime(minutes);
 			}
 
@@ -160,10 +172,10 @@ public class AddWaterBehav extends CyclicBehaviour {
 		public void action() {
 			ACLMessage msg = myAgent.receive(mt);
 			if (msg != null) {
-				if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL)
+				if (msg.getPerformative() == ACLMessage.ACCEPT_PROPOSAL) {
 					iAmClock = true;
-				else
-					myAgent.addBehaviour(new WaitForTimeUpdate());
+					parallel.removeSubBehaviour(timeUpdates);
+				}
 
 				myAgent.removeBehaviour(this);
 			} else {

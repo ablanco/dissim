@@ -80,7 +80,7 @@ public class CreatorAgent extends Agent {
 				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
 						"agents.EnviromentAgent", 1, arguments));
 			}
-			
+
 			addBehaviour(new ChooseClockEnviroment());
 
 			// Esperar a que los entornos estén inicializados
@@ -189,8 +189,9 @@ public class CreatorAgent extends Agent {
 
 		@Override
 		public void action() {
-			ACLMessage msg = myAgent.receive(MessageTemplate
-					.MatchPerformative(ACLMessage.PROPOSE));
+			ACLMessage msg = myAgent.receive(MessageTemplate.and(
+					MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
+					MessageTemplate.MatchConversationId("clock-env")));
 			if (msg != null) {
 				int perf = ACLMessage.REJECT_PROPOSAL;
 				// Sólo se le responde que sí al primero

@@ -132,7 +132,7 @@ public class EnviromentAgent extends Agent {
 				FloodScenario fscen = (FloodScenario) scen;
 				myAgent.addBehaviour(new AddWaterBehav(myAgent,
 						(FloodHexagonalGrid) grid, dateTime, fscen
-								.getWaterSourceMinutes()));
+								.getWaterSourceMinutes(), parallel));
 				services.add("add-water");
 
 				// Mover agua por la rejilla
