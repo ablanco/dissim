@@ -16,13 +16,22 @@
 
 package kml;
 
+import jade.core.AID;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import util.Point;
+import util.Snapshot;
 import util.Updateable;
+import util.flood.FloodHexagonalGrid;
+import util.flood.FloodPedestrian;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
+import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.LinearRing;
@@ -30,29 +39,27 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 
-public class KmlBase implements Updateable{
+public class KmlBase implements Updateable {
 	public final static String folderName = "Kml";
 	protected Kml kml;
-	protected Folder folder;
+	private Document doc;
 
-	public KmlBase(String name, String description) {
-		kml = new Kml();
-		folder = newFolder(kml, name, description);
-	}
+	private boolean init;
+
+	private short[][] oldGrid;
+	private KmlFlood kFlood;
+	private KmlPeople kPeople;
+
+	private String beginTime;
 
 	public KmlBase() {
 		kml = new Kml();
-		folder = newFolder(kml);
 	}
 
 	@Override
 	public void finish() {
-		// TODO Auto-generated method stub
-		if(folder.getName()!= null && folder.getName().length()!=0){
-			createKmzFile(kml, folder.getName());
-		}else{
-			createKmzFile(kml, "UnamedKml");
-		}		
+		// Escribimos el kml
+		createKmzFile(kml, getName());
 	}
 
 	@Override
@@ -63,48 +70,89 @@ public class KmlBase implements Updateable{
 
 	@Override
 	public void init() {
-		// TODO Auto-generated method stub
+		init = false;
 	}
 
 	@Override
-	public void update(Object obj) throws IllegalArgumentException {
+	public void update(Object obj, AID sender) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
-		
-	}
+		if (!(obj instanceof Snapshot))
+			throw new IllegalArgumentException(
+					"Object is not an instance of Snapshot");
+		Snapshot snap = (Snapshot) obj;
+		if (!init) {
+			beginTime = snap.getDateTime().toString();
+			// Le damos un nombre al Doc del KML
+			doc = kml.createAndSetDocument().withName(snap.getName())
+					.withDescription(snap.getDescription());
+			if (snap.getGrid() instanceof FloodHexagonalGrid) {
+				// Si es tenemos una inundacion inicializamos lo necesario
+				FloodHexagonalGrid fgrid = (FloodHexagonalGrid) snap.getGrid();
+				oldGrid = new short[fgrid.getColumns()][fgrid.getRows()];
+				// Inicializamos la matriz
+				for (int c = 0; c < fgrid.getColumns(); c++) {
+					for (int r = 0; r < fgrid.getRows(); r++) {
+						oldGrid[c][r] = fgrid.getTerrainValue(c, r);
+					}
+				}
+				kFlood = new KmlFlood(
+						newFolder(kml, "Flood", "Flooded Sectors"));
+			}
 
-	public void setName(String name) {
-		folder.setName(name);
-	}
+			// Demas inicializaciones para futuras ampliaziones
+			// TODO inicializacion para personas?
+			kPeople = new KmlPeople(newFolder(kml, "People",
+					"People Running For their lives"));
 
-	public void setDescription(String description) {
-		folder.setDescription(description);
+			// Todas las variables han sido iniciadas, no necesitamos volver
+			init = true;
+		} else {
+
+			if (snap.getGrid() instanceof FloodHexagonalGrid) {
+				// Por cada llamada update lo que tengo que hacer para FLOOD
+				FloodHexagonalGrid fGrid = (FloodHexagonalGrid) snap.getGrid();
+				kFlood.update(oldGrid, fGrid, beginTime, snap.getDateTime()
+						.toString());
+				beginTime = snap.getDateTime().toString();
+
+				Collection<Point> points = snap.getPeople().values();
+				if (points != null && points.size() > 0) {
+					// Tenemos personas
+					List<FloodPedestrian> people = new ArrayList<FloodPedestrian>();
+					for (Point point : points) {
+						people.add(new FloodPedestrian(
+								fGrid.tileToCoord(point), FloodPedestrian
+										.getStatus(fGrid.getWaterValue(point
+												.getCol(), point.getRow()))));
+					}
+					kPeople.update(people);
+				}
+			}
+
+		}
+
 	}
 
 	public Kml getKml() {
 		return kml;
 	}
-	
-	public Folder getFolder(){
-		return folder;
-	}
 
 	public String getName() {
-		if (folder.getName() != null && folder.getName().length() != 0)
-			return folder.getName();
+		if (doc.getName() != null && doc.getName().length() != 0)
+			return doc.getName();
 		return "DefaultName";
 	}
 
 	public String getDescription() {
-		if (folder.getDescription() != null
-				&& folder.getDescription().length() != 0)
-			return folder.getDescription();
+		if (doc.getDescription() != null && doc.getDescription().length() != 0)
+			return doc.getDescription();
 		return "DefaultDescriptor";
 	}
-	
+
 	/**
 	 * Static methods
 	 */
-	
+
 	/**
 	 * New kmz file of the current kml
 	 * 
@@ -160,30 +208,31 @@ public class KmlBase implements Updateable{
 		switch (borderLine.size()) {
 		case 0:
 			throw new IllegalArgumentException("Poligon canot be empty");
-		case 1: //Only one hexagon
+		case 1: // Only one hexagon
 			drawHexagonBorders(polygon, borderLine.get(0), incs);
 			break;
 		default:
-//			drawPolygon(folder, name, borderLine, incs);
+			// drawPolygon(folder, name, borderLine, incs);
 			break;
 		}
 	}
-	
-	public static void drawPolygon(Placemark placeMark,
-			LatLng borderLine, double[] incs) {
+
+	public static void drawPolygon(Placemark placeMark, LatLng borderLine,
+			double[] incs) {
 		Polygon polygon = newPolygon(placeMark);
-		if (borderLine != null){
+		if (borderLine != null) {
 			drawHexagonBorders(polygon, borderLine, incs);
-		}else{
+		} else {
 			throw new IllegalArgumentException("Poligon canot be empty");
 		}
 	}
 
-	protected static void drawHexagonBorders(Polygon polygon, LatLng coord, double[] incs) {
+	protected static void drawHexagonBorders(Polygon polygon, LatLng coord,
+			double[] incs) {
 
-		double ilat = (incs[0] * 4)/6;
-		double ilng = incs[1]/2;
-		
+		double ilat = (incs[0] * 4) / 6;
+		double ilng = incs[1] / 2;
+
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
@@ -233,5 +282,5 @@ public class KmlBase implements Updateable{
 		}
 		placeMark.setTimePrimitive(t);
 	}
-	
+
 }

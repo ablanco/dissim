@@ -71,20 +71,20 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		return old;
 	}
 
-	public short getWaterValue(int x, int y) {
-		x -= offX;
-		y -= offY;
+	public short getWaterValue(int col, int row) {
+		col -= offX;
+		row -= offY;
 		short value;
-		if (y == -1) {
-			value = northWater[x + 1];
-		} else if (y == rows) {
-			value = southWater[x + 1];
-		} else if (x == -1) {
-			value = westWater[y];
-		} else if (x == columns) {
-			value = eastWater[y];
+		if (row == -1) {
+			value = northWater[col + 1];
+		} else if (row == rows) {
+			value = southWater[col + 1];
+		} else if (col == -1) {
+			value = westWater[row];
+		} else if (col == columns) {
+			value = eastWater[row];
 		} else {
-			value = gridWater[x][y];
+			value = gridWater[col][row];
 		}
 		return value;
 	}

@@ -28,7 +28,6 @@ import java.util.TreeSet;
 import util.HexagonalGrid;
 import util.Point;
 import util.Snapshot;
-import util.Updateable;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
@@ -36,7 +35,7 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
 import de.micromata.opengis.kml.v_2_2_0.Style;
 
-public class KmlFlood implements Updateable {
+public class KmlFlood {
 	private long cont = 0;
 	private Set<Short> altitudes;
 	private boolean initialized = false;
@@ -52,58 +51,28 @@ public class KmlFlood implements Updateable {
 	 * End time of the simulation step
 	 */
 	protected String endTime = null;
-	//no poner : que se ralla :D
-	protected final String water="Water";
+	// no poner : que se ralla :D
+	protected final String water = "Water";
 	private Folder folder;
 
-	public KmlFlood() {
+	public KmlFlood(Folder folder) {
 		altitudes = new TreeSet<Short>();
-		folder = null;
-		
+		this.folder = folder;
 	}
 
-	public KmlFlood(KmlBase base) {
-		altitudes = new TreeSet<Short>();
-		folder = base.getFolder().createAndAddFolder().withName("Flood");
-	}
-
-	@Override
-	public void init() {
-		// Código de inicialización
-		initialized = false;
-	}
-
-	@Override
-	public void finish() {
-		// Código de finalización
-	}
-
-	/**
-	 * This metohs geneate a snapshot of the current state of the simulation
-	 * Needs the scenario has dateAndTime and updateTimeMinutes.
-	 */
-	@Override
-	public void update(Object obj) {
-		if (!(obj instanceof Snapshot))
-			throw new IllegalArgumentException(
-					"Object is not an instance of Snapshot");
-		Snapshot snap = (Snapshot) obj;
-		HexagonalGrid grid = snap.getGrid();
-		//incs for this snapshot
-		double[] incs =grid.getIncs();
+	public void update(short[][] oldGrid, HexagonalGrid grid, String beginTime,
+			String endTime) {
+		// incs for this snapshot
+		double[] incs = grid.getIncs();
 		if (!initialized) {
 			System.out.println("inicializando");
-			//Setting old grid for comparations
+			// Setting old grid for comparations
 			setOldGrid(grid);
-			//No need to do this anymore
-			if(folder==null){
-//	TODO	folder = snap.getKml().getFolder().createAndAddFolder().withName("Flood");
-			}
-			initialized = true;
+			// No need to do this anymore
 		}
 		// Now we update the time for each update call
-		beginTime = endTime;
-		endTime = snap.getDateTime().toString();
+		this.endTime = endTime;
+		this.beginTime = beginTime;
 
 		System.out.println("Simulation state at: " + endTime);
 
@@ -122,7 +91,9 @@ public class KmlFlood implements Updateable {
 	}
 
 	/**
-	 * Sets grid wich compares from the terrein not flooded, only if not initializad
+	 * Sets grid wich compares from the terrein not flooded, only if not
+	 * initializad
+	 * 
 	 * @param grid
 	 */
 	protected void setOldGrid(HexagonalGrid grid) {
@@ -157,9 +128,12 @@ public class KmlFlood implements Updateable {
 
 	/**
 	 * 
-	 * @param name  of the polygon
-	 * @param borderLine  borders of the polygon
-	 * @param z  amount of water over the ground
+	 * @param name
+	 *            of the polygon
+	 * @param borderLine
+	 *            borders of the polygon
+	 * @param z
+	 *            amount of water over the ground
 	 * @param incs
 	 */
 	public void drawWaterPolygon(String name, LatLng borderLine, short z,
@@ -302,11 +276,6 @@ public class KmlFlood implements Updateable {
 		return oldGrid;
 	}
 
-	@Override
-	public String getConversationId() {
-		return "kml";
-	}
-
 	protected void setWaterColorToPlaceMark(Placemark placeMark, short z) {
 		// Adding Color
 		createWaterStyleAndColor(z);
@@ -331,13 +300,13 @@ public class KmlFlood implements Updateable {
 			// maximo de 30 metros de profundidad
 			String alpha = "ff";
 			// Kml uses aabbggrr
-			
+
 			if (((z * 4) + 128) < 255) {
 				alpha = Integer.toHexString(z * 4 + 128);
 			}
-			//le doy el mismo color de azul que transparencia
-			String abgr = alpha+alpha+"5500";
-//			System.out.println("Setting color: "+abgr);
+			// le doy el mismo color de azul que transparencia
+			String abgr = alpha + alpha + "5500";
+			// System.out.println("Setting color: "+abgr);
 			polyStyle.setColor(abgr);
 			polyStyle.setColorMode(ColorMode.NORMAL);
 			altitudes.add(z);
