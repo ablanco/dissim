@@ -81,10 +81,15 @@ public class HexagonalGrid implements Serializable {
 		int size[] = calculateSize(NW, SE, tileSize);
 		int col = size[0];
 		int row = size[1];
-
+		
+		// Deberia funcionar tanto emisferio norte como sur
 		ilat = Math.abs(NW.getLat() - SE.getLat()) / row;
 		ilng = Math.abs(NW.getLng() - SE.getLng()) / col;
-
+		
+		
+//		ilat = (NW.getLat() - SE.getLat()) / row;
+//		ilng = (NW.getLng() - SE.getLng()) / col;
+		
 		gridTerrain = new short[col][row];
 		northTerrain = new short[col + 2];
 		southTerrain = new short[col + 2];

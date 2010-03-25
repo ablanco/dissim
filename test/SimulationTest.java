@@ -37,6 +37,11 @@ public class SimulationTest {
 			scen = randomGrid(Integer.parseInt(arguments[0]), Integer
 					.parseInt(arguments[1]));
 			break;
+		case 2:
+			//Con kml??
+			scen = randomGrid(Integer.parseInt(arguments[0]), Integer
+					.parseInt(arguments[1]));
+			break;
 		}
 		return scen;
 	}
