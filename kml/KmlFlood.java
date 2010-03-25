@@ -284,31 +284,22 @@ public class KmlFlood {
 
 	protected void createWaterStyleAndColor(short z) {
 		if (!altitudes.contains(z)) {
-			// Si no tenemos este color/altura definido
-			Style style = new Style();
-			folder.getStyleSelector().add(style);
-			style.setId(water + z);
-			// Creamos un nuevo estilo con ese color/altura
-			PolyStyle polyStyle = new PolyStyle();
-			style.setPolyStyle(polyStyle);
-			Color c = new Color(Color.blue.getRGB());
+			int blue = Color.blue.getBlue();
 			// Mientras mas profunda sea el agua, mas ocuro es el azul.
-			for (int i = 0; i < z; i++) {
-				c.darker();
-			}
-			// Para las transparecias igual, con un minimo de 128, esto tiene un
-			// maximo de 30 metros de profundidad
-			String alpha = "ff";
+			blue += z;
 			// Kml uses aabbggrr
-
-			if (((z * 4) + 128) < 255) {
-				alpha = Integer.toHexString(z * 4 + 128);
+			String abgr;
+			if (blue > 255) {
+				abgr = "ff" + "ff" + "55" + "00";
+			} else {
+				abgr = Integer.toHexString(blue) + Integer.toHexString(blue)
+						+ "55" + "00";
 			}
 			// le doy el mismo color de azul que transparencia
-			String abgr = alpha + alpha + "5500";
 			// System.out.println("Setting color: "+abgr);
-			polyStyle.setColor(abgr);
-			polyStyle.setColorMode(ColorMode.NORMAL);
+			folder.createAndAddStyle().withId(water + z)
+					.createAndSetPolyStyle().withColor(abgr);
+			// polyStyle.setColorMode(ColorMode.NORMAL);
 			altitudes.add(z);
 		}
 	}

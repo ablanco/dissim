@@ -20,15 +20,13 @@ import jade.core.AID;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import util.Point;
+import util.HexagonalGrid;
+import util.Pedestrian;
 import util.Snapshot;
 import util.Updateable;
 import util.flood.FloodHexagonalGrid;
-import util.flood.FloodPedestrian;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Document;
@@ -49,6 +47,7 @@ public class KmlBase implements Updateable {
 	private short[][] oldGrid;
 	private KmlFlood kFlood;
 	private KmlPeople kPeople;
+	private double[] incs;
 
 	private String beginTime;
 
@@ -85,6 +84,7 @@ public class KmlBase implements Updateable {
 			// Le damos un nombre al Doc del KML
 			doc = kml.createAndSetDocument().withName(snap.getName())
 					.withDescription(snap.getDescription());
+			incs = snap.getGrid().getIncs();
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
 				// Si es tenemos una inundacion inicializamos lo necesario
 				FloodHexagonalGrid fgrid = (FloodHexagonalGrid) snap.getGrid();
@@ -102,33 +102,30 @@ public class KmlBase implements Updateable {
 			// Demas inicializaciones para futuras ampliaziones
 			// TODO inicializacion para personas?
 			kPeople = new KmlPeople(newFolder(kml, "People",
-					"People Running For their lives"));
+					"People Running For their lives"), incs);
 
 			// Todas las variables han sido iniciadas, no necesitamos volver
 			init = true;
 		} else {
+			// Todas las demas iteraciones
+			List<Pedestrian> pedestrians = snap.getPeople();
+			if (pedestrians != null) {
+				HexagonalGrid g = snap.getGrid();
+				for (Pedestrian p: pedestrians){
+					p.setPos(g.tileToCoord(p.getPoint()));
+				}
+				kPeople.update(pedestrians, beginTime, snap.getDateTime()
+						.toString());
+			}
 
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
 				// Por cada llamada update lo que tengo que hacer para FLOOD
 				FloodHexagonalGrid fGrid = (FloodHexagonalGrid) snap.getGrid();
 				kFlood.update(oldGrid, fGrid, beginTime, snap.getDateTime()
 						.toString());
-				beginTime = snap.getDateTime().toString();
-
-				Collection<Point> points = snap.getPeople().values();
-				if (points != null && points.size() > 0) {
-					// Tenemos personas
-					List<FloodPedestrian> people = new ArrayList<FloodPedestrian>();
-					for (Point point : points) {
-						people.add(new FloodPedestrian(
-								fGrid.tileToCoord(point), FloodPedestrian
-										.getStatus(fGrid.getWaterValue(point
-												.getCol(), point.getRow()))));
-					}
-					kPeople.update(people);
-				}
 			}
 
+			beginTime = snap.getDateTime().toString();
 		}
 
 	}
