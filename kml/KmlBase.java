@@ -30,6 +30,7 @@ import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Document;
+import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
 import de.micromata.opengis.kml.v_2_2_0.LinearRing;
@@ -79,6 +80,7 @@ public class KmlBase implements Updateable {
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");
 		Snapshot snap = (Snapshot) obj;
+		// Inicizalizacion de KML
 		if (!init) {
 			beginTime = snap.getDateTime().toString();
 			// Le damos un nombre al Doc del KML
@@ -99,35 +101,36 @@ public class KmlBase implements Updateable {
 						newFolder(kml, "Flood", "Flooded Sectors"));
 			}
 
-			// Demas inicializaciones para futuras ampliaziones
-			// TODO inicializacion para personas?
 			kPeople = new KmlPeople(newFolder(kml, "People",
 					"People Running For their lives"), incs);
+			// Demas inicializaciones para futuras ampliaziones
 
-			// Todas las variables han sido iniciadas, no necesitamos volver
+			// No necesitamos volver
 			init = true;
 		} else {
 			// Todas las demas iteraciones
+			
+			//Actualizaciones para las personas
 			List<Pedestrian> pedestrians = snap.getPeople();
 			if (pedestrians != null) {
 				HexagonalGrid g = snap.getGrid();
-				for (Pedestrian p: pedestrians){
+				for (Pedestrian p : pedestrians) {
 					p.setPos(g.tileToCoord(p.getPoint()));
 				}
 				kPeople.update(pedestrians, beginTime, snap.getDateTime()
 						.toString());
 			}
-
+			
+			//Si es una inundacion, actualizar la inundacion
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
 				// Por cada llamada update lo que tengo que hacer para FLOOD
-				FloodHexagonalGrid fGrid = (FloodHexagonalGrid) snap.getGrid();
-				kFlood.update(oldGrid, fGrid, beginTime, snap.getDateTime()
+				kFlood.update(oldGrid, (FloodHexagonalGrid) snap.getGrid(), beginTime, snap.getDateTime()
 						.toString());
 			}
 
+			//Tiempo inicial para la siguiente Iteracion
 			beginTime = snap.getDateTime().toString();
 		}
-
 	}
 
 	public Kml getKml() {
@@ -254,30 +257,30 @@ public class KmlBase implements Updateable {
 	}
 
 	protected void drawPolygonBorders(Polygon polygon, List<LatLng> borderLine) {
-		LinearRing l = polygon.createAndSetOuterBoundaryIs()
-				.createAndSetLinearRing();
-		LatLng z = borderLine.get(0);
-		for (LatLng c : borderLine) {
-			l.addToCoordinates(c.toKmlString());
+		if (borderLine.size() > 0) {
+			LinearRing l = polygon.createAndSetOuterBoundaryIs()
+					.createAndSetLinearRing();
+			for (LatLng c : borderLine) {
+				l.addToCoordinates(c.toKmlString());
+			}
+			l.addToCoordinates(borderLine.get(0).toKmlString());
 		}
-		l.addToCoordinates(z.toKmlString());
 	}
 
 	/**
 	 * Sets when the event happends
 	 * 
-	 * @param placeMark
+	 * @param feature
 	 */
-	protected static void setTimeSpan(Placemark placeMark, String beginTime,
+	protected static void setTimeSpan(Feature feature, String beginTime,
 			String endTime) {
-		TimeSpan t = new TimeSpan();
+		TimeSpan t = feature.createAndSetTimeSpan();
 		if (beginTime != null) {
 			t.setBegin(beginTime);
 		}
 		if (endTime != null) {
 			t.setEnd(endTime);
 		}
-		placeMark.setTimePrimitive(t);
 	}
 
 }

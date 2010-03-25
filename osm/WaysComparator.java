@@ -25,10 +25,5 @@ public class WaysComparator implements Comparator<OsmWay>{
 		//Los de mas prioridad se pintaran los ultimos
 		return o1.priority - o2.priority;
 	}
-	
-	@Override
-	public boolean equals(Object o) {
-		return this.equals(o);
-	}
 
 }

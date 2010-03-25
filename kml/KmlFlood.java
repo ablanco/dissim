@@ -18,31 +18,25 @@ package kml;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
-import util.HexagonalGrid;
-import util.Point;
-import util.Snapshot;
+import util.flood.FloodHexagonalGrid;
+import util.flood.LatLngComparator;
 import util.jcoord.LatLng;
-import de.micromata.opengis.kml.v_2_2_0.ColorMode;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
-import de.micromata.opengis.kml.v_2_2_0.PolyStyle;
-import de.micromata.opengis.kml.v_2_2_0.Style;
 
 public class KmlFlood {
-	private long cont = 0;
-	private Set<Short> altitudes;
-	private boolean initialized = false;
 	/**
-	 * Copy of First Grid, we need it to see changes through time
+	 * Here are all floodLevels
 	 */
-	private short[][] oldGrid;
+	private Set<Short> altitudes;
 	/**
 	 * Begin time of the simulation step
 	 */
@@ -53,6 +47,9 @@ public class KmlFlood {
 	protected String endTime = null;
 	// no poner : que se ralla :D
 	protected final String water = "Water";
+	/**
+	 * Kml Folder where put all inundation info
+	 */
 	private Folder folder;
 
 	public KmlFlood(Folder folder) {
@@ -60,248 +57,139 @@ public class KmlFlood {
 		this.folder = folder;
 	}
 
-	public void update(short[][] oldGrid, HexagonalGrid grid, String beginTime,
-			String endTime) {
+	public void update(short[][] oldGrid, FloodHexagonalGrid fGrid,
+			String beginTime, String endTime) {
 		// incs for this snapshot
-		double[] incs = grid.getIncs();
-		if (!initialized) {
-			System.out.println("inicializando");
-			// Setting old grid for comparations
-			setOldGrid(grid);
-			// No need to do this anymore
-		}
+		double[] incs = fGrid.getIncs();
+		int tileSize = fGrid.getTileSize();
 		// Now we update the time for each update call
 		this.endTime = endTime;
 		this.beginTime = beginTime;
 
-		System.out.println("Simulation state at: " + endTime);
-
+		Map<Short, SortedSet<LatLng>> floodSectors = new TreeMap<Short, SortedSet<LatLng>>();
 		// For each tile who has changed ever, creates hexagon
-		for (int x = 0; x < grid.getColumns(); x++) {
-			for (int y = 0; y < grid.getRows(); y++) {
-				short z = (short) (grid.getTerrainValue(x, y) - oldGrid[x][y]);
-				if (z != 0) {
-					drawWaterPolygon("HEX[" + x + "," + y + "]", grid
-							.tileToCoord(x, y), (short) Math.abs(z), incs);
-					cont++;
-				}
-
-			}
-		}
-	}
-
-	/**
-	 * Sets grid wich compares from the terrein not flooded, only if not
-	 * initializad
-	 * 
-	 * @param grid
-	 */
-	protected void setOldGrid(HexagonalGrid grid) {
-		if (!initialized) {
-			// First Grid to compare
-			oldGrid = new short[grid.getColumns()][grid.getRows()];
-			for (int x = 0; x < grid.getColumns(); x++) {
-				for (int y = 0; y < grid.getRows(); y++) {
-					oldGrid[x][y] = grid.getTerrainValue(x, y);
-				}
-			}
-		}
-	}
-
-	/**
-	 * New Water Polygon to the kml file
-	 * 
-	 * @param name
-	 *            of the polygon
-	 * @param borderLine
-	 *            borders of the polygon
-	 * @param z
-	 *            amount of water over the ground
-	 */
-	public void drawWaterPolygon(String name, List<LatLng> borderLine, short z,
-			double[] incs) {
-		Placemark placeMark = KmlBase.newPlaceMark(folder, name);
-		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
-		setWaterColorToPlaceMark(placeMark, z);
-		KmlBase.drawPolygon(placeMark, borderLine, incs);
-	}
-
-	/**
-	 * 
-	 * @param name
-	 *            of the polygon
-	 * @param borderLine
-	 *            borders of the polygon
-	 * @param z
-	 *            amount of water over the ground
-	 * @param incs
-	 */
-	public void drawWaterPolygon(String name, LatLng borderLine, short z,
-			double[] incs) {
-		Placemark placeMark = KmlBase.newPlaceMark(folder, name);
-		setWaterColorToPlaceMark(placeMark, z);
-		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
-		KmlBase.drawPolygon(placeMark, borderLine, incs);
-	}
-
-	/**
-	 * Given an scenario and a SortedSet<Point> containin borders of a region of
-	 * equal height returns a List of LatLng in the right order to be printed
-	 * 
-	 * @param region
-	 * @param newSnap
-	 * @return
-	 */
-	@SuppressWarnings("unused")
-	private List<LatLng> regionToPoligon(SortedSet<Point> region,
-			Snapshot newSnap) {
-		List<LatLng> borderLine = new ArrayList<LatLng>();
-		// Initializating
-
-		List<Point> adyList = new ArrayList<Point>();
-
-		while (!region.isEmpty()) {
-			Point p = (Point) (region).first();
-			adyList.add(p);
-			region.remove(p);
-			while (!adyList.isEmpty()) {
-				p = adyList.get(0);
-				borderLine.add(newSnap.getGrid().tileToCoord(p.getCol(),
-						p.getRow()));
-				adyList.remove(p);
-				Set<Point> s = newSnap.getGrid().getAdjacents(p);
-				for (Point b : region) {
-					// could be more than one each time
-					if (s.contains(b)) {
-						borderLine.add(newSnap.getGrid().tileToCoord(
-								b.getCol(), b.getRow()));
-						adyList.add(b);
+		for (int col = 0; col < fGrid.getColumns(); col++) {
+			for (int row = 0; row < fGrid.getRows(); row++) {
+				// Por cada casilla
+				if (fGrid.isFloodBorder(col, row)) {
+					// Solo si esta inundada y es borde
+					short floodLevel = fGrid.getValue(col, row);
+					if (altitudes.add(floodLevel)) {
+						// Si no tenemos esta altitud añadimos un nuevo estilo
+						// con la profundidad solo de este punto
+						createWaterStyleAndColor(floodLevel, fGrid.getValue(
+								col, row));
 					}
-				}
-				for (Point r : adyList) {
-					region.remove(r);
-				}
-			}
-
-		}
-
-		return borderLine;
-	}
-
-	/**
-	 * Given a list of regions of same height, looks for the region with who has
-	 * adyacents points of border
-	 * 
-	 * @param regions
-	 * @param adyacents
-	 *            of border
-	 * @param border
-	 *            Border we want to add to his right region
-	 * @return False if has no adyacents in regions. If true means it already
-	 *         have added to the right region
-	 */
-	private boolean addBorderToRegion(List<SortedSet<Point>> regions,
-			Set<Point> adyacents, Point border) {
-		for (Set<Point> region : regions) {
-			for (Point adyacent : adyacents) {
-				if (region.contains(adyacent)) {
-					region.add(border);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Looks for changes between oldGrid y newGrid and add them into a
-	 * Collection of regions.
-	 * 
-	 * @param newSnap
-	 * @return a Collection whit all regions
-	 */
-	@SuppressWarnings("unused")
-	private Collection<List<SortedSet<Point>>> getBorderRegions(Snapshot newSnap) {
-		HashMap<Short, List<SortedSet<Point>>> levelRegions = new HashMap<Short, List<SortedSet<Point>>>();
-		HexagonalGrid newGrid = newSnap.getGrid();
-		// TODO mirar los extremos del array
-		for (int x = 0; x < 0; x++) {
-			for (int y = 0; y < 0; y++) {
-				// recorremos cada punto de la matriz
-				short altitude = newGrid.getTerrainValue(x, y);
-				// si son diferentes
-				Point p = new Point(x, y, altitude);
-				if (oldGrid[x][y] != altitude) {
-					// System.out.print("!=, ");
-					if (newSnap.getGrid().isBorderPoint(p)) {
-						// Solo añadimos los bordes
-						// System.out.print(", Borde");
-						// System.out.print("(" + x + "," + y + ") Region :" +
-						// altitude);
-						List<SortedSet<Point>> regions = levelRegions
-								.get(altitude);
-						if (regions == null) {
-							// si no existe la region la creamos y añadimos el
-							// borde
-							// System.out.print(", Nueva Lista Regiones Creada");
-							regions = new ArrayList<SortedSet<Point>>();
-							SortedSet<Point> region = new TreeSet<Point>();
-							region.add(p);
-							regions.add(region);
-							levelRegions.put(altitude, regions);
-						} else {
-							if (!addBorderToRegion(regions, newSnap.getGrid()
-									.getAdjacents(p), p)) {
-								// si no pertenece a una region creada, creamos
-								// una nueva region
-								// System.out.print(", Nueva Lista Region Creada");
-								SortedSet<Point> region = new TreeSet<Point>();
-								region.add(p);
-								regions.add(region);
-							}
-						}
-					} else {
-						// System.out.print(", no es un borde");
+					SortedSet<LatLng> floodTiles = floodSectors.get(floodLevel);
+					if (floodTiles == null) {
+						// Si no tenemos una lista de puntos a ese nivel de
+						// inundacion
+						floodTiles = new TreeSet<LatLng>(new LatLngComparator());
+						floodSectors.put(floodLevel, floodTiles);
 					}
-					// System.out.println();
+					// pasamos a coordenadas
+					LatLng pos = fGrid.tileToCoord(col, row);
+					pos.setAltitude(floodLevel);
+					floodTiles.add(pos);
+
+					// drawWaterPolygon("HEX[" + x + "," + y + "]", grid
+					// .tileToCoord(x, y), (short) Math.abs(z), incs);
+				}
+			}
+		}
+		Map<Short, List<LinkedList<LatLng>>> floods = getFloodSectors(
+				floodSectors, tileSize);
+		for (short key : floods.keySet()) {
+			List<LinkedList<LatLng>> sectors = floods.get(key);
+			for (LinkedList<LatLng> sector : sectors) {
+				drawWater(sector, key, incs);
+			}
+		}
+	}
+
+	private Map<Short, List<LinkedList<LatLng>>> getFloodSectors(
+			Map<Short, SortedSet<LatLng>> floodSectors, int tileSize) {
+		Map<Short, List<LinkedList<LatLng>>> floodLand = new TreeMap<Short, List<LinkedList<LatLng>>>();
+		for (short key : floodSectors.keySet()) {
+			List<LinkedList<LatLng>> sectors = new ArrayList<LinkedList<LatLng>>();
+			floodLand.put(key, sectors);
+			for (LatLng land : floodSectors.get(key)) {
+				if (sectors.isEmpty()) {
+					// Necesitamos empezar por alguna
+					LinkedList<LatLng> aux = new LinkedList<LatLng>();
+					aux.add(land);
+					sectors.add(aux);
 				} else {
-					// System.out.print(", no son distintos");
+
+					setAndOrderIntoList(sectors, land, tileSize);
+
+				}
+
+			}
+		}
+		return null;
+	}
+
+	private void setAndOrderIntoList(List<LinkedList<LatLng>> sectors,
+			LatLng land, int tileSize) {
+		boolean fin = false;
+		for (LinkedList<LatLng> sector : sectors) {
+			for (LatLng pos : sector) {
+				// La distancia sera pos si esta a la derecha, neg si esta a la
+				// izq
+				double dist = pos.distance(land);
+				if (dist <= tileSize * 1.1) {
+					// le damos un pequeño margen de error
+					if (dist > 0) {
+						sector.add(sector.indexOf(pos) + 1, land);
+					} else {
+						sector.add(sector.indexOf(pos), land);
+					}
+					fin = true;
+					break;
 				}
 			}
-		}
-		return levelRegions.values();
-	}
-
-	public short[][] getOldGrid() {
-		return oldGrid;
-	}
-
-	protected void setWaterColorToPlaceMark(Placemark placeMark, short z) {
-		// Adding Color
-		createWaterStyleAndColor(z);
-		placeMark.setStyleUrl(water + z);
-	}
-
-	protected void createWaterStyleAndColor(short z) {
-		if (!altitudes.contains(z)) {
-			int blue = Color.blue.getBlue();
-			// Mientras mas profunda sea el agua, mas ocuro es el azul.
-			blue += z;
-			// Kml uses aabbggrr
-			String abgr;
-			if (blue > 255) {
-				abgr = "ff" + "ff" + "55" + "00";
-			} else {
-				abgr = Integer.toHexString(blue) + Integer.toHexString(blue)
-						+ "55" + "00";
+			if (fin) {
+				break;
 			}
-			// le doy el mismo color de azul que transparencia
-			// System.out.println("Setting color: "+abgr);
-			folder.createAndAddStyle().withId(water + z)
-					.createAndSetPolyStyle().withColor(abgr);
-			// polyStyle.setColorMode(ColorMode.NORMAL);
-			altitudes.add(z);
 		}
+
+	}
+
+	private void drawWater(LinkedList<LatLng> sector, int floodLevel,
+			double[] incs) {
+		Placemark placeMark = KmlBase.newPlaceMark(folder, sector.getFirst()
+				.toString());
+		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
+		placeMark.setStyleUrl(water + floodLevel);
+		KmlBase.drawPolygon(placeMark, sector, incs);
+	}
+
+	/**
+	 * Creates an style for level floodLevel but with deep z
+	 * 
+	 * @param floodLevel
+	 *            Level
+	 * @param z
+	 *            deep
+	 */
+	protected void createWaterStyleAndColor(short floodLevel, short z) {
+		int blue = Color.blue.getBlue();
+		// Mientras mas profunda sea el agua, mas ocuro es el azul.
+		blue += z;
+		// Kml uses aabbggrr "5500" le da un color azul bonito
+		String abgr;
+		if (blue > 255) {
+			abgr = "ff" + "ff" + "55" + "00";
+		} else {
+			abgr = Integer.toHexString(blue) + Integer.toHexString(blue) + "55"
+					+ "00";
+		}
+		// le doy el mismo color de azul que transparencia
+		// System.out.println("Setting color: "+abgr);
+		folder.createAndAddStyle().withId(water + floodLevel)
+				.createAndSetPolyStyle().withColor(abgr);
+		// polyStyle.setColorMode(ColorMode.NORMAL);
 	}
 
 }

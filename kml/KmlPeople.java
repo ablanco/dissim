@@ -31,8 +31,7 @@ public class KmlPeople {
 			String end) {
 		GroundOverlay groundoverlay = folder.createAndAddGroundOverlay()
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-		groundoverlay.createAndSetTimeSpan().withBegin(begin).withEnd(end);
-
+		KmlBase.setTimeSpan(groundoverlay, begin, end);
 		//Depending status set propper img
 		switch (pedestrian.getStatus()) {
 		case Pedestrian.HEALTHY:
