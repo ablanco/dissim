@@ -29,17 +29,18 @@ import java.util.Map;
 import behaviours.InterGridBehav;
 
 import util.AgentHelper;
+import util.Pedestrian;
 import util.Point;
 import util.Scenario;
 
 @SuppressWarnings("serial")
 public class RegisterPeopleBehav extends CyclicBehaviour {
 
-	private Map<String, Point> people;
+	private Map<String, Pedestrian> people;
 	private Scenario scen;
 
 	public RegisterPeopleBehav(Agent agt, Scenario scen,
-			Map<String, Point> people) {
+			Map<String, Pedestrian> people) {
 		super(agt);
 		this.scen = scen;
 		this.people = people;
@@ -53,9 +54,9 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 		if (msg != null) {
 			if (msg.getPerformative() == ACLMessage.CANCEL) {
 				String id = msg.getContent();
-				Point p = people.remove(id);
-				if (p != null) // TODO Debug
-					System.out.println(id + " died at " + p.toString());
+				Pedestrian p = people.get(id);
+				if (p != null)
+					p.setStatus(Pedestrian.DEAD);
 			} else {
 				String[] pos = msg.getContent().split(" ");
 				String id = pos[0];
@@ -98,7 +99,7 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 					}
 					reply.setPerformative(ACLMessage.INFORM);
 				} else {
-					people.put(id, p);
+					people.put(id, new Pedestrian(p));
 					reply.setPerformative(ACLMessage.CONFIRM);
 				}
 

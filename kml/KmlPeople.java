@@ -36,21 +36,21 @@ public class KmlPeople {
 
 		// Healthy Stile
 		Style styleHealthy = folder.createAndAddStyle().withId(
-				String.valueOf(Pedestrian.Healthy));
+				String.valueOf(Pedestrian.HEALTHY));
 		IconStyle iconStyleHealthy = styleHealthy.createAndSetIconStyle()
 				.withColorMode(ColorMode.NORMAL);
 		iconStyleHealthy.createAndSetIcon().withHref(imgPath + "healthy.png");
 
 		// Hurt Stile
 		Style styleHurt = folder.createAndAddStyle().withId(
-				String.valueOf(Pedestrian.Hurt));
+				String.valueOf(Pedestrian.HURT));
 		IconStyle iconStyleHurt = styleHurt.createAndSetIconStyle()
 				.withColorMode(ColorMode.NORMAL);
 		iconStyleHurt.createAndSetIcon().withHref(imgPath + "hurt.png");
 
 		// Death Stile
 		Style styledead = folder.createAndAddStyle().withId(
-				String.valueOf(Pedestrian.Dead));
+				String.valueOf(Pedestrian.DEAD));
 		IconStyle iconStyledead = styledead.createAndSetIconStyle()
 				.withColorMode(ColorMode.NORMAL);
 		iconStyledead.createAndSetIcon().withHref(imgPath + "dead.png");
@@ -63,13 +63,13 @@ public class KmlPeople {
 		groundoverlay.createAndSetTimeSpan().withBegin(begin).withEnd(end);
 
 		switch (pedestrian.getStatus()) {
-		case Pedestrian.Healthy:
+		case Pedestrian.HEALTHY:
 			groundoverlay.createAndSetIcon().withHref(imgPath + "healthy.png");
 			break;
-		case Pedestrian.Hurt:
+		case Pedestrian.HURT:
 			groundoverlay.createAndSetIcon().withHref(imgPath + "hurt.png");
 			break;
-		case Pedestrian.Dead:
+		case Pedestrian.DEAD:
 			groundoverlay.createAndSetIcon().withHref(imgPath + "dead.png");
 			break;
 		default:

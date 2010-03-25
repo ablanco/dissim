@@ -17,6 +17,9 @@
 package util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class Snapshot implements Serializable {
@@ -25,17 +28,23 @@ public class Snapshot implements Serializable {
 
 	private HexagonalGrid grid;
 	private DateAndTime dateTime;
-	private Map<String, Point> people;
+	private List<Pedestrian> people;
 	private String name;
 	private String description;
 
 	public Snapshot(String name, String description, HexagonalGrid grid,
-			DateAndTime dateTime, Map<String, Point> people) {
+			DateAndTime dateTime, Map<String, Pedestrian> people) {
 		this.grid = grid;
 		this.dateTime = dateTime;
-		this.people = people;
 		this.name = name;
 		this.description = description;
+		this.people = new ArrayList<Pedestrian>(people.size());
+		Iterator<String> it = people.keySet().iterator();
+		while (it.hasNext()) {
+			String id = it.next();
+			Pedestrian p = people.get(id);
+			this.people.add(new Pedestrian(p.getPoint(), p.getStatus(), id));
+		}
 	}
 
 	public HexagonalGrid getGrid() {
@@ -46,7 +55,7 @@ public class Snapshot implements Serializable {
 		return dateTime;
 	}
 
-	public Map<String, Point> getPeople() {
+	public List<Pedestrian> getPeople() {
 		return people;
 	}
 

@@ -9,7 +9,7 @@ import osm.GetOSMInfo;
 import osm.OsmMap;
 import util.DateAndTime;
 import util.HexagonalGrid;
-import util.Point;
+import util.Pedestrian;
 import util.Snapshot;
 import util.jcoord.LatLng;
 
@@ -38,7 +38,7 @@ public class OSMMapTest {
 
 		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
 		Snapshot snapShot = new Snapshot("OSMMapTest", "", grid,
-				dateTime, new Hashtable<String, Point>());
+				dateTime, new Hashtable<String, Pedestrian>());
 		GetOSMInfo osmInfo = new GetOSMInfo(grid);
 
 		OsmMap osmMap = osmInfo.getOsmMap();

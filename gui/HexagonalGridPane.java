@@ -26,8 +26,8 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
@@ -35,6 +35,7 @@ import javax.swing.SwingConstants;
 
 import util.Hexagon2D;
 import util.HexagonalGrid;
+import util.Pedestrian;
 import util.Point;
 import util.Snapshot;
 import util.flood.FloodHexagonalGrid;
@@ -43,7 +44,7 @@ import util.flood.FloodHexagonalGrid;
 public class HexagonalGridPane extends JPanel implements Scrollable {
 
 	private HexagonalGrid grid = null;
-	private Map<String, Point> people;
+	private List<Pedestrian> people;
 	private int radius = -1;
 	private int hexWidth;
 	private int hexHeight;
@@ -109,7 +110,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 	public void paint(Graphics g) {
 		if (grid != null) {
 			if (people == null)
-				people = new Hashtable<String, Point>(1);
+				people = new ArrayList<Pedestrian>(1);
 
 			Graphics2D g2 = (Graphics2D) g;
 			g2.clearRect(0, 0, size.width, size.height);
@@ -173,9 +174,21 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 					g2.drawPolygon(hex);
 
 					// Pintar personas
-					Point p = new Point(i, j);
-					if (people.containsValue(p)) {
-						g2.setColor(Color.RED);
+					Point pos = new Point(i, j);
+					boolean person = false;
+					int status = Pedestrian.HEALTHY;
+					for (Pedestrian p : people) {
+						if (pos.equals(p.getPoint())) {
+							person = true;
+							status = p.getStatus();
+							break;
+						}
+					}
+					if (person) {
+						if (status == Pedestrian.HEALTHY)
+							g2.setColor(Color.RED);
+						else
+							g2.setColor(Color.DARK_GRAY);
 						Ellipse2D.Float circle = new Ellipse2D.Float(posX
 								- (radius / 2), posY - (radius / 2), radius,
 								radius);

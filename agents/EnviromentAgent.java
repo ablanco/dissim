@@ -34,7 +34,7 @@ import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Logger;
-import util.Point;
+import util.Pedestrian;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
@@ -54,7 +54,7 @@ public class EnviromentAgent extends Agent {
 	private HexagonalGrid grid = null;
 	private Logger logger = new Logger(); // TODO
 	private DateAndTime dateTime = null;
-	private Map<String, Point> people = new Hashtable<String, Point>();
+	private Map<String, Pedestrian> people = new Hashtable<String, Pedestrian>();
 
 	@Override
 	protected void setup() {

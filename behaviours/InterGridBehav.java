@@ -24,6 +24,7 @@ import jade.lang.acl.MessageTemplate;
 import java.util.Map;
 
 import util.HexagonalGrid;
+import util.Pedestrian;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 
@@ -40,10 +41,10 @@ public class InterGridBehav extends CyclicBehaviour {
 	private MessageTemplate mt = MessageTemplate
 			.MatchConversationId("intergrid");
 	private HexagonalGrid grid;
-	private Map<String, Point> people;
+	private Map<String, Pedestrian> people;
 
 	public InterGridBehav(Agent agt, HexagonalGrid grid,
-			Map<String, Point> people) {
+			Map<String, Pedestrian> people) {
 		super(agt);
 		this.grid = grid;
 		this.people = people;
@@ -72,7 +73,7 @@ public class InterGridBehav extends CyclicBehaviour {
 				int x = Integer.parseInt(data[2]);
 				int y = Integer.parseInt(data[3]);
 				if (comm.equals(PEOPLE_SET))
-					people.put(id, new Point(x, y));
+					people.put(id, new Pedestrian(new Point(x, y)));
 			}
 		} else {
 			block();

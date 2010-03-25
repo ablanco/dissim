@@ -31,7 +31,7 @@ import java.util.TreeSet;
 
 import util.DateAndTime;
 import util.HexagonalGrid;
-import util.Point;
+import util.Pedestrian;
 import util.Scenario;
 
 @SuppressWarnings("serial")
@@ -41,10 +41,10 @@ public class SyndicateBehav extends CyclicBehaviour {
 	private Map<String, Object[]> subscribers = new Hashtable<String, Object[]>();
 	private HexagonalGrid grid;
 	private DateAndTime dateTime;
-	private Map<String, Point> people;
+	private Map<String, Pedestrian> people;
 
 	public SyndicateBehav(Agent a, HexagonalGrid grid, DateAndTime dateTime,
-			Scenario scen, Map<String, Point> people) {
+			Scenario scen, Map<String, Pedestrian> people) {
 		super(a);
 		this.grid = grid;
 		this.dateTime = dateTime;
