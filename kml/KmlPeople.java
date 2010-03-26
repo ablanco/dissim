@@ -10,7 +10,7 @@ import de.micromata.opengis.kml.v_2_2_0.GroundOverlay;
 
 public class KmlPeople {
 
-	
+	public final static String imgPath = "http://pfc.mensab.com/wp-content/uploads/2010/03/";
 	private Folder folder;
 	private double[] incs;
 
@@ -35,13 +35,13 @@ public class KmlPeople {
 		//Depending status set propper img
 		switch (pedestrian.getStatus()) {
 		case Pedestrian.HEALTHY:
-			groundoverlay.createAndSetIcon().withHref(Pedestrian.imgPath + "healthy.png");
+			groundoverlay.createAndSetIcon().withHref(imgPath + "healthy.png");
 			break;
 		case Pedestrian.HURT:
-			groundoverlay.createAndSetIcon().withHref(Pedestrian.imgPath + "hurt.png");
+			groundoverlay.createAndSetIcon().withHref(imgPath + "hurt.png");
 			break;
 		case Pedestrian.DEAD:
-			groundoverlay.createAndSetIcon().withHref(Pedestrian.imgPath + "dead.png");
+			groundoverlay.createAndSetIcon().withHref(imgPath + "dead.png");
 			break;
 		default:
 			break;

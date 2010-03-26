@@ -16,7 +16,6 @@ public class Pedestrian implements Serializable {
 	private int status = HEALTHY;
 	private String id = null;
 	private Point point = null;
-	public final static String imgPath = "http://pfc.mensab.com/wp-content/uploads/2010/03/";
 	
 	public Pedestrian(Point point) {
 		this.point = point;
