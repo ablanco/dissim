@@ -133,7 +133,9 @@ public class CreatorAgent extends Agent {
 				while (people.hasNext()) {
 					LatLng pos = people.next();
 					// TODO sacar distancia de visión de algún lado
-					arguments = new Object[] { Double.toString(pos.getLat()),
+					arguments = new Object[] {
+							"agents.people.ranking.FarFromWaterRank",
+							Double.toString(pos.getLat()),
 							Double.toString(pos.getLng()), Integer.toString(2) };
 					myAgent
 							.addBehaviour(new CreateAgentBehav(myAgent, "Dude"

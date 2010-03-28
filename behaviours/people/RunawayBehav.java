@@ -23,20 +23,20 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 
-import java.util.Random;
 import java.util.Set;
-import java.util.TreeSet;
-
-import behaviours.AdjacentsGridBehav;
 
 import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
+import agents.people.ranking.Ranking;
+import agents.people.ranking.YouAreDeadException;
+import behaviours.AdjacentsGridBehav;
 
 @SuppressWarnings("serial")
 public class RunawayBehav extends CyclicBehaviour {
 
 	private AID env;
+	private Ranking rank;
 	private double lat; // Posición en coordenadas
 	private double lng;
 	private int x; // Posición en columna y fila
@@ -49,7 +49,7 @@ public class RunawayBehav extends CyclicBehaviour {
 	private MessageTemplate mt = MessageTemplate.MatchAll();
 
 	public RunawayBehav(Agent a, long period, AID env, double lat, double lng,
-			int d) {
+			int d, Ranking rank) {
 		super(a);
 		if (env == null)
 			throw new IllegalArgumentException(
@@ -59,6 +59,7 @@ public class RunawayBehav extends CyclicBehaviour {
 		this.lat = lat;
 		this.lng = lng;
 		this.d = d;
+		this.rank = rank;
 		previous = System.currentTimeMillis();
 	}
 
@@ -91,54 +92,20 @@ public class RunawayBehav extends CyclicBehaviour {
 				try {
 					Set<Point> adjacents = (Set<Point>) msg.getContentObject();
 
-					// Separar casillas inundadas de las secas
-					Set<Point> water = new TreeSet<Point>();
-					Set<Point> dry = new TreeSet<Point>();
-					for (Point pt : adjacents) {
-						if (pt.getW() > 0)
-							water.add(pt);
-						else
-							dry.add(pt);
-					}
-
-					// Por si no ve agua, que no se mueva
-					step = 0;
-
-					// Si no tiene casillas secas a su alrededor está rodeado y
-					// se ahoga
-					if (dry.size() == 0) {
-						// TODO Mejorar sistema para detectar ahogamiento
-						System.out.println(myAgent.getLocalName()
-								+ ": Me ahogo!!");
+					Point pmejor = null;
+					try {
+						pmejor = rank.choose(adjacents);
+					} catch (YouAreDeadException e) {
 						AgentHelper.send(myAgent, env, ACLMessage.CANCEL,
 								"register-people", myAgent.getLocalName());
 						myAgent.doDelete();
 						return;
 					}
 
-					if (water.size() > 0) {
-						// Buscar la casilla seca más alejada de las inundadas
-						int dmejor = Integer.MIN_VALUE;
-						Point pmejor = null;
-						for (Point pt : dry) {
-							int dist = 0;
-							for (Point w : water) {
-								dist += HexagonalGrid.distance(pt, w);
-							}
-							dist /= water.size();
-							if (dist > dmejor)
-								pmejor = pt;
-						}
+					// Por si no ve agua, que no se mueva
+					step = 0;
 
-						// Si no se ha encontrado una mejor se mueve a una seca
-						// al azar
-						if (pmejor != null) {
-							Point[] arrdry = new Point[dry.size()];
-							arrdry = dry.toArray(arrdry);
-							Random rnd = new Random(System.currentTimeMillis());
-							pmejor = arrdry[rnd.nextInt(arrdry.length)];
-						}
-
+					if (pmejor != null) {
 						// El agente avanza una casilla aunque tenga una
 						// distancia de visión mayor
 						if (type.equals(AdjacentsGridBehav.POSITION))

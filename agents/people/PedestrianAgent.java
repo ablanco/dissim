@@ -19,8 +19,12 @@ package agents.people;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+
+import java.lang.reflect.Constructor;
+
 import util.AgentHelper;
 import util.jcoord.LatLng;
+import agents.people.ranking.Ranking;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
 import behaviours.people.RunawayBehav;
@@ -28,18 +32,30 @@ import behaviours.people.RunawayBehav;
 @SuppressWarnings("serial")
 public class PedestrianAgent extends Agent {
 
+	private Ranking rank = null;
 	private double lat;
 	private double lng;
 	private int d;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args.length == 3) {
-			lat = Double.parseDouble((String) args[0]);
-			lng = Double.parseDouble((String) args[1]);
-			d = Integer.parseInt((String) args[2]);
+		if (args.length == 4) {
+			try {
+				// Carga, y crea un objeto de la clase pasada, por reflexión
+				Class cls = Class.forName((String) args[0]);
+				Constructor ct = cls.getConstructor(new Class[0]);
+				rank = (Ranking) ct.newInstance(new Object[0]);
+			} catch (Throwable e) {
+				e.printStackTrace();
+				doDelete();
+			}
+
+			lat = Double.parseDouble((String) args[1]);
+			lng = Double.parseDouble((String) args[2]);
+			d = Integer.parseInt((String) args[3]);
 		} else {
 			throw new IllegalArgumentException(getLocalName()
 					+ " - Wrong number of arguments: " + args.length);
@@ -47,7 +63,7 @@ public class PedestrianAgent extends Agent {
 
 		addBehaviour(new RequestScenarioBehav(new ContinuePA()));
 	}
-	
+
 	protected class ContinuePA extends ReceiveScenarioBehav {
 
 		@Override
@@ -70,7 +86,7 @@ public class PedestrianAgent extends Agent {
 			}
 
 			myAgent.addBehaviour(new RunawayBehav(myAgent, scen
-					.getPeopleUpdateTime(), envAID, lat, lng, d));
+					.getPeopleUpdateTime(), envAID, lat, lng, d, rank));
 
 			done = true;
 		}
