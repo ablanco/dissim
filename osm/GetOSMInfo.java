@@ -60,7 +60,7 @@ public class GetOSMInfo {
 		url += mBox;
 		// ("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url);
-		// System.err.println("Reading file: "+xmlFile.getAbsolutePath());
+		System.err.println("Reading file: "+xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
 		doc = parseFile(xmlFile);
 		// get root node of xml tree structure
@@ -268,7 +268,7 @@ public class GetOSMInfo {
 			File dir = Util.getDefaultTempDir();
 			File file = new File(dir, fileName);
 			if (!file.exists()) {
-				if (!Wget.wget(Util.getTempPath(), url)) {
+				if (!Wget.wget(dir.getPath(), url)) {
 					System.err
 							.println("No se ha podido descargar la informacion");
 					return null;
