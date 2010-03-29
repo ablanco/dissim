@@ -16,7 +16,13 @@
 
 package util;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -81,6 +87,76 @@ public class Scenario implements Serializable {
 	}
 
 	/**
+	 * Loads a Scenario form a text file and returns an instance
+	 * 
+	 * @param path
+	 * @return
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings("unchecked")
+	public static Scenario loadScenario(String path) throws IOException,
+			ClassNotFoundException {
+		Scenario scen = null;
+		File f = new File(path);
+		if (f.exists()) {
+			BufferedReader br = new BufferedReader(new FileReader(f));
+			ArrayList<String> data = new ArrayList<String>();
+			String line;
+
+			try {
+				// Cargamos el fichero completo
+				while ((line = br.readLine()) != null)
+					data.add(line);
+			} finally {
+				br.close();
+			}
+
+			// Buscamos el tipo de escenario
+			for (String s : data) {
+				if (s.startsWith("type")) {
+					String[] pair = s.split("=");
+					// Carga, y crea un objeto de la clase pasada, por reflexión
+					try {
+						Class cls = Class.forName(pair[1]);
+						Constructor ct = cls.getConstructor(new Class[0]);
+						scen = (Scenario) ct.newInstance(new Object[0]);
+					} catch (Exception e) {
+						throw new IOException(
+								"There were a problem trying to instantiate "
+										+ pair[1]);
+					}
+					break;
+				}
+			}
+
+			// Rellenamos de datos el escenario
+			if (scen != null) {
+				scen.loadScenarioData(data);
+				scen.complete();
+			} else {
+				throw new ClassNotFoundException(
+						"Couldn't create an instance of the type defined in "
+								+ path);
+			}
+		} else {
+			throw new FileNotFoundException("File " + path + "not found.");
+		}
+		return scen;
+	}
+
+	protected void loadScenarioData(ArrayList<String> data) {
+		for (String s : data) {
+			String[] pair = s.split("=");
+			if (pair[0].equals("")) {
+				// TODO leer datos del fichero
+			} else if (pair[0].equals("")) {
+
+			}
+		}
+	}
+
+	/**
 	 * Sets the Geolocation of the simulation, and the size of the tiles
 	 * 
 	 * @param NW
@@ -124,19 +200,6 @@ public class Scenario implements Serializable {
 	public int getTileSize() {
 		return tileSize;
 	}
-
-	// @Override
-	// public String toString() {
-	// if (complete)
-	// return "Current Time: " + currentDateAndTime.toString()
-	// + "\nSize [" + gridX + "," + gridY + "] NW coord :"
-	// + NW.toString() + ", SE Coord: " + SE.toString()
-	// + "\nTile size :" + NW.distance(tileToCoord(0, 1)) + "kms"
-	// + " ~ " + tileSize + "m, Diagonal =" + NW.distance(SE)
-	// + "kms";
-	// else
-	// return "Incomplete scenario description: " + super.toString();
-	// }
 
 	public void setPrecision(short precision) {
 		this.precision = precision;

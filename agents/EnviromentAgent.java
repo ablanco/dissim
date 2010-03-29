@@ -81,7 +81,7 @@ public class EnviromentAgent extends Agent {
 				}
 			}
 			// FIN GRID ALEATORIA
-			// TODO grid.obtainStreetInfo();
+			grid.obtainStreetInfo();
 		} else {
 			logger.errorln(getLocalName() + " wrong arguments.");
 			doDelete();

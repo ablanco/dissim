@@ -16,6 +16,7 @@
 
 package util.flood;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -46,6 +47,19 @@ public class FloodScenario extends Scenario {
 	public FloodScenario() {
 		super();
 		waterSources = new LinkedList<WaterSource>();
+	}
+
+	@Override
+	protected void loadScenarioData(ArrayList<String> data) {
+		super.loadScenarioData(data);
+		for (String s : data) {
+			String[] pair = s.split("=");
+			if (pair[0].equals("")) {
+				// TODO leer datos flood del fichero
+			} else if (pair[0].equals("")) {
+
+			}
+		}
 	}
 
 	@Override

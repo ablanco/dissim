@@ -500,8 +500,7 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public void obtainStreetInfo() {
-		Osm osm = new Osm(this);
-		osm.fillMatrix();
+		Osm.getMap(this);
 	}
 	
 	/**
