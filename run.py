@@ -35,7 +35,10 @@ def printUsage():
     print('para la generación de un nuevo escenario de simulación')
 
 def launch(scen):
-    os.system(__jade + __creator + "\\(" + scen + "\\)")
+    if os.access(scen, os.F_OK):
+        os.system(__jade + __creator + "\\(" + scen + "\\)")
+    else:
+        print('ERROR: El fichero ' + scen + ' no existe o no es accesible.')
 
 # MAIN
 
@@ -90,8 +93,12 @@ else:
     nenvs = raw_input('Número de agentes entorno: ')
     fich.write('\nnumEnvs=' + nenvs)
     print('\nENTRADA DE AGUA\n')
+    timeFlood = raw_input('Período (en milisegundos) de la actualización del agua en el terreno: ')
+    fich.write('\nupdateTimeFlood=' + timeFlood)
     timeWS = raw_input('Tiempo (en milisegundos) entre entradas de nueva agua en la inundación: ')
     fich.write('\nupdateTimeWS=' + timeWS)
+    timeRealWS = raw_input('Tiempo real dentro de la simulación (en minutos) que representa el tiempo anterior: ')
+    fich.write('\nupdateTimeRealWS=' + timeRealWS)
     nws = int(raw_input('Número de entradas de agua: '))
     for i in range(nws):
         ws = raw_input('Coordenadas (Lat,Lng) de la entrada de agua ' + str(i) + ': ')
@@ -102,6 +109,15 @@ else:
     PRINT('\nPERSONAS\n')
     timePeople = raw_input('Tiempo (en milisegundos) entre actualizaciones de los agentes humanos: ')
     fich.write('\nupdateTimePeople=' + timePeople)
-    # TODO
+    npeople = int(raw_input('Número de agentes humanos en la simulación: '))
+    for i in range(npeople):
+        person = raw_input('Coordenadas (Lat,Lng) del peatón ' + str(i) + ': ')
+        person = person.split(',')
+        fich.write('\nperson=[' + person[0] + ',' + person[1])
+        person = raw_input('Distancia de visión del peatón: ')
+        fich.write(',' + person)
+        person = raw_input('Velocidad (distancia a la que es capaz de moverse en un paso) del peatón: ')
+        fich.write(',' + person + ']')
+    print('\nESCENARIO GENERADO\n')
     fich.close()
     launch(scen)

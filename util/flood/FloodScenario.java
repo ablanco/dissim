@@ -39,7 +39,7 @@ public class FloodScenario extends Scenario {
 	 */
 	private long waterSourceUpdateTime = 75L;
 	/**
-	 * Real time (minutes) that the water
+	 * Real simulation time (minutes) between water entrances
 	 */
 	private int waterSourceMinutes = -1;
 
