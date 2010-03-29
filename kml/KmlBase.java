@@ -83,6 +83,8 @@ public class KmlBase implements Updateable {
 		// Inicizalizacion de KML
 		if (!init) {
 			beginTime = snap.getDateTime().toString();
+			setName(snap.getName());
+			setDescription(snap.getDescription());
 			// Le damos un nombre al Doc del KML
 			doc = kml.createAndSetDocument().withName(snap.getName())
 					.withDescription(snap.getDescription());
@@ -137,14 +139,24 @@ public class KmlBase implements Updateable {
 		return kml;
 	}
 
+	public void setName(String name) {
+		doc = kml.createAndSetDocument().withName(name);
+	}
+	
+	public void setDescription(String description){
+		if (doc != null){
+			doc.setDescription(description);
+		}
+	}
+	
 	public String getName() {
-		if (doc.getName() != null && doc.getName().length() != 0)
+		if (doc != null && doc.getName() != null && doc.getName().length() != 0)
 			return doc.getName();
 		return "DefaultName";
 	}
 
 	public String getDescription() {
-		if (doc.getDescription() != null && doc.getDescription().length() != 0)
+		if (doc != null && doc.getDescription() != null && doc.getDescription().length() != 0)
 			return doc.getDescription();
 		return "DefaultDescriptor";
 	}
