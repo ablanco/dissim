@@ -33,8 +33,7 @@ public class Scenario implements Serializable {
 	private String description = "";
 	private String name = "";
 	/**
-	 * Increment in degrees (depends on tileSize) 1 unit means 1/precision
-	 * meters
+	 * 1 altitude unit means (1/precision) meters
 	 */
 	private short precision = 10;
 	/**
@@ -44,7 +43,7 @@ public class Scenario implements Serializable {
 	/**
 	 * Periodo de actualización de los generadores de KML
 	 */
-	private long updateKML = 5000L;
+	private long updateKML = 3000L;
 	/**
 	 * Periodo de actualización de los agentes persona
 	 */

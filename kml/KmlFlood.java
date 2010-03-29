@@ -27,8 +27,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import util.flood.FloodHexagonalGrid;
-import util.flood.LatLngComparator;
 import util.jcoord.LatLng;
+import util.jcoord.LatLngComparator;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 

@@ -1,8 +1,7 @@
-package util.flood;
+package util.jcoord;
 
 import java.util.Comparator;
 
-import util.jcoord.LatLng;
 
 public class LatLngComparator implements Comparator<LatLng> {
 

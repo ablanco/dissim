@@ -42,6 +42,21 @@ def launch(scen):
 # Si no existe ya creamos el directorio de configuración
 if not(os.access(__configPath, os.F_OK)):
     os.makedirs(__configPath)
+# Creamos el fichero de configuración si no existe
+if not(os.access(__configPath + "config.conf", os.F_OK)):
+    fich = open(__configPath + 'config.conf', 'w')
+    fich.write('scenPath=' + __scenPath)
+    fich.close()
+else:
+    # Cargamos la configuración
+    fich = open(__configPath + 'config.conf', 'r')
+    data = fich.readlines()
+    for d in data:
+        d = d.replace('\n','')
+        pair = d.split('=')
+        if pair[0] == 'scenPath':
+            __scenPath = pair[1]
+    fich.close()
 
 if len(sys.argv) > 1:
     # No hay que generar un nuevo escenario
@@ -58,10 +73,12 @@ else:
     simName = raw_input('Nombre del nuevo escenario: ')
     scen = __scenPath + simName + '.scen'
     fich = open(scen, "w")
+    fich.write('type=util.flood.FloodScenario')
     fich.write('name=' + simName)
     # Preguntamos los datos del escenario
     desc = raw_input('Descripción del escenario: ')
     fich.write('description=' + desc)
+    print('\nÁREA DE LA SIMULACIÓN\n')
     NW = raw_input('Coordenadas (con el formato Lat,Lng) NorOeste del área de simulación: ')
     NW = NW.split(',')
     fich.write('\nNW=[' + NW[0] + ',' + NW[1] + ']')
@@ -72,6 +89,7 @@ else:
     fich.write('\ntileSize=' + tileSize)
     nenvs = raw_input('Número de agentes entorno: ')
     fich.write('\nnumEnvs=' + nenvs)
+    print('\nENTRADA DE AGUA\n')
     timeWS = raw_input('Tiempo (en milisegundos) entre entradas de nueva agua en la inundación: ')
     fich.write('\nupdateTimeWS=' + timeWS)
     nws = int(raw_input('Número de entradas de agua: '))
@@ -81,7 +99,8 @@ else:
         fich.write('\nwaterSource=[' + ws[0] + ',' + ws[1] + ',')
         wws = raw_input('Cantidad de agua de dicha entrada: ')
         fich.write(wws + ']')
-    timePeople = raw_input('Tiempo (en milisegundos) entre actualizaciones de los agentes humanos')
+    PRINT('\nPERSONAS\n')
+    timePeople = raw_input('Tiempo (en milisegundos) entre actualizaciones de los agentes humanos: ')
     fich.write('\nupdateTimePeople=' + timePeople)
     # TODO
     fich.close()
