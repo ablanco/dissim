@@ -1,6 +1,6 @@
 package test;
 
-import osm.GetOSMInfo;
+import osm.Osm;
 import osm.OsmMap;
 import util.HexagonalGrid;
 import util.jcoord.LatLng;
@@ -18,9 +18,8 @@ public class OSMgetTest {
 //				30.083244, -90.434048, (short)10), (short) 10);
 //		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
 //		Snapshot snapShot = new Snapshot(new AID(), grid, dateTime);
-		GetOSMInfo osmInfo = new GetOSMInfo(grid);
 		
-		OsmMap osmMap = osmInfo.getOsmMap();
+		OsmMap osmMap = Osm.getMap(grid);
 		
 		//Mostando info por pantalla
 		System.err.println(osmMap);

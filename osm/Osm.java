@@ -39,16 +39,14 @@ import util.HexagonalGrid;
 import util.Util;
 import util.jcoord.LatLng;
 
-public class GetOSMInfo {
-	private Document doc;
-	private Node root;
-	private HexagonalGrid grid;
-	private OsmMap osmMap;
-	private String fileName;
+public class Osm {
 
-	/** Creates a new instance of XmlParser */
-	public GetOSMInfo(HexagonalGrid grid) {
-		this.grid = grid;
+	/**
+	 * Get And Fill streets Matrix for this Grid from Open Streets Maps
+	 * @param grid
+	 * @return
+	 */
+	public static OsmMap getMap(HexagonalGrid grid) {
 		LatLng NW = grid.getArea()[0];
 		LatLng SE = grid.getArea()[1];
 
@@ -56,18 +54,18 @@ public class GetOSMInfo {
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
 		String mBox = NW.getLng() + "," + SE.getLat() + "," + SE.getLng() + ","
 				+ NW.getLat();
-		fileName = "map?bbox=" + mBox;
+		String fileName = "map?bbox=" + mBox;
 		url += mBox;
 		// ("Obtaining info from :" + url);
-		File xmlFile = getOSMXmlFromURL(url);
+		File xmlFile = getOSMXmlFromURL(url, fileName);
 		System.err.println("Reading file: "+xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
-		doc = parseFile(xmlFile);
+		Document doc = parseFile(xmlFile);
 		// get root node of xml tree structure
-		root = doc.getDocumentElement();
+		Node root = doc.getDocumentElement();
 		// write node and its child nodes into System.out
 		// writeDocumentToLog(root, 0);
-		osmMap = xmlToStreets(root);
+		return xmlToStreets(root,grid);
 	}
 
 	/**
@@ -78,8 +76,7 @@ public class GetOSMInfo {
 	 *            Root element de un xml obtenido de OSM
 	 * @return Clase con toda la información que necesitamos de OSM
 	 */
-	protected OsmMap xmlToStreets(Node root) {
-		OsmMap osmMap = null;
+	protected static OsmMap xmlToStreets(Node root, HexagonalGrid grid) {
 		// Skips osm and bounds
 		root = root.getFirstChild().getNextSibling().getNextSibling();
 		// gets First Node contains info about location
@@ -87,7 +84,7 @@ public class GetOSMInfo {
 		// Root node has id
 		NamedNodeMap attributes = mapInfo.getAttributes();
 		long id = Long.parseLong(attributes.item(0).getNodeValue());
-		osmMap = new OsmMap(id);
+		OsmMap osmMap = new OsmMap(id);
 		// Children has the info
 		NodeList mapInfoChilds = mapInfo.getChildNodes();
 		if (mapInfo.getFirstChild() != null) {// First child has Continent name
@@ -104,9 +101,12 @@ public class GetOSMInfo {
 		}
 		SortedMap<Long, OsmNode> osmNodes = new TreeMap<Long, OsmNode>();
 		// When this methods finised we've shuld have the first way
-		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes, osmMap);
+		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes, osmMap, grid);
 		// Now we sort the list
 		Collections.sort(osmMap.ways, new WaysComparator());
+		//Now we fill the streets matrix
+		osmMap.setMapInfo(grid);
+		//Now Returns All the info, if needed ...
 		return osmMap;
 	}
 
@@ -121,14 +121,14 @@ public class GetOSMInfo {
 	 *            Clase donde tendremos toda la informacion que necesitamos de
 	 *            OSM
 	 */
-	protected void getNodeInfo(Node node, SortedMap<Long, OsmNode> osmNodes,
-			OsmMap osmMap) {
+	protected static void getNodeInfo(Node node, SortedMap<Long, OsmNode> osmNodes,
+			OsmMap osmMap, HexagonalGrid grid) {
 		while (node != null) {
 			// Hasta llegar al final del XML
 			String nodeName = node.getNodeName();
 			if (nodeName.equalsIgnoreCase("node")) {
 				// Es un nodo, de informacion o de sitio especial
-				getNodeInfoNode(node, osmNodes, osmMap.specialPlaces);
+				getNodeInfoNode(node, osmNodes, osmMap.specialPlaces, grid);
 			} else if (nodeName.equalsIgnoreCase("way")) {
 				// Forma parte de un Way
 				getNodeInfoWay(node, osmNodes, osmMap.ways);
@@ -152,8 +152,8 @@ public class GetOSMInfo {
 	 * @param specialPlaces
 	 *            Set con los nodos especiales.
 	 */
-	protected void getNodeInfoNode(Node node,
-			SortedMap<Long, OsmNode> osmNodes, List<OsmNode> specialPlaces) {
+	protected static void getNodeInfoNode(Node node,
+			SortedMap<Long, OsmNode> osmNodes, List<OsmNode> specialPlaces, HexagonalGrid grid) {
 		NamedNodeMap attributes = node.getAttributes();
 		// Getting attributes
 		long id;
@@ -206,7 +206,7 @@ public class GetOSMInfo {
 	 * @param ways
 	 *            Acumulador de Ways que hemos ido reconociendo
 	 */
-	protected void getNodeInfoWay(Node node, SortedMap<Long, OsmNode> osmNodes,
+	protected static void getNodeInfoWay(Node node, SortedMap<Long, OsmNode> osmNodes,
 			List<OsmWay> ways) {
 		// Getting IDattributes
 		long id = Long.parseLong(node.getAttributes().item(0).getNodeValue());
@@ -258,11 +258,11 @@ public class GetOSMInfo {
 
 	/**
 	 * Given a proper url for OSM returns a file with the information
-	 * 
-	 * @param url
+	 * @param url Url for the web service
+	 * @param fileName Name for the file
 	 * @return
 	 */
-	protected File getOSMXmlFromURL(String url) {
+	protected static File getOSMXmlFromURL(String url, String fileName) {
 		try {
 			// creamos un fichero en el directorio temporal
 			File dir = Util.getDefaultTempDir();
@@ -299,7 +299,7 @@ public class GetOSMInfo {
 	 *            XML file to parse
 	 * @return XML document or <B>null</B> if error occured
 	 */
-	public Document parseFile(File sourceFile) {
+	public static Document parseFile(File sourceFile) {
 		System.out.println("Parsing XML file... " + sourceFile.getName());
 		DocumentBuilder docBuilder;
 		Document doc = null;
@@ -324,14 +324,6 @@ public class GetOSMInfo {
 		return doc;
 	}
 
-	public Document getDocument() {
-		return doc;
-	}
-
-	public Node getRoot() {
-		return root;
-	}
-
 	protected void printNodeInfo(Node node) {
 		System.out.println();
 		System.out.print("Name: " + node.getNodeName() + ",Value: "
@@ -351,13 +343,5 @@ public class GetOSMInfo {
 		}
 		System.out.println("Fin de hijos");
 
-	}
-
-	public OsmMap getOsmMap() {
-		return osmMap;
-	}
-
-	public void fillMatrix() {
-		osmMap.setMapInfo(grid);
 	}
 }

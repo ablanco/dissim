@@ -20,7 +20,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-import osm.GetOSMInfo;
+import osm.Osm;
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
 
@@ -500,7 +500,7 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public void obtainStreetInfo() {
-		GetOSMInfo osm = new GetOSMInfo(this);
+		Osm osm = new Osm(this);
 		osm.fillMatrix();
 	}
 	

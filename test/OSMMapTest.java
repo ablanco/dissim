@@ -5,7 +5,7 @@ import jade.core.AID;
 
 import java.util.Hashtable;
 
-import osm.GetOSMInfo;
+import osm.Osm;
 import osm.OsmMap;
 import util.DateAndTime;
 import util.HexagonalGrid;
@@ -39,9 +39,8 @@ public class OSMMapTest {
 		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
 		Snapshot snapShot = new Snapshot("OSMMapTest", "", grid,
 				dateTime, new Hashtable<String, Pedestrian>());
-		GetOSMInfo osmInfo = new GetOSMInfo(grid);
 
-		OsmMap osmMap = osmInfo.getOsmMap();
+		OsmMap osmMap = Osm.getMap(grid);
 
 		osmMap.setMapInfo(grid);
 		// Mostando info por pantalla
