@@ -20,11 +20,20 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class DateAndTime implements Serializable{
+public class DateAndTime implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private GregorianCalendar g;
+
+	public DateAndTime(String date, String hour) {
+		String[] d = date.split("/");
+		String[] h = hour.split(":");
+		g = new GregorianCalendar(Integer.parseInt(d[2]), Integer
+				.parseInt(d[1]), Integer.parseInt(d[0]),
+				Integer.parseInt(h[0]), Integer.parseInt(h[1]), Integer
+						.parseInt(h[2]));
+	}
 
 	public DateAndTime(int year, int month, int dayOfMonth, int hourOfDay,
 			int minute) {
@@ -33,12 +42,16 @@ public class DateAndTime implements Serializable{
 
 	/**
 	 * Increase the date and time in given minutes
+	 * 
 	 * @param minutes
 	 */
 	public DateAndTime updateTime(int minutes) {
 		GregorianCalendar previous = (GregorianCalendar) g.clone();
 		g.add(Calendar.MINUTE, minutes);
-		return new DateAndTime(previous.get(Calendar.YEAR), previous.get(Calendar.MONTH),previous.get(Calendar.DAY_OF_MONTH),previous.get(Calendar.HOUR_OF_DAY), previous.get(Calendar.MINUTE));
+		return new DateAndTime(previous.get(Calendar.YEAR), previous
+				.get(Calendar.MONTH), previous.get(Calendar.DAY_OF_MONTH),
+				previous.get(Calendar.HOUR_OF_DAY), previous
+						.get(Calendar.MINUTE));
 	}
 
 	@Override

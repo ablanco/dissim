@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import test.SimulationTest;
 import util.AgentHelper;
 import util.Logger;
 import util.Scenario;
@@ -42,20 +41,19 @@ public class CreatorAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		// TODO DEBUG
 		// Obtener argumentos
-		Object[] agtArgs = getArguments();
-		int opt = 0;
-		String[] strArgs = new String[] { Boolean.toString(false) };
-		if (agtArgs != null) {
-			opt = Integer.parseInt((String) agtArgs[0]);
-			strArgs = new String[agtArgs.length - 1];
-			for (int i = 1; i < agtArgs.length; i++) {
-				strArgs[i - 1] = (String) agtArgs[i];
-			}
+		Object[] args = getArguments();
+		if (args.length != 1)
+			throw new IllegalArgumentException("Wrong number of arguments");
+
+		// Cargar el escenario
+		try {
+			scen = Scenario.loadScenario((String) args[0]);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
 		}
-		scen = SimulationTest.generateScenario(opt, strArgs);
-		// FIN DEBUG
 
 		if (scen != null) {
 			if (!scen.isComplete())
@@ -86,7 +84,9 @@ public class CreatorAgent extends Agent {
 			// Esperar a que los entornos estén inicializados
 			addBehaviour(new WaitForReadyBehav());
 		} else {
-			throw new IllegalArgumentException("The scenario is null.");
+			System.err.println("Couldn't load scenario " + args[0]
+					+ ". Going dead.");
+			doDelete();
 		}
 	}
 

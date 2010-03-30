@@ -54,10 +54,17 @@ public class FloodScenario extends Scenario {
 		super.loadScenarioData(data);
 		for (String s : data) {
 			String[] pair = s.split("=");
-			if (pair[0].equals("")) {
-				// TODO leer datos flood del fichero
-			} else if (pair[0].equals("")) {
-
+			if (pair[0].equals("updateTimeFlood")) {
+				setFloodUpdateTime(Long.parseLong(pair[1]));
+			} else if (pair[0].equals("updateTimeWS")) {
+				setWaterSourceUpdateTime(Long.parseLong(pair[1]));
+			} else if (pair[0].equals("updateTimeRealWS")) {
+				setWaterSourceMinutes(Integer.parseInt(pair[1]));
+			} else if (pair[0].equals("waterSource")) {
+				String[] ws = decodeScenArray(pair[1]);
+				addWaterSource(new WaterSource(new LatLng(Double
+						.parseDouble(ws[0]), Double.parseDouble(ws[1])), Short
+						.parseShort(ws[2])));
 			}
 		}
 	}

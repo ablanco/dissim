@@ -123,7 +123,7 @@ public class Scenario implements Serializable {
 						scen = (Scenario) ct.newInstance(new Object[0]);
 					} catch (Exception e) {
 						throw new IOException(
-								"There were a problem trying to instantiate "
+								"There was a problem trying to instantiate "
 										+ pair[1]);
 					}
 					break;
@@ -145,13 +145,58 @@ public class Scenario implements Serializable {
 		return scen;
 	}
 
+	protected String[] decodeScenArray(String s) {
+		String[] result;
+		s = s.substring(1, s.length() - 1);
+		result = s.split(",");
+		return result;
+	}
+
 	protected void loadScenarioData(ArrayList<String> data) {
+		LatLng NW = null;
+		LatLng SE = null;
+		int TS = -1;
+		String date = null;
+		String hour = null;
 		for (String s : data) {
 			String[] pair = s.split("=");
-			if (pair[0].equals("")) {
-				// TODO leer datos del fichero
-			} else if (pair[0].equals("")) {
-
+			if (pair[0].equals("name")) {
+				setName(pair[1]);
+			} else if (pair[0].equals("description")) {
+				setDescription(pair[1]);
+			} else if (pair[0].equals("date")) {
+				date = pair[1];
+				if (hour != null)
+					simTime = new DateAndTime(date, hour);
+			} else if (pair[0].equals("hour")) {
+				hour = pair[1];
+				if (date != null)
+					simTime = new DateAndTime(date, hour);
+			} else if (pair[0].equals("NW")) {
+				String[] nw = decodeScenArray(pair[1]);
+				NW = new LatLng(Double.parseDouble(nw[0]), Double
+						.parseDouble(nw[1]));
+				if (SE != null && TS > 0)
+					setGeoData(NW, SE, TS);
+			} else if (pair[0].equals("SE")) {
+				String[] se = decodeScenArray(pair[1]);
+				SE = new LatLng(Double.parseDouble(se[0]), Double
+						.parseDouble(se[1]));
+				if (NW != null && TS > 0)
+					setGeoData(NW, SE, TS);
+			} else if (pair[0].equals("tileSize")) {
+				TS = Integer.parseInt(pair[1]);
+				if (NW != null && SE != null)
+					setGeoData(NW, SE, TS);
+			} else if (pair[0].equals("numEnvs")) {
+				setNumEnv(Integer.parseInt(pair[1]));
+			} else if (pair[0].equals("updateTimePeople")) {
+				setPeopleUpdateTime(Long.parseLong(pair[1]));
+			} else if (pair[0].equals("person")) {
+				String[] person = decodeScenArray(pair[1]);
+				addPeople(new LatLng(Double.parseDouble(person[0]), Double
+						.parseDouble(person[1])));
+				// TODO velocidad y distancia de visión
 			}
 		}
 	}

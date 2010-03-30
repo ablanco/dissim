@@ -19,11 +19,12 @@
 
 import sys
 import os
+import socket
 
-__jade = "java -cp '/usr/share/eclipse/plugins/it.fbk.sra.ejade_0.8.0/lib/libjade/*:/opt/lib/pfc/*:.' jade.Boot -gui -host klpt-chakra "
+__jade = "java -cp '" + os.environ['JADE_HOME'] + "/*:/opt/lib/pfc/*:.' jade.Boot -gui -host " + socket.gethostname()
 __creator = "God:agents.CreatorAgent"
 __configPath = os.environ['HOME'] + "/.dissim/"
-__scenPath = "./scen/"
+__scenPath = __configPath + "scen/" # default
 
 # DEFINICIÓN DE FUNCIONES
 
@@ -36,7 +37,7 @@ def printUsage():
 
 def launch(scen):
     if os.access(scen, os.F_OK):
-        os.system(__jade + __creator + "\\(" + scen + "\\)")
+        os.system(__jade + " " + __creator + "\\(" + scen + "\\)")
     else:
         print('ERROR: El fichero ' + scen + ' no existe o no es accesible.')
 
@@ -60,6 +61,9 @@ else:
         if pair[0] == 'scenPath':
             __scenPath = pair[1]
     fich.close()
+# Si no existe ya creamos el directorio con los escenarios
+if not(os.access(__scenPath, os.F_OK)):
+    os.makedirs(__scenPath)
 
 if len(sys.argv) > 1:
     # No hay que generar un nuevo escenario
@@ -69,7 +73,13 @@ if len(sys.argv) > 1:
         printUsage()
     else:
         # nos pasan el nombre del fichero con el escenario por parámetros
-        launch(op)
+        if op.find('/') > 0:
+            # es una ruta completa
+            launch(op)
+        else:
+            # es sólo el nombre del fichero, así que lo buscamos
+            # en la ruta por defecto
+            launch(__scenPath + op)
 else:
     # Generamos un nuevo escenario
     print('GENERANDO UN NUEVO ESCENARIO DE SIMULACIÓN\n')
@@ -77,10 +87,14 @@ else:
     scen = __scenPath + simName + '.scen'
     fich = open(scen, "w")
     fich.write('type=util.flood.FloodScenario')
-    fich.write('name=' + simName)
+    fich.write('\nname=' + simName)
     # Preguntamos los datos del escenario
     desc = raw_input('Descripción del escenario: ')
-    fich.write('description=' + desc)
+    fich.write('\ndescription=' + desc)
+    time = raw_input('Fecha y hora (con el formato dd/mm/aaaa-hh:mm:ss) de comienzo de la simulación: ')
+    time = time.split('-')
+    fich.write('\ndate=' + time[0])
+    fich.write('\nhour=' + time[1])
     print('\nÁREA DE LA SIMULACIÓN\n')
     NW = raw_input('Coordenadas (con el formato Lat,Lng) NorOeste del área de simulación: ')
     NW = NW.split(',')
@@ -102,11 +116,11 @@ else:
     nws = int(raw_input('Número de entradas de agua: '))
     for i in range(nws):
         ws = raw_input('Coordenadas (Lat,Lng) de la entrada de agua ' + str(i) + ': ')
-        ws = tws.split(',')
+        ws = ws.split(',')
         fich.write('\nwaterSource=[' + ws[0] + ',' + ws[1] + ',')
         wws = raw_input('Cantidad de agua de dicha entrada: ')
         fich.write(wws + ']')
-    PRINT('\nPERSONAS\n')
+    print('\nPERSONAS\n')
     timePeople = raw_input('Tiempo (en milisegundos) entre actualizaciones de los agentes humanos: ')
     fich.write('\nupdateTimePeople=' + timePeople)
     npeople = int(raw_input('Número de agentes humanos en la simulación: '))
