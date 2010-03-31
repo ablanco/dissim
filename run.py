@@ -20,6 +20,7 @@
 import sys
 import os
 import socket
+import math
 
 __jade = "java -cp '" + os.environ['JADE_HOME'] + "/*:" + os.environ['DISSIM_HOME'] + "/lib/*:.' jade.Boot -host " + socket.gethostname()
 __creator = "God:agents.CreatorAgent"
@@ -112,6 +113,8 @@ if len(sys.argv) > 1:
             scen = op
         i = i + 1
     if scen:
+        if not(scen.endswith('.scen')):
+            scen = scen + '.scen'
         # nos pasan el nombre del fichero con el escenario por parámetros
         if scen.find('/') > 0:
             # es una ruta completa
@@ -145,6 +148,8 @@ else:
     fich.write('\nSE=[' + SE[0] + ',' + SE[1] + ']')
     tileSize = raw_input('Diámetro (en metros) de la circunferencia que circunscribe a los hexágonos: ')
     fich.write('\ntileSize=' + tileSize)
+    precision = raw_input('Precisión en altura (1 una unidad de altura equivale a 1/precision metros): ')
+    fich.write('\nprecision=' + precision)
     nenvs = raw_input('Número de agentes entorno: ')
     fich.write('\nnumEnvs=' + nenvs)
     print('\nENTRADA DE AGUA\n')
@@ -159,8 +164,14 @@ else:
         ws = raw_input('Coordenadas (Lat,Lng) de la entrada de agua ' + str(i) + ': ')
         ws = ws.split(',')
         fich.write('\nwaterSource=[' + ws[0] + ',' + ws[1] + ',')
-        wws = raw_input('Cantidad de agua de dicha entrada: ')
-        fich.write(wws + ']')
+        wws = int(raw_input('Cantidad de agua de dicha entrada (en litros por ' + timeRealWS + ' minutos): '))
+        wws = wws / 1000 # paso a metros cúbicos
+        area = (3 * math.sqrt(3) * ((int(tileSize)/2)**2)) / 2 # área del hexágono
+        h = wws / area # altura en metros
+        wws = int(round(h * int(precision))) # altura en unidades de altura
+        if wws < 1:
+            wws = 1
+        fich.write(str(wws) + ']')
     print('\nPERSONAS\n')
     timePeople = raw_input('Tiempo (en milisegundos) entre actualizaciones de los agentes humanos: ')
     fich.write('\nupdateTimePeople=' + timePeople)
@@ -169,10 +180,15 @@ else:
         person = raw_input('Coordenadas (Lat,Lng) del peatón ' + str(i) + ': ')
         person = person.split(',')
         fich.write('\nperson=[' + person[0] + ',' + person[1])
-        person = raw_input('Distancia de visión del peatón: ')
+        person = raw_input('Distancia de visión del peatón (en hexágonos): ')
         fich.write(',' + person)
-        person = raw_input('Velocidad (distancia a la que es capaz de moverse en un paso) del peatón: ')
+        person = raw_input('Velocidad (distancia en hexágonos a la que es capaz de moverse en un paso) del peatón: ')
         fich.write(',' + person + ']')
+    print('\nVISORES\n')
+    timeKml = raw_input('Período (en milisegundos) de actualización del generador de KML: ')
+    fich.write('\nupdateTimeKml=' + timeKml)
+    timeVisor = raw_input('Período (en milisegundos) de actualización de los visores: ')
+    fich.write('\nupdateTimeVisor=' + timeVisor)
     print('\nESCENARIO GENERADO\n')
     fich.close()
     # lanzamos la simulación con el fichero recién generado

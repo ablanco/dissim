@@ -42,6 +42,7 @@ public class RunawayBehav extends CyclicBehaviour {
 	private int x; // Posición en columna y fila
 	private int y;
 	private int d; // Distancia de visión
+	private int s; // Velocidad
 	private String type = AdjacentsGridBehav.LAT_LNG;
 	private long period;
 	private long previous;
@@ -49,7 +50,7 @@ public class RunawayBehav extends CyclicBehaviour {
 	private MessageTemplate mt = MessageTemplate.MatchAll();
 
 	public RunawayBehav(Agent a, long period, AID env, double lat, double lng,
-			int d, Ranking rank) {
+			int d, int s, Ranking rank) {
 		super(a);
 		if (env == null)
 			throw new IllegalArgumentException(
@@ -59,6 +60,10 @@ public class RunawayBehav extends CyclicBehaviour {
 		this.lat = lat;
 		this.lng = lng;
 		this.d = d;
+		if (s > d) // La velocidad no puede ser superior a la distancia de visión
+			this.s = d;
+		else
+			this.s = s;
 		this.rank = rank;
 		previous = System.currentTimeMillis();
 	}
@@ -108,9 +113,15 @@ public class RunawayBehav extends CyclicBehaviour {
 					if (pmejor != null) {
 						// El agente avanza una casilla aunque tenga una
 						// distancia de visión mayor
-						if (type.equals(AdjacentsGridBehav.POSITION))
-							pmejor = HexagonalGrid.nearestHexagon(new Point(x,
-									y), pmejor);
+						if (type.equals(AdjacentsGridBehav.POSITION)) {
+							Point ideal = pmejor;
+							pmejor = new Point(x, y);
+							// Avanza tantas casillas como diga s
+							for (int i = 0; i < s; i++) {
+								pmejor = HexagonalGrid.nearestHexagon(pmejor,
+										ideal);
+							}
+						}
 
 						x = pmejor.getCol();
 						y = pmejor.getRow();

@@ -36,13 +36,14 @@ public class PedestrianAgent extends Agent {
 	private double lat;
 	private double lng;
 	private int d;
+	private int s;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args.length == 4) {
+		if (args.length == 5) {
 			try {
 				// Carga, y crea un objeto de la clase pasada, por reflexión
 				Class cls = Class.forName((String) args[0]);
@@ -56,6 +57,7 @@ public class PedestrianAgent extends Agent {
 			lat = Double.parseDouble((String) args[1]);
 			lng = Double.parseDouble((String) args[2]);
 			d = Integer.parseInt((String) args[3]);
+			s = Integer.parseInt((String) args[4]);
 		} else {
 			throw new IllegalArgumentException(getLocalName()
 					+ " - Wrong number of arguments: " + args.length);
@@ -86,7 +88,7 @@ public class PedestrianAgent extends Agent {
 			}
 
 			myAgent.addBehaviour(new RunawayBehav(myAgent, scen
-					.getPeopleUpdateTime(), envAID, lat, lng, d, rank));
+					.getPeopleUpdateTime(), envAID, lat, lng, d, s, rank));
 
 			done = true;
 		}

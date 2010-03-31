@@ -16,9 +16,16 @@ public class Pedestrian implements Serializable {
 	private int status = HEALTHY;
 	private String id = null;
 	private Point point = null;
+	private String rankClass = null;
+	private int vision = -1;
+	private int speed = -1;
 	
 	public Pedestrian(Point point) {
 		this.point = point;
+	}
+	
+	public Pedestrian(LatLng pos) {
+		this.pos = pos;
 	}
 
 	public Pedestrian(LatLng pos, int status, String id) {
@@ -75,5 +82,29 @@ public class Pedestrian implements Serializable {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+	
+	public void setRankClass(String rankClass) {
+		this.rankClass = rankClass;
+	}
+	
+	public String getRankClass() {
+		return rankClass;
+	}
+	
+	public void setVision(int vision) {
+		this.vision = vision;
+	}
+	
+	public int getVision() {
+		return vision;
+	}
+	
+	public void setSpeed(int speed) {
+		this.speed = speed;
+	}
+	
+	public int getSpeed() {
+		return speed;
 	}
 }

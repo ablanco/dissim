@@ -76,9 +76,10 @@ public class Scenario implements Serializable {
 	 * Simulation start time and date
 	 */
 	private DateAndTime simTime = null;
-
-	// TODO Mejorar, demasiado limitado
-	private LinkedList<LatLng> people = new LinkedList<LatLng>();
+	/**
+	 * Lista de agentes humanos
+	 */
+	private LinkedList<Pedestrian> people = new LinkedList<Pedestrian>();
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -194,9 +195,17 @@ public class Scenario implements Serializable {
 				setPeopleUpdateTime(Long.parseLong(pair[1]));
 			} else if (pair[0].equals("person")) {
 				String[] person = decodeScenArray(pair[1]);
-				addPeople(new LatLng(Double.parseDouble(person[0]), Double
-						.parseDouble(person[1])));
-				// TODO velocidad y distancia de visión
+				Pedestrian p = new Pedestrian(new LatLng(Double
+						.parseDouble(person[0]), Double.parseDouble(person[1])));
+				p.setVision(Integer.parseInt(person[2]));
+				p.setSpeed(Integer.parseInt(person[3]));
+				addPeople(p);
+			} else if (pair[0].equals("updateTimeKml")) {
+				updateKML = Long.parseLong(pair[1]);
+			} else if (pair[0].equals("updateTimeVisor")) {
+				updateVisor = Long.parseLong(pair[1]);
+			} else if (pair[0].equals("precision")) {
+				precision = Short.parseShort(pair[1]);
 			}
 		}
 	}
@@ -405,14 +414,17 @@ public class Scenario implements Serializable {
 		return -1;
 	}
 
-	public boolean addPeople(LatLng pos) {
+	public boolean addPeople(Pedestrian p) {
 		boolean result = false;
-		if (pos.isContainedIn(globalNW, globalSE))
-			result = people.add(pos);
+		LatLng pos = p.getPos();
+		if (pos != null) {
+			if (pos.isContainedIn(globalNW, globalSE))
+				result = people.add(p);
+		}
 		return result;
 	}
 
-	public Iterator<LatLng> getPeopleIterator() {
+	public Iterator<Pedestrian> getPeopleIterator() {
 		return people.iterator();
 	}
 

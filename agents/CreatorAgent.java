@@ -27,6 +27,7 @@ import java.util.ListIterator;
 
 import util.AgentHelper;
 import util.Logger;
+import util.Pedestrian;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
@@ -128,15 +129,17 @@ public class CreatorAgent extends Agent {
 				}
 
 				// Agentes humanos
-				Iterator<LatLng> people = scen.getPeopleIterator();
+				Iterator<Pedestrian> people = scen.getPeopleIterator();
 				int i = 0;
 				while (people.hasNext()) {
-					LatLng pos = people.next();
-					// TODO sacar distancia de visión de algún lado
+					Pedestrian p = people.next();
+					LatLng pos = p.getPos();
 					arguments = new Object[] {
 							"agents.people.ranking.FarFromWaterRank",
 							Double.toString(pos.getLat()),
-							Double.toString(pos.getLng()), Integer.toString(2) };
+							Double.toString(pos.getLng()),
+							Integer.toString(p.getVision()),
+							Integer.toString(p.getSpeed()) };
 					myAgent
 							.addBehaviour(new CreateAgentBehav(myAgent, "Dude"
 									+ i, "agents.people.PedestrianAgent", 1,
