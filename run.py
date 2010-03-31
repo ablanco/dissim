@@ -21,38 +21,51 @@ import sys
 import os
 import socket
 
-__jade = "java -cp '" + os.environ['JADE_HOME'] + "/*:/opt/lib/pfc/*:.' jade.Boot -gui -host " + socket.gethostname()
+__jade = "java -cp '" + os.environ['JADE_HOME'] + "/*:" + os.environ['DISSIM_HOME'] + "/lib/*:.' jade.Boot -host " + socket.gethostname()
 __creator = "God:agents.CreatorAgent"
 __configPath = os.environ['HOME'] + "/.dissim/"
 __scenPath = __configPath + "scen/" # default
+__name = 'DisSim'
 
 # DEFINICIÓN DE FUNCIONES
 
 def printUsage():
-    print('Modo de empleo: ' + sys.argv[0] + ' [OPCIONES|FICHERO]')
+    print('Modo de empleo: ' + sys.argv[0] + ' [OPCIONES] [FICHERO]')
     print('\nOpciones:')
-    print('\t--help\tMuestra esta ayuda')
-    print('\nSi no se le pasan argumentos se ejecutará el modo interactivo')
-    print('para la generación de un nuevo escenario de simulación')
+    print('\t--help\t\t\t\tMuestra esta ayuda\n\t-h\n')
+    print('\t--gui\t\t\t\tLanza también la interfaz gráfica de JADE\n\t-g\n')
+    print('\t--name NOMBRE\t\t\tPermite establecer el nombre de la plataforma JADE (por defecto DisSim)\n\t-n NOMBRE\n')
+    print('\t--add CLASE PARAMETRO+\t\tAñade un nuevo agente a una plataforma\n\t-a CLASE PARAMETRO+\n')
+    print('\nSi no se le pasa ningún argumento se ejecutará el modo interactivo')
+    print('para la generación de un nuevo escenario de simulación\n')
 
-def launch(scen):
-    if os.access(scen, os.F_OK):
-        os.system(__jade + " " + __creator + "\\(" + scen + "\\)")
+def launch(scen, agt=None, args=None):
+    global __jade
+    __jade = __jade + " -name " + __name
+    if agt:
+        com = __jade + " " + agt + "\\("
+        for a in args:
+            com = com + a + ' '
+        com = com + "\\)"
+        os.system(com)
     else:
-        print('ERROR: El fichero ' + scen + ' no existe o no es accesible.')
+        if os.access(scen, os.F_OK):
+            os.system(__jade + " " + __creator + "\\(" + scen + "\\)")
+        else:
+            print('ERROR: El fichero ' + scen + ' no existe o no es accesible.')
 
 # MAIN
 
-# Si no existe ya creamos el directorio de configuración
+# si no existe ya creamos el directorio de configuración
 if not(os.access(__configPath, os.F_OK)):
     os.makedirs(__configPath)
-# Creamos el fichero de configuración si no existe
+# creamos el fichero de configuración si no existe
 if not(os.access(__configPath + "config.conf", os.F_OK)):
     fich = open(__configPath + 'config.conf', 'w')
     fich.write('scenPath=' + __scenPath)
     fich.close()
 else:
-    # Cargamos la configuración
+    # cargamos la configuración
     fich = open(__configPath + 'config.conf', 'r')
     data = fich.readlines()
     for d in data:
@@ -61,34 +74,62 @@ else:
         if pair[0] == 'scenPath':
             __scenPath = pair[1]
     fich.close()
-# Si no existe ya creamos el directorio con los escenarios
+# si no existe ya creamos el directorio con los escenarios
 if not(os.access(__scenPath, os.F_OK)):
     os.makedirs(__scenPath)
 
 if len(sys.argv) > 1:
-    # No hay que generar un nuevo escenario
-    op = sys.argv[1]
-    if op.startswith('-'):
-        # --help
-        printUsage()
-    else:
+    # no hay que generar un nuevo escenario
+    i = 1
+    scen = None
+    agt = None
+    args = []
+    # procesar los argumentos
+    while i < len(sys.argv):
+        # el primer argumento es el nombre del programa, nos lo saltamos
+        op = sys.argv[i]
+        if op.startswith('-'):
+            if op == '--help' or op == '-h':
+                printUsage()
+            if op == '--add' or op == '-a':
+                i = i + 1
+                agt = sys.argv[i]
+                i = i + 1
+                arg = sys.argv[i]
+                while not(arg.startswith('-')):
+                    args.append(arg)
+                    i = i + 1
+                    if i < len(sys.argv):
+                        arg = sys.argv[i]
+                    else:
+                        break
+            if op == '--name' or op == '-n':
+                i == i + 1
+                __name = sys.argv[i]
+            if op == '--gui' or op == '-g':
+                __jade = __jade + ' -gui'
+        else:
+            scen = op
+        i = i + 1
+    if scen:
         # nos pasan el nombre del fichero con el escenario por parámetros
-        if op.find('/') > 0:
+        if scen.find('/') > 0:
             # es una ruta completa
-            launch(op)
+            launch(scen)
         else:
             # es sólo el nombre del fichero, así que lo buscamos
             # en la ruta por defecto
-            launch(__scenPath + op)
+            launch(__scenPath + scen)
+    elif agt:
+        launch(None, agt, args)
 else:
-    # Generamos un nuevo escenario
     print('GENERANDO UN NUEVO ESCENARIO DE SIMULACIÓN\n')
     simName = raw_input('Nombre del nuevo escenario: ')
     scen = __scenPath + simName + '.scen'
     fich = open(scen, "w")
     fich.write('type=util.flood.FloodScenario')
     fich.write('\nname=' + simName)
-    # Preguntamos los datos del escenario
+    # preguntamos los datos del escenario
     desc = raw_input('Descripción del escenario: ')
     fich.write('\ndescription=' + desc)
     time = raw_input('Fecha y hora (con el formato dd/mm/aaaa-hh:mm:ss) de comienzo de la simulación: ')
@@ -134,4 +175,5 @@ else:
         fich.write(',' + person + ']')
     print('\nESCENARIO GENERADO\n')
     fich.close()
+    # lanzamos la simulación con el fichero recién generado
     launch(scen)
