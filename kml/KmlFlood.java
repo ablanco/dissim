@@ -17,18 +17,12 @@
 package kml;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
-import util.jcoord.LatLngComparator;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
@@ -61,15 +55,33 @@ public class KmlFlood {
 			String beginTime, String endTime) {
 		// incs for this snapshot
 		double[] incs = fGrid.getIncs();
-		int tileSize = fGrid.getTileSize();
+//		int tileSize = fGrid.getTileSize();
 		// Now we update the time for each update call
 		this.endTime = endTime;
 		this.beginTime = beginTime;
 
-		Map<Short, SortedSet<LatLng>> floodSectors = new TreeMap<Short, SortedSet<LatLng>>();
+		//Map<Short, SortedSet<LatLng>> floodSectors = new TreeMap<Short, SortedSet<LatLng>>();
 		// For each tile who has changed ever, creates hexagon
 		for (int col = 0; col < fGrid.getColumns(); col++) {
 			for (int row = 0; row < fGrid.getRows(); row++) {
+	//TODO EASY WAY
+				short floodLevel = fGrid.getWaterValue(col, row);
+				if (altitudes.add(floodLevel)) {
+					// Si no tenemos esta altitud añadimos un nuevo estilo
+					// con la profundidad solo de este punto
+					createWaterStyleAndColor(floodLevel, floodLevel);
+				}
+				//Hay que meterlos en un linked list, para nada :D
+				LinkedList<LatLng> sector = new LinkedList<LatLng>();
+				sector.add(fGrid.tileToCoord(col, row));
+				drawWater(sector, floodLevel, incs);
+			}
+		}
+	}
+				
+				
+/*
+ * TODO esto esta en fase MUY BETA, asi que simplemente pintamos hexanos.
 				// Por cada casilla
 				if (fGrid.isFloodBorder(col, row)) {
 					// Solo si esta inundada y es borde
@@ -152,7 +164,7 @@ public class KmlFlood {
 		}
 
 	}
-
+*/
 	private void drawWater(LinkedList<LatLng> sector, int floodLevel,
 			double[] incs) {
 		Placemark placeMark = KmlBase.newPlaceMark(folder, sector.getFirst()

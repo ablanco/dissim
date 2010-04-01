@@ -110,8 +110,8 @@ public class KmlBase implements Updateable {
 			init = true;
 		} else {
 			// Todas las demas iteraciones
-			
-			//Actualizaciones para las personas
+
+			// Actualizaciones para las personas
 			List<Pedestrian> pedestrians = snap.getPeople();
 			if (pedestrians != null) {
 				HexagonalGrid g = snap.getGrid();
@@ -121,15 +121,15 @@ public class KmlBase implements Updateable {
 				kPeople.update(pedestrians, beginTime, snap.getDateTime()
 						.toString());
 			}
-			
-			//Si es una inundacion, actualizar la inundacion
+
+			// Si es una inundacion, actualizar la inundacion
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
 				// Por cada llamada update lo que tengo que hacer para FLOOD
-				kFlood.update(oldGrid, (FloodHexagonalGrid) snap.getGrid(), beginTime, snap.getDateTime()
-						.toString());
+				kFlood.update(oldGrid, (FloodHexagonalGrid) snap.getGrid(),
+						beginTime, snap.getDateTime().toString());
 			}
 
-			//Tiempo inicial para la siguiente Iteracion
+			// Tiempo inicial para la siguiente Iteracion
 			beginTime = snap.getDateTime().toString();
 		}
 	}
@@ -141,13 +141,13 @@ public class KmlBase implements Updateable {
 	public void setName(String name) {
 		doc = kml.createAndSetDocument().withName(name);
 	}
-	
-	public void setDescription(String description){
-		if (doc != null){
+
+	public void setDescription(String description) {
+		if (doc != null) {
 			doc.setDescription(description);
 		}
 	}
-	
+
 	public String getName() {
 		if (doc != null && doc.getName() != null && doc.getName().length() != 0)
 			return doc.getName();
@@ -155,7 +155,8 @@ public class KmlBase implements Updateable {
 	}
 
 	public String getDescription() {
-		if (doc != null && doc.getDescription() != null && doc.getDescription().length() != 0)
+		if (doc != null && doc.getDescription() != null
+				&& doc.getDescription().length() != 0)
 			return doc.getDescription();
 		return "DefaultDescriptor";
 	}
@@ -215,68 +216,37 @@ public class KmlBase implements Updateable {
 	 */
 	public static void drawPolygon(Placemark placeMark,
 			List<LatLng> borderLine, double[] incs) {
-		Polygon polygon = newPolygon(placeMark);
+		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
+				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+		LinearRing l = polygon.createAndSetOuterBoundaryIs()
+		.createAndSetLinearRing();
+		
 		switch (borderLine.size()) {
 		case 0:
 			throw new IllegalArgumentException("Poligon canot be empty");
-		case 1: // Only one hexagon
-			drawHexagonBorders(polygon, borderLine.get(0), incs);
+		case 1: // Draws Hexagon
+			LatLng coord = borderLine.get(0);
+			double ilat = (incs[0] * 4) / 6;
+			double ilng = incs[1] / 2;
+
+			l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
+			l.addToCoordinates(coord.addIncs(ilat / 2, ilng).toKmlString());
+			l.addToCoordinates(coord.addIncs(-ilat / 2, ilng).toKmlString());
+			l.addToCoordinates(coord.addIncs(-ilat, 0).toKmlString());
+			l.addToCoordinates(coord.addIncs(-ilat / 2, -ilng).toKmlString());
+			l.addToCoordinates(coord.addIncs(ilat / 2, -ilng).toKmlString());
+			l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
 			break;
-		default:
-			// drawPolygon(folder, name, borderLine, incs);
-			break;
-		}
-	}
-
-	public static void drawPolygon(Placemark placeMark, LatLng borderLine,
-			double[] incs) {
-		Polygon polygon = newPolygon(placeMark);
-		if (borderLine != null) {
-			drawHexagonBorders(polygon, borderLine, incs);
-		} else {
-			throw new IllegalArgumentException("Poligon canot be empty");
-		}
-	}
-
-	protected static void drawHexagonBorders(Polygon polygon, LatLng coord,
-			double[] incs) {
-
-		double ilat = (incs[0] * 4) / 6;
-		double ilng = incs[1] / 2;
-
-		LinearRing l = polygon.createAndSetOuterBoundaryIs()
-				.createAndSetLinearRing();
-
-		l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
-		l.addToCoordinates(coord.addIncs(ilat / 2, ilng).toKmlString());
-		l.addToCoordinates(coord.addIncs(-ilat / 2, ilng).toKmlString());
-		l.addToCoordinates(coord.addIncs(-ilat, 0).toKmlString());
-		l.addToCoordinates(coord.addIncs(-ilat / 2, -ilng).toKmlString());
-		l.addToCoordinates(coord.addIncs(ilat / 2, -ilng).toKmlString());
-		l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
-	}
-
-	/**
-	 * Creates Polygon Object
-	 * 
-	 * @param placeMark
-	 * @return
-	 */
-	protected static Polygon newPolygon(Placemark placeMark) {
-		return placeMark.createAndSetPolygon().withExtrude(true)
-				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-	}
-
-	protected void drawPolygonBorders(Polygon polygon, List<LatLng> borderLine) {
-		if (borderLine.size() > 0) {
-			LinearRing l = polygon.createAndSetOuterBoundaryIs()
-					.createAndSetLinearRing();
+		default: //Draws Polygon
 			for (LatLng c : borderLine) {
 				l.addToCoordinates(c.toKmlString());
 			}
+			//Esto solo dibuja los centros del poligono, no es hegagonal
 			l.addToCoordinates(borderLine.get(0).toKmlString());
+			break;
 		}
 	}
+
 
 	/**
 	 * Sets when the event happends
