@@ -88,12 +88,12 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		}
 		return value;
 	}
-	
-	public boolean isFloodBorder(int col, int row){
+
+	public boolean isFloodBorder(int col, int row) {
 		short z = getValue(col, row);
-		for (int[] a :getAdjacents(col, row)){
-			//Si está inundado y al mismo nivel de inundación
-			if (gridWater[a[0]][a[1]] != 0 && getValue(a[0],a[1]) != z){
+		for (int[] a : getAdjacents(col, row)) {
+			// Si está inundado y al mismo nivel de inundación
+			if (getWaterValue(a[0], a[1]) != 0 && getValue(a[0], a[1]) != z) {
 				return false;
 			}
 		}

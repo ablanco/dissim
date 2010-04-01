@@ -64,8 +64,7 @@ public class KmlBase implements Updateable {
 
 	@Override
 	public String getConversationId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "kml";
 	}
 
 	@Override

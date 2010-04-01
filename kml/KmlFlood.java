@@ -120,14 +120,11 @@ public class KmlFlood {
 					aux.add(land);
 					sectors.add(aux);
 				} else {
-
 					setAndOrderIntoList(sectors, land, tileSize);
-
 				}
-
 			}
 		}
-		return null;
+		return floodLand;
 	}
 
 	private void setAndOrderIntoList(List<LinkedList<LatLng>> sectors,
