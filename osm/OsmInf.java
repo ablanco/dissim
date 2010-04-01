@@ -42,7 +42,7 @@ public class OsmInf {
 	public static final short Aerialway = Tracktype + mediumClass;
 	public static final short Railway = Aerialway + mediumClass;
 	public static final short Highway = Railway + bigClass;
-	private static final short Roads = 600;
+	public static final short Roads = 600;
 	// End Roads
 	// Safe Points
 	// Big Places
@@ -59,13 +59,14 @@ public class OsmInf {
 	public static final short Building = Military + mediumClass * 4;
 	public static final short Aeroway = Building + mediumClass * 5;
 
-	private static final short SafePoint = 1000;
+	public static final short SafePoint = 1000;
 	// End Safe Points
 	// Others
 	public static final short Boundary = -2;
 
 	/**
 	 * Given a Node Returns a Full of Info Node
+	 * 
 	 * @param node
 	 * @return
 	 */
@@ -177,9 +178,10 @@ public class OsmInf {
 
 	/**
 	 * Given a highway Type Returns a Proper value for this kind of Highway
+	 * 
 	 * @param type
 	 * @param value
-	 * @return 
+	 * @return
 	 */
 	private static short getHighway(String type, String value) {
 		short key = Highway;
@@ -232,7 +234,27 @@ public class OsmInf {
 	}
 
 	/**
+	 * Given a type, returns Parent Big Type
+	 * 
+	 * @param type
+	 * @return Parent Big Type
+	 */
+	public static short getBigType(short type) {
+		if (type < Raw_Field) {
+			return Undefined;
+		} else if (type < Land) {
+			return Land;
+		} else if (type < Roads) {
+			return Roads;
+		} else if (type < SafePoint) {
+			return SafePoint;
+		}
+		return Undefined;
+	}
+
+	/**
 	 * Given a type, returns Parent Type
+	 * 
 	 * @param type
 	 * @return Parent Type
 	 */
@@ -287,7 +309,8 @@ public class OsmInf {
 	}
 
 	/**
-	 * Given a type returns the proper color. 
+	 * Given a type returns the proper color.
+	 * 
 	 * @param type
 	 * @return
 	 */
@@ -327,6 +350,7 @@ public class OsmInf {
 
 	/**
 	 * Given a Type returns the parents type Name
+	 * 
 	 * @param type
 	 * @return Parent Type Name
 	 */
@@ -351,6 +375,5 @@ public class OsmInf {
 		}
 
 	}
-	
-	
+
 }
