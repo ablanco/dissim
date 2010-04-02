@@ -22,11 +22,16 @@ import os
 import socket
 import math
 
-__jade = "java -cp '" + os.environ['JADE_HOME'] + "/*:" + os.environ['DISSIM_HOME'] + "/lib/*:.' jade.Boot -host " + socket.gethostname()
+__jade = "java -cp '" + os.environ['JADE_HOME'] + "/*:" + os.environ['DISSIM_HOME'] + "/lib/*:.' jade.Boot"
+__host = "-host " + socket.gethostname()
+__port = None
+__local_host = None
+__local_port = None
+__container = None
+__name = '-name DisSim'
 __creator = "God:agents.CreatorAgent"
 __configPath = os.environ['HOME'] + "/.dissim/"
 __scenPath = __configPath + "scen/" # default
-__name = 'DisSim'
 
 # DEFINICIÓN DE FUNCIONES
 
@@ -34,15 +39,28 @@ def printUsage():
     print('Modo de empleo: ' + sys.argv[0] + ' [OPCIONES] [FICHERO]')
     print('\nOpciones:')
     print('\t--help\t\t\t\tMuestra esta ayuda\n\t-h\n')
+    print('\t--add NOMBRE:CLASE PARAMETRO+\tAñade un nuevo agente a una plataforma\n\t-a NOMBRE:CLASE PARAMETRO+\n')
     print('\t--gui\t\t\t\tLanza también la interfaz gráfica de JADE\n\t-g\n')
     print('\t--name NOMBRE\t\t\tPermite establecer el nombre de la plataforma JADE (por defecto DisSim)\n\t-n NOMBRE\n')
-    print('\t--add CLASE PARAMETRO+\t\tAñade un nuevo agente a una plataforma\n\t-a CLASE PARAMETRO+\n')
+    print('\t--host HOST\t\t\tPermite establecer el host del contenedor principal\n\t-H HOST\n')
+    print('\t--port PUERTO\t\t\tPermite establecer el puerto a través del cual conectarse al contenedor principal\n\t-p PUERTO\n')
+    print('\t--local-host HOST\t\tPermite establecer el host del contenedor\n\t-lh HOST\n')
+    print('\t--local-port PUERTO\t\tPermite establecer el puerto a través del cual conectarse al contenedor\n\t-lp PUERTO\n')
+    print('\t--container\t\t\tEspecifica que esta instancia de JADE es un contenedor\n\t-c')
     print('\nSi no se le pasa ningún argumento se ejecutará el modo interactivo')
     print('para la generación de un nuevo escenario de simulación\n')
 
 def launch(scen, agt=None, args=None):
     global __jade
-    __jade = __jade + " -name " + __name
+    __jade = __jade + " " + __name + " " + __host
+    if __port:
+        __jade = __jade + " " + __port
+    if __local_port:
+        __jade = __jade + " " + __local_port
+    if __local_host:
+        __jade = __jade + " " + __local_host
+    if __container:
+        __jade = __jade + " " + __container
     if agt:
         com = __jade + " " + agt + "\\("
         for a in args:
@@ -93,6 +111,7 @@ if len(sys.argv) > 1:
             if op == '--help' or op == '-h':
                 printUsage()
             if op == '--add' or op == '-a':
+                __container = '-container'
                 i = i + 1
                 agt = sys.argv[i]
                 i = i + 1
@@ -105,10 +124,24 @@ if len(sys.argv) > 1:
                     else:
                         break
             if op == '--name' or op == '-n':
-                i == i + 1
-                __name = sys.argv[i]
+                i = i + 1
+                __name = '-name ' + sys.argv[i]
             if op == '--gui' or op == '-g':
                 __jade = __jade + ' -gui'
+            if op == '--port' or op == '-p':
+                i = i + 1
+                __port = '-port ' + sys.argv[i]
+            if op == '--host' or op == '-H':
+                i = i + 1
+                __host = '-host ' + sys.argv[i]
+            if op == '--local-port' or op == '-lp':
+                i = i + 1
+                __local_port = '-local-port ' + sys.argv[i]
+            if op == '--local-host' or op == '-lh':
+                i = i + 1
+                __local_host = '-local-host ' + sys.argv[i]
+            if op == '--container' or op == '-c':
+                __container = '-container'
         else:
             scen = op
         i = i + 1
