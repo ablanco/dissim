@@ -24,11 +24,13 @@ import util.HexagonalGrid;
 import util.Point;
 
 public class FarFromWaterRank implements Ranking {
-	
-	public FarFromWaterRank() {}
 
 	@Override
-	public Point choose(Set<Point> adjacents) throws YouAreDeadException {
+	public Point choose(Set<Point> adjacents, Point position, int vision,
+			int speed) throws YouAreDeadException {
+		if (position != null)
+			adjacents.add(position);
+
 		// Separar casillas inundadas de las secas
 		Set<Point> water = new TreeSet<Point>();
 		Set<Point> dry = new TreeSet<Point>();

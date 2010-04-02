@@ -48,6 +48,7 @@ public class RunawayBehav extends CyclicBehaviour {
 	private long previous;
 	private int step = 0;
 	private MessageTemplate mt = MessageTemplate.MatchAll();
+	private Point position = null;
 
 	public RunawayBehav(Agent a, long period, AID env, double lat, double lng,
 			int d, int s, Ranking rank) {
@@ -60,7 +61,8 @@ public class RunawayBehav extends CyclicBehaviour {
 		this.lat = lat;
 		this.lng = lng;
 		this.d = d;
-		if (s > d) // La velocidad no puede ser superior a la distancia de visión
+		if (s > d) // La velocidad no puede ser superior a la distancia de
+			// visión
 			this.s = d;
 		else
 			this.s = s;
@@ -99,7 +101,7 @@ public class RunawayBehav extends CyclicBehaviour {
 
 					Point pmejor = null;
 					try {
-						pmejor = rank.choose(adjacents);
+						pmejor = rank.choose(adjacents, position, d, s);
 					} catch (YouAreDeadException e) {
 						AgentHelper.send(myAgent, env, ACLMessage.CANCEL,
 								"register-people", myAgent.getLocalName());
@@ -107,7 +109,6 @@ public class RunawayBehav extends CyclicBehaviour {
 						return;
 					}
 
-					// Por si no ve agua, que no se mueva
 					step = 0;
 
 					if (pmejor != null) {
@@ -117,14 +118,19 @@ public class RunawayBehav extends CyclicBehaviour {
 							Point ideal = pmejor;
 							pmejor = new Point(x, y);
 							// Avanza tantas casillas como diga s
+							Point aux = pmejor;
 							for (int i = 0; i < s; i++) {
-								pmejor = HexagonalGrid.nearestHexagon(pmejor,
-										ideal);
+								aux = HexagonalGrid.nearestHexagon(aux, ideal);
+								// No entra en casillas con agua
+								if (aux.getW() > 0)
+									aux = pmejor;
 							}
+							pmejor = aux;
 						}
 
 						x = pmejor.getCol();
 						y = pmejor.getRow();
+						position = pmejor;
 						type = AdjacentsGridBehav.POSITION;
 
 						// Informamos al entorno del movimiento

@@ -170,10 +170,10 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 					g2.fillPolygon(hex);
 
 					// Pintar el borde amarillo si hay algún tipo de calle
-					if (OsmInf.getBigType(grid.getStreetValue(i, j)) == OsmInf.Roads)
+					if (OsmInf.getBigType(grid.getStreetValue(i, j)) == OsmInf.Roads) {
 						g2.setColor(Color.YELLOW);
-
-					g2.drawPolygon(hex);
+						g2.drawPolygon(hex);
+					}
 
 					// Pintar personas
 					Point pos = new Point(i, j);

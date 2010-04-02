@@ -81,15 +81,14 @@ public class HexagonalGrid implements Serializable {
 		int size[] = calculateSize(NW, SE, tileSize);
 		int col = size[0];
 		int row = size[1];
-		
+
 		// Deberia funcionar tanto emisferio norte como sur
 		ilat = Math.abs(NW.getLat() - SE.getLat()) / row;
 		ilng = Math.abs(NW.getLng() - SE.getLng()) / col;
-		
-		
-//		ilat = (NW.getLat() - SE.getLat()) / row;
-//		ilng = (NW.getLng() - SE.getLng()) / col;
-		
+
+		// ilat = (NW.getLat() - SE.getLat()) / row;
+		// ilng = (NW.getLng() - SE.getLng()) / col;
+
 		gridTerrain = new short[col][row];
 		northTerrain = new short[col + 2];
 		southTerrain = new short[col + 2];
@@ -502,13 +501,14 @@ public class HexagonalGrid implements Serializable {
 	public void obtainStreetInfo() {
 		Osm.getMap(this);
 	}
-	
+
 	/**
 	 * Returns degree increments lat, long
+	 * 
 	 * @return
 	 */
-	public double[] getIncs(){
-		return new double[]{ilat,ilng};
+	public double[] getIncs() {
+		return new double[] { ilat, ilng };
 	}
 
 	@Override
@@ -535,6 +535,8 @@ public class HexagonalGrid implements Serializable {
 	public static final int LEFT_DOWN = 5;
 
 	public static Point nearestHexagon(Point a, Point b) {
+		if (a.equals(b))
+			return a;
 		int key = whichHexagonalMove(a, b);
 		// movimiento(key);
 		return hexagonalMoveTo(a, key);

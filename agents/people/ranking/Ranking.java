@@ -21,7 +21,8 @@ import java.util.Set;
 import util.Point;
 
 public interface Ranking {
-	
-	public Point choose(Set<Point> adjacents) throws YouAreDeadException;
+
+	public Point choose(Set<Point> adjacents, Point position, int vision,
+			int speed) throws YouAreDeadException;
 
 }

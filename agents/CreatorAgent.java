@@ -114,6 +114,7 @@ public class CreatorAgent extends Agent {
 				if (scen instanceof FloodScenario) {
 					FloodScenario fscen = (FloodScenario) scen;
 					ListIterator<WaterSource> it = fscen.waterSourcesIterator();
+					int cont = 0;
 					while (it.hasNext()) {
 						WaterSource ws = it.next();
 						LatLng coord = ws.getCoord();
@@ -123,8 +124,9 @@ public class CreatorAgent extends Agent {
 								Short.toString(ws.getWater()),
 								Long.toString(fscen.getWaterSourceUpdateTime()) };
 						myAgent.addBehaviour(new CreateAgentBehav(myAgent,
-								"WaterSource", "agents.flood.WaterSourceAgent",
-								1, arguments));
+								"WaterSource" + cont,
+								"agents.flood.WaterSourceAgent", 1, arguments));
+						cont++;
 					}
 				}
 
@@ -135,7 +137,7 @@ public class CreatorAgent extends Agent {
 					Pedestrian p = people.next();
 					LatLng pos = p.getPos();
 					arguments = new Object[] {
-							"agents.people.ranking.FarFromWaterRank",
+							"agents.people.ranking.HighFarStreetRank",
 							Double.toString(pos.getLat()),
 							Double.toString(pos.getLng()),
 							Integer.toString(p.getVision()),
