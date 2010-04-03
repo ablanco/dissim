@@ -24,6 +24,7 @@ import java.util.List;
 
 import util.HexagonalGrid;
 import util.Pedestrian;
+import util.Point;
 import util.Snapshot;
 import util.Updateable;
 import util.flood.FloodHexagonalGrid;
@@ -109,22 +110,28 @@ public class KmlBase implements Updateable {
 			init = true;
 		} else {
 			// Todas las demas iteraciones
-
-			// Actualizaciones para las personas
-			List<Pedestrian> pedestrians = snap.getPeople();
-			if (pedestrians != null && pedestrians.size() > 0) {
-				HexagonalGrid g = snap.getGrid();
-				for (Pedestrian p : pedestrians) {
-					p.setPos(g.tileToCoord(p.getPoint()));
-				}
-				kPeople.update(pedestrians, beginTime, snap.getDateTime()
-						.toString());
-			}
 			// Si es una inundacion, actualizar la inundacion
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
+				FloodHexagonalGrid f = (FloodHexagonalGrid) snap.getGrid();
 				// Por cada llamada update lo que tengo que hacer para FLOOD
-				kFlood.update(oldGrid, (FloodHexagonalGrid) snap.getGrid(),
+				kFlood.update(oldGrid, f,
 						beginTime, snap.getDateTime().toString());
+				
+				// Actualizaciones para las personas en inundaciones
+				//Obtenemos la lista de personas
+				List<Pedestrian> pedestrians = snap.getPeople();
+				if (pedestrians != null && pedestrians.size() > 0) {
+					// Si hay personas
+					HexagonalGrid g = snap.getGrid();
+					for (Pedestrian p : pedestrians) {
+						//Por cada persona averiguamos su status y su posicion
+						Point x = p.getPoint();
+						p.setStatus(f.getWaterValue(x.getCol(), x.getRow()));
+						p.setPos(g.tileToCoord(x));
+					}
+					kPeople.update(pedestrians, beginTime, snap.getDateTime()
+							.toString());
+				}
 			}
 
 			// Tiempo inicial para la siguiente Iteracion

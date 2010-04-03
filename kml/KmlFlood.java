@@ -195,7 +195,6 @@ public class KmlFlood {
 					+ "00";
 		}
 		// le doy el mismo color de azul que transparencia
-		// System.out.println("Setting color: "+abgr);
 		folder.createAndAddStyle().withId(water + floodLevel)
 				.createAndSetPolyStyle().withColor(abgr);
 		// polyStyle.setColorMode(ColorMode.NORMAL);
