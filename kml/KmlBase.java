@@ -29,7 +29,6 @@ import util.Updateable;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
-import de.micromata.opengis.kml.v_2_2_0.Document;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
@@ -41,7 +40,7 @@ import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 public class KmlBase implements Updateable {
 	public final static String folderName = "Kml";
 	protected Kml kml;
-	private Document doc;
+	protected Folder folder;
 
 	private boolean init;
 
@@ -84,9 +83,8 @@ public class KmlBase implements Updateable {
 			beginTime = snap.getDateTime().toString();
 			setName(snap.getName());
 			setDescription(snap.getDescription());
-			// Le damos un nombre al Doc del KML
-			doc = kml.createAndSetDocument().withName(snap.getName())
-					.withDescription(snap.getDescription());
+			// Le damos un nombre al Contenedor Principal del KML
+			folder = newFolder(kml,snap.getName(),snap.getDescription());
 			incs = snap.getGrid().getIncs();
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
 				// Si es tenemos una inundacion inicializamos lo necesario
@@ -98,11 +96,12 @@ public class KmlBase implements Updateable {
 						oldGrid[c][r] = fgrid.getTerrainValue(c, r);
 					}
 				}
+				//Default name and description for kmlFlood
 				kFlood = new KmlFlood(
-						newFolder(kml, "Flood", "Flooded Sectors"));
+						addFolder(folder, "Flood", "Flooded Sectors"));
 			}
-
-			kPeople = new KmlPeople(newFolder(kml, "People",
+			//Default name and Description for kmlPeople
+			kPeople = new KmlPeople(addFolder(folder, "People",
 					"People Running For their lives"), incs);
 			// Demas inicializaciones para futuras ampliaziones
 
@@ -113,7 +112,7 @@ public class KmlBase implements Updateable {
 
 			// Actualizaciones para las personas
 			List<Pedestrian> pedestrians = snap.getPeople();
-			if (pedestrians != null) {
+			if (pedestrians != null && pedestrians.size() > 0) {
 				HexagonalGrid g = snap.getGrid();
 				for (Pedestrian p : pedestrians) {
 					p.setPos(g.tileToCoord(p.getPoint()));
@@ -121,7 +120,6 @@ public class KmlBase implements Updateable {
 				kPeople.update(pedestrians, beginTime, snap.getDateTime()
 						.toString());
 			}
-
 			// Si es una inundacion, actualizar la inundacion
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
 				// Por cada llamada update lo que tengo que hacer para FLOOD
@@ -139,25 +137,28 @@ public class KmlBase implements Updateable {
 	}
 
 	public void setName(String name) {
-		doc = kml.createAndSetDocument().withName(name);
+		if (folder != null) {
+			folder.setName(name);
+		}
 	}
 
 	public void setDescription(String description) {
-		if (doc != null) {
-			doc.setDescription(description);
+		if (folder != null) {
+			folder.setDescription(description);
 		}
 	}
 
 	public String getName() {
-		if (doc != null && doc.getName() != null && doc.getName().length() != 0)
-			return doc.getName();
+		if (folder != null && folder.getName() != null
+				&& folder.getName().length() != 0)
+			return folder.getName();
 		return "DefaultName";
 	}
 
 	public String getDescription() {
-		if (doc != null && doc.getDescription() != null
-				&& doc.getDescription().length() != 0)
-			return doc.getDescription();
+		if (folder != null && folder.getDescription() != null
+				&& folder.getDescription().length() != 0)
+			return folder.getDescription();
 		return "DefaultDescriptor";
 	}
 
@@ -191,8 +192,20 @@ public class KmlBase implements Updateable {
 				.withDescription(description);
 	}
 
-	public static Folder newFolder(Kml kml) {
-		return kml.createAndSetFolder().withOpen(true);
+	/**
+	 * Adds folder to an existing Folder
+	 * @param folder
+	 * @param name
+	 * @param description
+	 * @return
+	 */
+	public static Folder addFolder(Folder folder, String name,
+			String description) {
+		if (folder!= null){
+			return folder.createAndAddFolder().withName(name).withOpen(true)
+			.withDescription(description);	
+		}
+		throw new NullPointerException();
 	}
 
 	/**
@@ -219,8 +232,8 @@ public class KmlBase implements Updateable {
 		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
-		.createAndSetLinearRing();
-		
+				.createAndSetLinearRing();
+
 		switch (borderLine.size()) {
 		case 0:
 			throw new IllegalArgumentException("Poligon canot be empty");
@@ -237,16 +250,15 @@ public class KmlBase implements Updateable {
 			l.addToCoordinates(coord.addIncs(ilat / 2, -ilng).toKmlString());
 			l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
 			break;
-		default: //Draws Polygon
+		default: // Draws Polygon
 			for (LatLng c : borderLine) {
 				l.addToCoordinates(c.toKmlString());
 			}
-			//Esto solo dibuja los centros del poligono, no es hegagonal
+			// Esto solo dibuja los centros del poligono, no es hegagonal
 			l.addToCoordinates(borderLine.get(0).toKmlString());
 			break;
 		}
 	}
-
 
 	/**
 	 * Sets when the event happends

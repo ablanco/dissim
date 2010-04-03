@@ -16,12 +16,17 @@
 
 package test;
 
-import java.util.Hashtable;
+import jade.core.AID;
 
+import java.util.Hashtable;
+import java.util.List;
+
+import kml.KmlBase;
 import util.DateAndTime;
-import util.HexagonalGrid;
 import util.Pedestrian;
+import util.Point;
 import util.Snapshot;
+import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
 
 public class TimeStampTest {
@@ -35,27 +40,37 @@ public class TimeStampTest {
 		 * NW: 29.952869, -90.063764 SE: 29.952158, -90.062461
 		 */
 
-		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953260,
+		FloodHexagonalGrid grid = new FloodHexagonalGrid(new LatLng(29.953260,
 				-90.088238, (short) 10), new LatLng(29.918075, -90.053707,
 				(short) 10), 0, 0, 500);
-		Snapshot newOrleans = new Snapshot("TimeStampTest", "", 
-				grid, new DateAndTime(2000, 3, 15, 15, 3),
+		Snapshot newOrleans = new Snapshot("TimeStampTest", "", grid,
+				new DateAndTime(2000, 3, 15, 15, 3),
 				new Hashtable<String, Pedestrian>());
 
-		
-//		KmlFlood k = new KmlFlood(newOrleans.getKml());
-//
-//		for (int rep = 0; rep < 6; rep++) {
-//			for (int i = 0; i < grid.getColumns(); i++) {
-//				for (int j = 0; j < grid.getRows(); j++) {
-//					short x = (short) ((Math.random() * 100) % 24);
-//					grid.setTerrainValue(i, j, x);
-//				}
-//			}
-//			k.update(newOrleans);
-//			newOrleans.updateTime(30);
-//		}
-//		newOrleans.writeKml();
+		KmlBase k = new KmlBase();
+		int c = newOrleans.getGrid().getColumns();
+		int r = newOrleans.getGrid().getRows();
+
+		for (int rep = 0; rep < 6; rep++) {
+			for (int i = 0; i < grid.getColumns(); i++) {
+				for (int j = 0; j < grid.getRows(); j++) {
+					short x = (short) ((Math.random() * 100) % 5);
+					grid.setWaterValue(i, j, x);
+				}
+			}
+
+			List<Pedestrian> people = newOrleans.getPeople();
+			for (int i = 0; i < 6; i++) {
+				people.add(new Pedestrian(new Point(
+						(int) ((Math.random() * 100) % c), (int) ((Math
+								.random() * 100) % r))));
+			}
+
+			k.update(newOrleans, new AID());
+			newOrleans.getPeople().clear();
+			newOrleans.updateTime(30);
+		}
+		k.finish();
 	}
 
 }

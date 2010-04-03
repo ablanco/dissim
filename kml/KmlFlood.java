@@ -16,7 +16,6 @@
 
 package kml;
 
-import java.awt.Color;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
@@ -183,7 +182,8 @@ public class KmlFlood {
 	 *            deep
 	 */
 	protected void createWaterStyleAndColor(short floodLevel, short z) {
-		int blue = Color.blue.getBlue();
+		//Le damos un color medio para que se parezca a agua
+		int blue = 125;
 		// Mientras mas profunda sea el agua, mas ocuro es el azul.
 		blue += z;
 		// Kml uses aabbggrr "5500" le da un color azul bonito
