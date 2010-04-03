@@ -77,7 +77,6 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
 
-			// TODO intento de arreglarlo para scroll pane pero nada
 			int width = ((hexWidth * grid.getColumns()) + (hexWidth / 2));
 			int height = (hexHeight * grid.getRows());
 
@@ -100,7 +99,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 						max = value;
 				}
 			}
-			max += 100; // TODO Sacar el max nivel del agua del snapshot
+//			max += 100; // TODO Sacar el max nivel del agua del snapshot
 			setVisible(true);
 			firstTime = false;
 		}
@@ -127,8 +126,8 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			g2.addRenderingHints(rh);
 
 			// Estilo de pincel
-			Stroke stroke = new BasicStroke(1, BasicStroke.CAP_ROUND,
-					BasicStroke.JOIN_ROUND);
+			Stroke stroke = new BasicStroke(2, BasicStroke.CAP_SQUARE,
+					BasicStroke.JOIN_MITER);
 			g2.setStroke(stroke);
 
 			int diff = max - min;

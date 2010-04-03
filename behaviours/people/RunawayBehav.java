@@ -26,7 +26,6 @@ import jade.lang.acl.UnreadableException;
 import java.util.Set;
 
 import util.AgentHelper;
-import util.HexagonalGrid;
 import util.Point;
 import agents.people.ranking.Ranking;
 import agents.people.ranking.YouAreDeadException;
@@ -111,23 +110,8 @@ public class RunawayBehav extends CyclicBehaviour {
 
 					step = 0;
 
+					// Si ha encontrado a donde moverse
 					if (pmejor != null) {
-						// El agente avanza una casilla aunque tenga una
-						// distancia de visión mayor
-						if (type.equals(AdjacentsGridBehav.POSITION)) {
-							Point ideal = pmejor;
-							pmejor = new Point(x, y);
-							// Avanza tantas casillas como diga s
-							Point aux = pmejor;
-							for (int i = 0; i < s; i++) {
-								aux = HexagonalGrid.nearestHexagon(aux, ideal);
-								// No entra en casillas con agua
-								if (aux.getW() > 0)
-									aux = pmejor;
-							}
-							pmejor = aux;
-						}
-
 						x = pmejor.getCol();
 						y = pmejor.getRow();
 						position = pmejor;

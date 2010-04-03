@@ -9,11 +9,8 @@ public class Pedestrian implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public final static int HEALTHY = 0;
-	public final static int HURT = 1;
-	public final static int DEAD = 2;
-
-	// Esta altura para arriba esta muerto
-	public final static int DangerWaterLevel = 1;
+	public final static int DEAD = 1;
+	public final static int HURT = 2;
 
 	private LatLng pos = null;
 	private int status = HEALTHY;
@@ -22,10 +19,6 @@ public class Pedestrian implements Serializable {
 	private String rankClass = null;
 	private int vision = -1;
 	private int speed = -1;
-
-	// Atrributes for Pedestrians
-	// private int strength = MaxStrength;
-	// public final static int MaxStrength = 5;
 
 	public Pedestrian(Point point) {
 		this.point = point;
@@ -78,7 +71,6 @@ public class Pedestrian implements Serializable {
 		this.pos = pos;
 	}
 
-	//TODO tener en cuenta atributos
 	public void setStatus(int status) {
 		this.status = status;
 	}

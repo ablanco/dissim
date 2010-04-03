@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import util.AgentHelper;
 import util.DateAndTime;
@@ -69,19 +68,6 @@ public class EnviromentAgent extends Agent {
 			int offX = Integer.parseInt((String) args[5]);
 			int offY = Integer.parseInt((String) args[6]);
 			grid = new FloodHexagonalGrid(NW, SE, offX, offY, tileSize);
-			// TODO grid.obtainTerrainElevation();
-			Random rnd = new Random(System.currentTimeMillis());
-			for (int i = -1 + grid.getOffX(); i <= (grid.getColumns() + grid
-					.getOffX()); i++) {
-				for (int j = -1 + grid.getOffY(); j <= (grid.getRows() + grid
-						.getOffY()); j++) {
-					grid
-							.setTerrainValue(i, j,
-									(short) (rnd.nextInt(500) - 250));
-				}
-			}
-			// FIN GRID ALEATORIA
-			grid.obtainStreetInfo();
 		} else {
 			logger.errorln(getLocalName() + " wrong arguments.");
 			doDelete();
@@ -107,6 +93,16 @@ public class EnviromentAgent extends Agent {
 
 		@Override
 		public void action() {
+			grid.setPrecision(scen.getPrecision());
+			
+			System.out.println("DESCARGANDO ALTURAS DEL TERRENO");
+			System.out.println("Matriz " + grid.getColumns() + "x"
+					+ grid.getRows() + " - Tarda unos minutos.");
+			grid.obtainTerrainElevation();
+			
+			System.out.println("PROCESANDO INFORMACIÓN SOBRE CALLES");
+			grid.obtainStreetInfo();
+			
 			dateTime = scen.getStartTime();
 
 			List<String> services = new ArrayList<String>(10);

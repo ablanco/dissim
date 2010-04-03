@@ -22,7 +22,7 @@ import os
 import socket
 import math
 
-__jade = "java -cp '" + os.environ['JADE_HOME'] + "/*:" + os.environ['DISSIM_HOME'] + "/lib/*:.' jade.Boot"
+__jade = "java -cp '" + os.environ['JADE_HOME'] + "/*:" + os.environ['JAK_HOME'] + "/*:.' jade.Boot"
 __host = "-host " + socket.gethostname()
 __port = None
 __local_host = None

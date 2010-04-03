@@ -18,11 +18,11 @@ package util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.TreeSet;
 
 import osm.Osm;
 import util.jcoord.LatLng;
-import webservices.AltitudeWS;
 
 public class HexagonalGrid implements Serializable {
 
@@ -68,6 +68,10 @@ public class HexagonalGrid implements Serializable {
 	private short[] southStreets;
 	private short[] eastStreets;
 	private short[] westStreets;
+	/**
+	 * 1 altitude unit means (1/precision) meters
+	 */
+	private short precision = -1;
 
 	public HexagonalGrid(LatLng NW, LatLng SE, int offX, int offY, int tileSize) {
 		this.NW = NW;
@@ -479,21 +483,31 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Call a webservice to obtain the elevation of all tiles of the grid
 	 */
-	public void obtainTerrainElevation() {
-		// TODO eye-candy
-		// int total = gridX * gridY;
+	public void obtainTerrainElevation() throws IllegalStateException {
+		if (precision <= 0)
+			throw new IllegalStateException(
+					"Precision hasn't been defined yet.");
+
+		// int total = (rows + 2) * (columns + 2);
 		// int cont = 0;
 		int endX = offX + columns;
 		int endY = offY + rows;
+		// TODO
+		// for (int i = offX - 1; i <= endX; i++) {
+		// for (int j = offY - 1; j <= endY; j++) {
+		// LatLng coord = tileToCoord(i, j);
+		// double value = AltitudeWS.getElevation(coord);
+		// setTerrainValue(i, j, doubleToInner(value));
+		// cont++;
+		// System.out.println("Obtenidas " + cont + " de " + total
+		// + " alturas\r");
+		// }
+		// }
+
+		Random rnd = new Random(System.currentTimeMillis());
 		for (int i = offX - 1; i <= endX; i++) {
 			for (int j = offY - 1; j <= endY; j++) {
-				LatLng coord = tileToCoord(i, j);
-				double value = AltitudeWS.getElevation(coord);
-				setTerrainValue(i, j, (short) value);
-				// doubleToInner(value));
-				// cont++;
-				// System.out.println("Obtenidas " + cont + " de " + total +
-				// " alturas\r");
+				setTerrainValue(i, j, (short) rnd.nextInt(200));
 			}
 		}
 	}
@@ -522,6 +536,18 @@ public class HexagonalGrid implements Serializable {
 				+ " m";
 		s += "\nTile size: " + tileSize + "m";
 		return s;
+	}
+
+	public void setPrecision(short precision) {
+		this.precision = precision;
+	}
+
+	public short doubleToInner(double d) {
+		return (short) (d * precision);
+	}
+
+	public double innerToDouble(short s) {
+		return ((double) s) / precision;
 	}
 
 	// STATIC DATA AND METHODS

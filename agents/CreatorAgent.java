@@ -149,16 +149,6 @@ public class CreatorAgent extends Agent {
 					i++;
 				}
 
-				// TODO DEBUG
-				for (i = 0; i < scen.getNumEnv(); i++) {
-					arguments = new Object[] { "gui.VisorFrame",
-							Integer.toString(i) };
-					myAgent.addBehaviour(new CreateAgentBehav(myAgent,
-							"DefaultVisor" + i, "agents.UpdateAgent", 1,
-							arguments));
-				}
-				// FIN DEBUG
-
 				myAgent.removeBehaviour(this);
 			} else {
 				block();

@@ -53,7 +53,7 @@ public class HighFarStreetRank implements Ranking {
 		if (position != null) {
 			// Sólo las adyacentes a distancia 1
 			for (Point pt : dry) {
-				if (HexagonalGrid.distance(position, pt) == 1)
+				if (HexagonalGrid.distance(position, pt) <= 1)
 					freeAdjc.add(pt);
 			}
 		} else {
@@ -100,7 +100,9 @@ public class HighFarStreetRank implements Ranking {
 			}
 		}
 
+		// Equilibramos ambas escalas de puntos
 		double factor = dry.size() / (vision * 2);
+		factor *= 2; // Damos preferencia a huir del agua
 		// Puntuamos según la distancia media al agua
 		if (water.size() > 0) {
 			for (Point pt : dry) {
@@ -113,7 +115,7 @@ public class HighFarStreetRank implements Ranking {
 			}
 		}
 
-		return getBest(dry);
+		return getBest(adjacents, dry, position, speed);
 	}
 
 	private void score(String key, int points) {
@@ -123,18 +125,53 @@ public class HighFarStreetRank implements Ranking {
 		scores.put(key, new Integer(points));
 	}
 
-	private Point getBest(Set<Point> dry) {
+	private Point getBest(Set<Point> adjacents, Set<Point> dry, Point position,
+			int speed) {
 		Point result = null;
 		int max = Integer.MIN_VALUE;
+
 		for (Point pt : dry) {
-			// Sólo se mueve por calles
-			int scr = scores.get(pt.toString()).intValue();
-			if (scr > max) {
-				max = scr;
-				result = pt;
+			boolean ok = true;
+			Point aux = position;
+			// Comprobamos si el hexágono es apto
+			if (position != null) {
+				// Sólo avanza lo que le permita su velocidad
+				for (int i = 0; i < speed; i++) {
+					// Se puede llegar a él?
+					aux = HexagonalGrid.nearestHexagon(aux, pt);
+					aux = findHexagon(adjacents, aux);
+					// No entra en casillas con agua y sólo se mueve por calles
+					if (aux.getW() > 0
+							|| OsmInf.getBigType(aux.getS()) != OsmInf.Roads) {
+						ok = false;
+						break;
+					}
+				}
+			} else {
+				aux = pt;
+			}
+
+			if (ok) {
+				// Si es apto miramos su puntuación
+				int scr = scores.get(pt.toString()).intValue();
+				if (scr > max) {
+					max = scr;
+					result = aux;
+				}
 			}
 		}
+
 		return result;
+	}
+
+	private Point findHexagon(Set<Point> adjacents, Point pt) {
+		for (Point apt : adjacents) {
+			if (pt.equals(apt)) {
+				pt = apt;
+				break;
+			}
+		}
+		return pt;
 	}
 
 }
