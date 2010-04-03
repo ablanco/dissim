@@ -27,8 +27,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import openwfe.org.misc.Wget;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -37,12 +35,14 @@ import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
 import util.Util;
+import util.Wget;
 import util.jcoord.LatLng;
 
 public class Osm {
 
 	/**
 	 * Get And Fill streets Matrix for this Grid from Open Streets Maps
+	 * 
 	 * @param grid
 	 * @return
 	 */
@@ -58,22 +58,22 @@ public class Osm {
 		url += mBox;
 		// ("Obtaining info from :" + url);
 		File xmlFile = getOSMXmlFromURL(url, fileName);
-		System.err.println("Reading file: "+xmlFile.getAbsolutePath());
+		System.err.println("Reading file: " + xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
 		Document doc = null;
 		Node root = null;
-		try{
-			doc =parseFile(xmlFile);
+		try {
+			doc = parseFile(xmlFile);
 			// get root node of xml tree structure
 			root = doc.getDocumentElement();
 			// write node and its child nodes into System.out
-				
-		}catch (NullPointerException e) {
-			//A ocurrido un error al obtener el xml, abortado calles
+
+		} catch (NullPointerException e) {
+			// A ocurrido un error al obtener el xml, abortado calles
 			System.err.println("Error obtaining Streets, no map generated");
 			return new OsmMap(-1000);
-		}		
-		return xmlToStreets(root,grid);
+		}
+		return xmlToStreets(root, grid);
 	}
 
 	/**
@@ -109,12 +109,13 @@ public class Osm {
 		}
 		SortedMap<Long, OsmNode> osmNodes = new TreeMap<Long, OsmNode>();
 		// When this methods finised we've shuld have the first way
-		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes, osmMap, grid);
+		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes, osmMap,
+				grid);
 		// Now we sort the list
 		Collections.sort(osmMap.ways, new WaysComparator());
-		//Now we fill the streets matrix
+		// Now we fill the streets matrix
 		osmMap.setMapInfo(grid);
-		//Now Returns All the info, if needed ...
+		// Now Returns All the info, if needed ...
 		return osmMap;
 	}
 
@@ -129,8 +130,8 @@ public class Osm {
 	 *            Clase donde tendremos toda la informacion que necesitamos de
 	 *            OSM
 	 */
-	protected static void getNodeInfo(Node node, SortedMap<Long, OsmNode> osmNodes,
-			OsmMap osmMap, HexagonalGrid grid) {
+	protected static void getNodeInfo(Node node,
+			SortedMap<Long, OsmNode> osmNodes, OsmMap osmMap, HexagonalGrid grid) {
 		while (node != null) {
 			// Hasta llegar al final del XML
 			String nodeName = node.getNodeName();
@@ -161,7 +162,8 @@ public class Osm {
 	 *            Set con los nodos especiales.
 	 */
 	protected static void getNodeInfoNode(Node node,
-			SortedMap<Long, OsmNode> osmNodes, List<OsmNode> specialPlaces, HexagonalGrid grid) {
+			SortedMap<Long, OsmNode> osmNodes, List<OsmNode> specialPlaces,
+			HexagonalGrid grid) {
 		NamedNodeMap attributes = node.getAttributes();
 		// Getting attributes
 		long id;
@@ -214,8 +216,8 @@ public class Osm {
 	 * @param ways
 	 *            Acumulador de Ways que hemos ido reconociendo
 	 */
-	protected static void getNodeInfoWay(Node node, SortedMap<Long, OsmNode> osmNodes,
-			List<OsmWay> ways) {
+	protected static void getNodeInfoWay(Node node,
+			SortedMap<Long, OsmNode> osmNodes, List<OsmWay> ways) {
 		// Getting IDattributes
 		long id = Long.parseLong(node.getAttributes().item(0).getNodeValue());
 		// Creating the way and adding to map
@@ -266,8 +268,11 @@ public class Osm {
 
 	/**
 	 * Given a proper url for OSM returns a file with the information
-	 * @param url Url for the web service
-	 * @param fileName Name for the file
+	 * 
+	 * @param url
+	 *            Url for the web service
+	 * @param fileName
+	 *            Name for the file
 	 * @return
 	 */
 	protected static File getOSMXmlFromURL(String url, String fileName) {
