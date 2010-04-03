@@ -125,9 +125,7 @@ public class KmlBase implements Updateable {
 					HexagonalGrid g = snap.getGrid();
 					for (Pedestrian p : pedestrians) {
 						//Por cada persona averiguamos su status y su posicion
-						Point x = p.getPoint();
-						p.setStatus(f.getWaterValue(x.getCol(), x.getRow()));
-						p.setPos(g.tileToCoord(x));
+						p.setPos(g.tileToCoord(p.getPoint()));
 					}
 					kPeople.update(pedestrians, beginTime, snap.getDateTime()
 							.toString());

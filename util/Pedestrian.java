@@ -79,15 +79,8 @@ public class Pedestrian implements Serializable {
 	}
 
 	//TODO tener en cuenta atributos
-	public void setStatus(int waterLevel) {
-		if (waterLevel > DangerWaterLevel)
-			this.status = DEAD;
-		else if (waterLevel > 0){
-			this.status = HURT;
-		}
-		else {
-			this.status = HEALTHY;
-		}
+	public void setStatus(int status) {
+		this.status = status;
 	}
 
 	public void setRankClass(String rankClass) {

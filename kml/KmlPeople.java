@@ -31,18 +31,16 @@ public class KmlPeople {
 			String end) {
 		GroundOverlay groundoverlay = folder.createAndAddGroundOverlay()
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+		KmlBase.setTimeSpan(groundoverlay, begin, end);
 		//Depending status set propper img
 		switch (pedestrian.getStatus()) {
 		case Pedestrian.HEALTHY:
-			KmlBase.setTimeSpan(groundoverlay, begin, end);
 			groundoverlay.createAndSetIcon().withHref(imgPath + "healthy.png");
 			break;
 		case Pedestrian.HURT:
-			KmlBase.setTimeSpan(groundoverlay, begin, end);
 			groundoverlay.createAndSetIcon().withHref(imgPath + "hurt.png");
 			break;
 		case Pedestrian.DEAD:
-			KmlBase.setTimeSpan(groundoverlay, begin, null);
 			groundoverlay.createAndSetIcon().withHref(imgPath + "dead.png");
 			break;
 		default:
