@@ -82,7 +82,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @return a String KML friendly representation of this LatLng object
 	 */
 	public String toKmlString() {
-		return this.lng + ", " + this.lat + ", " + this.altitude;
+		return String.valueOf(this.lng).substring(0, 9) + ", " + String.valueOf(this.lat).substring(0, 9) + ", " + this.altitude;
 	}
 
 	/**

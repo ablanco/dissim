@@ -16,11 +16,7 @@
 
 package gui.Map;
 
-import java.awt.Color;
-
 import javax.swing.table.AbstractTableModel;
-
-import osm.OsmMap;
 
 public class Leyend extends AbstractTableModel{
 	/**

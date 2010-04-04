@@ -17,7 +17,6 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 
 import osm.OsmInf;
-
 import util.Hexagon2D;
 import util.HexagonalGrid;
 

@@ -87,6 +87,10 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		}
 		return value;
 	}
+	
+	public short[][] getGridWater() {
+		return gridWater;
+	}
 
 	public boolean isFloodBorder(int col, int row) {
 		short z = getValue(col, row);

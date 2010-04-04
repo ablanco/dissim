@@ -26,12 +26,11 @@ import jade.lang.acl.MessageTemplate;
 import java.io.IOException;
 import java.util.Map;
 
-import behaviours.InterGridBehav;
-
 import util.AgentHelper;
 import util.Pedestrian;
 import util.Point;
 import util.Scenario;
+import behaviours.InterGridBehav;
 
 @SuppressWarnings("serial")
 public class RegisterPeopleBehav extends CyclicBehaviour {

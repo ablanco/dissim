@@ -43,134 +43,104 @@ public class KmlFlood {
 	/**
 	 * Kml Folder where put all inundation info
 	 */
+	private Folder container;
 	private Folder folder;
 
 	public KmlFlood(Folder folder) {
 		altitudes = new TreeSet<Short>();
-		this.folder = folder;
+		this.container = folder;
 	}
 
 	public void update(short[][] oldGrid, FloodHexagonalGrid fGrid,
-			String beginTime, String endTime) {
+			String name,String beginTime, String endTime) {
 		// incs for this snapshot
 		double[] incs = fGrid.getIncs();
-//		int tileSize = fGrid.getTileSize();
+		// int tileSize = fGrid.getTileSize();
 		// Now we update the time for each update call
 		this.endTime = endTime;
 		this.beginTime = beginTime;
-
-		//Map<Short, SortedSet<LatLng>> floodSectors = new TreeMap<Short, SortedSet<LatLng>>();
+		folder = container.createAndAddFolder().withName(name).withDescription("From: "+beginTime+" To :"+endTime);
+		// Map<Short, SortedSet<LatLng>> floodSectors = new TreeMap<Short,
+		// SortedSet<LatLng>>();
 		// For each tile who has changed ever, creates hexagon
+		int offCol = fGrid.getOffX();
+		int offRow = fGrid.getOffY();
 		for (int col = 0; col < fGrid.getColumns(); col++) {
 			for (int row = 0; row < fGrid.getRows(); row++) {
-	//TODO EASY WAY
-				short floodLevel = fGrid.getWaterValue(col, row);
-				if (altitudes.add(floodLevel)) {
-					// Si no tenemos esta altitud añadimos un nuevo estilo
-					// con la profundidad solo de este punto
-					createWaterStyleAndColor(floodLevel, floodLevel);
-				}
-				//Hay que meterlos en un linked list, para nada :D
-				LinkedList<LatLng> sector = new LinkedList<LatLng>();
-				sector.add(fGrid.tileToCoord(col, row));
-				drawWater(sector, floodLevel, incs);
-			}
-		}
-	}
-				
-				
-/*
- * TODO esto esta en fase MUY BETA, asi que simplemente pintamos hexanos.
-				// Por cada casilla
-				if (fGrid.isFloodBorder(col, row)) {
-					// Solo si esta inundada y es borde
-					short floodLevel = fGrid.getValue(col, row);
+				// TODO EASY WAY
+				int c = col + offCol;
+				int r = row + offRow;
+				short floodLevel = -1;
+				floodLevel = fGrid.getWaterValue(c, r);
+
+				if (floodLevel > 0) {
+					//Solo dibujamos aquellos poligonos que estan inundados
 					if (altitudes.add(floodLevel)) {
 						// Si no tenemos esta altitud añadimos un nuevo estilo
 						// con la profundidad solo de este punto
-						createWaterStyleAndColor(floodLevel, fGrid.getValue(
-								col, row));
+						createWaterStyleAndColor(floodLevel, floodLevel);
 					}
-					SortedSet<LatLng> floodTiles = floodSectors.get(floodLevel);
-					if (floodTiles == null) {
-						// Si no tenemos una lista de puntos a ese nivel de
-						// inundacion
-						floodTiles = new TreeSet<LatLng>(new LatLngComparator());
-						floodSectors.put(floodLevel, floodTiles);
-					}
-					// pasamos a coordenadas
-					LatLng pos = fGrid.tileToCoord(col, row);
-					pos.setAltitude(floodLevel);
-					floodTiles.add(pos);
-
-					// drawWaterPolygon("HEX[" + x + "," + y + "]", grid
-					// .tileToCoord(x, y), (short) Math.abs(z), incs);
+					// Hay que meterlos en un linked list, para nada :D
+					LinkedList<LatLng> sector = new LinkedList<LatLng>();
+					sector.add(fGrid.tileToCoord(c, r));
+					drawWater(sector, floodLevel, incs);
 				}
-			}
-		}
-		Map<Short, List<LinkedList<LatLng>>> floods = getFloodSectors(
-				floodSectors, tileSize);
-		for (short key : floods.keySet()) {
-			List<LinkedList<LatLng>> sectors = floods.get(key);
-			for (LinkedList<LatLng> sector : sectors) {
-				drawWater(sector, key, incs);
 			}
 		}
 	}
 
-	private Map<Short, List<LinkedList<LatLng>>> getFloodSectors(
-			Map<Short, SortedSet<LatLng>> floodSectors, int tileSize) {
-		Map<Short, List<LinkedList<LatLng>>> floodLand = new TreeMap<Short, List<LinkedList<LatLng>>>();
-		for (short key : floodSectors.keySet()) {
-			List<LinkedList<LatLng>> sectors = new ArrayList<LinkedList<LatLng>>();
-			floodLand.put(key, sectors);
-			for (LatLng land : floodSectors.get(key)) {
-				if (sectors.isEmpty()) {
-					// Necesitamos empezar por alguna
-					LinkedList<LatLng> aux = new LinkedList<LatLng>();
-					aux.add(land);
-					sectors.add(aux);
-				} else {
-					setAndOrderIntoList(sectors, land, tileSize);
-				}
-			}
-		}
-		return floodLand;
-	}
-
-	private void setAndOrderIntoList(List<LinkedList<LatLng>> sectors,
-			LatLng land, int tileSize) {
-		boolean fin = false;
-		for (LinkedList<LatLng> sector : sectors) {
-			for (LatLng pos : sector) {
-				// La distancia sera pos si esta a la derecha, neg si esta a la
-				// izq
-				double dist = pos.distance(land);
-				if (dist <= tileSize * 1.1) {
-					// le damos un pequeño margen de error
-					if (dist > 0) {
-						sector.add(sector.indexOf(pos) + 1, land);
-					} else {
-						sector.add(sector.indexOf(pos), land);
-					}
-					fin = true;
-					break;
-				}
-			}
-			if (fin) {
-				break;
-			}
-		}
-
-	}
-*/
+	/*
+	 * TODO esto esta en fase MUY BETA, asi que simplemente pintamos hexanos. //
+	 * Por cada casilla if (fGrid.isFloodBorder(col, row)) { // Solo si esta
+	 * inundada y es borde short floodLevel = fGrid.getValue(col, row); if
+	 * (altitudes.add(floodLevel)) { // Si no tenemos esta altitud añadimos un
+	 * nuevo estilo // con la profundidad solo de este punto
+	 * createWaterStyleAndColor(floodLevel, fGrid.getValue( col, row)); }
+	 * SortedSet<LatLng> floodTiles = floodSectors.get(floodLevel); if
+	 * (floodTiles == null) { // Si no tenemos una lista de puntos a ese nivel
+	 * de // inundacion floodTiles = new TreeSet<LatLng>(new
+	 * LatLngComparator()); floodSectors.put(floodLevel, floodTiles); } //
+	 * pasamos a coordenadas LatLng pos = fGrid.tileToCoord(col, row);
+	 * pos.setAltitude(floodLevel); floodTiles.add(pos);
+	 * 
+	 * // drawWaterPolygon("HEX[" + x + "," + y + "]", grid // .tileToCoord(x,
+	 * y), (short) Math.abs(z), incs); } } } Map<Short,
+	 * List<LinkedList<LatLng>>> floods = getFloodSectors( floodSectors,
+	 * tileSize); for (short key : floods.keySet()) { List<LinkedList<LatLng>>
+	 * sectors = floods.get(key); for (LinkedList<LatLng> sector : sectors) {
+	 * drawWater(sector, key, incs); } } }
+	 * 
+	 * private Map<Short, List<LinkedList<LatLng>>> getFloodSectors( Map<Short,
+	 * SortedSet<LatLng>> floodSectors, int tileSize) { Map<Short,
+	 * List<LinkedList<LatLng>>> floodLand = new TreeMap<Short,
+	 * List<LinkedList<LatLng>>>(); for (short key : floodSectors.keySet()) {
+	 * List<LinkedList<LatLng>> sectors = new ArrayList<LinkedList<LatLng>>();
+	 * floodLand.put(key, sectors); for (LatLng land : floodSectors.get(key)) {
+	 * if (sectors.isEmpty()) { // Necesitamos empezar por alguna
+	 * LinkedList<LatLng> aux = new LinkedList<LatLng>(); aux.add(land);
+	 * sectors.add(aux); } else { setAndOrderIntoList(sectors, land, tileSize);
+	 * } } } return floodLand; }
+	 * 
+	 * private void setAndOrderIntoList(List<LinkedList<LatLng>> sectors, LatLng
+	 * land, int tileSize) { boolean fin = false; for (LinkedList<LatLng> sector
+	 * : sectors) { for (LatLng pos : sector) { // La distancia sera pos si esta
+	 * a la derecha, neg si esta a la // izq double dist = pos.distance(land);
+	 * if (dist <= tileSize * 1.1) { // le damos un pequeño margen de error if
+	 * (dist > 0) { sector.add(sector.indexOf(pos) + 1, land); } else {
+	 * sector.add(sector.indexOf(pos), land); } fin = true; break; } } if (fin)
+	 * { break; } }
+	 * 
+	 * }
+	 */
 	private void drawWater(LinkedList<LatLng> sector, int floodLevel,
 			double[] incs) {
-		Placemark placeMark = KmlBase.newPlaceMark(folder, sector.getFirst()
-				.toString());
-		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
-		placeMark.setStyleUrl(water + floodLevel);
-		KmlBase.drawPolygon(placeMark, sector, incs);
+		if (sector != null && sector.size() > 0) {
+			Placemark placeMark = KmlBase.newPlaceMark(folder, String.valueOf(floodLevel));
+			KmlBase.setTimeSpan(placeMark, beginTime, endTime);
+			placeMark.setStyleUrl(water + floodLevel);
+			KmlBase.drawPolygon(placeMark, sector, incs);
+		}
+
 	}
 
 	/**
@@ -182,7 +152,7 @@ public class KmlFlood {
 	 *            deep
 	 */
 	protected void createWaterStyleAndColor(short floodLevel, short z) {
-		//Le damos un color medio para que se parezca a agua
+		// Le damos un color medio para que se parezca a agua
 		int blue = 125;
 		// Mientras mas profunda sea el agua, mas ocuro es el azul.
 		blue += z;
@@ -191,11 +161,10 @@ public class KmlFlood {
 		if (blue > 255) {
 			abgr = "ff" + "ff" + "55" + "00";
 		} else {
-			abgr = Integer.toHexString(blue) + Integer.toHexString(blue) + "55"
-					+ "00";
+			abgr = "aa" + Integer.toHexString(blue) + "55" + "00";
 		}
 		// le doy el mismo color de azul que transparencia
-		folder.createAndAddStyle().withId(water + floodLevel)
+		container.createAndAddStyle().withId(water + floodLevel)
 				.createAndSetPolyStyle().withColor(abgr);
 		// polyStyle.setColorMode(ColorMode.NORMAL);
 	}

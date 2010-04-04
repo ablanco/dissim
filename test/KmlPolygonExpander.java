@@ -1,10 +1,7 @@
 package test;
 
-import kml.KmlBase;
-import kml.KmlFlood;
 import gui.VisorFrame;
 import util.Scenario;
-import util.Snapshot;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
 

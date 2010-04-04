@@ -20,16 +20,19 @@ import jade.core.AID;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import util.HexagonalGrid;
 import util.Pedestrian;
-import util.Point;
 import util.Snapshot;
 import util.Updateable;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
+import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Kml;
@@ -43,14 +46,22 @@ public class KmlBase implements Updateable {
 	protected Kml kml;
 	protected Folder folder;
 
-	private boolean init;
-
-	private short[][] oldGrid;
+	/**
+	 * En este kml almacenaremos toda la informacion de las inundaciones
+	 */
 	private KmlFlood kFlood;
+	/**
+	 * En este kml almacenaremos toda la informacion de las personas que
+	 * afectadas por alguna catastrofe
+	 */
 	private KmlPeople kPeople;
-	private double[] incs;
 
-	private String beginTime;
+	/**
+	 * Aqui iremos almacenando la informacion que va cambiando para cada
+	 * escenario al que estemos subscrito, el map es para organizarlo mejor, el
+	 * nombre de cada escenario deberia de ser unico
+	 */
+	private Map<String, KmlInf> inf;
 
 	public KmlBase() {
 		kml = new Kml();
@@ -69,71 +80,70 @@ public class KmlBase implements Updateable {
 
 	@Override
 	public void init() {
-		init = false;
+		inf = new TreeMap<String, KmlInf>();
 	}
 
 	@Override
 	public void update(Object obj, AID sender) throws IllegalArgumentException {
 		// TODO Auto-generated method stub
+
 		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");
 		Snapshot snap = (Snapshot) obj;
-		// Inicizalizacion de KML
-		if (!init) {
-			beginTime = snap.getDateTime().toString();
+
+		if (inf.keySet().size() == 0) {
+			// No hay ninguna informacion de ningun entorno creamos la base
 			setName(snap.getName());
 			setDescription(snap.getDescription());
 			// Le damos un nombre al Contenedor Principal del KML
-			folder = newFolder(kml,snap.getName(),snap.getDescription());
-			incs = snap.getGrid().getIncs();
+			folder = newFolder(kml, snap.getName(), snap.getDescription());
+
+			kFlood = new KmlFlood(addFolder(folder, "Flood", "Flooded Sectors"));
+
+			kPeople = new KmlPeople(addFolder(folder, "People",
+					"People Running For their lives"));
+		}
+
+		// Aqui iremos almacenando la informacion que cambia para cada escenario
+		// al que estemos subscritos
+		KmlInf currentEnv = inf.get(sender.getLocalName());
+		if (currentEnv == null) {
+			// No tenemos informacion para este enviorement
+			currentEnv = new KmlInf(sender.getLocalName(), null, snap
+					.getDateTime().toString(), snap.getGrid().getIncs());
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
 				// Si es tenemos una inundacion inicializamos lo necesario
-				FloodHexagonalGrid fgrid = (FloodHexagonalGrid) snap.getGrid();
-				oldGrid = new short[fgrid.getColumns()][fgrid.getRows()];
-				// Inicializamos la matriz
-				for (int c = 0; c < fgrid.getColumns(); c++) {
-					for (int r = 0; r < fgrid.getRows(); r++) {
-						oldGrid[c][r] = fgrid.getTerrainValue(c, r);
-					}
-				}
-				//Default name and description for kmlFlood
-				kFlood = new KmlFlood(
-						addFolder(folder, "Flood", "Flooded Sectors"));
+				currentEnv.setGrid(((FloodHexagonalGrid) snap.getGrid())
+						.getGridWater());
 			}
-			//Default name and Description for kmlPeople
-			kPeople = new KmlPeople(addFolder(folder, "People",
-					"People Running For their lives"), incs);
-			// Demas inicializaciones para futuras ampliaziones
-
-			// No necesitamos volver
-			init = true;
+			// Almacenamos la informacion concreta que necesitamos
+			// TODO quizas sender.getLocalName() no sea unico
+			inf.put(sender.getLocalName(), currentEnv);
 		} else {
 			// Todas las demas iteraciones
+			// Actualizamos las marcas de tiempo
+			currentEnv.SetNewDate(snap.getDateTime().toString());
 			// Si es una inundacion, actualizar la inundacion
+
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
 				FloodHexagonalGrid f = (FloodHexagonalGrid) snap.getGrid();
 				// Por cada llamada update lo que tengo que hacer para FLOOD
-				kFlood.update(oldGrid, f,
-						beginTime, snap.getDateTime().toString());
-				
-				// Actualizaciones para las personas en inundaciones
-				//Obtenemos la lista de personas
-				List<Pedestrian> pedestrians = snap.getPeople();
-				if (pedestrians != null && pedestrians.size() > 0) {
-					// Si hay personas
-					HexagonalGrid g = snap.getGrid();
-					for (Pedestrian p : pedestrians) {
-						//Por cada persona averiguamos su status y su posicion
-						p.setPos(g.tileToCoord(p.getPoint()));
-					}
-					kPeople.update(pedestrians, beginTime, snap.getDateTime()
-							.toString());
-				}
+				kFlood.update(currentEnv.getWaterGrid(), f, currentEnv
+						.getName(), currentEnv.getBegin(), currentEnv.getEnd());
 			}
-
-			// Tiempo inicial para la siguiente Iteracion
-			beginTime = snap.getDateTime().toString();
+			// Obtenemos la lista de personas
+			List<Pedestrian> pedestrians = snap.getPeople();
+			if (pedestrians != null && pedestrians.size() > 0) {
+				// Si hay personas
+				HexagonalGrid g = snap.getGrid();
+				for (Pedestrian p : pedestrians) {
+					// Por cada persona averiguamos su status y su posicion
+					p.setPos(g.tileToCoord(p.getPoint()));
+				}
+				kPeople.update(pedestrians, currentEnv.getName(), currentEnv
+						.getBegin(), currentEnv.getEnd(), currentEnv.getIncs());
+			}
 		}
 	}
 
@@ -199,6 +209,7 @@ public class KmlBase implements Updateable {
 
 	/**
 	 * Adds folder to an existing Folder
+	 * 
 	 * @param folder
 	 * @param name
 	 * @param description
@@ -206,9 +217,9 @@ public class KmlBase implements Updateable {
 	 */
 	public static Folder addFolder(Folder folder, String name,
 			String description) {
-		if (folder!= null){
+		if (folder != null) {
 			return folder.createAndAddFolder().withName(name).withOpen(true)
-			.withDescription(description);	
+					.withDescription(description);
 		}
 		throw new NullPointerException();
 	}
@@ -234,8 +245,11 @@ public class KmlBase implements Updateable {
 	 */
 	public static void drawPolygon(Placemark placeMark,
 			List<LatLng> borderLine, double[] incs) {
-		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
-				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
+		if (borderLine == null || borderLine.size() < 1) {
+			throw new NullPointerException();
+		}
+		Polygon polygon = placeMark.createAndSetPolygon().withAltitudeMode(
+				AltitudeMode.ABSOLUTE);
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
@@ -247,20 +261,26 @@ public class KmlBase implements Updateable {
 			double ilat = (incs[0] * 4) / 6;
 			double ilng = incs[1] / 2;
 
-			l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
-			l.addToCoordinates(coord.addIncs(ilat / 2, ilng).toKmlString());
-			l.addToCoordinates(coord.addIncs(-ilat / 2, ilng).toKmlString());
-			l.addToCoordinates(coord.addIncs(-ilat, 0).toKmlString());
-			l.addToCoordinates(coord.addIncs(-ilat / 2, -ilng).toKmlString());
-			l.addToCoordinates(coord.addIncs(ilat / 2, -ilng).toKmlString());
-			l.addToCoordinates(coord.addIncs(ilat, 0).toKmlString());
+			// Hexagonal
+			float[] f = new float[] { 1, 0, 1 / 2, 1, -1 / 2, 1, -1, 0, -1 / 2,
+					-1, 1 / 2, -1, 1, 0 };
+			double lat = coord.getLat();
+			double lng = coord.getLng();
+			List<Coordinate> coordinates = new ArrayList<Coordinate>();
+			for (int i = 0; i < f.length; i = i + 2) {
+				Coordinate c = new Coordinate(f[i + 1] * ilng + lng, f[i]
+						* ilat + lat, coord.getAltitude());
+				coordinates.add(c);
+			}
+			l.withCoordinates(coordinates);
 			break;
 		default: // Draws Polygon
+			// Closing the polygon
+			borderLine.add(borderLine.get(0));
 			for (LatLng c : borderLine) {
-				l.addToCoordinates(c.toKmlString());
+				l.addToCoordinates(c.getLng(), c.getLat(), c.getAltitude());
 			}
 			// Esto solo dibuja los centros del poligono, no es hegagonal
-			l.addToCoordinates(borderLine.get(0).toKmlString());
 			break;
 		}
 	}
