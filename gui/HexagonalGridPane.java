@@ -179,6 +179,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 					boolean person = false;
 					int status = Pedestrian.HEALTHY;
 					for (Pedestrian p : people) {
+						// Miramos si hay alguien en esta casilla
 						if (pos.equals(p.getPoint())) {
 							person = true;
 							status = p.getStatus();
@@ -186,6 +187,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 						}
 					}
 					if (person) {
+						// Si la había la pintamos
 						if (status == Pedestrian.HEALTHY)
 							g2.setColor(Color.RED);
 						else

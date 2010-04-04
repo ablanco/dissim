@@ -38,8 +38,6 @@ public class RunawayBehav extends CyclicBehaviour {
 	private Ranking rank;
 	private double lat; // Posición en coordenadas
 	private double lng;
-	private int x; // Posición en columna y fila
-	private int y;
 	private int d; // Distancia de visión
 	private int s; // Velocidad
 	private String type = AdjacentsGridBehav.LAT_LNG;
@@ -47,7 +45,7 @@ public class RunawayBehav extends CyclicBehaviour {
 	private long previous;
 	private int step = 0;
 	private MessageTemplate mt = MessageTemplate.MatchAll();
-	private Point position = null;
+	private Point position = null; // Posición en columna y fila
 
 	public RunawayBehav(Agent a, long period, AID env, double lat, double lng,
 			int d, int s, Ranking rank) {
@@ -86,8 +84,9 @@ public class RunawayBehav extends CyclicBehaviour {
 				content += Double.toString(lat) + " " + Double.toString(lng)
 						+ " " + Integer.toString(d);
 			} else {
-				content += Integer.toString(x) + " " + Integer.toString(y)
-						+ " " + Integer.toString(d);
+				content += Integer.toString(position.getCol()) + " "
+						+ Integer.toString(position.getRow()) + " "
+						+ Integer.toString(d);
 			}
 			mt = AgentHelper.send(myAgent, env, ACLMessage.REQUEST,
 					"adjacents-grid", content);
@@ -112,15 +111,13 @@ public class RunawayBehav extends CyclicBehaviour {
 
 					// Si ha encontrado a donde moverse
 					if (pmejor != null) {
-						x = pmejor.getCol();
-						y = pmejor.getRow();
 						position = pmejor;
 						type = AdjacentsGridBehav.POSITION;
 
 						// Informamos al entorno del movimiento
 						content = myAgent.getLocalName() + " "
-								+ Integer.toString(x) + " "
-								+ Integer.toString(y);
+								+ Integer.toString(position.getCol()) + " "
+								+ Integer.toString(position.getRow());
 						mt = AgentHelper.send(myAgent, env, ACLMessage.INFORM,
 								"register-people", content);
 						step = 2;
