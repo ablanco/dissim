@@ -44,29 +44,28 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		southWater = new short[columns + 2];
 		eastWater = new short[rows];
 		westWater = new short[rows];
-		// modTiles = new TreeSet<Point>();
 		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offX, offY);
 	}
 
-	public short setWaterValue(int x, int y, short value) {
-		x -= offX;
-		y -= offY;
+	public short setWaterValue(int col, int row, short value) {
+		col -= offX;
+		row -= offY;
 		short old;
-		if (y == -1) {
-			old = northWater[x + 1];
-			northWater[x + 1] = value;
-		} else if (y == rows) {
-			old = southWater[x + 1];
-			southWater[x + 1] = value;
-		} else if (x == -1) {
-			old = westWater[y];
-			westWater[y] = value;
-		} else if (x == columns) {
-			old = eastWater[y];
-			eastWater[y] = value;
+		if (row == -1) {
+			old = northWater[col + 1];
+			northWater[col + 1] = value;
+		} else if (row == rows) {
+			old = southWater[col + 1];
+			southWater[col + 1] = value;
+		} else if (col == -1) {
+			old = westWater[row];
+			westWater[row] = value;
+		} else if (col == columns) {
+			old = eastWater[row];
+			eastWater[row] = value;
 		} else {
-			old = gridWater[x][y];
-			gridWater[x][y] = value;
+			old = gridWater[col][row];
+			gridWater[col][row] = value;
 		}
 		return old;
 	}

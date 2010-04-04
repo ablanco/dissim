@@ -51,7 +51,7 @@ import behaviours.people.RegisterPeopleBehav;
 public class EnviromentAgent extends Agent {
 
 	private HexagonalGrid grid = null;
-	private Logger logger = new Logger(); // TODO
+	private Logger logger = new Logger(); // TODO logger
 	private DateAndTime dateTime = null;
 	private Map<String, Pedestrian> people = new Hashtable<String, Pedestrian>();
 

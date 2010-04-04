@@ -116,7 +116,7 @@ public class AddWaterBehav extends CyclicBehaviour {
 
 			// Si se trata de agua enviada por la entrada de agua que es la
 			// referencia, y si somos el entorno reloj
-			if (timesReference.equals(coord.toString()) && iAmClock) {
+			if (iAmClock && timesReference.equals(coord.toString())) {
 				if (otherEnvs == null) {
 					DFAgentDescription[] result = AgentHelper.search(myAgent,
 							"add-water");

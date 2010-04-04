@@ -99,7 +99,7 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 						max = value;
 				}
 			}
-//			max += 100; // TODO Sacar el max nivel del agua del snapshot
+			max += (max - min) * 0.15; // 15% más
 			setVisible(true);
 			firstTime = false;
 		}

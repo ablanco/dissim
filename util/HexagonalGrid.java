@@ -423,29 +423,6 @@ public class HexagonalGrid implements Serializable {
 				}
 			}
 		}
-		return getPoint(col, row, isIn);
-	}
-
-	/**
-	 * Returns a valid point Form the grid
-	 * 
-	 * @param col
-	 * @param row
-	 * @param isIn
-	 *            explicit declaration if was into the box or not
-	 * @return
-	 */
-	private Point getPoint(int col, int row, boolean isIn) {
-		if (col < 0) {
-			col = 0;
-		} else if (col >= columns) {
-			col = columns - 1;
-		}
-		if (row < 0) {
-			row = 0;
-		} else if (row >= rows) {
-			row = rows - 1;
-		}
 		return new Point(col, row, getValue(col, row), isIn);
 	}
 
@@ -492,7 +469,7 @@ public class HexagonalGrid implements Serializable {
 		// int cont = 0;
 		int endX = offX + columns;
 		int endY = offY + rows;
-		// TODO
+		// TODO descargar alturas
 		// for (int i = offX - 1; i <= endX; i++) {
 		// for (int j = offY - 1; j <= endY; j++) {
 		// LatLng coord = tileToCoord(i, j);
