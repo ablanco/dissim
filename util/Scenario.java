@@ -267,7 +267,15 @@ public class Scenario implements Serializable {
 		return (short) (d * precision);
 	}
 
+	public static short doubleToInner(short precision, double d) {
+		return (short) (d * precision);
+	}
+
 	public double innerToDouble(short s) {
+		return ((double) s) / precision;
+	}
+
+	public static double innerToDouble(short precision, short s) {
 		return ((double) s) / precision;
 	}
 
@@ -403,9 +411,6 @@ public class Scenario implements Serializable {
 
 		int idx = 0;
 		for (int[] envSize : envSizes) {
-			// System.out.println("x: " + x + " y: " + y + " sx: " + envSize[0]
-			// + " sy: " + envSize[1] + " ox: " + envSize[2] + " oy: "
-			// + envSize[3]);
 			if (x < (envSize[0] + envSize[2]) && x >= envSize[2]
 					&& y < (envSize[1] + envSize[3]) && y >= envSize[3])
 				return idx;

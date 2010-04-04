@@ -497,7 +497,7 @@ public class HexagonalGrid implements Serializable {
 		// for (int j = offY - 1; j <= endY; j++) {
 		// LatLng coord = tileToCoord(i, j);
 		// double value = AltitudeWS.getElevation(coord);
-		// setTerrainValue(i, j, doubleToInner(value));
+		// setTerrainValue(i, j, Scenario.doubleToInner(precision, value));
 		// cont++;
 		// System.out.println("Obtenidas " + cont + " de " + total
 		// + " alturas\r");
@@ -540,14 +540,6 @@ public class HexagonalGrid implements Serializable {
 
 	public void setPrecision(short precision) {
 		this.precision = precision;
-	}
-
-	public short doubleToInner(double d) {
-		return (short) (d * precision);
-	}
-
-	public double innerToDouble(short s) {
-		return ((double) s) / precision;
 	}
 
 	// STATIC DATA AND METHODS
