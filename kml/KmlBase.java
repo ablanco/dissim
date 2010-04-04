@@ -65,6 +65,7 @@ public class KmlBase implements Updateable {
 
 	public KmlBase() {
 		kml = new Kml();
+		inf = new TreeMap<String, KmlInf>();
 	}
 
 	@Override
@@ -262,8 +263,8 @@ public class KmlBase implements Updateable {
 			double ilng = incs[1] / 2;
 
 			// Hexagonal
-			float[] f = new float[] { 1, 0, 1 / 2, 1, -1 / 2, 1, -1, 0, -1 / 2,
-					-1, 1 / 2, -1, 1, 0 };
+			double[] f = new double[] { 1, 0, 0.5, 1, -0.5, 1, -1, 0, -0.5,
+					-1, 0.5, -1, 1, 0 };
 			double lat = coord.getLat();
 			double lng = coord.getLng();
 			List<Coordinate> coordinates = new ArrayList<Coordinate>();
