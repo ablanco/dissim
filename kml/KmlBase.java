@@ -107,6 +107,8 @@ public class KmlBase implements Updateable {
 		// Aqui iremos almacenando la informacion que cambia para cada escenario
 		// al que estemos subscritos
 		KmlInf currentEnv = inf.get(sender.getLocalName());
+		
+		System.out.println("Kml Update "+currentEnv.toString());
 		if (currentEnv == null) {
 			// No tenemos informacion para este enviorement
 			currentEnv = new KmlInf(sender.getLocalName(), null, snap
@@ -247,8 +249,8 @@ public class KmlBase implements Updateable {
 		if (borderLine == null || borderLine.size() < 1) {
 			throw new NullPointerException();
 		}
-		Polygon polygon = placeMark.createAndSetPolygon().withAltitudeMode(
-				AltitudeMode.ABSOLUTE);
+		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true).withAltitudeMode(
+				AltitudeMode.RELATIVE_TO_GROUND);
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 

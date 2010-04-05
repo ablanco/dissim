@@ -47,4 +47,9 @@ public class KmlInf {
 		begin = this.end;
 		this.end = end;
 	}
+	
+	@Override
+	public String toString() {
+		return name+", From "+begin+" to "+end;
+	}
 }
