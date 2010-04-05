@@ -86,8 +86,6 @@ public class KmlBase implements Updateable {
 
 	@Override
 	public void update(Object obj, AID sender) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-
 		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");

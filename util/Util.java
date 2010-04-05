@@ -24,41 +24,43 @@ public class Util {
 	 * Default Temp Directory
 	 */
 	public static String defaultName = "PFC-Catastrofes";
-	
-	
+
 	/**
 	 * Gets machine Temp Directory
+	 * 
 	 * @return
 	 */
-	public static String getTempPath(){
-		 String path = null;
-		try{
+	public static String getTempPath() {
+		String path = null;
+		try {
 			File f = File.createTempFile("Chanicidad", null);
 
-		path = f.getAbsolutePath();
-		path = (String) path.subSequence(0, path.length()
-				- f.getName().length());
-		//Tenemos el path al directorio tmp
-		f.deleteOnExit();
-		f.delete();
-		}catch (Exception e) {
-			// TODO: handle exception
-			System.err.println("No se ha podido crear un fichero en el directorio temporal ");
+			path = f.getAbsolutePath();
+			path = (String) path.subSequence(0, path.length()
+					- f.getName().length());
+			// Tenemos el path al directorio tmp
+			f.deleteOnExit();
+			f.delete();
+		} catch (Exception e) {
+			System.err
+					.println("No se ha podido crear un fichero en el directorio temporal ");
+			e.printStackTrace();
 		}
 		return path;
 	}
 
 	/**
-	 * Gets/create Default temp Directorory
+	 * Gets/create Default temp directory
+	 * 
 	 * @return
 	 */
-	public static File getDefaultTempDir(){
+	public static File getDefaultTempDir() {
 		String path = getTempPath();
-		File f = new File(path+defaultName);
-		if (!f.exists() && !f.isDirectory()){
+		File f = new File(path + defaultName);
+		if (!f.exists() && !f.isDirectory()) {
 			f.mkdir();
 		}
 		return f;
 	}
-	
+
 }

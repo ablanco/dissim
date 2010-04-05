@@ -16,6 +16,13 @@
 
 package util;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
@@ -23,6 +30,7 @@ import java.util.TreeSet;
 
 import osm.Osm;
 import util.jcoord.LatLng;
+import webservices.AltitudeWS;
 
 public class HexagonalGrid implements Serializable {
 
@@ -459,32 +467,86 @@ public class HexagonalGrid implements Serializable {
 
 	/**
 	 * Call a webservice to obtain the elevation of all tiles of the grid
+	 * 
+	 * @throws IllegalStateException
+	 * @throws IOException
 	 */
-	public void obtainTerrainElevation() throws IllegalStateException {
+	public void obtainTerrainElevation(boolean random)
+			throws IllegalStateException, IOException {
 		if (precision <= 0)
 			throw new IllegalStateException(
 					"Precision hasn't been defined yet.");
 
-		// int total = (rows + 2) * (columns + 2);
-		// int cont = 0;
 		int endX = offX + columns;
 		int endY = offY + rows;
-		// TODO descargar alturas
-		// for (int i = offX - 1; i <= endX; i++) {
-		// for (int j = offY - 1; j <= endY; j++) {
-		// LatLng coord = tileToCoord(i, j);
-		// double value = AltitudeWS.getElevation(coord);
-		// setTerrainValue(i, j, Scenario.doubleToInner(precision, value));
-		// cont++;
-		// System.out.println("Obtenidas " + cont + " de " + total
-		// + " alturas\r");
-		// }
-		// }
 
-		Random rnd = new Random(System.currentTimeMillis());
-		for (int i = offX - 1; i <= endX; i++) {
-			for (int j = offY - 1; j <= endY; j++) {
-				setTerrainValue(i, j, (short) rnd.nextInt(200));
+		if (!random) {
+			File tmp = Util.getDefaultTempDir();
+			String fname = NW.getLat() + "-" + NW.getLng() + "-" + SE.getLat()
+					+ "-" + SE.getLng() + "-" + tileSize;
+			File f = new File(tmp, fname);
+			boolean empty = false;
+			try {
+				empty = f.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			if (empty) {
+				BufferedWriter bw = null;
+				try {
+					// Descargamos la altura y la escribimos a disco para
+					// futuras simulaciones
+					bw = new BufferedWriter(new FileWriter(f));
+					int total = (rows + 2) * (columns + 2);
+					int cont = 0;
+					for (int i = offX - 1; i <= endX; i++) {
+						for (int j = offY - 1; j <= endY; j++) {
+							LatLng coord = tileToCoord(i, j);
+							double value = AltitudeWS.getElevation(coord);
+							short alt = Scenario
+									.doubleToInner(precision, value);
+							setTerrainValue(i, j, alt);
+							bw.write(i + "," + j + "=" + alt + "\n");
+							cont++;
+							System.out.println("Obtenidas " + cont + " de "
+									+ total + " alturas\r");
+						}
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				} finally {
+					if (bw != null)
+						bw.close();
+				}
+			} else {
+				// Si ya estaban los datos en el disco los leemos
+				BufferedReader br = null;
+				String[] data;
+				String[] coord;
+				String line;
+				try {
+					br = new BufferedReader(new FileReader(f));
+					while ((line = br.readLine()) != null) {
+						data = line.split("=");
+						coord = data[0].split(",");
+						setTerrainValue(Integer.parseInt(coord[0]), Integer
+								.parseInt(coord[1]), Short.parseShort(data[1]));
+					}
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} finally {
+					if (br != null)
+						br.close();
+				}
+			}
+		} else {
+			// Alturas aleatorias
+			Random rnd = new Random(System.currentTimeMillis());
+			for (int i = offX - 1; i <= endX; i++) {
+				for (int j = offY - 1; j <= endY; j++) {
+					setTerrainValue(i, j, (short) rnd.nextInt(200));
+				}
 			}
 		}
 	}

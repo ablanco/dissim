@@ -77,9 +77,13 @@ public class Scenario implements Serializable {
 	 */
 	private DateAndTime simTime = null;
 	/**
-	 * Lista de agentes humanos
+	 * Human agents list
 	 */
 	private LinkedList<Pedestrian> people = new LinkedList<Pedestrian>();
+	/**
+	 * Random terrain
+	 */
+	private boolean randomAltitudes = false;
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -201,11 +205,13 @@ public class Scenario implements Serializable {
 				p.setSpeed(Integer.parseInt(person[3]));
 				addPeople(p);
 			} else if (pair[0].equals("updateTimeKml")) {
-				updateKML = Long.parseLong(pair[1]);
+				setUpdateKMLPeriod(Long.parseLong(pair[1]));
 			} else if (pair[0].equals("updateTimeVisor")) {
-				updateVisor = Long.parseLong(pair[1]);
+				setUpdateVisorPeriod(Long.parseLong(pair[1]));
 			} else if (pair[0].equals("precision")) {
-				precision = Short.parseShort(pair[1]);
+				setPrecision(Short.parseShort(pair[1]));
+			} else if (pair[0].equals("randomTerrain")) {
+				setRandomAltitudes(Boolean.parseBoolean(pair[1]));
 			}
 		}
 	}
@@ -440,6 +446,14 @@ public class Scenario implements Serializable {
 
 	public DateAndTime getStartTime() {
 		return simTime;
+	}
+
+	public void setRandomAltitudes(boolean randomAltitudes) {
+		this.randomAltitudes = randomAltitudes;
+	}
+
+	public boolean getRandomAltitudes() {
+		return randomAltitudes;
 	}
 
 }

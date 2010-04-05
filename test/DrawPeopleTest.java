@@ -14,7 +14,6 @@ public class DrawPeopleTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		HexagonalGrid grid = new HexagonalGrid(new LatLng(29.953260,
 				-90.088238, (short) 10), new LatLng(29.918075, -90.053707,
 				(short) 10), 0, 0, 500);

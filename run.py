@@ -185,6 +185,8 @@ else:
     fich.write('\nprecision=' + precision)
     nenvs = raw_input('Número de agentes entorno: ')
     fich.write('\nnumEnvs=' + nenvs)
+    rndTerrain = raw_input('¿Terreno aleatorio? (True|False): ')
+    fich.write('\nrandomTerrain=' + rndTerrain)
     print('\nENTRADA DE AGUA\n')
     timeFlood = raw_input('Período (en milisegundos) de la actualización del agua en el terreno: ')
     fich.write('\nupdateTimeFlood=' + timeFlood)
