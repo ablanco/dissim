@@ -107,7 +107,7 @@ public class KmlBase implements Updateable {
 		// Aqui iremos almacenando la informacion que cambia para cada escenario
 		// al que estemos subscritos
 		KmlInf currentEnv = inf.get(sender.getLocalName());
-		
+
 		if (currentEnv == null) {
 			// No tenemos informacion para este enviorement
 			currentEnv = new KmlInf(sender.getLocalName(), null, snap
@@ -248,8 +248,8 @@ public class KmlBase implements Updateable {
 		if (borderLine == null || borderLine.size() < 1) {
 			throw new NullPointerException();
 		}
-		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true).withAltitudeMode(
-				AltitudeMode.RELATIVE_TO_GROUND);
+		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
+				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 		LinearRing l = polygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
@@ -262,8 +262,8 @@ public class KmlBase implements Updateable {
 			double ilng = incs[1] / 2;
 
 			// Hexagonal
-			double[] f = new double[] { 1, 0, 0.5, 1, -0.5, 1, -1, 0, -0.5,
-					-1, 0.5, -1, 1, 0 };
+			double[] f = new double[] { 1, 0, 0.5, 1, -0.5, 1, -1, 0, -0.5, -1,
+					0.5, -1, 1, 0 };
 			double lat = coord.getLat();
 			double lng = coord.getLng();
 			List<Coordinate> coordinates = new ArrayList<Coordinate>();
