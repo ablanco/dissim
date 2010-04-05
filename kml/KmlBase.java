@@ -108,7 +108,6 @@ public class KmlBase implements Updateable {
 		// al que estemos subscritos
 		KmlInf currentEnv = inf.get(sender.getLocalName());
 		
-		System.out.println("Kml Update "+currentEnv.toString());
 		if (currentEnv == null) {
 			// No tenemos informacion para este enviorement
 			currentEnv = new KmlInf(sender.getLocalName(), null, snap
