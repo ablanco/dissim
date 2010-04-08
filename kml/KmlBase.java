@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.JFileChooser;
+
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Snapshot;
@@ -70,8 +72,16 @@ public class KmlBase implements Updateable {
 
 	@Override
 	public void finish() {
-		// Escribimos el kml
-		createKmzFile(kml, getName());
+		JFileChooser fc = new JFileChooser();
+		int returnVal = fc.showSaveDialog(null);
+		// Pedimos al usuario que nos diga dónde guardar el fichero
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();		
+			// Escribimos el kml
+			createKmzFile(kml, file.getAbsolutePath());
+		} else {
+			// TODO Cancelado el guardar, ¿hacer algo?
+		}
 	}
 
 	@Override
