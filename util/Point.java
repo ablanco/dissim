@@ -76,7 +76,7 @@ public class Point implements Comparable<Point>, Serializable {
 	public boolean equals(Object o) {
 		if (o instanceof Point) {
 			Point p = (Point) o;
-			return (p.col == col) && (p.row == row);
+			return (p.getCol() == col) && (p.getRow() == row);
 		} else {
 			return false;
 		}

@@ -591,6 +591,12 @@ public class HexagonalGrid implements Serializable {
 	public static final int RIGHT_DOWN = 4;
 	public static final int LEFT_DOWN = 5;
 
+	/**
+	 * Returns the adjacent hexagon to a that is in b direction
+	 * @param a
+	 * @param b
+	 * @return
+	 */
 	public static Point nearestHexagon(Point a, Point b) {
 		if (a.equals(b))
 			return a;

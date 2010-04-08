@@ -33,8 +33,28 @@ public class HighFarStreetRank implements Ranking {
 	@Override
 	public Point choose(Set<Point> adjacents, Point position, int vision,
 			int speed) throws YouAreDeadException {
-		if (position != null)
+
+		if (position != null) {
+			// Sólo las casillas que puede ver desde su calle
+			Set<Point> aux = new NoDuplicatePointsSet(adjacents.size() + 1);
+			for (Point pt : adjacents) {
+				Point auxpt = position;
+				// Buscamos que llegue en línea a través de una calle
+				while (!pt.equals(auxpt)) {
+					auxpt = findHexagon(adjacents, HexagonalGrid
+							.nearestHexagon(auxpt, pt));
+					if (OsmInf.getBigType(auxpt.getS()) != OsmInf.Roads) {
+						auxpt = null;
+						break;
+					}
+				}
+				// Si ha podido llegar nos quedamos el punto
+				if (pt.equals(auxpt))
+					aux.add(pt);
+			}
+			adjacents = aux;
 			adjacents.add(position);
+		}
 
 		// Separar casillas inundadas de las secas
 		Set<Point> water = new NoDuplicatePointsSet(adjacents.size());
