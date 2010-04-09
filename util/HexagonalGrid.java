@@ -95,8 +95,8 @@ public class HexagonalGrid implements Serializable {
 		int row = size[1];
 
 		// Deberia funcionar tanto emisferio norte como sur
-		ilat = Math.abs(NW.getLat() - SE.getLat()) / row;
-		ilng = Math.abs(NW.getLng() - SE.getLng()) / col;
+		ilat = LatLng.round(Math.abs(NW.getLat() - SE.getLat()) / row);
+		ilng = LatLng.round(Math.abs(NW.getLng() - SE.getLng()) / col);
 
 		// ilat = (NW.getLat() - SE.getLat()) / row;
 		// ilng = (NW.getLng() - SE.getLng()) / col;

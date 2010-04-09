@@ -16,12 +16,16 @@
 
 package kml;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
+import util.jcoord.LatLngComparator;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
@@ -52,94 +56,127 @@ public class KmlFlood {
 	}
 
 	public void update(short[][] oldGrid, FloodHexagonalGrid fGrid,
-			String name,String beginTime, String endTime) {
+			String name, String beginTime, String endTime) {
 		// incs for this snapshot
 		double[] incs = fGrid.getIncs();
 		// int tileSize = fGrid.getTileSize();
 		// Now we update the time for each update call
 		this.endTime = endTime;
 		this.beginTime = beginTime;
-		folder = container.createAndAddFolder().withName(name).withDescription("From: "+beginTime+" To :"+endTime);
-		// Map<Short, SortedSet<LatLng>> floodSectors = new TreeMap<Short,
-		// SortedSet<LatLng>>();
+		folder = container.createAndAddFolder().withName(name).withDescription(
+				"From: " + beginTime + " To :" + endTime);
+		TreeMap<Short, SortedSet<LatLng>> floodSectors = new TreeMap<Short, SortedSet<LatLng>>();
 		// For each tile who has changed ever, creates hexagon
 		int offCol = fGrid.getOffX();
 		int offRow = fGrid.getOffY();
+		SortedSet<LatLng> sector;
 		for (int col = 0; col < fGrid.getColumns(); col++) {
 			for (int row = 0; row < fGrid.getRows(); row++) {
-				// TODO EASY WAY
 				int c = col + offCol;
 				int r = row + offRow;
 				short floodLevel = -1;
 				floodLevel = fGrid.getWaterValue(c, r);
 
 				if (floodLevel > 0) {
-					//Solo dibujamos aquellos poligonos que estan inundados
+					short key = fGrid.getValue(c, r);
+					// Solo dibujamos aquellos poligonos que estan inundados
 					if (altitudes.add(floodLevel)) {
 						// Si no tenemos esta altitud añadimos un nuevo estilo
 						// con la profundidad solo de este punto
-						createWaterStyleAndColor(floodLevel, floodLevel);
+						createWaterStyleAndColor(key, floodLevel);
 					}
-					// Hay que meterlos en un linked list, para nada :D
-					LinkedList<LatLng> sector = new LinkedList<LatLng>();
+					// Nos interesan las zonas inundadas que estan al mismo
+					// nivel
+
+					sector = floodSectors.get(key);
+					if (sector == null) {
+						sector = new TreeSet<LatLng>(new LatLngComparator());
+						floodSectors.put(key, sector);
+					}
+					// Añadimos la casilla en su nivel correspondiente
 					sector.add(fGrid.tileToCoord(c, r));
-					drawWater(sector, floodLevel, incs);
 				}
 			}
 		}
+
+		for (short key : floodSectors.keySet()) {
+			SortedSet<LatLng> sectors = floodSectors.get(key);
+			// Por cada lista de puntos al mismo nivel, identifico los
+			// diferentes poligonos
+			List<Kpolygon> Kpolygons = separatePolygons(sectors, fGrid
+					.getTileSize() * 1.1, fGrid.getIncs());
+			// Una vez que tengo los poligonos, los pinto en el kml
+			for (Kpolygon kpolygon : Kpolygons) {
+				drawWater(kpolygon, key, incs);
+			}
+
+		}
+
 	}
 
-	/*
-	 * TODO esto esta en fase MUY BETA, asi que simplemente pintamos hexanos. //
-	 * Por cada casilla if (fGrid.isFloodBorder(col, row)) { // Solo si esta
-	 * inundada y es borde short floodLevel = fGrid.getValue(col, row); if
-	 * (altitudes.add(floodLevel)) { // Si no tenemos esta altitud añadimos un
-	 * nuevo estilo // con la profundidad solo de este punto
-	 * createWaterStyleAndColor(floodLevel, fGrid.getValue( col, row)); }
-	 * SortedSet<LatLng> floodTiles = floodSectors.get(floodLevel); if
-	 * (floodTiles == null) { // Si no tenemos una lista de puntos a ese nivel
-	 * de // inundacion floodTiles = new TreeSet<LatLng>(new
-	 * LatLngComparator()); floodSectors.put(floodLevel, floodTiles); } //
-	 * pasamos a coordenadas LatLng pos = fGrid.tileToCoord(col, row);
-	 * pos.setAltitude(floodLevel); floodTiles.add(pos);
+	/**
+	 * Este metodo recibe una lista de vertices que estan al mismo nivel, su
+	 * mision es separarlos en conjuntos de vertices adyacentes y crear tantos
+	 * poligonos como conjuntos haya
 	 * 
-	 * // drawWaterPolygon("HEX[" + x + "," + y + "]", grid // .tileToCoord(x,
-	 * y), (short) Math.abs(z), incs); } } } Map<Short,
-	 * List<LinkedList<LatLng>>> floods = getFloodSectors( floodSectors,
-	 * tileSize); for (short key : floods.keySet()) { List<LinkedList<LatLng>>
-	 * sectors = floods.get(key); for (LinkedList<LatLng> sector : sectors) {
-	 * drawWater(sector, key, incs); } } }
-	 * 
-	 * private Map<Short, List<LinkedList<LatLng>>> getFloodSectors( Map<Short,
-	 * SortedSet<LatLng>> floodSectors, int tileSize) { Map<Short,
-	 * List<LinkedList<LatLng>>> floodLand = new TreeMap<Short,
-	 * List<LinkedList<LatLng>>>(); for (short key : floodSectors.keySet()) {
-	 * List<LinkedList<LatLng>> sectors = new ArrayList<LinkedList<LatLng>>();
-	 * floodLand.put(key, sectors); for (LatLng land : floodSectors.get(key)) {
-	 * if (sectors.isEmpty()) { // Necesitamos empezar por alguna
-	 * LinkedList<LatLng> aux = new LinkedList<LatLng>(); aux.add(land);
-	 * sectors.add(aux); } else { setAndOrderIntoList(sectors, land, tileSize);
-	 * } } } return floodLand; }
-	 * 
-	 * private void setAndOrderIntoList(List<LinkedList<LatLng>> sectors, LatLng
-	 * land, int tileSize) { boolean fin = false; for (LinkedList<LatLng> sector
-	 * : sectors) { for (LatLng pos : sector) { // La distancia sera pos si esta
-	 * a la derecha, neg si esta a la // izq double dist = pos.distance(land);
-	 * if (dist <= tileSize * 1.1) { // le damos un pequeño margen de error if
-	 * (dist > 0) { sector.add(sector.indexOf(pos) + 1, land); } else {
-	 * sector.add(sector.indexOf(pos), land); } fin = true; break; } } if (fin)
-	 * { break; } }
-	 * 
-	 * }
+	 * @param sectors
+	 * @param d
+	 * @return
 	 */
-	private void drawWater(LinkedList<LatLng> sector, int floodLevel,
-			double[] incs) {
-		if (sector != null && sector.size() > 0) {
-			Placemark placeMark = KmlBase.newPlaceMark(folder, String.valueOf(floodLevel));
-			KmlBase.setTimeSpan(placeMark, beginTime, endTime);
-			placeMark.setStyleUrl(water + floodLevel);
-			KmlBase.drawPolygon(placeMark, sector, incs);
+	private List<Kpolygon> separatePolygons(SortedSet<LatLng> sectors,
+			double d, double[] incs) {
+		List<Kpolygon> kpolygons = new ArrayList<Kpolygon>();
+		while (!sectors.isEmpty()) {
+			// Cada vez creamos una lista con el primer elemento
+			SortedSet<LatLng> sector = new TreeSet<LatLng>(new LatLngComparator());
+			LatLng aux = sectors.first();
+			// Guardamos el primer elemento
+			sector.add(aux);
+			// Lo borramos de la lista
+			sectors.remove(aux);
+			boolean adyacentes = false;
+			// Mientras nos queden coordenadas
+			while (!adyacentes) {
+				System.err.println("Buscando adyacentes");
+				// No hay adyacentes a esta coordenada, es un punto aislado
+				adyacentes = true;
+				// TODO mejorar la eficiencia
+				// Por cada coordenada que quede
+				for (LatLng c1 : sectors) {
+					// Cogemos la lista de los que son menores, nos quedamos con
+					// el ultimo y comparamos
+					LatLng c2 = sector.headSet(c1).last();
+					// En caso de ser adyacente, la añadimos y dejamos de
+					// mirar
+					if (Math.abs(c1.distance(c2)) <= d) {
+						System.err.println(c1 + " Es adyacente a " + c2);
+						adyacentes = false;
+						sector.add(c1);
+					}
+				}
+				// Borramos todas las coordenadas adyacentes de la lista
+				if (!sectors.removeAll(sector)) {
+					throw new IllegalArgumentException(
+							"El remove no ha funcionado");
+				}
+			}
+			// Añadimos a la lista de poligonos el correspondiente a la lista de
+			// adyacentes
+			System.err.println("Dibujando poligono " + sector);
+			kpolygons.add(new Kpolygon(Kpolygon.WaterType, sector, incs));
 		}
+		return kpolygons;
+	}
+
+	private void drawWater(Kpolygon kp, int floodLevel, double[] incs) {
+		if (kp == null) {
+			throw new IllegalArgumentException("El polygono no puede ser nulo");
+		}
+		Placemark placeMark = KmlBase.newPlaceMark(folder, String
+				.valueOf(floodLevel));
+		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
+		placeMark.setStyleUrl(water + floodLevel);
+		KmlBase.drawPolygon(placeMark, kp);
 
 	}
 

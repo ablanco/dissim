@@ -20,7 +20,6 @@ import jade.core.AID;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,7 +31,6 @@ import util.Pedestrian;
 import util.Snapshot;
 import util.Updateable;
 import util.flood.FloodHexagonalGrid;
-import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
@@ -116,6 +114,7 @@ public class KmlBase implements Updateable {
 
 		// Aqui iremos almacenando la informacion que cambia para cada escenario
 		// al que estemos subscritos
+		// System.err.println(sender.getLocalName()+" "+snap.getDateTime().toString());
 		KmlInf currentEnv = inf.get(sender.getLocalName());
 
 		if (currentEnv == null) {
@@ -250,48 +249,30 @@ public class KmlBase implements Updateable {
 	 * 
 	 * @param name
 	 *            of the polygon
-	 * @param borderLine
+	 * @param kpolygon
 	 *            borders of the polygon
 	 */
-	public static void drawPolygon(Placemark placeMark,
-			List<LatLng> borderLine, double[] incs) {
-		if (borderLine == null || borderLine.size() < 1) {
+	public static void drawPolygon(Placemark placeMark, Kpolygon kpolygon) {
+		if (kpolygon == null) {
 			throw new NullPointerException();
 		}
-		Polygon polygon = placeMark.createAndSetPolygon().withExtrude(true)
+		Polygon kmlPolygon = placeMark.createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-		LinearRing l = polygon.createAndSetOuterBoundaryIs()
+		LinearRing outer = kmlPolygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
-		switch (borderLine.size()) {
-		case 0:
-			throw new IllegalArgumentException("Poligon canot be empty");
-		case 1: // Draws Hexagon
-			LatLng coord = borderLine.get(0);
-			double ilat = (incs[0] * 4) / 6;
-			double ilng = incs[1] / 2;
+		if (kpolygon.getOuterLine().size() < 1) {
+			throw new IllegalArgumentException(
+					"El borde exterior del poligono no puede ser 0");
+		}
+		//Pintamos la linea exterior del poligono
+		outer.withCoordinates(kpolygon.getOuterLine());
 
-			// Hexagonal
-			double[] f = new double[] { 1, 0, 0.5, 1, -0.5, 1, -1, 0, -0.5, -1,
-					0.5, -1, 1, 0 };
-			double lat = coord.getLat();
-			double lng = coord.getLng();
-			List<Coordinate> coordinates = new ArrayList<Coordinate>();
-			for (int i = 0; i < f.length; i = i + 2) {
-				Coordinate c = new Coordinate(f[i + 1] * ilng + lng, f[i]
-						* ilat + lat, coord.getAltitude());
-				coordinates.add(c);
-			}
-			l.withCoordinates(coordinates);
-			break;
-		default: // Draws Polygon
-			// Closing the polygon
-			borderLine.add(borderLine.get(0));
-			for (LatLng c : borderLine) {
-				l.addToCoordinates(c.getLng(), c.getLat(), c.getAltitude());
-			}
-			// Esto solo dibuja los centros del poligono, no es hegagonal
-			break;
+		//Si el poligono tiene huecos los pintamos
+		for (List<Coordinate> inn : kpolygon.getInnerLines()) {
+			LinearRing inner = kmlPolygon.createAndAddInnerBoundaryIs()
+					.createAndSetLinearRing();
+			inner.withCoordinates(inn);
 		}
 	}
 

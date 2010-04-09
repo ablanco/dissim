@@ -42,8 +42,8 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @since 1.0
 	 */
 	public LatLng(double lat, double lng) {
-		this.lat = lat;
-		this.lng = lng;
+		this.lat = round(lat);
+		this.lng = round(lng);
 	}
 
 	/**
@@ -59,8 +59,8 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @author Manuel Gomar Acosta
 	 */
 	public LatLng(double lat, double lng, short altitude) {
-		this.lat = lat;
-		this.lng = lng;
+		this.lat = round(lat);
+		this.lng = round(lng);
 		this.altitude = altitude;
 	}
 
@@ -71,7 +71,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @since 1.0
 	 */
 	public String toString() {
-		return "(" + this.lat + ", " + this.lng + ", " + this.altitude + ")";
+		return "(" + lat + ", " + lng + ", " + this.altitude + ")";
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @return a String KML friendly representation of this LatLng object
 	 */
 	public String toKmlString() {
-		return String.valueOf(this.lng).substring(0, 9) + ", " + String.valueOf(this.lat).substring(0, 9) + ", " + this.altitude;
+		return lng + ", " + lat + ", " + this.altitude;
 	}
 
 	/**
@@ -409,7 +409,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	public LatLng addIncs(double lat, double lng){
-		return new LatLng(this.lat+lat, this.lng+lng);
+		return new LatLng(round(this.lat+lat), round(this.lng+lng));
 	}
 
 	/**
@@ -472,5 +472,10 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		} else if (lng > SE.getLng()) {
 			lng = SE.getLng();
 		}
+	}
+	
+	public static double round(double c){
+		long l = (long) (c * Math.pow(10, 6));
+		return l/Math.pow(10, 6);
 	}
 }
