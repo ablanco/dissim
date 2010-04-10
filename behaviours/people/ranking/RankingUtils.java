@@ -1,0 +1,151 @@
+//    Flood and evacuation simulator using multi-agent technology
+//    Copyright (C) 2010 Alejandro Blanco and Manuel Gomar
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+package behaviours.people.ranking;
+
+import java.util.Iterator;
+import java.util.Random;
+import java.util.Set;
+
+import osm.OsmInf;
+
+import util.HexagonalGrid;
+import util.NoDuplicatePointsSet;
+import util.Point;
+
+public class RankingUtils {
+
+	public static Set<Point> filterByStreetView(Set<Point> adjacents,
+			Point position) {
+		// Sólo las casillas que puede ver desde su calle
+		Set<Point> aux = new NoDuplicatePointsSet(adjacents.size() + 1);
+		for (Point pt : adjacents) {
+			Point auxpt = position;
+			// Buscamos que llegue en línea a través de una calle
+			while (!pt.equals(auxpt)) {
+				auxpt = findHexagon(adjacents, HexagonalGrid.nearestHexagon(
+						auxpt, pt));
+				if (OsmInf.getBigType(auxpt.getS()) != OsmInf.Roads) {
+					auxpt = null;
+					break;
+				}
+			}
+			// Si ha podido llegar nos quedamos el punto
+			if (pt.equals(auxpt))
+				aux.add(pt);
+		}
+		return aux;
+	}
+
+	public static Point findHexagon(Set<Point> adjacents, Point pt) {
+		for (Point apt : adjacents) {
+			if (pt.equals(apt)) {
+				pt = apt;
+				break;
+			}
+		}
+		return pt;
+	}
+
+	public static Point accessible(Set<Point> adjacents, Point position,
+			Point destination, int speed) {
+		Point result = null;
+		Point aux = position;
+		int cont = 0;
+		// Recorremos hexágonos hasta llegar a él
+		while (!destination.equals(aux)) {
+			cont++;
+			aux = findHexagon(adjacents, HexagonalGrid.nearestHexagon(aux,
+					destination));
+			// Mientras la velocidad lo permita vamos avanzando hexágonos
+			if (cont <= speed)
+				result = aux;
+			// Miramos que no nos encontremos con obstáculos en el camino
+			if (!destination.equals(aux)) {
+				if (aux.getW() > 0
+						|| OsmInf.getBigType(aux.getS()) != OsmInf.Roads) {
+					result = null;
+					break;
+				}
+			}
+		}
+		return result;
+	}
+
+	public static Point farInSetFromPoint(Set<Point> in, Point from) {
+		Point result = null;
+		int max = Integer.MIN_VALUE;
+		for (Point pt : in) {
+			int dist = HexagonalGrid.distance(from, pt);
+			if (dist > max) {
+				result = pt;
+				max = dist;
+			}
+		}
+		return result;
+	}
+
+	public static Point farInSetFromSet(Set<Point> in, Set<Point> from) {
+		if(from.size() == 0)
+			return randomFromSet(new Random(System.currentTimeMillis()), in);
+		
+		Point result = null;
+		int max = Integer.MIN_VALUE;
+		for (Point inpt : in) {
+			int dist = 0;
+			for (Point frpt : from) {
+				dist += HexagonalGrid.distance(inpt, frpt);
+			}
+			if (from.size() != 0)
+				dist /= from.size();
+			if (dist > max) {
+				result = inpt;
+				max = dist;
+			}
+		}
+		return result;
+	}
+
+	public static boolean detectFloodDeath(Set<Point> dry, Point position) {
+		// Si no tiene casillas secas a su alrededor está rodeado y
+		// se ahoga
+		Set<Point> freeAdjc = new NoDuplicatePointsSet(6);
+		if (position != null) {
+			// Sólo las adyacentes a distancia 1
+			for (Point pt : dry) {
+				if (HexagonalGrid.distance(position, pt) <= 1)
+					freeAdjc.add(pt);
+			}
+		} else {
+			freeAdjc = dry;
+		}
+		if (freeAdjc.size() == 0)
+			return true;
+		return false;
+	}
+
+	public static Point randomFromSet(Random rnd, Set<Point> points) {
+		int aux = rnd.nextInt(points.size());
+		Iterator<Point> it = points.iterator();
+		Point p = it.next();
+		while (aux > 0) {
+			p = it.next();
+			aux--;
+		}
+		return p;
+	}
+
+}

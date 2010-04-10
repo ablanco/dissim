@@ -27,9 +27,9 @@ import java.util.Set;
 
 import util.AgentHelper;
 import util.Point;
-import agents.people.ranking.Ranking;
-import agents.people.ranking.YouAreDeadException;
 import behaviours.AdjacentsGridBehav;
+import behaviours.people.ranking.Ranking;
+import behaviours.people.ranking.YouAreDeadException;
 
 @SuppressWarnings("serial")
 public class RunawayBehav extends CyclicBehaviour {

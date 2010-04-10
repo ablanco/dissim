@@ -24,10 +24,10 @@ import java.lang.reflect.Constructor;
 
 import util.AgentHelper;
 import util.jcoord.LatLng;
-import agents.people.ranking.Ranking;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
 import behaviours.people.RunawayBehav;
+import behaviours.people.ranking.Ranking;
 
 @SuppressWarnings("serial")
 public class PedestrianAgent extends Agent {

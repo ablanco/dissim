@@ -14,7 +14,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package agents.people.ranking;
+package behaviours.people.ranking;
 
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -35,24 +35,7 @@ public class HighFarStreetRank implements Ranking {
 			int speed) throws YouAreDeadException {
 
 		if (position != null) {
-			// Sólo las casillas que puede ver desde su calle
-			Set<Point> aux = new NoDuplicatePointsSet(adjacents.size() + 1);
-			for (Point pt : adjacents) {
-				Point auxpt = position;
-				// Buscamos que llegue en línea a través de una calle
-				while (!pt.equals(auxpt)) {
-					auxpt = findHexagon(adjacents, HexagonalGrid
-							.nearestHexagon(auxpt, pt));
-					if (OsmInf.getBigType(auxpt.getS()) != OsmInf.Roads) {
-						auxpt = null;
-						break;
-					}
-				}
-				// Si ha podido llegar nos quedamos el punto
-				if (pt.equals(auxpt))
-					aux.add(pt);
-			}
-			adjacents = aux;
+			adjacents = RankingUtils.filterByStreetView(adjacents, position);
 			adjacents.add(position);
 		}
 
@@ -67,19 +50,7 @@ public class HighFarStreetRank implements Ranking {
 			// Las casillas que no son calles se ignoran
 		}
 
-		// Si no tiene casillas secas a su alrededor está rodeado y
-		// se ahoga
-		Set<Point> freeAdjc = new NoDuplicatePointsSet(6);
-		if (position != null) {
-			// Sólo las adyacentes a distancia 1
-			for (Point pt : dry) {
-				if (HexagonalGrid.distance(position, pt) <= 1)
-					freeAdjc.add(pt);
-			}
-		} else {
-			freeAdjc = dry;
-		}
-		if (freeAdjc.size() == 0)
+		if (RankingUtils.detectFloodDeath(dry, position))
 			throw new YouAreDeadException("Surrounded by water :(");
 
 		scores = new Hashtable<String, Integer>(dry.size());
@@ -159,7 +130,7 @@ public class HighFarStreetRank implements Ranking {
 				for (int i = 0; i < speed; i++) {
 					// Se puede llegar a él?
 					aux = HexagonalGrid.nearestHexagon(aux, pt);
-					aux = findHexagon(adjacents, aux);
+					aux = RankingUtils.findHexagon(adjacents, aux);
 					// No entra en casillas con agua y sólo se mueve por calles
 					if (aux.getW() > 0
 							|| OsmInf.getBigType(aux.getS()) != OsmInf.Roads) {
@@ -182,16 +153,6 @@ public class HighFarStreetRank implements Ranking {
 		}
 
 		return result;
-	}
-
-	private Point findHexagon(Set<Point> adjacents, Point pt) {
-		for (Point apt : adjacents) {
-			if (pt.equals(apt)) {
-				pt = apt;
-				break;
-			}
-		}
-		return pt;
 	}
 
 }
