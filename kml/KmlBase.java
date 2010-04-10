@@ -253,18 +253,15 @@ public class KmlBase implements Updateable {
 	 *            borders of the polygon
 	 */
 	public static void drawPolygon(Placemark placeMark, Kpolygon kpolygon) {
-		if (kpolygon == null) {
-			throw new NullPointerException();
+		if (kpolygon == null || kpolygon.getOuterLine().size()==0) {
+			throw new IllegalArgumentException(
+			"El borde exterior del poligono no puede ser 0");
 		}
 		Polygon kmlPolygon = placeMark.createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 		LinearRing outer = kmlPolygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
-		if (kpolygon.getOuterLine().size() < 1) {
-			throw new IllegalArgumentException(
-					"El borde exterior del poligono no puede ser 0");
-		}
 		//Pintamos la linea exterior del poligono
 		outer.withCoordinates(kpolygon.getOuterLine());
 

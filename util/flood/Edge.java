@@ -59,7 +59,7 @@ public class Edge {
 	 * @return
 	 */
 	public boolean isAdyacent(Edge e) {
-		return a == e.getA() || b == e.getB() || b == e.getA() || a == e.getB();
+		return b == e.getA() || b == e.getB() || a == e.getA() || a == e.getB();
 	}
 	
 	/**

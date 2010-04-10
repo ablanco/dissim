@@ -17,12 +17,14 @@
 package kml;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
+import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngComparator;
@@ -59,123 +61,89 @@ public class KmlFlood {
 			String name, String beginTime, String endTime) {
 		// incs for this snapshot
 		double[] incs = fGrid.getIncs();
+		double ilat = incs[0]*3/5;
+		double ilng = incs[1]/2;
 		// int tileSize = fGrid.getTileSize();
 		// Now we update the time for each update call
 		this.endTime = endTime;
 		this.beginTime = beginTime;
 		folder = container.createAndAddFolder().withName(name).withDescription(
 				"From: " + beginTime + " To :" + endTime);
-		TreeMap<Short, SortedSet<LatLng>> floodSectors = new TreeMap<Short, SortedSet<LatLng>>();
 		// For each tile who has changed ever, creates hexagon
 		int offCol = fGrid.getOffX();
 		int offRow = fGrid.getOffY();
-		SortedSet<LatLng> sector;
+		Collection<Point> flooded = new TreeSet<Point>();
+		// Collection<Point> flooded = new SortedSet<Point>();
 		for (int col = 0; col < fGrid.getColumns(); col++) {
 			for (int row = 0; row < fGrid.getRows(); row++) {
 				int c = col + offCol;
 				int r = row + offRow;
-				short floodLevel = -1;
-				floodLevel = fGrid.getWaterValue(c, r);
-
-				if (floodLevel > 0) {
-					short key = fGrid.getValue(c, r);
-					// Solo dibujamos aquellos poligonos que estan inundados
-					if (altitudes.add(floodLevel)) {
-						// Si no tenemos esta altitud añadimos un nuevo estilo
-						// con la profundidad solo de este punto
-						createWaterStyleAndColor(key, floodLevel);
-					}
-					// Nos interesan las zonas inundadas que estan al mismo
-					// nivel
-
-					sector = floodSectors.get(key);
-					if (sector == null) {
-						sector = new TreeSet<LatLng>(new LatLngComparator());
-						floodSectors.put(key, sector);
-					}
-					// Añadimos la casilla en su nivel correspondiente
-					sector.add(fGrid.tileToCoord(c, r));
+				if (fGrid.getWaterValue(c, r) > 0) {
+					flooded.add(new Point(c, r, fGrid.getValue(c, r)));
 				}
 			}
 		}
+		System.err.println("Sectores inundados "+flooded);
+		// Mientras tengamos casillas inundadas
+		while (!flooded.isEmpty()) {
+			// Obtenemos el primer punto
+			boolean adyacents = true;
+			// Vamos rellenando el primer sector
+			Collection<Point> sector = new TreeSet<Point>();
+			while (adyacents) {
+				// Mientras tenga un nuevo adyacente
+				adyacents = false;
+				Iterator<Point> it = flooded.iterator();
+				if (sector.isEmpty() && !flooded.isEmpty()) {
+					// Significa que es un nuevo sector
+					sector.add(it.next());
+					it.remove();
+				}
+				while (it.hasNext()) {
+					// Mientras nos queden casillas por visitar
+					Point p = it.next();
+					for (Point pp : sector){	
+						if (pp.isAdyacent(p)) {
+							sector.add(p);
+							it.remove();
+							adyacents = true;
+							break;
+						}
+					}
+				}
+			}
+			// Creamos una lista de vertices
+			List<LatLng> vertices = new ArrayList<LatLng>();
+			short deep = 0;
+			// Aprobechamos para sacar la altura media
+			System.err.println("Sector inundado, puntos "+sector);
+			for (Point p : sector) {
+				deep += p.getZ();
+				vertices.add(fGrid.tileToCoord(p));
+			}
+			deep = (short) (deep / sector.size());
 
-		for (short key : floodSectors.keySet()) {
-			SortedSet<LatLng> sectors = floodSectors.get(key);
-			// Por cada lista de puntos al mismo nivel, identifico los
-			// diferentes poligonos
-			List<Kpolygon> Kpolygons = separatePolygons(sectors, fGrid
-					.getTileSize() * 1.1, fGrid.getIncs());
-			// Una vez que tengo los poligonos, los pinto en el kml
-			for (Kpolygon kpolygon : Kpolygons) {
-				drawWater(kpolygon, key, incs);
+			Kpolygon kp = new Kpolygon(Kpolygon.WaterType, vertices, ilat, ilng);
+			kp.setDeep(deep);
+			System.err.println("Poligono Dibujado");
+
+			if (altitudes.add(deep)) {
+				createWaterStyleAndColor(deep);
 			}
 
+			drawWater(kp);
 		}
 
 	}
 
-	/**
-	 * Este metodo recibe una lista de vertices que estan al mismo nivel, su
-	 * mision es separarlos en conjuntos de vertices adyacentes y crear tantos
-	 * poligonos como conjuntos haya
-	 * 
-	 * @param sectors
-	 * @param d
-	 * @return
-	 */
-	private List<Kpolygon> separatePolygons(SortedSet<LatLng> sectors,
-			double d, double[] incs) {
-		List<Kpolygon> kpolygons = new ArrayList<Kpolygon>();
-		while (!sectors.isEmpty()) {
-			// Cada vez creamos una lista con el primer elemento
-			SortedSet<LatLng> sector = new TreeSet<LatLng>(new LatLngComparator());
-			LatLng aux = sectors.first();
-			// Guardamos el primer elemento
-			sector.add(aux);
-			// Lo borramos de la lista
-			sectors.remove(aux);
-			boolean adyacentes = false;
-			// Mientras nos queden coordenadas
-			while (!adyacentes) {
-				System.err.println("Buscando adyacentes");
-				// No hay adyacentes a esta coordenada, es un punto aislado
-				adyacentes = true;
-				// TODO mejorar la eficiencia
-				// Por cada coordenada que quede
-				for (LatLng c1 : sectors) {
-					// Cogemos la lista de los que son menores, nos quedamos con
-					// el ultimo y comparamos
-					LatLng c2 = sector.headSet(c1).last();
-					// En caso de ser adyacente, la añadimos y dejamos de
-					// mirar
-					if (Math.abs(c1.distance(c2)) <= d) {
-						System.err.println(c1 + " Es adyacente a " + c2);
-						adyacentes = false;
-						sector.add(c1);
-					}
-				}
-				// Borramos todas las coordenadas adyacentes de la lista
-				if (!sectors.removeAll(sector)) {
-					throw new IllegalArgumentException(
-							"El remove no ha funcionado");
-				}
-			}
-			// Añadimos a la lista de poligonos el correspondiente a la lista de
-			// adyacentes
-			System.err.println("Dibujando poligono " + sector);
-			kpolygons.add(new Kpolygon(Kpolygon.WaterType, sector, incs));
-		}
-		return kpolygons;
-	}
-
-	private void drawWater(Kpolygon kp, int floodLevel, double[] incs) {
+	private void drawWater(Kpolygon kp) {
 		if (kp == null) {
 			throw new IllegalArgumentException("El polygono no puede ser nulo");
 		}
-		Placemark placeMark = KmlBase.newPlaceMark(folder, String
-				.valueOf(floodLevel));
+		Placemark placeMark = KmlBase.newPlaceMark(folder, String.valueOf(kp
+				.getDeep()));
 		KmlBase.setTimeSpan(placeMark, beginTime, endTime);
-		placeMark.setStyleUrl(water + floodLevel);
+		placeMark.setStyleUrl(water + kp.getDeep());
 		KmlBase.drawPolygon(placeMark, kp);
 
 	}
@@ -188,11 +156,11 @@ public class KmlFlood {
 	 * @param z
 	 *            deep
 	 */
-	protected void createWaterStyleAndColor(short floodLevel, short z) {
+	protected void createWaterStyleAndColor(short floodLevel) {
 		// Le damos un color medio para que se parezca a agua
 		int blue = 125;
 		// Mientras mas profunda sea el agua, mas ocuro es el azul.
-		blue += z;
+		blue += floodLevel;
 		// Kml uses aabbggrr "5500" le da un color azul bonito
 		String abgr;
 		if (blue > 255) {

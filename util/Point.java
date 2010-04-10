@@ -59,6 +59,12 @@ public class Point implements Comparable<Point>, Serializable {
 		return isIn;
 	}
 
+	public boolean isAdyacent(Point p) {
+		return Math.abs(col - p.getCol()) < 2 && Math.abs(row - p.getRow()) < 2
+				&& !(col + 1 == p.getCol() && row + 1 == p.getRow())
+				&& !(col + 1 == p.getCol() && row - 1 == p.getRow());
+	}
+
 	@Override
 	public int compareTo(Point o) {
 		if (o.col == col && o.row == row)
