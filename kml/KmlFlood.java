@@ -20,14 +20,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
-import util.jcoord.LatLngComparator;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
@@ -61,8 +61,8 @@ public class KmlFlood {
 			String name, String beginTime, String endTime) {
 		// incs for this snapshot
 		double[] incs = fGrid.getIncs();
-		double ilat = incs[0]*3/5;
-		double ilng = incs[1]/2;
+		double ilat = incs[0] * 4 / 6;
+		double ilng = incs[1] / 2;
 		// int tileSize = fGrid.getTileSize();
 		// Now we update the time for each update call
 		this.endTime = endTime;
@@ -72,66 +72,83 @@ public class KmlFlood {
 		// For each tile who has changed ever, creates hexagon
 		int offCol = fGrid.getOffX();
 		int offRow = fGrid.getOffY();
-		Collection<Point> flooded = new TreeSet<Point>();
+		Map<Short, Collection<Point>> floods = new TreeMap<Short, Collection<Point>>();
+		Collection<Point> flooded;
 		// Collection<Point> flooded = new SortedSet<Point>();
+		// Para toda la matriz
 		for (int col = 0; col < fGrid.getColumns(); col++) {
 			for (int row = 0; row < fGrid.getRows(); row++) {
 				int c = col + offCol;
 				int r = row + offRow;
 				if (fGrid.getWaterValue(c, r) > 0) {
+					// Nos fijamos solo en los sectores inundados
+					short key = fGrid.getValue(c, r);
+					flooded = floods.get(key);
+					// Los ordenamos por Niveles, para reducir la longitud de
+					// las listas lo maximo posible
+					if (flooded == null) {
+						flooded = new TreeSet<Point>();
+						floods.put(key, flooded);
+					}
 					flooded.add(new Point(c, r, fGrid.getValue(c, r)));
 				}
 			}
 		}
-		System.err.println("Sectores inundados "+flooded);
 		// Mientras tengamos casillas inundadas
-		while (!flooded.isEmpty()) {
-			// Obtenemos el primer punto
-			boolean adyacents = true;
-			// Vamos rellenando el primer sector
-			Collection<Point> sector = new TreeSet<Point>();
-			while (adyacents) {
-				// Mientras tenga un nuevo adyacente
-				adyacents = false;
-				Iterator<Point> it = flooded.iterator();
-				if (sector.isEmpty() && !flooded.isEmpty()) {
-					// Significa que es un nuevo sector
-					sector.add(it.next());
-					it.remove();
-				}
-				while (it.hasNext()) {
-					// Mientras nos queden casillas por visitar
-					Point p = it.next();
-					for (Point pp : sector){	
-						if (pp.isAdyacent(p)) {
-							sector.add(p);
-							it.remove();
-							adyacents = true;
-							break;
+		for (short key : floods.keySet()) {
+			// Vamos iterando sobre este sector para obtener los adyacentes
+			Collection<Point> waterTiles = floods.get(key);
+			while (!waterTiles.isEmpty()) {
+				// Obtenemos el primer punto
+				boolean adyacents = true;
+				// Vamos rellenando el primer sector
+				Collection<Point> sector = new TreeSet<Point>();
+				while (adyacents) {
+					// Mientras tenga un nuevo adyacente
+					adyacents = false;
+					Iterator<Point> it = waterTiles.iterator();
+					if (sector.isEmpty() && !waterTiles.isEmpty()) {
+						// Significa que es un nuevo sector
+						sector.add(it.next());
+						it.remove();
+					}
+					while (it.hasNext()) {
+						// Mientras nos queden casillas por visitar
+						Point p = it.next();
+						for (Point pp : sector) {
+							// Miro si es adyacente a alguno de los que ya se
+							// que son adyacentes
+							if (pp.isAdyacent(p)) {
+								sector.add(p);
+								it.remove();
+								adyacents = true;
+								break;
+							}
 						}
 					}
 				}
-			}
-			// Creamos una lista de vertices
-			List<LatLng> vertices = new ArrayList<LatLng>();
-			short deep = 0;
-			// Aprobechamos para sacar la altura media
-			System.err.println("Sector inundado, puntos "+sector);
-			for (Point p : sector) {
-				deep += p.getZ();
-				vertices.add(fGrid.tileToCoord(p));
-			}
-			deep = (short) (deep / sector.size());
+				// Creamos una lista de vertices
+				List<LatLng> vertices = new ArrayList<LatLng>();
+				short deep = 0;
+				// Aprobechamos para sacar la altura media
+				System.err.println("Sector inundado, puntos " + sector);
+				for (Point p : sector) {
+					deep += p.getZ();
+					vertices.add(fGrid.tileToCoord(p));
+				}
+				deep = (short) (deep / sector.size());
 
-			Kpolygon kp = new Kpolygon(Kpolygon.WaterType, vertices, ilat, ilng);
-			kp.setDeep(deep);
-			System.err.println("Poligono Dibujado");
+				Kpolygon kp = new Kpolygon(Kpolygon.WaterType, vertices, ilat,
+						ilng);
+				kp.setDeep(deep);
+				System.err.println("Poligono Dibujado");
 
-			if (altitudes.add(deep)) {
-				createWaterStyleAndColor(deep);
+				if (altitudes.add(deep)) {
+					createWaterStyleAndColor(deep);
+				}
+
+				drawWater(kp);
 			}
-
-			drawWater(kp);
 		}
 
 	}

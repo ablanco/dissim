@@ -30,7 +30,7 @@ public class CoverturaConexa {
 
 		FloodHexagonalGrid grid = new FloodHexagonalGrid(new LatLng(29.953260,
 				-90.088238, (short) 10), new LatLng(29.918075, -90.053707,
-				(short) 10), 0, 0, 30);
+				(short) 10), 0, 0, 600);
 		// FloodHexagonalGrid grid = new FloodHexagonalGrid(new
 		// LatLng(29.953260,
 		// -90.088238, (short) 10), new LatLng(29.952260, -90.087238,
@@ -40,34 +40,39 @@ public class CoverturaConexa {
 				new Hashtable<String, Pedestrian>());
 
 		KmlBase k = new KmlBase();
-		int c = newOrleans.getGrid().getColumns();
-		int r = newOrleans.getGrid().getRows();
-
-		SortedSet<LatLng> sl = new TreeSet<LatLng>(new LatLngComparator());
-		HashSet<LatLng> ss = new HashSet<LatLng>();
-
-		for (int rep = 0; rep < 6; rep++) {
-			for (int i = 0; i < c; i++) {
-				for (int j = 0; j < r; j++) {
-					sl.add(newOrleans.getGrid().tileToCoord(i, j));
-					ss.add(newOrleans.getGrid().tileToCoord(i, j));
-
-					short x = (short) ((Math.random() * 100) % 2);
-					grid.setWaterValue(i, j, x);
-				}
-			}
-
-			List<Pedestrian> people = newOrleans.getPeople();
-			for (int i = 0; i < 6; i++) {
-				people.add(new Pedestrian(new Point(
-						(int) ((Math.random() * 100) % c), (int) ((Math
-								.random() * 100) % r))));
-			}
-
-			k.update(newOrleans, new AID());
-			newOrleans.getPeople().clear();
-			newOrleans.updateTime(3);
-		}
+		
+//		int c = newOrleans.getGrid().getColumns();
+//		int r = newOrleans.getGrid().getRows();
+//		for (int rep = 0; rep < 6; rep++) {
+//			for (int i = 0; i < c; i++) {
+//				for (int j = 0; j < r; j++) {
+//					short x = (short) ((Math.random() * 100) % 2);
+//					grid.setWaterValue(i, j, x);
+//				}
+//			}
+//
+//			List<Pedestrian> people = newOrleans.getPeople();
+//			for (int i = 0; i < 6; i++) {
+//				people.add(new Pedestrian(new Point(
+//						(int) ((Math.random() * 100) % c), (int) ((Math
+//								.random() * 100) % r))));
+//			}
+//
+//			k.update(newOrleans, new AID());
+//			newOrleans.getPeople().clear();
+//			newOrleans.updateTime(3);
+//		}
+		
+		k.update(newOrleans, new AID());
+		newOrleans.updateTime(1);
+		grid.setWaterValue(4, 4, (short) 5);
+		grid.setWaterValue(4, 5, (short) 5);
+		grid.setWaterValue(4, 6, (short) 5);
+		grid.setWaterValue(4, 3, (short) 5);
+		grid.setWaterValue(4, 2, (short) 5);
+		k.update(newOrleans, new AID());
+		newOrleans.updateTime(3);
+		
 		k.finish();
 	}
 

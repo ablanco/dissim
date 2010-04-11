@@ -48,8 +48,7 @@ public class Edge {
 	@Override
 	public boolean equals(Object obj) {
 		Edge e = (Edge) obj;
-		return (a == e.getA() && b == e.getB());
-//		return isAdyacent(e);
+		return (almostEqual(a, e.getA()) && almostEqual(b,e.getB()));
 	}
 
 	/**
@@ -59,7 +58,8 @@ public class Edge {
 	 * @return
 	 */
 	public boolean isAdyacent(Edge e) {
-		return b == e.getA() || b == e.getB() || a == e.getA() || a == e.getB();
+//		return b == e.getA() || b == e.getB() || a == e.getA() || a == e.getB();
+		return almostEqual(b, e.getA()) || almostEqual(b, e.getB()) || almostEqual(a, e.getA()) || almostEqual(a, e.getB()); 
 	}
 	
 	/**
@@ -68,9 +68,7 @@ public class Edge {
 	 * @return
 	 */
 	public boolean isOposite(Edge e){
-		Coordinate c = e.getB();
-		Coordinate d = e.getA();
-		return a.getLatitude() == c.getLatitude() && a.getLongitude() == c.getLongitude() && b.getLatitude() == d.getLatitude() && b.getLongitude() == d.getLongitude();
+		return almostEqual(a, e.getB()) && almostEqual(b, e.getA());
 	}
 
 	@Override
@@ -95,5 +93,22 @@ public class Edge {
 		return String.valueOf(Integer.toHexString(Integer.valueOf(slat)+Integer.valueOf(slng))); 
 //		return "["+slat+","+slng+"]";
 //		return "["+Integer.toHexString(Integer.valueOf(slat))+","+Integer.toHexString(Integer.valueOf(slng))+"]";
+	}
+	
+	/**
+	 * Epic Method, returns true if two coordinates looks like nearly the same
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	private boolean almostEqual(Coordinate a, Coordinate b){
+		long alat = (long) Math.abs((a.getLatitude() * Math.pow(10, 6)));
+		long alng = (long) Math.abs((a.getLongitude() * Math.pow(10, 6)));
+		long blat = (long) Math.abs((b.getLatitude() * Math.pow(10, 6)));
+		long blng = (long) Math.abs((b.getLongitude() * Math.pow(10, 6)));
+		//TODO mejorar
+//		System.err.println("A: "+a+", B:"+b+" resultado "+alat+"-"+blat+" vs "+alng+"-"+blng);
+		return Math.abs(alat-blat)<10 && Math.abs(alng-blng)<10;
+		
 	}
 }

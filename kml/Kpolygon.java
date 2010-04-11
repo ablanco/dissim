@@ -2,6 +2,7 @@ package kml;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -42,26 +43,29 @@ public class Kpolygon {
 		}
 		System.err.println("Creando polygono, obteniendas todas las aristas "
 				+ rawEdgeList);
-		int size = rawEdgeList.size();
 		// TODO mejorar eficiencia
-		while (size > 1) {
-			List<List<Edge>> edgeList = new ArrayList<List<Edge>>();
-			// Mientras el tamaño sea mayor que uno no habre terminado
-			if (size % 2 != 0) {
-				size--;
-			}
-			// Voy sumando de dos en dos
-			for (int i = 0; i < size; i = i + 2) {
-				edgeList.add(borderOperator(rawEdgeList.get(i), rawEdgeList
-						.get(i + 1)));
-			}
-			// Me quedo con la nueva lista
-			rawEdgeList = edgeList;
-			size = rawEdgeList.size();
+		List<Edge> edgeList = new ArrayList<Edge>();
+		Iterator<List<Edge>> it = rawEdgeList.iterator();
+		// La razon de esto es, Al hacerlo de otra forma, podia coincidir la
+		// suma de dos sectores que no fueran adyacentes, lo cual crea huecos
+		// que no se pueden resolver de una forma eficiente, esto tampoco es muy
+		// eficiente, pero es mucho menos complicao, creo, que lo otro.
+		while (it.hasNext()) {
+			edgeList = borderOperator(it.next(), edgeList);
 		}
-		System.err.println("Lista en bruto de las aristas "
-				+ rawEdgeList.get(0));
-		separateLines(rawEdgeList.get(0));
+		System.err.println("Lista en bruto de las aristas " + edgeList);
+		Collection<List<Edge>> edges = separateLines(edgeList);
+		Iterator<List<Edge>> e = edges.iterator();
+		while (e.hasNext()) {
+			// El primero es el Borde exterior
+			outerLine = edgeToList(e.next());
+			while (e.hasNext()) {
+				// Los demas son bordes interiores
+				innerLines.add(edgeToList(e.next()));
+			}
+		}
+		System.err.println("\t Borde exterior " + outerLine);
+		System.err.println("\t Bordes Interiores " + innerLines);
 	}
 
 	public List<Coordinate> getOuterLine() {
@@ -128,27 +132,64 @@ public class Kpolygon {
 	private List<Edge> borderOperator(List<Edge> h1, List<Edge> h2) {
 		List<Edge> edges = new ArrayList<Edge>();
 		// System.err.println("Listas entrada");
-		// System.err.println("\t "+h1);
-		// System.err.println("\t "+h2);
-		for (Edge e : h1) {
-			if (!h2.contains(e)) {
-				edges.add(e);
-				h2.remove(e);
+		// System.err.println("\t " + h1);
+		// System.err.println("\t " + h2);
+		Iterator<Edge> it1 = h1.iterator();
+		while (it1.hasNext()) {
+			Edge a = it1.next();
+			Iterator<Edge> it2 = h2.iterator();
+			boolean repetido = false;
+			while (!repetido && it2.hasNext()) {
+				Edge b = it2.next();
+				// Buscamos en las dos listas los repetidos
+				if (a.isOposite(b)) {
+//					System.err.println(a + " opuesto de " + b);
+					// Si son repetidos los borramos
+					it2.remove();
+					it1.remove();
+					repetido = true;
+				}
 			}
 		}
+//		System.err.println("Listas sin duplicados");
+//		System.err.println("\t " + h1);
+//		System.err.println("\t " + h2);
+		// ahora tenemos que rellenar los huecos de los borrados
+		it1 = h1.iterator();
+		while (it1.hasNext()) {
+			// Por cada elemento de la primera lista
+			edges.add(it1.next());
+			Iterator<Edge> it2 = h2.iterator();
+			boolean adyacente = true;
+			while (it2.hasNext() && adyacente) {
+				// Miramos si hay algun adyacente de la segunda lista
+				Edge prev = edges.get(edges.size() - 1);
+				Edge curr = it2.next();
+				if (prev.isAdyacent(curr)) {
+					// en caso de haberlo y mientras sean adyacentes pues los
+					// vamos poniendo consecutivos
+					edges.add(curr);
+					it2.remove();
+				} else {
+					// Han dejado de ser adyacentes y el ultimo deberia ser
+					// adyacente con el que falta ... eventualmente
+					adyacente = false;
+				}
+			}
+		}
+		// Si las listas no eran adyacentes, pues añado todo al final
 		edges.addAll(h2);
-		// System.err.println("\t Salida "+edges);
+//		System.err.println("\t\t Listas unidas " + edges);
 		return edges;
 	}
 
 	/**
-	 * Suma todas las aristas, el resultado es una lista de aristas que coincide
-	 * con la covertura conexa de los hexagonos. Tambien detecta el borde
-	 * exterior y los bordes interiores en caso de existir
+	 * Suma todas las aristas, el problema es que es un caos, asi que da muchas
+	 * listas que hay que juntar luego, otra chapuza mas ...
 	 * 
 	 * @param rawPolygon
 	 */
-	private void separateLines(List<Edge> rawPolygon) {
+	private Collection<List<Edge>> separateLines(List<Edge> rawPolygon) {
 		Collection<List<Edge>> borders = new TreeSet<List<Edge>>(
 				new SizeComparator());
 		LinkedList<Edge> border = new LinkedList<Edge>();
@@ -158,31 +199,112 @@ public class Kpolygon {
 		for (Edge e : rawPolygon) {
 			Edge a = border.getLast();
 			if (e.isAdyacent(a)) {// Voy añadiendo mientras sean adyacentes
-			// System.err.println(a+" son adyacentes "+e);
+				// System.err.println(a+" son adyacentes "+e);
 				border.add(e);
 			} else {// ya no es adyacente, es otro borde
-				System.err.println("\tDetectado Borde " + border);
 				border = new LinkedList<Edge>();
 				border.add(e);
 				borders.add(border);
 			}
 		}
-		boolean outer = true;
-		for (List<Edge> b : borders) {
-			if (outer) {
-				outerLine = edgeToList(b);
-				outer = false;
-			} else {
-				innerLines.add(edgeToList(b));
-			}
-		}
+		// Chapuza para arreglar que no es una buena ordenación
+		System.err.println("\t Bordes separados "+borders);
+		return joinLines(borders);
 	}
 
+	/**
+	 * El problema es que al final no hace bien las mezclas de listas, y hay que
+	 * volver a rejuntarlos
+	 * 
+	 * @param borders
+	 * @return
+	 */
+	private Collection<List<Edge>> joinLines(Collection<List<Edge>> borders) {
+		// No sabemos en el orden que van a estar, aqui que cada vez que haya
+		// una modificacion tenemos que repetir todo el proceso
+		boolean unchanged = false;
+		while (!unchanged && borders.size() > 1) {
+			// Suponemos que no ha cambiado
+			unchanged = true;
+			// Primer iterador
+			Iterator<List<Edge>> it = borders.iterator();
+			// Nos quedamos con el primer elemento y borramos
+			List<Edge> curr = it.next();
+			it.remove();
+			while (it.hasNext()) {
+				List<Edge> next = it.next();
+				int j = isAdyacentList(curr, next);
+				if (j != 0) {
+					System.err.println("Uniendo Bordes "+curr+" con "+next);
+					curr = union(j, curr, next);
+					System.err.println("\t y este es el resultado "+curr);
+					it.remove();
+					unchanged = false;
+				}
+			}
+			borders.add(curr);
+		}
+		System.err.println("\t Bordes unidos "+borders);
+		return borders;
+	}
+
+	/**
+	 * Pasa una lista de Aristas a una lista de Coordinate
+	 * 
+	 * @param line
+	 * @return
+	 */
 	private List<Coordinate> edgeToList(List<Edge> line) {
 		List<Coordinate> lc = new ArrayList<Coordinate>();
 		for (Edge e : line) {
 			lc.addAll(e.getEdge());
 		}
 		return lc;
+	}
+
+	/**
+	 * Returns 0 if list are not adyacent, 1 if l1+l2 -1 if l2+l1
+	 * 
+	 * @param l1
+	 * @param l2
+	 * @return
+	 */
+	private int isAdyacentList(List<Edge> l1, List<Edge> l2) {
+		if (l1 == null || l2 == null || l1.size() == 0 || l2.size() == 0) {
+			// Logicamento no son iguales
+			return 0;
+		}
+		Edge p1 = l1.get(0);
+		Edge p2 = l2.get(0);
+		Edge u1 = l1.get(l1.size() - 1);
+		Edge u2 = l2.get(l2.size() - 1);
+
+		// l1 -> l2
+		if (u1.isAdyacent(p2)) {
+			return 1;
+		}
+
+		// l2 -> l1
+		if (u2.isAdyacent(p1)) {
+			return -1;
+		}
+
+		// l1 y l2 no son adyacentes
+		return 0;
+	}
+
+	private List<Edge> union(int key, List<Edge> a, List<Edge> b) {
+		List<Edge> union = new ArrayList<Edge>();
+		if (key > 0) {
+			union.addAll(a);
+			union.addAll(b);
+		} else if (key < 0) {
+			union.addAll(b);
+			union.addAll(a);
+		} else {
+			throw new IllegalArgumentException(
+					"Estas listas no son adyacentes!!");
+		}
+		return union;
 	}
 }
