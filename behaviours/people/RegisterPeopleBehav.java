@@ -61,8 +61,13 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 				String id = pos[0];
 				Point p = new Point(Integer.parseInt(pos[1]), Integer
 						.parseInt(pos[2]));
+				int state = Pedestrian.HEALTHY;
 
 				ACLMessage reply = msg.createReply();
+
+				// Tiene información sobre estado, algo especial le pasa
+				if (pos.length == 4)
+					state = Integer.parseInt(pos[3]);
 
 				int env = isOutsideArea(p);
 				if (env >= 0) {
@@ -86,7 +91,8 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 					// Avisar a entorno de que se le envía una persona
 					String content = InterGridBehav.PEOPLE_SET + " " + id + " "
 							+ Integer.toString(p.getCol()) + " "
-							+ Integer.toString(p.getRow());
+							+ Integer.toString(p.getRow()) + " "
+							+ Integer.toString(state);
 					AgentHelper.send(myAgent, envAID, ACLMessage.INFORM,
 							"intergrid", content);
 
@@ -98,7 +104,7 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 					}
 					reply.setPerformative(ACLMessage.INFORM);
 				} else {
-					people.put(id, new Pedestrian(p));
+					people.put(id, new Pedestrian(p, state, id));
 					reply.setPerformative(ACLMessage.CONFIRM);
 				}
 

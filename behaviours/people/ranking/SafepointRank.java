@@ -30,22 +30,15 @@ public class SafepointRank implements Ranking {
 
 	@Override
 	public Point choose(Set<Point> adjacents, Point position, int vision,
-			int speed) throws YouAreDeadException {
-
-		System.out.println("Choosing!");
+			int speed) throws YouAreDeadException, YouAreSafeException {
 
 		if (position != null) {
-			// TODO - Extremadamente ineficiente
-			long time = System.currentTimeMillis();
 			adjacents = RankingUtils.filterByStreetView(adjacents, position);
 			adjacents.add(position);
-			System.out.println("took: " + (System.currentTimeMillis() - time));
 
 			// Si ya está en un refugio no se mueve ni muere ni nada
-			if (OsmInf.getBigType(position.getS()) == OsmInf.SafePoint) {
-				// TODO setStatus(SAFE)
-				return null; 
-			}
+			if (OsmInf.getBigType(position.getS()) == OsmInf.SafePoint)
+				throw new YouAreSafeException(position);
 		}
 
 		// Separar casillas inundadas de las secas, y buscar refugios
@@ -55,10 +48,10 @@ public class SafepointRank implements Ranking {
 		for (Point pt : adjacents) {
 			if (pt.getW() > 0)
 				water.add(pt);
-			else if (OsmInf.getBigType(pt.getS()) == OsmInf.Roads)
-				dry.add(pt);
 			else if (OsmInf.getBigType(pt.getS()) == OsmInf.SafePoint)
 				safe.add(pt);
+			else if (OsmInf.getBigType(pt.getS()) == OsmInf.Roads)
+				dry.add(pt);
 			// Las casillas que no son calles ni refugios se ignoran
 		}
 
@@ -69,19 +62,17 @@ public class SafepointRank implements Ranking {
 			return RankingUtils.farInSetFromSet(dry, water);
 		} else {
 			if (safe.size() == 0) {
-				System.out.println("No veo refugio");
 				// Caso en que no tiene refugio a la vista
+				// TODO Mejorar
 				Point p = null;
 
 				if (water.size() != 0) {
-					System.out.println("Veo agua!");
 					p = RankingUtils.farInSetFromSet(dry, water);
 					p = RankingUtils.accessible(adjacents, position, p, speed);
 				}
 
 				// Si no ha visto agua se mueve al azar
 				if (p == null) {
-					System.out.println("No sé a donde moverme!");
 					Random rnd = new Random(System.currentTimeMillis());
 					int intentos = 3;
 					while (intentos > 0 && p == null) {
@@ -91,12 +82,11 @@ public class SafepointRank implements Ranking {
 						intentos--;
 					}
 				}
-				if (p != null)
-					System.out.println("Me muevo a " + p.toString());
+
 				return p;
 			} else {
-				System.out.println("Veo refugios!! " + safe.size());
 				// Caso en que ve uno o más refugios
+
 				LinkedList<Point> sortedSafe = new LinkedList<Point>();
 				for (Point pt : safe) {
 					// Ordenamos los refugios por distancia

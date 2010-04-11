@@ -11,6 +11,7 @@ public class Pedestrian implements Serializable {
 	public final static int HEALTHY = 0;
 	public final static int DEAD = 1;
 	public final static int HURT = 2;
+	public final static int SAFE = 3;
 
 	private LatLng pos = null;
 	private int status = HEALTHY;

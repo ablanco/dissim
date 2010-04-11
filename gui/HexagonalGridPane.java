@@ -192,8 +192,10 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 						// Si la había la pintamos
 						if (status == Pedestrian.HEALTHY)
 							g2.setColor(Color.RED);
-						else
+						else if (status == Pedestrian.DEAD)
 							g2.setColor(Color.DARK_GRAY);
+						else if (status == Pedestrian.SAFE)
+							g2.setColor(Color.PINK);
 						Ellipse2D.Float circle = new Ellipse2D.Float(posX
 								- (radius / 2), posY - (radius / 2), radius,
 								radius);

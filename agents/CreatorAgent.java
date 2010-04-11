@@ -138,7 +138,7 @@ public class CreatorAgent extends Agent {
 					LatLng pos = p.getPos();
 					// TODO sacar rank del pedestrian
 					arguments = new Object[] {
-							"behaviours.people.ranking.HighFarStreetRank",
+							"behaviours.people.ranking.SafepointRank",
 							Double.toString(pos.getLat()),
 							Double.toString(pos.getLng()),
 							Integer.toString(p.getVision()),

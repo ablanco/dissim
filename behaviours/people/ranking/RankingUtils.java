@@ -38,7 +38,8 @@ public class RankingUtils {
 			while (!pt.equals(auxpt)) {
 				auxpt = findHexagon(adjacents, HexagonalGrid.nearestHexagon(
 						auxpt, pt));
-				if (OsmInf.getBigType(auxpt.getS()) != OsmInf.Roads) {
+				if (OsmInf.getBigType(auxpt.getS()) != OsmInf.Roads
+						&& OsmInf.getBigType(auxpt.getS()) != OsmInf.SafePoint) {
 					auxpt = null;
 					break;
 				}
@@ -99,9 +100,9 @@ public class RankingUtils {
 	}
 
 	public static Point farInSetFromSet(Set<Point> in, Set<Point> from) {
-		if(from.size() == 0)
+		if (from.size() == 0)
 			return randomFromSet(new Random(System.currentTimeMillis()), in);
-		
+
 		Point result = null;
 		int max = Integer.MIN_VALUE;
 		for (Point inpt : in) {

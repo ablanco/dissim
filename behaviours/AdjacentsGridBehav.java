@@ -21,9 +21,9 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.io.IOException;
-import java.util.TreeSet;
 
 import util.HexagonalGrid;
+import util.NoDuplicatePointsSet;
 import util.Point;
 import util.jcoord.LatLng;
 
@@ -46,13 +46,16 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				.MatchConversationId("adjacents-grid");
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
-			// Mensaje CFP recibido, hay que procesarlo
+			// Mensaje recibido, hay que procesarlo
 			String pos = msg.getContent();
 			String[] data = pos.split(" ");
 			String type = data[0];
-			TreeSet<Point> adjacents = null;
+			NoDuplicatePointsSet adjacents = null;
 			int x;
 			int y;
+
+			// Si se trata de coordenadas geográficas las pasamos a coordenadas
+			// en la rejilla
 			if (type.equals(LAT_LNG)) {
 				double lat = Double.parseDouble(data[1]);
 				double lng = Double.parseDouble(data[2]);
@@ -60,6 +63,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				x = p.getCol();
 				y = p.getRow();
 			} else {
+				// Si son coordenadas de la rejilla
 				x = Integer.parseInt(data[1]);
 				y = Integer.parseInt(data[2]);
 			}
@@ -68,9 +72,10 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				d = Integer.parseInt(data[3]);
 
 			adjacents = grid.getAdjacents(new Point(x, y));
-			TreeSet<Point> adj1 = adjacents;
+			NoDuplicatePointsSet adj1 = adjacents;
 			while (d > 1) {
-				TreeSet<Point> adj2 = new TreeSet<Point>();
+				NoDuplicatePointsSet adj2 = new NoDuplicatePointsSet(adj1
+						.size() * 6);
 				for (Point pt : adj1) {
 					adj2.addAll(grid.getAdjacents(pt));
 				}

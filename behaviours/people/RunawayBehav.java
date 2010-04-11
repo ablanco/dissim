@@ -26,10 +26,12 @@ import jade.lang.acl.UnreadableException;
 import java.util.Set;
 
 import util.AgentHelper;
+import util.Pedestrian;
 import util.Point;
 import behaviours.AdjacentsGridBehav;
 import behaviours.people.ranking.Ranking;
 import behaviours.people.ranking.YouAreDeadException;
+import behaviours.people.ranking.YouAreSafeException;
 
 @SuppressWarnings("serial")
 public class RunawayBehav extends CyclicBehaviour {
@@ -46,6 +48,7 @@ public class RunawayBehav extends CyclicBehaviour {
 	private int step = 0;
 	private MessageTemplate mt = MessageTemplate.MatchAll();
 	private Point position = null; // Posición en columna y fila
+	private int status = Pedestrian.HEALTHY;
 
 	public RunawayBehav(Agent a, long period, AID env, double lat, double lng,
 			int d, int s, Ranking rank) {
@@ -105,6 +108,9 @@ public class RunawayBehav extends CyclicBehaviour {
 								"register-people", myAgent.getLocalName());
 						myAgent.doDelete();
 						return;
+					} catch (YouAreSafeException e) {
+						status = Pedestrian.SAFE;
+						pmejor = e.getPosition();
 					}
 
 					step = 0;
@@ -118,8 +124,14 @@ public class RunawayBehav extends CyclicBehaviour {
 						content = myAgent.getLocalName() + " "
 								+ Integer.toString(position.getCol()) + " "
 								+ Integer.toString(position.getRow());
+
+						// Si el estado no es el normal informamos
+						if (status != Pedestrian.HEALTHY)
+							content += " " + Integer.toString(status);
+
 						mt = AgentHelper.send(myAgent, env, ACLMessage.INFORM,
 								"register-people", content);
+
 						step = 2;
 					}
 				} catch (UnreadableException e) {
@@ -140,6 +152,14 @@ public class RunawayBehav extends CyclicBehaviour {
 						e.printStackTrace();
 					}
 				}
+
+				// Si el agente está a salvo acaba su papel en la simulación,
+				// así que lo borramos
+				if (status == Pedestrian.SAFE) {
+					myAgent.doDelete();
+					return;
+				}
+
 				step = 0;
 			} else {
 				block();
@@ -147,5 +167,4 @@ public class RunawayBehav extends CyclicBehaviour {
 			break;
 		}
 	}
-
 }

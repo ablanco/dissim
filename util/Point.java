@@ -93,6 +93,10 @@ public class Point implements Comparable<Point>, Serializable {
 		return "[(" + col + "," + row + ") " + z + "]";
 	}
 
+	public String hashPos() {
+		return col + "," + row;
+	}
+
 	public int getCol() {
 		return col;
 	}

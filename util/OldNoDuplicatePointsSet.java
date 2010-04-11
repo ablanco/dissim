@@ -17,72 +17,74 @@
 package util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
-public class NoDuplicatePointsSet implements Set<Point>, Serializable {
+public class OldNoDuplicatePointsSet implements Set<Point>, Serializable {
 
 	private static final long serialVersionUID = 1L;
+	
+	private int initialCapacity = -1;
+	private ArrayList<Point> data;
 
-	private Hashtable<String, Point> data;
-	private int iniCap = -1;
-
-	public NoDuplicatePointsSet() {
-		data = new Hashtable<String, Point>();
+	public OldNoDuplicatePointsSet() {
+		data = new ArrayList<Point>();
 	}
 
-	public NoDuplicatePointsSet(int initialCapacity) {
-		iniCap = initialCapacity;
-		data = new Hashtable<String, Point>(initialCapacity);
+	public OldNoDuplicatePointsSet(int initialCapacity) {
+		this.initialCapacity = initialCapacity;
+		data = new ArrayList<Point>(initialCapacity);
 	}
 
 	@Override
 	public boolean add(Point e) {
-		if (e == null)
-			throw new IllegalArgumentException(
-					"This set doesn't admit null elements.");
-
-		if (!data.containsKey(e.hashPos())) {
-			data.put(e.hashPos(), e);
-			return true;
-		}
-
-		return false;
+		boolean result = contains(e);
+		if (!result)
+			data.add(e);
+		return result;
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends Point> c) {
 		boolean result = false;
-		for (Point point : c) {
-			result = result || add(point);
+		for (Point pt : c) {
+			result = result || add(pt);
 		}
 		return result;
 	}
 
 	@Override
 	public void clear() {
-		if (iniCap > 0)
-			data = new Hashtable<String, Point>(iniCap);
+		if (initialCapacity > 0)
+			data = new ArrayList<Point>(initialCapacity);
 		else
-			data = new Hashtable<String, Point>();
+			data = new ArrayList<Point>();
 	}
 
 	@Override
 	public boolean contains(Object o) {
-		if (o instanceof Point) {
-			Point p = (Point) o;
-			return data.containsKey(p.hashPos());
+		Point e;
+		if (o instanceof Point)
+			e = (Point) o;
+		else
+			return false;
+		boolean result = false;
+		for (Point pt : data) {
+			if (pt.equals(e)) {
+				result = true;
+				break;
+			}
 		}
-		return false;
+		return result;
 	}
 
 	@Override
 	public boolean containsAll(Collection<?> c) {
 		boolean result = true;
 		Iterator<?> it = c.iterator();
-		while (it.hasNext() && result) {
+		while (result && it.hasNext()) {
 			result = result && contains(it.next());
 		}
 		return result;
@@ -95,36 +97,22 @@ public class NoDuplicatePointsSet implements Set<Point>, Serializable {
 
 	@Override
 	public Iterator<Point> iterator() {
-		return data.values().iterator();
+		return data.iterator();
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		if (o instanceof Point) {
-			Point p = (Point) o;
-			Point old = data.remove(p.hashPos());
-			return old != null;
-		}
-		return false;
+		return data.remove(o);
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		boolean result = false;
-		for (Object obj : c) {
-			result = result || remove(obj);
-		}
-		return result;
+		return data.removeAll(c);
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		boolean result = false;
-		for (Point p : data.values()) {
-			if (c.contains(p))
-				result = result || remove(p);
-		}
-		return result;
+		return data.retainAll(c);
 	}
 
 	@Override
@@ -134,12 +122,12 @@ public class NoDuplicatePointsSet implements Set<Point>, Serializable {
 
 	@Override
 	public Object[] toArray() {
-		return data.values().toArray();
+		return data.toArray();
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		return data.values().toArray(a);
+		return data.toArray(a);
 	}
 
 }

@@ -72,8 +72,9 @@ public class InterGridBehav extends CyclicBehaviour {
 				String id = data[1];
 				int x = Integer.parseInt(data[2]);
 				int y = Integer.parseInt(data[3]);
+				int s = Integer.parseInt(data[4]);
 				if (comm.equals(PEOPLE_SET))
-					people.put(id, new Pedestrian(new Point(x, y)));
+					people.put(id, new Pedestrian(new Point(x, y), s, id));
 			}
 		} else {
 			block();

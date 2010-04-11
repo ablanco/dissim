@@ -17,10 +17,10 @@
 package util.flood;
 
 import java.util.Set;
-import java.util.TreeSet;
 
 import util.HexagonalGrid;
 import util.ModifiedTilesSet;
+import util.NoDuplicatePointsSet;
 import util.Point;
 import util.jcoord.LatLng;
 
@@ -133,9 +133,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
-	public TreeSet<Point> getAdjacents(Point p) {
-		TreeSet<Point> result = new TreeSet<Point>();
+	public NoDuplicatePointsSet getAdjacents(Point p) {
 		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
+		NoDuplicatePointsSet result = new NoDuplicatePointsSet(indexes.length);
 		for (int i = 0; i < indexes.length; i++) {
 			int[] tile = indexes[i];
 			Point adj = new Point(tile[0], tile[1], getValue(tile[0], tile[1]),
@@ -148,7 +148,6 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	public Set<Point> getModCoordAndReset() {
 		ModifiedTilesSet result = modTiles;
-		// modTiles = new TreeSet<Point>();
 		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offX, offY);
 		return result.withoutNulls();
 	}

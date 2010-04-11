@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.TreeSet;
 
 import osm.Osm;
 import util.jcoord.LatLng;
@@ -334,11 +333,11 @@ public class HexagonalGrid implements Serializable {
 	 * @param p
 	 *            Point
 	 * 
-	 * @return TreeSet<Point> adjacents to p
+	 * @return NoDuplicatePointsSet adjacents to p
 	 */
-	public TreeSet<Point> getAdjacents(Point p) {
-		TreeSet<Point> result = new TreeSet<Point>();
+	public NoDuplicatePointsSet getAdjacents(Point p) {
 		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
+		NoDuplicatePointsSet result = new NoDuplicatePointsSet(indexes.length);
 		for (int i = 0; i < indexes.length; i++) {
 			result.add(new Point(indexes[i][0], indexes[i][1], getValue(
 					indexes[i][0], indexes[i][1])));
@@ -593,6 +592,7 @@ public class HexagonalGrid implements Serializable {
 
 	/**
 	 * Returns the adjacent hexagon to a that is in b direction
+	 * 
 	 * @param a
 	 * @param b
 	 * @return
