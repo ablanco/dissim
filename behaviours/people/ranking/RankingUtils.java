@@ -28,6 +28,19 @@ import util.Point;
 
 public class RankingUtils {
 
+	public static final int NORTH = 0;
+	public static final int SOUTH = 1;
+	public static final int EAST = 2;
+	public static final int WEST = 3;
+
+	/**
+	 * Returns a Set with the tiles in adjacents that can be viewed from
+	 * position, through streets and safepoints
+	 * 
+	 * @param adjacents
+	 * @param position
+	 * @return
+	 */
 	public static Set<Point> filterByStreetView(Set<Point> adjacents,
 			Point position) {
 		// Sólo las casillas que puede ver desde su calle
@@ -51,6 +64,13 @@ public class RankingUtils {
 		return aux;
 	}
 
+	/**
+	 * Find the point in adjacents that has the same position that pt
+	 * 
+	 * @param adjacents
+	 * @param pt
+	 * @return
+	 */
 	public static Point findHexagon(Set<Point> adjacents, Point pt) {
 		for (Point apt : adjacents) {
 			if (pt.equals(apt)) {
@@ -61,6 +81,16 @@ public class RankingUtils {
 		return pt;
 	}
 
+	/**
+	 * Returns the point from adjacents that is in destination direction
+	 * considering speed if there aren't obstacles, returns null in other case
+	 * 
+	 * @param adjacents
+	 * @param position
+	 * @param destination
+	 * @param speed
+	 * @return
+	 */
 	public static Point accessible(Set<Point> adjacents, Point position,
 			Point destination, int speed) {
 		Point result = null;
@@ -86,6 +116,13 @@ public class RankingUtils {
 		return result;
 	}
 
+	/**
+	 * Returns the point from in that is farthest from the point from
+	 * 
+	 * @param in
+	 * @param from
+	 * @return
+	 */
 	public static Point farInSetFromPoint(Set<Point> in, Point from) {
 		Point result = null;
 		int max = Integer.MIN_VALUE;
@@ -99,6 +136,13 @@ public class RankingUtils {
 		return result;
 	}
 
+	/**
+	 * Returns the point from in that is farthest from the points in from
+	 * 
+	 * @param in
+	 * @param from
+	 * @return
+	 */
 	public static Point farInSetFromSet(Set<Point> in, Set<Point> from) {
 		if (from.size() == 0)
 			return randomFromSet(new Random(System.currentTimeMillis()), in);
@@ -120,10 +164,17 @@ public class RankingUtils {
 		return result;
 	}
 
+	/**
+	 * Returns true if the position is flooded and surrounded by water
+	 * 
+	 * @param dry
+	 * @param position
+	 * @return
+	 */
 	public static boolean detectFloodDeath(Set<Point> dry, Point position) {
 		// Si no tiene casillas secas a su alrededor está rodeado y
 		// se ahoga
-		Set<Point> freeAdjc = new NoDuplicatePointsSet(6);
+		Set<Point> freeAdjc = new NoDuplicatePointsSet(7);
 		if (position != null) {
 			// Sólo las adyacentes a distancia 1
 			for (Point pt : dry) {
@@ -138,6 +189,13 @@ public class RankingUtils {
 		return false;
 	}
 
+	/**
+	 * Returns a random point from the set
+	 * 
+	 * @param rnd
+	 * @param points
+	 * @return
+	 */
 	public static Point randomFromSet(Random rnd, Set<Point> points) {
 		int aux = rnd.nextInt(points.size());
 		Iterator<Point> it = points.iterator();
@@ -147,6 +205,85 @@ public class RankingUtils {
 			aux--;
 		}
 		return p;
+	}
+
+	/**
+	 * Returns the direction to follow from position to destination
+	 * 
+	 * @param position
+	 * @param destination
+	 * @return
+	 */
+	public static int getDirection(Point position, Point destination) {
+		if (destination == null)
+			return randomDirection(new Random(System.currentTimeMillis()));
+
+		int dir = -1;
+		int difCol = position.getCol() - destination.getCol();
+		int difRow = position.getRow() - destination.getRow();
+		if (Math.abs(difCol) > Math.abs(difRow)) {
+			if (difCol > 0)
+				dir = WEST;
+			else
+				dir = EAST;
+		} else {
+			if (difRow > 0)
+				dir = NORTH;
+			else
+				dir = SOUTH;
+		}
+		return dir;
+	}
+
+	/**
+	 * Returns the point of the set that is farthest in the given direction
+	 * 
+	 * @param points
+	 * @param direction
+	 * @return
+	 */
+	public static Point getPointByDirection(Set<Point> points, int direction) {
+		Point result = null;
+		int value = -10; // Kinda ugly :P
+		for (Point pt : points) {
+			switch (direction) {
+			case NORTH:
+				if (pt.getRow() < value || value == -10) {
+					value = pt.getRow();
+					result = pt;
+				}
+				break;
+			case SOUTH:
+				if (pt.getRow() > value || value == -10) {
+					value = pt.getRow();
+					result = pt;
+				}
+				break;
+			case WEST:
+				if (pt.getCol() < value || value == -10) {
+					value = pt.getCol();
+					result = pt;
+				}
+				break;
+			case EAST:
+				if (pt.getCol() > value || value == -10) {
+					value = pt.getCol();
+					result = pt;
+				}
+				break;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns a random direction
+	 * 
+	 * @param rnd
+	 * @return
+	 */
+	public static int randomDirection(Random rnd) {
+		return rnd.nextInt(4);
 	}
 
 }

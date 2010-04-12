@@ -28,6 +28,9 @@ import util.Point;
 
 public class SafepointRank implements Ranking {
 
+	private Random rnd = new Random(System.currentTimeMillis());
+	private int direction = RankingUtils.randomDirection(rnd);
+
 	@Override
 	public Point choose(Set<Point> adjacents, Point position, int vision,
 			int speed) throws YouAreDeadException, YouAreSafeException {
@@ -63,7 +66,6 @@ public class SafepointRank implements Ranking {
 		} else {
 			if (safe.size() == 0) {
 				// Caso en que no tiene refugio a la vista
-				// TODO Mejorar
 				Point p = null;
 
 				if (water.size() != 0) {
@@ -71,18 +73,23 @@ public class SafepointRank implements Ranking {
 					p = RankingUtils.accessible(adjacents, position, p, speed);
 				}
 
-				// Si no ha visto agua se mueve al azar
+				// Si no ha visto agua se mueve al azar, pero manteniendo una
+				// dirección
 				if (p == null) {
-					Random rnd = new Random(System.currentTimeMillis());
 					int intentos = 3;
 					while (intentos > 0 && p == null) {
-						p = RankingUtils.randomFromSet(rnd, dry);
+						p = RankingUtils.getPointByDirection(dry, direction);
 						p = RankingUtils.accessible(adjacents, position, p,
 								speed);
+						// Si no puede avanzar en esa dirección cambia a otra al
+						// azar
+						if (p == null)
+							direction = RankingUtils.randomDirection(rnd);
 						intentos--;
 					}
 				}
 
+				direction = RankingUtils.getDirection(position, p);
 				return p;
 			} else {
 				// Caso en que ve uno o más refugios
