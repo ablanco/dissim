@@ -2,20 +2,14 @@ package test;
 
 import jade.core.AID;
 
-import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import kml.KmlBase;
 import util.DateAndTime;
 import util.Pedestrian;
-import util.Point;
 import util.Snapshot;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
-import util.jcoord.LatLngComparator;
 
 public class CoverturaConexa {
 
@@ -40,29 +34,29 @@ public class CoverturaConexa {
 				new Hashtable<String, Pedestrian>());
 
 		KmlBase k = new KmlBase();
-		
-//		int c = newOrleans.getGrid().getColumns();
-//		int r = newOrleans.getGrid().getRows();
-//		for (int rep = 0; rep < 6; rep++) {
-//			for (int i = 0; i < c; i++) {
-//				for (int j = 0; j < r; j++) {
-//					short x = (short) ((Math.random() * 100) % 2);
-//					grid.setWaterValue(i, j, x);
-//				}
-//			}
-//
-//			List<Pedestrian> people = newOrleans.getPeople();
-//			for (int i = 0; i < 6; i++) {
-//				people.add(new Pedestrian(new Point(
-//						(int) ((Math.random() * 100) % c), (int) ((Math
-//								.random() * 100) % r))));
-//			}
-//
-//			k.update(newOrleans, new AID());
-//			newOrleans.getPeople().clear();
-//			newOrleans.updateTime(3);
-//		}
-		
+
+		// int c = newOrleans.getGrid().getColumns();
+		// int r = newOrleans.getGrid().getRows();
+		// for (int rep = 0; rep < 6; rep++) {
+		// for (int i = 0; i < c; i++) {
+		// for (int j = 0; j < r; j++) {
+		// short x = (short) ((Math.random() * 100) % 2);
+		// grid.setWaterValue(i, j, x);
+		// }
+		// }
+		//
+		// List<Pedestrian> people = newOrleans.getPeople();
+		// for (int i = 0; i < 6; i++) {
+		// people.add(new Pedestrian(new Point(
+		// (int) ((Math.random() * 100) % c), (int) ((Math
+		// .random() * 100) % r))));
+		// }
+		//
+		// k.update(newOrleans, new AID());
+		// newOrleans.getPeople().clear();
+		// newOrleans.updateTime(3);
+		// }
+
 		k.update(newOrleans, new AID());
 		newOrleans.updateTime(1);
 		grid.setWaterValue(4, 4, (short) 5);
@@ -72,7 +66,7 @@ public class CoverturaConexa {
 		grid.setWaterValue(4, 2, (short) 5);
 		k.update(newOrleans, new AID());
 		newOrleans.updateTime(3);
-		
+
 		k.finish();
 	}
 

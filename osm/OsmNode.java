@@ -8,43 +8,45 @@ public class OsmNode implements Comparable<OsmNode> {
 	protected Point point;
 	protected LatLng coord;
 	protected OsmNodeExtendedInfo extendedInfo;
-	private boolean in;
+
+	// private boolean in;
 
 	public OsmNode(long id, Point point) {
 		this.id = id;
 		this.point = point;
-		in=true;
+		// in=true;
 	}
 
 	public OsmNode(long id, LatLng coord) {
-		this.id=id;
-		this.coord=coord;
-		in=false;
+		this.id = id;
+		this.coord = coord;
+		// in=false;
 	}
 
 	public void setExtendedInfo(OsmNodeExtendedInfo extendedInfo) {
 		this.extendedInfo = extendedInfo;
 	}
+
 	public OsmNodeExtendedInfo getExtendedInfo() {
 		return extendedInfo;
 	}
-	
+
 	public void setPoint(Point point) {
 		this.point = point;
-		in = true;
+		// in = true;
 	}
-	
+
 	public Point getPoint() {
 		return point;
 	}
-	
-	public boolean isIn(){
+
+	public boolean isIn() {
 		return point.isIn();
 	}
-	
-	public void setIn(boolean in) {
-		this.in = in;
-	}
+
+	// public void setIn(boolean in) {
+	// this.in = in;
+	// }
 
 	@Override
 	public int compareTo(OsmNode n) {
@@ -67,9 +69,9 @@ public class OsmNode implements Comparable<OsmNode> {
 		if (point != null) {
 			result += point.toString();
 		} else {
-			result += coord.toString()+" ";
+			result += coord.toString() + " ";
 		}
-		if (extendedInfo!=null){
+		if (extendedInfo != null) {
 			result += extendedInfo.toString();
 		}
 		return result;

@@ -51,19 +51,18 @@ public class Visor {
 		emptyLabel.setPreferredSize(new Dimension(800, 600));
 		Container contentPanel = frame.getContentPane();
 		contentPanel.add(emptyLabel, BorderLayout.CENTER);
-		
-		MapPane mapPane = new MapPane();
-		
-		JTable tableLeyend = new JTable(new Leyend(MAP_GUI)) ;
-		tableLeyend.setDefaultRenderer(Color.class,
-                 new ColorRenderer(true));
-//		tableLeyend.setDefaultEditor(Color.class,
-//               new ColorEditor());
+
+		// MapPane mapPane = new MapPane();
+
+		JTable tableLeyend = new JTable(new Leyend(MAP_GUI));
+		tableLeyend.setDefaultRenderer(Color.class, new ColorRenderer(true));
+		// tableLeyend.setDefaultEditor(Color.class,
+		// new ColorEditor());
 
 		JScrollPane scrolltableLeyend = new JScrollPane(tableLeyend);
 		tableLeyend.setFillsViewportHeight(true);
 		contentPanel.add(scrolltableLeyend);
-		
+
 		// Display the window.
 		frame.pack();
 		frame.setVisible(true);
