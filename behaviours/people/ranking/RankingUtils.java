@@ -286,4 +286,75 @@ public class RankingUtils {
 		return rnd.nextInt(4);
 	}
 
+	/**
+	 * Returns a random direction excluding the opposite one
+	 * 
+	 * @param rnd
+	 * @param direction
+	 * @return
+	 */
+	public static int randomDirection(Random rnd, int direction) {
+		int oppo = oppositeDirection(direction);
+		int result = rnd.nextInt(3);
+		if (result == oppo)
+			result = 3;
+		return result;
+	}
+
+	/**
+	 * Returns the opposite direction to the given one
+	 * 
+	 * @param direction
+	 * @return
+	 */
+	public static int oppositeDirection(int direction) {
+		switch (direction) {
+		case NORTH:
+			return SOUTH;
+		case SOUTH:
+			return NORTH;
+		case WEST:
+			return EAST;
+		case EAST:
+			return WEST;
+		default:
+			return randomDirection(new Random(System.currentTimeMillis()));
+		}
+	}
+
+	/**
+	 * Returns true if there are street tiles adjacents to position in
+	 * orthogonal direction than direction
+	 * 
+	 * @param position
+	 * @param direction
+	 * @param adjacents
+	 * @return
+	 */
+	public static boolean intersection(Point position, int direction,
+			Set<Point> adjacents) {
+		boolean result = false;
+		int col = position.getCol();
+		int row = position.getRow();
+		Point p;
+		// TODO qué pasa si la calle es de más de 1 hex de ancho? creería q es
+		// una intersección cuando no lo es
+		if (direction == NORTH || direction == SOUTH) {
+			p = findHexagon(adjacents, new Point(col - 1, row));
+			result = result || OsmInf.getBigType(p.getS()) == OsmInf.Roads;
+			if (result)
+				return result;
+			p = findHexagon(adjacents, new Point(col + 1, row));
+			result = result || OsmInf.getBigType(p.getS()) == OsmInf.Roads;
+		} else {
+			p = findHexagon(adjacents, new Point(col, row - 1));
+			result = result || OsmInf.getBigType(p.getS()) == OsmInf.Roads;
+			if (result)
+				return result;
+			p = findHexagon(adjacents, new Point(col, row + 1));
+			result = result || OsmInf.getBigType(p.getS()) == OsmInf.Roads;
+		}
+		return result;
+	}
+
 }

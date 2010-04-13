@@ -77,6 +77,12 @@ public class SafepointRank implements Ranking {
 				// dirección
 				if (p == null) {
 					int intentos = 3;
+
+					// Si está en una intersección escoge una calle al azar
+					if (RankingUtils.intersection(position, direction, dry))
+						direction = RankingUtils
+								.randomDirection(rnd, direction);
+
 					while (intentos > 0 && p == null) {
 						p = RankingUtils.getPointByDirection(dry, direction);
 						p = RankingUtils.accessible(adjacents, position, p,
