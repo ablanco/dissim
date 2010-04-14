@@ -58,10 +58,26 @@ public class Edge {
 	 * @return
 	 */
 	public boolean isAdyacent(Edge e) {
-//		return b == e.getA() || b == e.getB() || a == e.getA() || a == e.getB();
-		return almostEqual(b, e.getA()) || almostEqual(b, e.getB()) || almostEqual(a, e.getA()) || almostEqual(a, e.getB()); 
+		return almostEqual(b, e.getA()) || almostEqual(a, e.getB()) ;
 	}
 	
+	/**
+	 * Returns true if the edge is the next adyacent edge this[a,b], e[a,b] si this.b==e.a
+	 * @param e
+	 * @return
+	 */
+	public boolean isNext(Edge e){
+		return almostEqual(b, e.getA());
+	}
+	
+	/**
+	 * Returns true if the edge is the previous adyacent edge this[a,b], e[a,b] si this.a==e.b
+	 * @param e
+	 * @return
+	 */
+	public boolean isPrevious(Edge e){
+		return almostEqual(a, e.getA());
+	}
 	/**
 	 * Return true if e is the opposite (A,B) == (B,A)
 	 * @param e
@@ -71,6 +87,14 @@ public class Edge {
 		return almostEqual(a, e.getB()) && almostEqual(b, e.getA());
 	}
 
+	/** 
+	 * Reuturns the opposite edge from this
+	 * @param e
+	 * @return
+	 */
+	public Edge opposite(){
+		return new Edge(sig, b, a);
+	}
 	@Override
 	public String toString() {
 //		return sig + "[(" + a.getLatitude() + "," + a.getLongitude() + "),"
