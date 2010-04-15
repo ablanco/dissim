@@ -7,6 +7,9 @@ import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.GroundOverlay;
+import de.micromata.opengis.kml.v_2_2_0.Icon;
+import de.micromata.opengis.kml.v_2_2_0.RefreshMode;
+import de.micromata.opengis.kml.v_2_2_0.ViewRefreshMode;
 
 public class KmlPeople {
 
@@ -33,15 +36,16 @@ public class KmlPeople {
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 		KmlBase.setTimeSpan(groundoverlay, begin, end);
 		// Depending status set propper img
+		Icon icon = groundoverlay.createAndSetIcon().withRefreshInterval(10.0).withViewBoundScale(1.0).withViewRefreshTime(10.0).withRefreshMode(RefreshMode.ON_INTERVAL).withViewRefreshMode(ViewRefreshMode.ON_STOP);
 		switch (pedestrian.getStatus()) {
 		case Pedestrian.HEALTHY:
-			groundoverlay.createAndSetIcon().withHref(imgPath + "healthy.png");
+			icon.withHref(imgPath + "healthy.png");
 			break;
 		case Pedestrian.HURT:
-			groundoverlay.createAndSetIcon().withHref(imgPath + "hurt.png");
+			icon.withHref(imgPath + "hurt.png");
 			break;
 		case Pedestrian.DEAD:
-			groundoverlay.createAndSetIcon().withHref(imgPath + "dead.png");
+			icon.withHref(imgPath + "dead.png");
 			break;
 		default:
 			break;
@@ -52,6 +56,7 @@ public class KmlPeople {
 				.withSouth(pos.getLat() - incs[0]).withEast(
 						pos.getLng() + incs[1])
 				.withWest(pos.getLng() - incs[1]).withRotation(45d);
+		
 	}
 
 }

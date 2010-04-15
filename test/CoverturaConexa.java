@@ -60,13 +60,53 @@ public class CoverturaConexa {
 		k.update(newOrleans, new AID());
 		newOrleans.updateTime(1);
 		grid.setWaterValue(4, 4, (short) 5);
-		grid.setWaterValue(4, 5, (short) 5);
-		grid.setWaterValue(4, 6, (short) 5);
-		grid.setWaterValue(4, 3, (short) 5);
-		grid.setWaterValue(4, 2, (short) 5);
+//		[[(5,6) 1], [(5,7) 1], [(4,5) 1], [(4,7) 1], [(3,4) 1], [(3,5) 1], [(3,6) 1], [(3,7) 1], [(2,5) 1], [(2,6) 1], [(2,7) 1], [(1,5) 1]]
+		grid.setWaterValue(5,6 ,(short) 5);
+		grid.setWaterValue(5,7 ,(short) 5);
+		grid.setWaterValue(5,7 ,(short) 5);
+		grid.setWaterValue(4,7 ,(short) 5);
+		grid.setWaterValue( 3,4,(short) 5);
+		grid.setWaterValue(3,5 ,(short) 5);
+		grid.setWaterValue( 3,6,(short) 5);
+		grid.setWaterValue(3,7 ,(short) 5);
+		grid.setWaterValue(2,5 ,(short) 5);
+		grid.setWaterValue(2,6 ,(short) 5);
+		grid.setWaterValue(2,7 ,(short) 5);
+		grid.setWaterValue(1,5 ,(short) 5);
+		
+//		 [[(2,2) 1], [(1,0) 1], [(1,1) 1], [(1,2) 1], [(0,2) 1], [(0,3) 1]]
+		grid.setWaterValue(2,2 ,(short) 5);
+		grid.setWaterValue(1,0 ,(short) 5);
+		grid.setWaterValue(1,1 ,(short) 5);
+		grid.setWaterValue(1,2 ,(short) 5);
+		grid.setWaterValue(0,2 ,(short) 5);
+		grid.setWaterValue( 0,3,(short) 5);
+//	  [[(5,2) 1], [(5,3) 1], [(5,4) 1], [(4,1) 1], [(4,2) 1], [(4,3) 1], [(3,0) 1], [(3,1) 1], [(3,3) 1], [(2,0) 1], [(2,1) 1], [(2,3) 1], [(2,4) 1], 
+		//[(1,0) 1], [(1,2) 1], [(1,4) 1], [(0,1) 1], [(0,2) 1]]
+		grid.setWaterValue(5,2 ,(short) 5);
+		grid.setWaterValue(5,3 ,(short) 5);
+		grid.setWaterValue(5,4 ,(short) 5);
+		grid.setWaterValue(4,1 ,(short) 5);
+		grid.setWaterValue(4,2 ,(short) 5);
+		grid.setWaterValue(4,3 ,(short) 5);
+		grid.setWaterValue( 3,0,(short) 5);
+		grid.setWaterValue(3,1 ,(short) 5);
+		grid.setWaterValue( 3,3,(short) 5);
+		grid.setWaterValue(2,0 ,(short) 5);
+		grid.setWaterValue(2,1 ,(short) 5);
+		grid.setWaterValue( 2,3,(short) 5);
+		grid.setWaterValue(2,4 ,(short) 5);
+		grid.setWaterValue( 1,0,(short) 5);
+		grid.setWaterValue(1,2 ,(short) 5);
+		grid.setWaterValue(1,4 ,(short) 5);
+		grid.setWaterValue(0,1 ,(short) 5);
+		grid.setWaterValue(0,2 ,(short) 5);
+		
+		
 		k.update(newOrleans, new AID());
 		newOrleans.updateTime(3);
 
+		
 		k.finish();
 	}
 

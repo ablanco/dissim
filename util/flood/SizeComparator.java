@@ -7,6 +7,6 @@ public class SizeComparator implements Comparator<List<Edge>>  {
 
 	@Override
 	public int compare(List<Edge> edges0, List<Edge> edges1) {
-		return edges1.size() - edges0.size();
+		return edges0.size() - edges1.size();
 	}
 }

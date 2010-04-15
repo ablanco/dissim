@@ -66,7 +66,7 @@ public class Edge {
 	 * @param e
 	 * @return
 	 */
-	public boolean isNext(Edge e){
+	public boolean isNextOf(Edge e){
 		return almostEqual(b, e.getA());
 	}
 	
@@ -75,8 +75,8 @@ public class Edge {
 	 * @param e
 	 * @return
 	 */
-	public boolean isPrevious(Edge e){
-		return almostEqual(a, e.getA());
+	public boolean isPreviousOf(Edge e){
+		return almostEqual(a, e.getB());
 	}
 	/**
 	 * Return true if e is the opposite (A,B) == (B,A)
