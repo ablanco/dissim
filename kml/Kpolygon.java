@@ -14,8 +14,9 @@ import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 
 public class Kpolygon {
 
-	public static final int RawType = 1;
+	public static final int RawType = -1;
 	public static final int WaterType = 1;
+	public static final int Pedestrian = 2;
 
 	private List<Coordinate> outerLine;
 	private List<List<Coordinate>> innerLines;
@@ -41,10 +42,11 @@ public class Kpolygon {
 		for (LatLng l : rawPolygon) {
 			rawEdgeList.add(getHexagonEdges(l, ilat, ilng));
 		}
-		System.err.println("Creando polygono, obteniendas todas las aristas "
-				+ rawEdgeList);
+//		System.err.println("Creando polygono, obteniendas todas las aristas "
+//				+ rawEdgeList);
 		// TODO mejorar eficiencia
-		Collection<LinkedList<Edge>> edgeList = new TreeSet<LinkedList<Edge>>(new SizeComparator());
+		Collection<LinkedList<Edge>> edgeList = new TreeSet<LinkedList<Edge>>(
+				new SizeComparator());
 		Iterator<LinkedList<Edge>> it = rawEdgeList.iterator();
 		// La razon de esto es, Al hacerlo de otra forma, podia coincidir la
 		// suma de dos sectores que no fueran adyacentes, lo cual crea huecos
@@ -52,11 +54,12 @@ public class Kpolygon {
 		// eficiente, pero es mucho menos complicao, creo, que lo otro.
 		while (it.hasNext()) {
 			LinkedList<Edge> curr = it.next();
-//			System.err.println("Borde Actual "+curr);
+//			System.err.println("\tBorde Actual " + curr);
 			edgeList = borderOperator(edgeList, curr);
-//			System.err.println("Bordes Separados "+edgeList.size()+" : "+edgeList);
+			// System.err.println("Bordes Separados "+edgeList.size()+" : "+edgeList);
 			edgeList = joinBorders(edgeList);
-//			System.err.println("Bordes reordenados "+edgeList.size()+" : "+edgeList);
+//			System.err.println("\t\tBordes reordenados " + edgeList.size()
+//					+ " : " + edgeList);
 		}
 
 		Iterator<LinkedList<Edge>> e = edgeList.iterator();
@@ -68,8 +71,8 @@ public class Kpolygon {
 				innerLines.add(edgeToList(e.next()));
 			}
 		}
-		System.err.println("\t Borde exterior " + outerLine);
-		System.err.println("\t Bordes Interiores " + innerLines);
+//		System.err.println("\t Borde exterior " + outerLine);
+//		System.err.println("\t Bordes Interiores " + innerLines);
 	}
 
 	public List<Coordinate> getOuterLine() {
@@ -137,9 +140,9 @@ public class Kpolygon {
 	private Collection<LinkedList<Edge>> borderOperator(
 			Collection<LinkedList<Edge>> polygonBorders,
 			LinkedList<Edge> polygonEdges) {
-//		System.err.println("Listas entrada");
-//		System.err.println("\t Actual "+polygonBorders);
-//		System.err.println("\t Por añadir" + polygonEdges);
+		// System.err.println("Listas entrada");
+		// System.err.println("\t Actual "+polygonBorders);
+		// System.err.println("\t Por añadir" + polygonEdges);
 
 		// Buscamos en la lista de bordes conexa, bordes que se repiten, si hay
 		// alguno
@@ -151,57 +154,65 @@ public class Kpolygon {
 			LinkedList<Edge> currList = it.next();
 			boolean modified = false;
 			Iterator<Edge> iEdge = polygonEdges.iterator();
-			while(iEdge.hasNext()){
+			while (iEdge.hasNext()) {
 				Edge e = iEdge.next();
 				int index = currList.indexOf(e.opposite());
-				if (index>0){
-//					System.err.println("\t Se ha encontrado un opuesto "+e);
+				if (index > 0) {
+					// System.err.println("\t Se ha encontrado un opuesto "+e);
 					currList.remove(index);
 					iEdge.remove();
 					modified = true;
 				}
 			}
-			
+
 			if (modified) {
-				//Los que han sido modificados, ya no son conexos, asi que los separamos en listas conexas
-//				System.err.println("\t Bordes Modificados "+split(currList));
+				// Los que han sido modificados, ya no son conexos, asi que los
+				// separamos en listas conexas
+				// System.err.println("\t Bordes Modificados "+split(currList));
 				modificados.addAll(split(currList));
 				it.remove();
 			}
 		}
-		//Esto quiere decir que quedan bordes interiores quizas que no son conexos
-		
+		// Esto quiere decir que quedan bordes interiores quizas que no son
+		// conexos
+
 		if (!polygonEdges.isEmpty()) {
+//			System.err.println("\t\tAun quedan por añadir Aristas "
+//					+ polygonBorders);
 			modificados.add(polygonEdges);
 		}
-//		System.err.println("\t Todos los Modificados "+modificados.size()+" : "+modificados);
+		// System.err.println("\t Todos los Modificados "+modificados.size()+" : "+modificados);
 
-		//Ya tenemos todas las listas separadas, ahora las juntamos en una sola lista
+		// Ya tenemos todas las listas separadas, ahora las juntamos en una sola
+		// lista
 		polygonBorders.addAll(modificados);
-//		System.err.println("\t Bordes Modificados y No Modificados "+polygonBorders.size()+" :"+polygonBorders);
+//		System.err.println("\t Bordes Modificados y No Modificados "
+//				+ polygonBorders.size() + " :" + polygonBorders);
 		return polygonBorders;
 	}
 
 	/**
 	 * Separa una lista de aristas en una collecion de aristas conexas entre si
+	 * 
 	 * @param currList
 	 * @return
 	 */
-	private Collection<LinkedList<Edge>> split(
-			LinkedList<Edge> currList) {
+	private Collection<LinkedList<Edge>> split(LinkedList<Edge> currList) {
+//		System.err.println("\t\t Antes de Partir "+currList.size()+" : "+currList);
 		LinkedList<Edge> conexo = new LinkedList<Edge>();
 		Collection<LinkedList<Edge>> borders = new ArrayList<LinkedList<Edge>>();
-		while (!currList.isEmpty()){
+		while (!currList.isEmpty()) {
 			Edge prev = currList.pop();
 			conexo.add(prev);
 			borders.add(conexo);
-			while(!currList.isEmpty()){
+			while (!currList.isEmpty()) {
 				Edge curr = currList.pop();
-				if (prev.isNextOf(curr)){
-//					System.err.println("\t\t "+prev+ " conexo con "+ curr);
+				if (prev.isNextOf(curr)) {
+//					System.err.println("\t\t " + prev + " conexo con " + curr);
 					conexo.add(curr);
-				}else{
-//					System.err.println("\t\t "+prev+ " NO conexo con "+ curr);
+				} else {
+//					System.err.println("\t\t " + prev + " NO conexo con "
+//							+ curr);
 					conexo = new LinkedList<Edge>();
 					conexo.add(curr);
 					borders.add(conexo);
@@ -209,32 +220,62 @@ public class Kpolygon {
 				prev = curr;
 			}
 		}
+//		System.err.println("\t\t Despues de Partir "+borders.size()+" : "+borders);
 		return borders;
 	}
 
-	private Collection<LinkedList<Edge>> joinBorders (Collection<LinkedList<Edge>> borderList){
+	private Collection<LinkedList<Edge>> joinBorders(
+			Collection<LinkedList<Edge>> borderList) {
+		// Lista de bordes Final
+//		System.err.println("\t\t Tamaño entrada " + borderList.size() + " :"
+//				+ borderList);
 		Collection<LinkedList<Edge>> join = new ArrayList<LinkedList<Edge>>();
+		// Iterador sobre los bordes que ya teniamos
 		Iterator<LinkedList<Edge>> bIterator = borderList.iterator();
-		while (bIterator.hasNext()){
+		while (bIterator.hasNext()) {
+			// Mientras tengamos bordes que explorar
 			LinkedList<Edge> curr = bIterator.next();
 			bIterator.remove();
+			// Marcamos la lista como modificada, para que entre en el bucle
 			boolean modificado = true;
-			bIterator = borderList.iterator();
-			while (bIterator.hasNext() && modificado && !borderList.isEmpty()){
-				modificado = false;
-				LinkedList<Edge> conexo = bIterator.next();
-				if (curr.getLast().isNextOf(conexo.getFirst())){
-					curr.addAll(conexo);
-					bIterator.remove();
-					modificado = true;
-				}else if (curr.getFirst().isPreviousOf(conexo.getLast())){
-					curr.addAll(0, conexo);
-					bIterator.remove();
-					modificado = true;
+			// Reutilizamos el iterador, para iterar sobre todos los demas
+			// elementos, menos el primero
+			while (modificado && !borderList.isEmpty() && bIterator.hasNext()) {
+				bIterator = borderList.iterator();
+				while (bIterator.hasNext() && modificado
+						&& !borderList.isEmpty()) {
+					// Aqui nos aseguramos de haber recorrido Toda la lista
+					// buscando posibles uniones repitiendo cada vez que haya
+					// una modificacion
+					modificado = false;
+					LinkedList<Edge> conexo = bIterator.next();
+//					System.err.println("\t\t Mirando si " + conexo
+//							+ " es conexo con " + curr);
+					// Mientras tenga aristas por añadir
+					if (curr.getLast().isNextOf(conexo.getFirst())) {
+						// Es la continuacion, añado y borro
+						curr.addAll(conexo);
+						bIterator.remove();
+						modificado = true;
+//						System.err.println("\t\t Se ha añadido al Final "
+//								+ curr);
+					} else if (curr.getFirst().isPreviousOf(conexo.getLast())) {
+						// Esta al principio, añado y borro
+						curr.addAll(0, conexo);
+						bIterator.remove();
+						modificado = true;
+//						System.err.println("\t\t Se ha añadido al Principio "
+//								+ curr);
+					}
 				}
 			}
+			// Añado la nueva lista a la lista de resultados finales
 			join.add(curr);
 		}
+		if (!borderList.isEmpty()) {
+			join.addAll(borderList);
+		}
+//		System.err.println("\t\t Tamaño salida " + join.size() + " :" + join);
 		return join;
 	}
 
@@ -251,5 +292,5 @@ public class Kpolygon {
 		}
 		return lc;
 	}
-	
+
 }

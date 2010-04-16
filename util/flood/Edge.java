@@ -132,7 +132,7 @@ public class Edge {
 		long blng = (long) Math.abs((b.getLongitude() * Math.pow(10, 6)));
 		//TODO mejorar
 //		System.err.println("A: "+a+", B:"+b+" resultado "+alat+"-"+blat+" vs "+alng+"-"+blng);
-		return Math.abs(alat-blat)<10 && Math.abs(alng-blng)<10;
+		return Math.abs(alat-blat)<3 && Math.abs(alng-blng)<3;
 		
 	}
 }

@@ -131,7 +131,7 @@ public class KmlFlood {
 				List<LatLng> vertices = new ArrayList<LatLng>();
 				short deep = 0;
 				// Aprobechamos para sacar la altura media
-				System.err.println("Sector inundado, puntos " + sector);
+//				System.err.println("Sector inundado, puntos " + sector);
 				for (Point p : sector) {
 					deep += p.getZ();
 					vertices.add(fGrid.tileToCoord(p));
@@ -141,7 +141,7 @@ public class KmlFlood {
 				Kpolygon kp = new Kpolygon(Kpolygon.WaterType, vertices, ilat,
 						ilng);
 				kp.setDeep(deep);
-				System.err.println("Poligono Dibujado");
+//				System.err.println("Poligono Dibujado");
 
 				if (altitudes.add(deep)) {
 					createWaterStyleAndColor(deep);

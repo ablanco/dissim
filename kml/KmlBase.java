@@ -212,7 +212,7 @@ public class KmlBase implements Updateable {
 	 * A folder is a container where you can put several things inside
 	 */
 	public static Folder newFolder(Kml kml, String name, String description) {
-		return kml.createAndSetFolder().withName(name).withOpen(true)
+		return kml.createAndSetFolder().withName(name).withOpen(false)
 				.withDescription(description);
 	}
 
@@ -227,7 +227,7 @@ public class KmlBase implements Updateable {
 	public static Folder addFolder(Folder folder, String name,
 			String description) {
 		if (folder != null) {
-			return folder.createAndAddFolder().withName(name).withOpen(true)
+			return folder.createAndAddFolder().withName(name).withOpen(false)
 					.withDescription(description);
 		}
 		throw new NullPointerException();
