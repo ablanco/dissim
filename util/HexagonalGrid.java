@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import osm.Osm;
+import osm.OsmMap;
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
 
@@ -551,7 +552,7 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public void obtainStreetInfo() {
-		Osm.getMap(this);
+		Osm.setOsmMapInfo(this);
 	}
 
 	/**

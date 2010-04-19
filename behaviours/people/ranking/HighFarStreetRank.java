@@ -21,7 +21,7 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Set;
 
-import osm.OsmInf;
+import osm.Osm;
 import util.HexagonalGrid;
 import util.NoDuplicatePointsSet;
 import util.Point;
@@ -45,7 +45,7 @@ public class HighFarStreetRank implements Ranking {
 		for (Point pt : adjacents) {
 			if (pt.getW() > 0)
 				water.add(pt);
-			else if (OsmInf.getBigType(pt.getS()) == OsmInf.Roads)
+			else if (Osm.getBigType(pt.getS()) == Osm.Roads)
 				dry.add(pt);
 			// Las casillas que no son calles se ignoran
 		}
@@ -133,7 +133,7 @@ public class HighFarStreetRank implements Ranking {
 					aux = RankingUtils.findHexagon(adjacents, aux);
 					// No entra en casillas con agua y sólo se mueve por calles
 					if (aux.getW() > 0
-							|| OsmInf.getBigType(aux.getS()) != OsmInf.Roads) {
+							|| Osm.getBigType(aux.getS()) != Osm.Roads) {
 						ok = false;
 						break;
 					}

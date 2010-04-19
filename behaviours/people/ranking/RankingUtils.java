@@ -20,8 +20,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
-import osm.OsmInf;
-
+import osm.Osm;
 import util.HexagonalGrid;
 import util.NoDuplicatePointsSet;
 import util.Point;
@@ -51,8 +50,8 @@ public class RankingUtils {
 			while (!pt.equals(auxpt)) {
 				auxpt = findHexagon(adjacents, HexagonalGrid.nearestHexagon(
 						auxpt, pt));
-				if (OsmInf.getBigType(auxpt.getS()) != OsmInf.Roads
-						&& OsmInf.getBigType(auxpt.getS()) != OsmInf.SafePoint) {
+				if (Osm.getBigType(auxpt.getS()) != Osm.Roads
+						&& Osm.getBigType(auxpt.getS()) != Osm.SafePoint) {
 					auxpt = null;
 					break;
 				}
@@ -107,7 +106,7 @@ public class RankingUtils {
 			// Miramos que no nos encontremos con obstáculos en el camino
 			if (!destination.equals(aux)) {
 				if (aux.getW() > 0
-						|| OsmInf.getBigType(aux.getS()) != OsmInf.Roads) {
+						|| Osm.getBigType(aux.getS()) != Osm.Roads) {
 					result = null;
 					break;
 				}
@@ -341,18 +340,18 @@ public class RankingUtils {
 		// una intersección cuando no lo es
 		if (direction == NORTH || direction == SOUTH) {
 			p = findHexagon(adjacents, new Point(col - 1, row));
-			result = result || OsmInf.getBigType(p.getS()) == OsmInf.Roads;
+			result = result || Osm.getBigType(p.getS()) == Osm.Roads;
 			if (result)
 				return result;
 			p = findHexagon(adjacents, new Point(col + 1, row));
-			result = result || OsmInf.getBigType(p.getS()) == OsmInf.Roads;
+			result = result || Osm.getBigType(p.getS()) == Osm.Roads;
 		} else {
 			p = findHexagon(adjacents, new Point(col, row - 1));
-			result = result || OsmInf.getBigType(p.getS()) == OsmInf.Roads;
+			result = result || Osm.getBigType(p.getS()) == Osm.Roads;
 			if (result)
 				return result;
 			p = findHexagon(adjacents, new Point(col, row + 1));
-			result = result || OsmInf.getBigType(p.getS()) == OsmInf.Roads;
+			result = result || Osm.getBigType(p.getS()) == Osm.Roads;
 		}
 		return result;
 	}

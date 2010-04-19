@@ -33,7 +33,7 @@ import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 
-import osm.OsmInf;
+import osm.Osm;
 import util.Hexagon2D;
 import util.HexagonalGrid;
 import util.Pedestrian;
@@ -168,10 +168,10 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 					g2.fillPolygon(hex);
 
 					// Pintar el borde amarillo si hay algún tipo de calle
-					if (OsmInf.getBigType(grid.getStreetValue(i, j)) == OsmInf.Roads) {
+					if (Osm.getBigType(grid.getStreetValue(i, j)) == Osm.Roads) {
 						g2.setColor(Color.YELLOW);
 						g2.drawPolygon(hex);
-					} else if (OsmInf.getBigType(grid.getStreetValue(i, j)) == OsmInf.SafePoint) {
+					} else if (Osm.getBigType(grid.getStreetValue(i, j)) == Osm.SafePoint) {
 						g2.setColor(Color.RED);
 						g2.drawPolygon(hex);
 					}

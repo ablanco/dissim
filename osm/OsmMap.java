@@ -16,140 +16,198 @@
 
 package osm;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 import util.HexagonalGrid;
-import util.Point;
 import util.jcoord.LatLng;
+import de.micromata.opengis.kml.v_2_2_0.LatLonBox;
 
 public class OsmMap {
-	
 
-	protected String continent;
-	protected String name;
-	protected String place;
-	protected long id;
-	protected List<OsmWay> ways;
-	protected List<OsmNode> specialPlaces;
+	protected Hashtable<Long, OsmWay> ways;
+	protected Hashtable<Long, OsmNode> nodes;
+	protected List<OsmRelation> relations;
+	protected List<OsmTag> tags;
+	protected LatLonBox mapBox;
 
-	public OsmMap(long id) {
-		this.id = id;
-		ways = new ArrayList<OsmWay>();
-		specialPlaces = new ArrayList<OsmNode>();
+	public OsmMap() {
+		ways = new Hashtable<Long, OsmWay>();
+		nodes = new Hashtable<Long, OsmNode>();
+		tags = new ArrayList<OsmTag>();
+		relations = new ArrayList<OsmRelation>();
 	}
 
-	public void setContinent(String continent) {
-		this.continent = continent;
+	public LatLonBox getMapBox() {
+		return mapBox;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Hashtable<Long, OsmNode> getNodes() {
+		return nodes;
 	}
 
-	public void setPlace(String place) {
-		this.place = place;
+	public Hashtable<Long, OsmWay> getWays() {
+		return ways;
 	}
 
-	public void addWay(OsmWay way) {
-		ways.add(way);
+	public List<OsmRelation> getRelations() {
+		return relations;
 	}
 
-	public void addSpecialPlace(OsmNode node) {
-		specialPlaces.add(node);
+	public void setMapBox(LatLonBox mapBox) {
+		this.mapBox = mapBox;
+	}
+
+	public OsmWay addWay(OsmWay way) {
+		if (way != null) {
+			return ways.put(way.getId(), way);
+		}
+		return null;
+	}
+
+	public OsmNode addNode(OsmNode node) {
+		if (node != null) {
+			return nodes.put(node.getId(), node);
+		}
+		return null;
+	}
+
+	public boolean addRelation(OsmRelation relation) {
+		if (relation != null) {
+			return relations.add(relation);
+		}
+		return false;
 	}
 
 	@Override
 	public String toString() {
-		String result = "";
-		if (continent!=null)
-			result += "Continent: "+continent+" ";
-		if (place!= null)
-			result += "Place: "+place +" ";
-		if(name!= null){
-			result +="Name: "+ name + "\n";
+		StringBuffer result = new StringBuffer();
+		for (OsmWay w : ways.values()) {
+			result.append(w.toString() + "\n");
 		}
-		for (OsmWay w : ways) {
-			result += w.toString() + "\n";
+
+		for (OsmNode n : nodes.values()) {
+			result.append(n.toString() + "\n");
 		}
-		
-		for (OsmNode n : specialPlaces) {
-			result += n.toString() + "\n";
+
+		for (OsmRelation r : relations) {
+			result.append(r + "\n");
 		}
-		return result;
+		return result.toString();
 	}
 
-	public void setMapInfo(HexagonalGrid infoGrid) {
+	/**
+	 * Get info from Open Streets Maps
+	 * 
+	 * @param grid
+	 * @return
+	 */
+	public static OsmMap getMap(HexagonalGrid grid) {
+		LatLng NW = grid.getArea()[0];
+		LatLng SE = grid.getArea()[1];
 
-		for (OsmWay way : ways) {
-			try {
-				setMapInfoWay(way, infoGrid);
-			} catch (IllegalArgumentException e) {
-				// System.err.println("*****No tiene nodos!!! " +
-				// way.toString());
-			}
-		}
-		for (OsmNode node : specialPlaces) {
-			// System.err.println(node.toString());
-			setMapInfoValue(infoGrid, node.coord, node.extendedInfo.getKey());
-		}
-	}
-
-	private void setMapInfoWay(OsmWay way, HexagonalGrid grid) {
-		List<OsmNode> nodeWay = way.getWay();
-		if (nodeWay.size() == 0) {
-			throw new IllegalArgumentException(
-					"No puede haber un camino sin nodos");
-		}
-		List<Point> road = new ArrayList<Point>();
-		OsmNode b = nodeWay.get(0);
-		if (way.getFirsNode() != null) {
-			road.addAll(aproximateWayPoints(way.getFirsNode(), b));
-		}
-		// Way from a to b
-		for (int x = 1; x < nodeWay.size(); x++) {
-			OsmNode a = b;
-			b = nodeWay.get(x);
-			road.addAll(aproximateWayPoints(a, b));
-		}
-		if (way.getLastNode() != null) {
-			road.addAll(aproximateWayPoints(b, way.getLastNode()));
-		}
-		short key = way.getKey();
-//		System.err.println(way.toString());
-//		System.err.print("Way: "+way.getId()+", Nodes: ");
-		for (Point p : road) {
-//			System.err.print(p.toString()+", ");
-			grid.setStreetValue(p, key);
-		}
-//		System.err.println();
-
-	}
-
-	private List<Point> aproximateWayPoints(OsmNode nodeA, OsmNode nodeB) {
-		List<Point> road = new ArrayList<Point>();
-		Point pointA = nodeA.getPoint();
-		Point pointB = nodeB.getPoint();
-		road.add(pointA);
-		while (!pointA.equals(pointB)) {
-			//Mientras no hayamos llegado al destino
-			pointA = HexagonalGrid.nearestHexagon(pointA, pointB);
-			//Añadimos punto a la carretera
-			road.add(pointA);
-		}
-		return road; 
-	}
-
-	private void setMapInfoValue(HexagonalGrid infoGrid, LatLng coord,
-			short value) {
+		// Open Streets Maps uses a differente mapBox, NE, SW
+		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
+		String mBox = NW.getLng() + "," + SE.getLat() + "," + SE.getLng() + ","
+				+ NW.getLat();
+		String fileName = "map?bbox=" + mBox;
+		url += mBox;
+		System.err.println("Obtaining info from :" + url);
+		File xmlFile = Osm.getOSMXmlFromURL(url, fileName);
+		System.err.println("Reading file: " + xmlFile.getAbsolutePath());
+		// parse XML file -> XML document will be build
+		Document doc = null;
+		Node node = null;
 		try {
-			Point point = infoGrid.coordToTile(coord);
-			infoGrid.setStreetValue(point.getCol(), point.getRow(), value);
-			// System.err.println("Valor del grid cambiado con exito");
-		} catch (IndexOutOfBoundsException e) {
-			System.err
-					.println("**************Intentando acceder fuera del array");
-		}
+			doc = Osm.parseFile(xmlFile);
+			// get root node of xml tree structure
+			node = doc.getDocumentElement();
+			// write node and its child nodes into System.out
 
+		} catch (NullPointerException e) {
+			// A ocurrido un error al obtener el xml, abortado calles
+			System.err.println("Error obtaining Streets, no map generated");
+			return null;
+		}
+		OsmMap osmMap = new OsmMap();
+		// <?xml version="1.0" encoding="UTF-8"?>
+		// <osm version="0.6" generator="CGImap 0.0.2">
+		// <bounds minlat="29.925797" minlon="-90.075409" maxlat="29.947426"
+		// maxlon="-90.046214"/>
+		node = node.getFirstChild().getNextSibling();
+		NamedNodeMap attributes = node.getAttributes();
+		double minlat = Double.parseDouble(attributes.item(0).getNodeValue());
+		double minlon = Double.parseDouble(attributes.item(1).getNodeValue());
+		double maxlat = Double.parseDouble(attributes.item(2).getNodeValue());
+		double maxlon = Double.parseDouble(attributes.item(3).getNodeValue());
+		osmMap.setMapBox(new LatLonBox().withSouth(minlat).withWest(minlon)
+				.withNorth(maxlat).withEast(maxlon));
+		// Seguimos con todos los demás atributos
+		node = node.getNextSibling();
+		while (node != null) {
+			String type = node.getNodeName();
+			if (type.equalsIgnoreCase("node")) {
+				OsmNode nd = OsmNode.getNode(node);
+				if (!nd.isSimpleNode()) {
+					// Solo añadimos los puntos de los sitios de interes
+					nd.setPoint(grid.coordToTile(nd.getCoord()));
+				}
+//				System.err.println("\t" + nd);
+				osmMap.addNode(nd);
+			} else if (type.equalsIgnoreCase("way")) {
+				OsmWay w = OsmWay.getOsmWay(node, osmMap.getNodes());
+				boolean in = false;
+				boolean out = true;
+				boolean last = true;
+				Iterator<OsmNode> it = w.getWay().iterator();
+				while (it.hasNext()) {
+					OsmNode n = it.next();
+
+					n.setPoint(grid.coordToTile(n.getCoord()));
+					in = n.isIn();
+					// Aun no estamos dentro
+					if (!in && out) {
+						w.setFirst(n);
+						it.remove();
+					}
+
+					if (in) {
+						// Estamos dentro
+						n.setPoint(grid.coordToTile(n.getCoord()));
+						out = false;
+					}
+
+					if (!in && !out) {
+						if (last) {
+							// Acabamos de salir
+							w.setLast(n);
+							last = false;
+						}
+						// todas las demas salidas
+						it.remove();
+					}
+				}
+//				System.err.println("\t" + w);
+				osmMap.addWay(w);
+			} else if (type.equalsIgnoreCase("relation")) {
+				OsmRelation r = OsmRelation.getRelation(node, osmMap.getWays());
+//				System.err.println("\t" + r);
+				osmMap.addRelation(r);
+			}else if (type.equalsIgnoreCase("#text")){
+				//skipping
+			} else {
+				System.err.println("\tEtiqueta no reconocida " + type);
+			}
+			node = node.getNextSibling();
+		}
+		return osmMap;
 	}
+
 }

@@ -1,7 +1,10 @@
 package osm;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+
+import org.w3c.dom.Node;
 
 public class OsmWay implements Comparable<OsmWay>{
 	/**
@@ -12,70 +15,75 @@ public class OsmWay implements Comparable<OsmWay>{
 	/**
 	 * Información Extendida de WAY
 	 */
-	protected OsmNodeExtendedInfo extendedInfo;
-	/**
-	 * Sometimes OSM give nodes out of the box, Next node to this is contained
-	 */
-	protected OsmNode firsNode;
-	/**
-	 * Sometimes OSM give nodes out of the box, Previous node is contained
-	 */
-	protected OsmNode lastNode;
-	// TODO prioridad a la hora de pintarlo
+	protected List<OsmTag> tags;
 	/**
 	 * Priority of painting ROAD
 	 */
-	protected int priority;
+	private OsmNode first;
+	private OsmNode last;
+	
+	protected short type=Osm.Undefined;
 
-	public OsmWay(long id) {
+	private OsmWay(long id) {
 		this.id = id;
 		way = new ArrayList<OsmNode>();
+		tags = new ArrayList<OsmTag>();
 	}
 
-	protected void addToWay(OsmNode node) {
-		way.add(node);
+	public OsmNode getFirstNode(){
+		return first;
+	}
+	
+	public OsmNode getLastNode(){
+		return last;
+	}
+	public List<OsmTag> getTags() {
+		return tags;
+	}
+	
+	public void setType(short type) {
+		this.type = type;
+	}
+	public void setFirst(OsmNode first) {
+		this.first = first;
+	}
+	
+	public void setLast(OsmNode last) {
+		this.last = last;
+	}
+	
+	protected boolean addToWay(OsmNode node) {
+		if (node != null){
+			return way.add(node);	
+		}
+		return false;
 	}
 
+	private boolean addTag(OsmTag tag) {
+		if (tag != null){
+			return tags.add(tag);
+		}
+		return false;		
+	}
 	public boolean containsNode(OsmNode node) {
 		return way.contains(node);
-	}
-
-	public void setFirsNode(OsmNode firsNode) {
-		this.firsNode = firsNode;
 	}
 
 	public long getId() {
 		return id;
 	}
 
-	public int getPriority() {
-		return priority;
-	}
-
-	public void setLastNode(OsmNode lastNode) {
-		this.lastNode = lastNode;
+	public short getType() {
+		if (type == Osm.Undefined){
+			type = Osm.getNodeType(tags);
+		}
+		return type;
 	}
 
 	public List<OsmNode> getWay() {
 		return way;
 	}
 
-	public OsmNode getFirsNode() {
-		return firsNode;
-	}
-
-	public OsmNode getLastNode() {
-		return lastNode;
-	}
-
-	public short getKey() {
-		if (extendedInfo != null) {
-			return extendedInfo.getKey();
-		} else {
-			System.err.println("Undefined WAY TYPE - " + toString());
-			return -1;
-		}
-	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -85,30 +93,54 @@ public class OsmWay implements Comparable<OsmWay>{
 
 	@Override
 	public String toString() {
-		String result = "Way Id: " + id;
-		if (extendedInfo != null) {
-			result += ": " + extendedInfo.toString();
+		String result = "Way: "+id+", "+getType()+"\t tags: ";		
+		for (OsmTag tag : tags){
+			result += tag.toString() +", ";
 		}
-		if (firsNode != null) {
-			result += " *First Node: " + firsNode + "* ";
-		}
-		if (lastNode != null) {
-			result += " *Last Node: " + lastNode + "* ";
-		}
-		result += "| Nodes: ";
+		result += "\n\t Nodes: ";
 		for (OsmNode n : way) {
 			result += n.toString() + ", ";
 		}
+		
 		return result;
 	}
 
-	public void setExtendedInfo(OsmNodeExtendedInfo extendedInfo) {
-		this.extendedInfo = extendedInfo;
-		priority = extendedInfo.getKey();
-	}
 
 	@Override
 	public int compareTo(OsmWay o) {
 		return (int) (id - o.id);
 	}
+	
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return (int) id;
+	}
+	
+	public static OsmWay getOsmWay(Node node, Hashtable<Long, OsmNode> nodes){
+		OsmWay osmWay = new OsmWay(Long.parseLong(node
+				.getAttributes().item(0).getNodeValue()));
+		// Bajamos un nivel
+		node = node.getFirstChild();
+		while (node != null) {
+			String type = node.getNodeName();
+			if (type.equalsIgnoreCase("nd")) {
+				long ref = Long.parseLong(node.getAttributes().item(0).getNodeValue());
+				osmWay.addToWay(nodes.get(ref));
+			} else if (type.equalsIgnoreCase("tag")) {
+				osmWay.addTag(OsmTag.getTag(node));
+			} else {
+				// No deberiamos llegar aqui
+			}
+			node = node.getNextSibling();
+		}
+		if (osmWay.getWay().size() > 0) {
+			osmWay.setType(Osm.getNodeType(osmWay.getTags()));
+			return osmWay;
+		} else {
+			return null;
+		}
+	}
+
+
 }

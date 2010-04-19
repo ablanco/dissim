@@ -23,7 +23,7 @@ public class WaysComparator implements Comparator<OsmWay>{
 	@Override
 	public int compare(OsmWay o1, OsmWay o2) {
 		//Los de mas prioridad se pintaran los ultimos
-		return o1.priority - o2.priority;
+		return o1.type - o2.type;
 	}
 
 }

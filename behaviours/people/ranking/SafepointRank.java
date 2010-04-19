@@ -21,7 +21,7 @@ import java.util.ListIterator;
 import java.util.Random;
 import java.util.Set;
 
-import osm.OsmInf;
+import osm.Osm;
 import util.HexagonalGrid;
 import util.NoDuplicatePointsSet;
 import util.Point;
@@ -40,7 +40,7 @@ public class SafepointRank implements Ranking {
 			adjacents.add(position);
 
 			// Si ya está en un refugio no se mueve ni muere ni nada
-			if (OsmInf.getBigType(position.getS()) == OsmInf.SafePoint)
+			if (Osm.getBigType(position.getS()) == Osm.SafePoint)
 				throw new YouAreSafeException(position);
 		}
 
@@ -51,9 +51,9 @@ public class SafepointRank implements Ranking {
 		for (Point pt : adjacents) {
 			if (pt.getW() > 0)
 				water.add(pt);
-			else if (OsmInf.getBigType(pt.getS()) == OsmInf.SafePoint)
+			else if (Osm.getBigType(pt.getS()) == Osm.SafePoint)
 				safe.add(pt);
-			else if (OsmInf.getBigType(pt.getS()) == OsmInf.Roads)
+			else if (Osm.getBigType(pt.getS()) == Osm.Roads)
 				dry.add(pt);
 			// Las casillas que no son calles ni refugios se ignoran
 		}

@@ -16,255 +16,68 @@
 
 package osm;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
+import util.Point;
 import util.Util;
 import util.Wget;
-import util.jcoord.LatLng;
 
 public class Osm {
 
-	/**
-	 * Get And Fill streets Matrix for this Grid from Open Streets Maps
-	 * 
-	 * @param grid
-	 * @return
-	 */
-	public static OsmMap getMap(HexagonalGrid grid) {
-		LatLng NW = grid.getArea()[0];
-		LatLng SE = grid.getArea()[1];
+	private static final short smallClass = 10;
+	private static final short mediumClass = 50;
+	private static final short bigClass = 100;
 
-		// Open Streets Maps uses a differente mapBox, NE, SW
-		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
-		String mBox = NW.getLng() + "," + SE.getLat() + "," + SE.getLng() + ","
-				+ NW.getLat();
-		String fileName = "map?bbox=" + mBox;
-		url += mBox;
-		// ("Obtaining info from :" + url);
-		File xmlFile = getOSMXmlFromURL(url, fileName);
-		System.err.println("Reading file: " + xmlFile.getAbsolutePath());
-		// parse XML file -> XML document will be build
-		Document doc = null;
-		Node root = null;
-		try {
-			doc = parseFile(xmlFile);
-			// get root node of xml tree structure
-			root = doc.getDocumentElement();
-			// write node and its child nodes into System.out
+	public static final short Undefined = -1;
+	// Land
+	public static final short Raw_Field = 0;
+	public static final short Waterway = Raw_Field + smallClass;
+	public static final short Barrier = Waterway + smallClass;
+	public static final short Natural = Barrier + smallClass;
+	public static final short Landuse = Natural + smallClass;
+	public static final short Geological = Landuse + smallClass;
+	public static final short Land = 200;
+	// End Land Types
+	// Roads
+	public static final short Tracktype = Land + mediumClass;
+	public static final short Cycleway = Tracktype + mediumClass;
+	public static final short Aerialway = Tracktype + mediumClass;
+	public static final short Railway = Aerialway + mediumClass;
+	public static final short Highway = Railway + bigClass;
+	public static final short Roads = 600;
+	// End Roads
+	// Safe Points
+	// Big Places
+	public static final short Man_Made = Roads + smallClass;
+	public static final short Shop = Man_Made + smallClass;
+	public static final short Tourism = Shop + smallClass;
+	public static final short Power = Tourism + smallClass;
+	public static final short Leisure = Man_Made + mediumClass;
+	public static final short Amenity = Leisure + mediumClass;
 
-		} catch (NullPointerException e) {
-			// A ocurrido un error al obtener el xml, abortado calles
-			System.err.println("Error obtaining Streets, no map generated");
-			return new OsmMap(-1000);
-		}
-		return xmlToStreets(root, grid);
-	}
+	// Goverment
+	public static final short Historic = Amenity + smallClass;
+	public static final short Military = Historic + smallClass;
+	public static final short Building = Military + mediumClass * 4;
+	public static final short Aeroway = Building + mediumClass * 5;
 
-	/**
-	 * Dado el nodo root del xml de OSM nos devuelve OsmMap con toda la
-	 * información que necesitamos
-	 * 
-	 * @param root
-	 *            Root element de un xml obtenido de OSM
-	 * @return Clase con toda la información que necesitamos de OSM
-	 */
-	protected static OsmMap xmlToStreets(Node root, HexagonalGrid grid) {
-		// Skips osm and bounds
-		root = root.getFirstChild().getNextSibling().getNextSibling();
-		// gets First Node contains info about location
-		Node mapInfo = root.getNextSibling();
-		// Root node has id
-		NamedNodeMap attributes = mapInfo.getAttributes();
-		long id = Long.parseLong(attributes.item(0).getNodeValue());
-		OsmMap osmMap = new OsmMap(id);
-		// Children has the info
-		NodeList mapInfoChilds = mapInfo.getChildNodes();
-		if (mapInfo.getFirstChild() != null) {// First child has Continent name
-			attributes = mapInfoChilds.item(1).getAttributes();
-			osmMap.setContinent(attributes.item(1).getNodeValue());
-			// Second child has the name of the place
-			attributes = mapInfoChilds.item(3).getAttributes();
-			osmMap.setName(attributes.item(1).getNodeValue());
-			// Forth child contains place type
-			mapInfo = mapInfoChilds.item(6).getNextSibling();
-			attributes = mapInfo.getAttributes();
-			osmMap.setPlace(attributes.item(1).getNodeValue());
-			// Now we've got all information
-		}
-		SortedMap<Long, OsmNode> osmNodes = new TreeMap<Long, OsmNode>();
-		// When this methods finised we've shuld have the first way
-		getNodeInfo(root.getNextSibling().getNextSibling(), osmNodes, osmMap,
-				grid);
-		// Now we sort the list
-		Collections.sort(osmMap.ways, new WaysComparator());
-		// Now we fill the streets matrix
-		osmMap.setMapInfo(grid);
-		// Now Returns All the info, if needed ...
-		return osmMap;
-	}
-
-	/**
-	 * Dado un nodo lo clasifica y lo añade a un OsmMap
-	 * 
-	 * @param node
-	 *            Nodo Root de un xml de OSM
-	 * @param osmNodes
-	 *            Map con todos los nodos
-	 * @param osmMap
-	 *            Clase donde tendremos toda la informacion que necesitamos de
-	 *            OSM
-	 */
-	protected static void getNodeInfo(Node node,
-			SortedMap<Long, OsmNode> osmNodes, OsmMap osmMap, HexagonalGrid grid) {
-		while (node != null) {
-			// Hasta llegar al final del XML
-			String nodeName = node.getNodeName();
-			if (nodeName.equalsIgnoreCase("node")) {
-				// Es un nodo, de informacion o de sitio especial
-				getNodeInfoNode(node, osmNodes, osmMap.specialPlaces, grid);
-			} else if (nodeName.equalsIgnoreCase("way")) {
-				// Forma parte de un Way
-				getNodeInfoWay(node, osmNodes, osmMap.ways);
-			} else {
-				// Informacion que no nos interesa, que es member???
-				// Skipping
-			}
-			node = node.getNextSibling();
-		}
-	}
-
-	/**
-	 * Dado un Nodo Node, que son los puntos del mapa, extraemos toda su
-	 * información. Pueden ser de tod tipos, nodos normales o nodos especiales
-	 * (edificios, aeropuertos ...)
-	 * 
-	 * @param node
-	 *            Nodo que queremos analizar
-	 * @param osmNodes
-	 *            Map con todos los nodos
-	 * @param specialPlaces
-	 *            Set con los nodos especiales.
-	 */
-	protected static void getNodeInfoNode(Node node,
-			SortedMap<Long, OsmNode> osmNodes, List<OsmNode> specialPlaces,
-			HexagonalGrid grid) {
-		NamedNodeMap attributes = node.getAttributes();
-		// Getting attributes
-		long id;
-		double lat;
-		double lng;
-		try {
-			id = Long.parseLong(attributes.item(1).getNodeValue());
-			lat = Double.parseDouble(attributes.item(2).getNodeValue());
-			lng = Double.parseDouble(attributes.item(3).getNodeValue());
-			// Weird error while parsin xml file
-			System.err.println("Are you at the etsii??");
-		} catch (Exception e) {
-			id = Long.parseLong(attributes.item(0).getNodeValue());
-			lat = Double.parseDouble(attributes.item(1).getNodeValue());
-			lng = Double.parseDouble(attributes.item(2).getNodeValue());
-		}
-		LatLng latLng = new LatLng(lat, lng);
-		OsmNode osmNode = new OsmNode(id, latLng);
-		// System.err.println("Nodo leido: "+osmNode.toString()+" Coordenadas: "+latLng.toString()+" lat: "+lat+", lng; "+lng);
-		// Añadimos el punto del grid/punto aproximado del grid (mirar variable
-		// isIn)
-		osmNode.setPoint(grid.coordToTile(latLng));
-		// If is extended Node:
-		if (node.getFirstChild() != null) {
-			// Is a special Place
-			osmNode.setExtendedInfo(OsmInf
-					.getExtendedInfo(node.getFirstChild()));
-			// Adding to Special Places
-			if (osmNode.getExtendedInfo().getKey() != OsmInf.Undefined) {
-				specialPlaces.add(osmNode);
-			} else {
-				System.err.println("Undefinde node: " + osmNode);
-			}
-		} else {
-			// Adding node to map of nodes
-			osmNodes.put(id, osmNode);
-		}
-	}
-
-	/**
-	 * Dado un Nodo WAY extrae su información y lo añade a la lista de Ways y le
-	 * añade todos los nodos contenidos en el Map. No los elemina porque se ha
-	 * dado el caso que un nodo puede estar en varios Ways
-	 * 
-	 * @param node
-	 *            nodo del xml que estamos reconociendo
-	 * @param osmNodes
-	 *            Map con todos los nodos reconocidos esperando a ser asignados
-	 *            a un way
-	 * @param ways
-	 *            Acumulador de Ways que hemos ido reconociendo
-	 */
-	protected static void getNodeInfoWay(Node node,
-			SortedMap<Long, OsmNode> osmNodes, List<OsmWay> ways) {
-		// Getting IDattributes
-		long id = Long.parseLong(node.getAttributes().item(0).getNodeValue());
-		// Creating the way and adding to map
-		OsmWay osmWay = new OsmWay(id);
-
-		node = node.getFirstChild();
-		// Getting Nodes id to add way
-		boolean in = false;
-		boolean out = true;
-		while (node != null && !node.getNodeName().equalsIgnoreCase("tag")) {
-			if (node.getNodeName().equalsIgnoreCase("nd")) {
-				// es un nodo
-				long key = Long.parseLong(node.getAttributes().item(0)
-						.getNodeValue());
-				// Adding to way
-				OsmNode aux = osmNodes.get(key);
-				if (aux != null) {
-					// Tenemos el nodo que buscamos
-					if (aux.isIn()) {
-						// Esta dentro de las coordenadas
-						osmWay.addToWay(aux);
-						in = true;
-						out = false;
-					} else {
-						// No esta dentro de las coordenadas, tenemos que buscar
-						// el primero y el ultimo que si que lo esten para poder
-						// interpolar la posición hasta el extremo al que
-						// debemos pintar
-						if (out) {
-							osmWay.setFirsNode(aux);
-							// Primero fuera:
-						}
-						if (in) {
-							osmWay.setLastNode(aux);
-							// "Ultimo Fuera: "
-							in = aux.isIn();
-						}
-					}
-				}// Buscamos un key que no existe ... wtf osm??
-			}
-			node = node.getNextSibling();
-		}
-		// Obtaining extended info and Priority
-		osmWay.setExtendedInfo(OsmInf.getExtendedInfo(node));
-		// Ahora que tenemos la prioridad añadimos el Way
-		ways.add(osmWay);
-	}
+	public static final short SafePoint = 1000;
+	// End Safe Points
+	// Others
+	public static final short Boundary = -2;
+	public static final short Multipolygon = -3;
 
 	/**
 	 * Given a proper url for OSM returns a file with the information
@@ -275,7 +88,7 @@ public class Osm {
 	 *            Name for the file
 	 * @return
 	 */
-	protected static File getOSMXmlFromURL(String url, String fileName) {
+	public static File getOSMXmlFromURL(String url, String fileName) {
 		try {
 			// creamos un fichero en el directorio temporal
 			File dir = Util.getDefaultTempDir();
@@ -337,24 +150,452 @@ public class Osm {
 		return doc;
 	}
 
-	protected void printNodeInfo(Node node) {
-		System.out.println();
-		System.out.print("Name: " + node.getNodeName() + ",Value: "
-				+ node.getNodeValue() + " - ");
-		NamedNodeMap attributes = node.getAttributes();
-		if (attributes != null) {
-			for (int j = 0; j < attributes.getLength(); j++) {
-				System.out.print(attributes.item(j).getNodeValue() + ", ");
+	/**
+	 * Dado un HexagonalGrid se descarga de internet toda la información desde
+	 * OSM y lo actualiza
+	 * 
+	 * @param osmMap
+	 * @param grid
+	 */
+	public static void setOsmMapInfo(HexagonalGrid grid) {
+		OsmMap osmMap = OsmMap.getMap(grid);
+		for (OsmRelation r : osmMap.getRelations()) {
+			if (r.getType() == Boundary || r.getType() == Undefined) {
+				// Las marcas de fronteras no nos interesan
+			}else{
+				System.err.println("Escribiendo Relations " + r);
+				setStreetValue(r, grid);
 			}
 		}
+		
+//		for (OsmWay w : osmMap.getWays().values()) {
+//			if (w.getType() > Undefined){
+//				setStreetValue(w, grid);
+//			}else{
+//			System.err.println("No se ha escrito: " + w);
+//			}
+//		}
 
-		NodeList infoChilds = node.getChildNodes();
-		if (infoChilds != null) {
-			for (int i = 0; i < infoChilds.getLength(); i++) {
-				printNodeInfo(infoChilds.item(i));
+		for (OsmNode n : osmMap.getNodes().values()) {
+			if (!n.isSimpleNode()) {
+//				System.err.println("Escribiendo Nodes: " + n);
+				setStreetValue(n, grid);
 			}
 		}
-		System.out.println("Fin de hijos");
+	}
+
+	/**
+	 * Set Street value in point p given the type only is type is greater than
+	 * previous value
+	 * 
+	 * @param p
+	 * @param type
+	 * @param grid
+	 * @return
+	 */
+	public static boolean setStreetValue(Point p, short type, HexagonalGrid grid) {
+		short currType = grid.getStreetValue(p);
+		if (type == currType) {
+			// Esto quiere decir que es una intersección, luego le damos un
+			// valor impar
+			try {
+				// System.err.println("Escribiendo en " + p + " el valor " +
+				// type);
+				grid.setStreetValue(p, (short) (type + 1));
+			} catch (Exception e) {
+				System.err
+						.println("Se ha producido un error al intentar insertar "
+								+ p + ", del tipo " + (type + 1));
+				e.printStackTrace();
+			}
+			return true;
+		} else if (type > currType) {
+			// Esto quiere decir que hay algo mas importate que lo actual,
+			// sobreescribimos
+			try {
+				// System.err.println("Escribiendo en " + p + " el valor " +
+				// type);
+				grid.setStreetValue(p, type);
+			} catch (Exception e) {
+				System.err
+						.println("Se ha producido un error al intentar insertar "
+								+ p + ", del tipo " + type);
+				e.printStackTrace();
+			}
+			return true;
+		}
+		// System.err.println("No se esta escribiendo nada en " + p +
+		// " el valor "
+		// + type+ " ya tiene "+currType);
+		return false;
+
+	}
+
+	/**
+	 * Solo para puntos de interes, Añadimos a la matriz de calles del grid el
+	 * Nodo Siempre que el valor que metamos sea mayor que el valor que antes
+	 * estuviera en la matriz
+	 * 
+	 * @param n
+	 * @param grid
+	 * @return
+	 */
+	public static boolean setStreetValue(OsmNode n, HexagonalGrid grid) {
+		return setStreetValue(n.getPoint(), n.getType(), grid);
+	}
+
+	/**
+	 * Valido para cualquier OsmNode, añadimos en la matriz de calles, siempre
+	 * que sea mayor, el valor especificado en type
+	 * 
+	 * @param n
+	 * @param type
+	 * @param grid
+	 * @return
+	 */
+	public static boolean setStreetValue(OsmNode n, short type,
+			HexagonalGrid grid) {
+		return setStreetValue(n.getPoint(), type, grid);
+	}
+
+	/**
+	 * Añadimos a la matriz de calles el Way
+	 * 
+	 * @param w
+	 * @param grid
+	 */
+	public static void setStreetValue(OsmWay w, HexagonalGrid grid) {
+		short type = w.getType();
+		Iterator<OsmNode> it = w.getWay().iterator();
+		OsmNode prev = null;
+		if (it.hasNext()) {
+			prev = it.next();
+		}
+		while (it.hasNext()) {
+			OsmNode curr = it.next();
+			setStreetValue(type, prev, curr, grid);
+			prev = curr;
+		}
+		OsmNode first = w.getFirstNode();
+		if (first != null) {
+			setStreetValue(type, first, w.getWay().get(0), grid);
+		}
+		OsmNode last = w.getLastNode();
+		if (last != null) {
+			setStreetValue(type, w.getWay().get(w.getWay().size() - 1), last,
+					grid);
+		}
+	}
+
+	public static void setStreetValue(OsmRelation r, HexagonalGrid grid) {
+		for (OsmMember m : r.getMembers()) {
+			setStreetValue(m.getWay(), grid);
+		}
+		// Aqui tenemos que rellenar con valores el medio de estos dos members
+		setStreetValue(r.getType(), r.getMembers(), grid);
+
+	}
+
+	public static void setStreetValue(short type, List<OsmMember> members,
+			HexagonalGrid grid) {
+		// Algoritmo de cubo de pintura, detectar bordes
+
+	}
+
+	public static void setStreetValue(short type, OsmNode a, OsmNode b,
+			HexagonalGrid grid) {
+		Point pointA = a.getPoint();
+		Point pointB = b.getPoint();
+		setStreetValue(a, type, grid);
+		while (!pointA.equals(pointB)) {
+			// Mientras no hayamos llegado al destino
+			pointA = HexagonalGrid.nearestHexagon(pointA, pointB);
+			// Añadimos punto a la carretera
+			setStreetValue(pointA, type, grid);
+		}
+		setStreetValue(b, type, grid);
+	}
+
+	/**
+	 * Given a Node Returns a Full of Info Node
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public static short getNodeType(List<OsmTag> tags) {
+		for (OsmTag tag : tags) {
+			String name = tag.getName();
+			String value = tag.getValue();
+			if (name.equalsIgnoreCase("highway")
+					|| name.equalsIgnoreCase("junction")
+					|| name.equalsIgnoreCase("traffic_calming")
+					|| name.equalsIgnoreCase("service")) {
+				return getHighway(name, value);
+			} else if (name.equalsIgnoreCase("amenity")) {
+				return Amenity;
+			} else if (name.equalsIgnoreCase("historic")) {
+				return Historic;
+			} else if (name.equalsIgnoreCase("leisure")
+					|| name.equalsIgnoreCase("sport")) {
+				return Leisure;
+			} else if (name.equalsIgnoreCase("aeroway")) {
+				return Aeroway;
+			} else if (name.equalsIgnoreCase("Barrier")) {
+				return Barrier;
+			} else if (name.equalsIgnoreCase("Cycleway")) {
+				return Cycleway;
+			} else if (name.equalsIgnoreCase("Tracktype")) {
+				return Tracktype;
+			} else if (name.equalsIgnoreCase("Waterway")) {
+				return getWaterway(value);
+			} else if (name.equalsIgnoreCase("Railway")) {
+				return getRailway(value);
+			} else if (name.equalsIgnoreCase("Aerialway")) {
+				return Aerialway;
+			} else if (name.equalsIgnoreCase("Power")) {
+				return Power;
+			} else if (name.equalsIgnoreCase("Shop")) {
+				return Shop;
+			} else if (name.equalsIgnoreCase("ManMade")) {
+				return Man_Made;
+			} else if (name.equalsIgnoreCase("Historic")) {
+				return Historic;
+			} else if (name.equalsIgnoreCase("Military")) {
+				return Military;
+			} else if (name.equalsIgnoreCase("Natural")) {
+				return Natural;
+			} else if (name.equalsIgnoreCase("Geological")) {
+				return Geological;
+			} else if (name.equalsIgnoreCase("Building")) {
+				return Building;
+			} else if (name.equalsIgnoreCase("Landuse")) {
+				return Landuse;
+			} else if (name.equalsIgnoreCase("boundary")) {
+				return Boundary;
+			} else if (name.equalsIgnoreCase("type")) {
+				return Multipolygon;
+			} else {
+				System.err.println("Undefinded Tags " + tags);
+			}
+		}
+		return Undefined;
+	}
+
+	private static short getRailway(String value) {
+		short key = Railway;
+		key += 2;
+		if (value.equalsIgnoreCase("rail"))
+			return key;
+		key += 2;
+		if (value.equalsIgnoreCase("tram"))
+			return key;
+		return Railway;
+	}
+
+	private static short getWaterway(String value) {
+		short key = Waterway;
+		if (value.equalsIgnoreCase("riverbank"))
+			return key;
+		return 0;
+	}
+
+	/**
+	 * Given a highway Type Returns a Proper value for this kind of Highway Los
+	 * incrementos van de dos en dos, cuando es intersección será impar.
+	 * 
+	 * @param type
+	 * @param value
+	 * @return
+	 */
+	private static short getHighway(String type, String value) {
+		short key = Highway;
+		if (type.equalsIgnoreCase("highway")) {
+			// Higways
+			if (value.equalsIgnoreCase("footway")
+					|| value.equalsIgnoreCase("path"))
+				return key;
+			key += 2;
+			if (value.equalsIgnoreCase("track"))
+				return key;
+			key += 2;
+			if (value.equalsIgnoreCase("cycleway"))
+				return key;
+			key += 2;
+			if (value.equalsIgnoreCase("residential")
+					|| value.contains("parking"))
+				return key;
+			key += 2;
+			if (value.equalsIgnoreCase("road")
+					|| value.equalsIgnoreCase("pedestrian"))
+				return key;
+			key += 2;
+			if (value.equalsIgnoreCase("service"))
+				return key;
+			key += 2;
+			if (value.equalsIgnoreCase("tertiary"))
+				return key;
+			key += 2;
+			if (value.equalsIgnoreCase("secondary"))
+				return key;
+			key += 2;
+			if (value.equalsIgnoreCase("primary"))
+				return key;
+			key += 2;
+			if (value.contains("trunk"))
+				return key;
+			key += 2;
+			if (value.contains("motorway"))
+				return key;
+		} else if (type.equalsIgnoreCase("junction")) {
+
+		} else if (type.equalsIgnoreCase("traffic_calming")) {
+
+		} else {
+			// service
+		}
+		return Highway;
+	}
+
+	/**
+	 * Given a type, returns Parent Big Type
+	 * 
+	 * @param type
+	 * @return Parent Big Type
+	 */
+	public static short getBigType(short type) {
+		if (type < Raw_Field) {
+			return Undefined;
+		} else if (type < Land) {
+			return Land;
+		} else if (type < Roads) {
+			return Roads;
+		} else if (type < SafePoint) {
+			return SafePoint;
+		}
+		return Undefined;
+	}
+
+	/**
+	 * Given a type, returns Parent Type
+	 * 
+	 * @param type
+	 * @return Parent Type
+	 */
+	public static short getType(short type) {
+		if (type < Raw_Field) {
+			return Undefined;
+		} else if (type < Land) {
+			// Land Type
+			if (type < Waterway)
+				return Raw_Field;
+			if (type < Barrier)
+				return Waterway;
+			if (type < Natural)
+				return Barrier;
+			if (type < Landuse)
+				return Natural;
+			if (type < Geological)
+				return Landuse;
+			return Geological;
+		} else if (type < Roads) {
+			if (type < Cycleway)
+				return Tracktype;
+			if (type < Aerialway)
+				return Cycleway;
+			if (type < Railway)
+				return Aerialway;
+			if (type < Highway)
+				return Railway;
+			return Highway;
+		} else if (type < SafePoint) {
+			if (type < Shop)
+				return Man_Made;
+			if (type < Tourism)
+				return Shop;
+			if (type < Power)
+				return Tourism;
+			if (type < Leisure)
+				return Power;
+			if (type < Amenity)
+				return Leisure;
+			return Amenity;
+		} else {
+			// Infrastructura
+			if (type < Military)
+				return Historic;
+			if (type < Building)
+				return Military;
+			if (type < Aeroway)
+				return Building;
+			return Aeroway;
+		}
+	}
+
+	/**
+	 * Given a type returns the proper color.
+	 * 
+	 * @param type
+	 * @return
+	 */
+	public static Color getColor(short type) {
+		short key = getType(type);
+		int brigther = (type - key) * 10;
+		if (key < Raw_Field) {
+			// Undefined or Not important
+			return new Color(Color.GRAY.getRGB() + brigther);
+		} else if (key < Land) {
+			// Tipes of land
+			switch (key) {
+			case Waterway:
+				return new Color(Color.BLUE.getRGB() + brigther);
+			case Landuse:
+				return new Color(Color.YELLOW.getRGB() + brigther);
+			default:
+				return new Color(Color.CYAN.getRGB() + brigther);
+			}
+		} else if (key < Roads) {
+			// types of roads
+			switch (key) {
+			case Highway:
+				return new Color(Color.RED.getRGB() + brigther);
+			case Railway:
+				return new Color(Color.ORANGE.getRGB() + brigther);
+			default:
+				return new Color(Color.MAGENTA.getRGB() + brigther);
+			}
+		} else {
+			// Types of safe Places
+			// hay muchos tipos de safe place si le ponemos brighter se sale del
+			// verde
+			return new Color(Color.GREEN.getRGB());
+		}
+	}
+
+	/**
+	 * Given a Type returns the parents type Name
+	 * 
+	 * @param type
+	 * @return Parent Type Name
+	 */
+	public static String getName(short type) {
+		short key = getType(type);
+		switch (key) {
+		case Boundary:
+			return "Boundary Limit";
+		case Highway:
+			return "Highway";
+		case Railway:
+			return "Rail Way";
+		case Waterway:
+			return "Water Way";
+		case Landuse:
+			return "Land Use";
+		default:
+			if (key > Roads) {
+				return "Safe Point";
+			}
+			return "Undefined " + type;
+		}
 
 	}
 }
