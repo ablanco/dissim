@@ -11,7 +11,7 @@ import util.jcoord.LatLng;
 
 public class OsmNode implements Comparable<OsmNode> {
 	protected long id;
-	protected Point point;
+	protected Point point = null;
 	protected LatLng coord;
 	protected List<OsmTag> tags;
 	private short type = Osm.Undefined;
@@ -62,13 +62,6 @@ public class OsmNode implements Comparable<OsmNode> {
 		return true;
 	}
 
-	public boolean isIn() {
-		if (point == null) {
-			return false;
-		}
-		return true;
-	}
-
 	public boolean addTag(OsmTag tag) {
 		if (tag != null) {
 			return tags.add(tag);
@@ -91,11 +84,13 @@ public class OsmNode implements Comparable<OsmNode> {
 		}
 	}
 
+	@Override
 	public boolean equals(Object o) {
 		OsmNode node = (OsmNode) o;
 		return id == node.id;
 	}
 
+	@Override
 	public String toString() {
 		String result = "Node Id: " + id + " ";
 		if (point != null) {

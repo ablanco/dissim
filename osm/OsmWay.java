@@ -2,6 +2,7 @@ package osm;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 
 import org.w3c.dom.Node;
@@ -19,8 +20,6 @@ public class OsmWay implements Comparable<OsmWay>{
 	/**
 	 * Priority of painting ROAD
 	 */
-	private OsmNode first;
-	private OsmNode last;
 	
 	protected short type=Osm.Undefined;
 
@@ -30,13 +29,6 @@ public class OsmWay implements Comparable<OsmWay>{
 		tags = new ArrayList<OsmTag>();
 	}
 
-	public OsmNode getFirstNode(){
-		return first;
-	}
-	
-	public OsmNode getLastNode(){
-		return last;
-	}
 	public List<OsmTag> getTags() {
 		return tags;
 	}
@@ -44,14 +36,7 @@ public class OsmWay implements Comparable<OsmWay>{
 	public void setType(short type) {
 		this.type = type;
 	}
-	public void setFirst(OsmNode first) {
-		this.first = first;
-	}
-	
-	public void setLast(OsmNode last) {
-		this.last = last;
-	}
-	
+
 	protected boolean addToWay(OsmNode node) {
 		if (node != null){
 			return way.add(node);	
@@ -64,9 +49,6 @@ public class OsmWay implements Comparable<OsmWay>{
 			return tags.add(tag);
 		}
 		return false;		
-	}
-	public boolean containsNode(OsmNode node) {
-		return way.contains(node);
 	}
 
 	public long getId() {
@@ -140,6 +122,16 @@ public class OsmWay implements Comparable<OsmWay>{
 		} else {
 			return null;
 		}
+	}
+
+	public void cleanNodes() {
+		Iterator<OsmNode> it = way.iterator();
+		while (it.hasNext()){
+			if (it.next().getPoint() == null){
+				it.remove();
+			}
+		}
+		
 	}
 
 

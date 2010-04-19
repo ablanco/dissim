@@ -92,6 +92,11 @@ public class Point implements Comparable<Point>, Serializable {
 	public String toString() {
 		return "[(" + col + "," + row + ") " + z + "]";
 	}
+	
+	@Override
+	public int hashCode() {
+		return (int) (Math.pow(col+10, 2)*row);
+	}
 
 	public String hashPos() {
 		return col + "," + row;

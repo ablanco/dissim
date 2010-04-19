@@ -19,16 +19,15 @@ package osm;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import util.HexagonalGrid;
 import util.jcoord.LatLng;
-import de.micromata.opengis.kml.v_2_2_0.LatLonBox;
+import util.jcoord.LatLngBox;
 
 public class OsmMap {
 
@@ -36,7 +35,7 @@ public class OsmMap {
 	protected Hashtable<Long, OsmNode> nodes;
 	protected List<OsmRelation> relations;
 	protected List<OsmTag> tags;
-	protected LatLonBox mapBox;
+	protected LatLngBox mapBox;
 
 	public OsmMap() {
 		ways = new Hashtable<Long, OsmWay>();
@@ -45,7 +44,7 @@ public class OsmMap {
 		relations = new ArrayList<OsmRelation>();
 	}
 
-	public LatLonBox getMapBox() {
+	public LatLngBox getMapBox() {
 		return mapBox;
 	}
 
@@ -61,7 +60,7 @@ public class OsmMap {
 		return relations;
 	}
 
-	public void setMapBox(LatLonBox mapBox) {
+	public void setMapBox(LatLngBox mapBox) {
 		this.mapBox = mapBox;
 	}
 
@@ -84,6 +83,10 @@ public class OsmMap {
 			return relations.add(relation);
 		}
 		return false;
+	}
+
+	public boolean isIn(OsmNode n) {
+		return mapBox.isIn(n.getCoord());
 	}
 
 	@Override
@@ -141,16 +144,10 @@ public class OsmMap {
 		// <osm version="0.6" generator="CGImap 0.0.2">
 		// <bounds minlat="29.925797" minlon="-90.075409" maxlat="29.947426"
 		// maxlon="-90.046214"/>
-		node = node.getFirstChild().getNextSibling();
-		NamedNodeMap attributes = node.getAttributes();
-		double minlat = Double.parseDouble(attributes.item(0).getNodeValue());
-		double minlon = Double.parseDouble(attributes.item(1).getNodeValue());
-		double maxlat = Double.parseDouble(attributes.item(2).getNodeValue());
-		double maxlon = Double.parseDouble(attributes.item(3).getNodeValue());
-		osmMap.setMapBox(new LatLonBox().withSouth(minlat).withWest(minlon)
-				.withNorth(maxlat).withEast(maxlon));
+		// Pasamos de todo eso
+		osmMap.setMapBox(new LatLngBox(NW, SE));
+		node = node.getFirstChild().getNextSibling().getNextSibling();
 		// Seguimos con todos los demás atributos
-		node = node.getNextSibling();
 		while (node != null) {
 			String type = node.getNodeName();
 			if (type.equalsIgnoreCase("node")) {
@@ -159,49 +156,44 @@ public class OsmMap {
 					// Solo añadimos los puntos de los sitios de interes
 					nd.setPoint(grid.coordToTile(nd.getCoord()));
 				}
-//				System.err.println("\t" + nd);
+				// System.err.println("\t" + nd);
 				osmMap.addNode(nd);
 			} else if (type.equalsIgnoreCase("way")) {
 				OsmWay w = OsmWay.getOsmWay(node, osmMap.getNodes());
-				boolean in = false;
-				boolean out = true;
-				boolean last = true;
-				Iterator<OsmNode> it = w.getWay().iterator();
+				ListIterator<OsmNode> it = w.getWay().listIterator();
+				boolean first = false;
+				boolean last = false;
 				while (it.hasNext()) {
 					OsmNode n = it.next();
-
-					n.setPoint(grid.coordToTile(n.getCoord()));
-					in = n.isIn();
-					// Aun no estamos dentro
-					if (!in && out) {
-						w.setFirst(n);
-						it.remove();
-					}
-
-					if (in) {
-						// Estamos dentro
-						n.setPoint(grid.coordToTile(n.getCoord()));
-						out = false;
-					}
-
-					if (!in && !out) {
-						if (last) {
-							// Acabamos de salir
-							w.setLast(n);
-							last = false;
+					if (!osmMap.isIn(n)) {
+						//Estamos dentro de los puntos fuera
+						if (first && !last){
+							//Es el primero que se queda fuera
+							n.setPoint(grid.coordToTile(n.getCoord()));
+							last = true; 
 						}
-						// todas las demas salidas
-						it.remove();
+						//Tenemos que borrar todos los que estan fuera
+					} else {
+						// Estamos dentro
+						if (!first && it.hasPrevious()){
+							OsmNode prev = it.previous();
+							prev.setPoint(grid.coordToTile(n.getCoord()));
+							it.next();
+							first = true;
+						}
+						n.setPoint(grid.coordToTile(n.getCoord()));
 					}
 				}
-//				System.err.println("\t" + w);
+				
+				// System.err.println("\t" + w);
+				w.cleanNodes();
 				osmMap.addWay(w);
 			} else if (type.equalsIgnoreCase("relation")) {
 				OsmRelation r = OsmRelation.getRelation(node, osmMap.getWays());
-//				System.err.println("\t" + r);
+				// System.err.println("\t" + r);
 				osmMap.addRelation(r);
-			}else if (type.equalsIgnoreCase("#text")){
-				//skipping
+			} else if (type.equalsIgnoreCase("#text")) {
+				// skipping
 			} else {
 				System.err.println("\tEtiqueta no reconocida " + type);
 			}

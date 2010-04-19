@@ -30,8 +30,8 @@ public class OSMMapTest {
 //		NW = new LatLng(29.939898, -90.064604);
 //		SE = new LatLng(29.934196, -90.051663);
 		// Coordenadas centro ciudad
-		// NW = new LatLng(29.953, -90.088, (short)10);
-		// SE =new LatLng( 29.940, -90.070, (short)10);
+//		 NW = new LatLng(29.953, -90.088, (short)10);
+//		 SE =new LatLng( 29.940, -90.070, (short)10);
 
 		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 30);
 
