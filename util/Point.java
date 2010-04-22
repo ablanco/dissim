@@ -28,6 +28,7 @@ public class Point implements Comparable<Point>, Serializable {
 	private boolean isIn = true;
 	private short w = 0;
 	private short s = 0;
+	private int hash;
 
 	public Point(int col, int row) {
 		this(col, row, (short) 0);
@@ -37,6 +38,7 @@ public class Point implements Comparable<Point>, Serializable {
 		this.col = col;
 		this.row = row;
 		this.z = z;
+		hash = (int) (Math.pow(col + 10, 2) * row);
 	}
 
 	public Point(int[] xyz) {
@@ -92,10 +94,10 @@ public class Point implements Comparable<Point>, Serializable {
 	public String toString() {
 		return "[(" + col + "," + row + ") " + z + "]";
 	}
-	
+
 	@Override
 	public int hashCode() {
-		return (int) (Math.pow(col+10, 2)*row);
+		return hash;
 	}
 
 	public String hashPos() {
