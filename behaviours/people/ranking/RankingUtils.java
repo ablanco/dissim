@@ -22,8 +22,8 @@ import java.util.Set;
 
 import osm.Osm;
 import util.HexagonalGrid;
-import util.NoDuplicatePointsSet;
 import util.Point;
+import util.java.NoDuplicatePointsSet;
 
 public class RankingUtils {
 

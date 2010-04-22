@@ -14,11 +14,11 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package util;
+package util.java;
 
 import java.io.File;
 
-public class Util {
+public class TempFiles {
 
 	/**
 	 * Default Temp Directory
@@ -33,7 +33,7 @@ public class Util {
 	public static String getTempPath() {
 		String path = null;
 		try {
-			File f = File.createTempFile("Chanicidad", null);
+			File f = File.createTempFile("Chanicidad", null); // TODO mejorar
 
 			path = f.getAbsolutePath();
 			path = (String) path.subSequence(0, path.length()

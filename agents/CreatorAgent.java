@@ -26,11 +26,11 @@ import java.util.Iterator;
 import java.util.ListIterator;
 
 import util.AgentHelper;
-import util.Logger;
 import util.Pedestrian;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
+import util.java.Logger;
 import util.jcoord.LatLng;
 import behaviours.CreateAgentBehav;
 

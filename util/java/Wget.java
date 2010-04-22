@@ -40,7 +40,7 @@
 // jtmpl 1.1.01 2004/05/19 (john.mettraux@openwfe.org)
 //
 
-package util;
+package util.java;
 
 import java.net.URL;
 import java.net.URLConnection;

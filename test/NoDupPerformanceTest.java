@@ -18,9 +18,9 @@ package test;
 
 import java.util.Random;
 
-import util.NoDuplicatePointsSet;
 import util.OldNoDuplicatePointsSet;
 import util.Point;
+import util.java.NoDuplicatePointsSet;
 
 public class NoDupPerformanceTest {
 

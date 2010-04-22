@@ -29,10 +29,10 @@ import java.util.Map;
 import java.util.Set;
 
 import util.AgentHelper;
-import util.Logger;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
+import util.java.Logger;
 import behaviours.InterGridBehav;
 
 public class UpdateFloodGridBehav extends TickerBehaviour {

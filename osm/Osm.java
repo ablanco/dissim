@@ -31,10 +31,10 @@ import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
-import util.NoDuplicatePointsSet;
 import util.Point;
-import util.Util;
-import util.Wget;
+import util.java.NoDuplicatePointsSet;
+import util.java.TempFiles;
+import util.java.Wget;
 
 public class Osm {
 
@@ -94,7 +94,7 @@ public class Osm {
 	public static File getOSMXmlFromURL(String url, String fileName) {
 		try {
 			// creamos un fichero en el directorio temporal
-			File dir = Util.getDefaultTempDir();
+			File dir = TempFiles.getDefaultTempDir();
 			File file = new File(dir, fileName);
 			if (!file.exists()) {
 				if (!Wget.wget(dir.getPath(), url)) {

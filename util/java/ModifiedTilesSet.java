@@ -14,7 +14,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package util;
+package util.java;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
+
+import util.Point;
 
 public class ModifiedTilesSet implements Set<Point>, Serializable {
 

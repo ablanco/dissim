@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import osm.Osm;
-import osm.OsmMap;
+import util.java.NoDuplicatePointsSet;
+import util.java.TempFiles;
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
 
@@ -481,7 +482,7 @@ public class HexagonalGrid implements Serializable {
 		int endY = offY + rows;
 
 		if (!random) {
-			File tmp = Util.getDefaultTempDir();
+			File tmp = TempFiles.getDefaultTempDir();
 			String fname = NW.getLat() + "-" + NW.getLng() + "-" + SE.getLat()
 					+ "-" + SE.getLng() + "-" + tileSize;
 			File f = new File(tmp, fname);

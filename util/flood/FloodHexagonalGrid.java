@@ -19,9 +19,9 @@ package util.flood;
 import java.util.Set;
 
 import util.HexagonalGrid;
-import util.ModifiedTilesSet;
-import util.NoDuplicatePointsSet;
 import util.Point;
+import util.java.ModifiedTilesSet;
+import util.java.NoDuplicatePointsSet;
 import util.jcoord.LatLng;
 
 public class FloodHexagonalGrid extends HexagonalGrid {

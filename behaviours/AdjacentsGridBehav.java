@@ -23,8 +23,8 @@ import jade.lang.acl.MessageTemplate;
 import java.io.IOException;
 
 import util.HexagonalGrid;
-import util.NoDuplicatePointsSet;
 import util.Point;
+import util.java.NoDuplicatePointsSet;
 import util.jcoord.LatLng;
 
 public class AdjacentsGridBehav extends CyclicBehaviour {
