@@ -39,6 +39,8 @@ public class Point implements Comparable<Point>, Serializable {
 		this.row = row;
 		this.z = z;
 		hash = (int) (Math.pow(col + 10, 2) * row);
+		// TODO tiene colisiones
+		// por ejemplo, los ptos (-1,81) y (71,1) dan el mismo hash: 6561
 	}
 
 	public Point(int[] xyz) {
