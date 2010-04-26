@@ -201,8 +201,8 @@ public class Scenario implements Serializable {
 				String[] person = decodeScenArray(pair[1]);
 				Pedestrian p = new Pedestrian(new LatLng(Double
 						.parseDouble(person[0]), Double.parseDouble(person[1])));
-				p.setVision(Integer.parseInt(person[2]));
-				p.setSpeed(Integer.parseInt(person[3]));
+				p.setScenData(Integer.parseInt(person[2]), Integer
+						.parseInt(person[3]), Integer.parseInt(person[4]));
 				addPeople(p);
 			} else if (pair[0].equals("updateTimeKml")) {
 				setUpdateKMLPeriod(Long.parseLong(pair[1]));

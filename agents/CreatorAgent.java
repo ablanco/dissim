@@ -136,17 +136,14 @@ public class CreatorAgent extends Agent {
 				while (people.hasNext()) {
 					Pedestrian p = people.next();
 					LatLng pos = p.getPos();
-					// TODO sacar rank del pedestrian
-					arguments = new Object[] {
-							"behaviours.people.ranking.SafepointRank",
+					arguments = new Object[] { p.getRankClass(),
 							Double.toString(pos.getLat()),
 							Double.toString(pos.getLng()),
 							Integer.toString(p.getVision()),
 							Integer.toString(p.getSpeed()) };
-					myAgent
-							.addBehaviour(new CreateAgentBehav(myAgent, "Dude"
-									+ i, "agents.people.PedestrianAgent", 1,
-									arguments));
+					myAgent.addBehaviour(new CreateAgentBehav(myAgent, "Dude"
+							+ i, "agents.people.PedestrianAgent",
+							p.getClones(), arguments));
 					i++;
 				}
 

@@ -210,7 +210,7 @@ else:
     print('\nPERSONAS\n')
     timePeople = raw_input('Tiempo (en milisegundos) entre actualizaciones de los agentes humanos: ')
     fich.write('\nupdateTimePeople=' + timePeople)
-    npeople = int(raw_input('Número de agentes humanos en la simulación: '))
+    npeople = int(raw_input('Número de grupos de agentes humanos en la simulación: '))
     for i in range(npeople):
         person = raw_input('Coordenadas (Lat,Lng) del peatón ' + str(i) + ': ')
         person = person.split(',')
@@ -218,6 +218,8 @@ else:
         person = raw_input('Distancia de visión del peatón (en hexágonos): ')
         fich.write(',' + person)
         person = raw_input('Velocidad (distancia en hexágonos a la que es capaz de moverse en un paso) del peatón: ')
+        fich.write(',' + person)
+        person = raw_input('Número de clones (agentes en el grupo): ')
         fich.write(',' + person + ']')
     print('\nVISORES\n')
     timeKml = raw_input('Período (en milisegundos) de actualización del generador de KML: ')
