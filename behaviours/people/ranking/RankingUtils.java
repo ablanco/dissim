@@ -105,8 +105,7 @@ public class RankingUtils {
 				result = aux;
 			// Miramos que no nos encontremos con obstáculos en el camino
 			if (!destination.equals(aux)) {
-				if (aux.getW() > 0
-						|| Osm.getBigType(aux.getS()) != Osm.Roads) {
+				if (aux.getW() > 0 || Osm.getBigType(aux.getS()) != Osm.Roads) {
 					result = null;
 					break;
 				}
@@ -158,6 +157,54 @@ public class RankingUtils {
 			if (dist > max) {
 				result = inpt;
 				max = dist;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the point from in that is the nearest to the point to
+	 * 
+	 * @param in
+	 * @param to
+	 * @return
+	 */
+	public static Point nearInSetToPoint(Set<Point> in, Point to) {
+		Point result = null;
+		int min = Integer.MAX_VALUE;
+		for (Point pt : in) {
+			int dist = HexagonalGrid.distance(to, pt);
+			if (dist < min) {
+				result = pt;
+				min = dist;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Returns the point from in that is the nearest to the points from to
+	 * 
+	 * @param in
+	 * @param to
+	 * @return
+	 */
+	public static Point nearInSetToSet(Set<Point> in, Set<Point> to) {
+		if (to.size() == 0)
+			return randomFromSet(new Random(System.currentTimeMillis()), in);
+
+		Point result = null;
+		int min = Integer.MAX_VALUE;
+		for (Point inpt : in) {
+			int dist = 0;
+			for (Point frpt : to) {
+				dist += HexagonalGrid.distance(inpt, frpt);
+			}
+			if (to.size() != 0)
+				dist /= to.size();
+			if (dist < min) {
+				result = inpt;
+				min = dist;
 			}
 		}
 		return result;
