@@ -28,6 +28,7 @@ import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
@@ -180,11 +181,14 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 					Point pos = new Point(i, j);
 					boolean person = false;
 					int status = Pedestrian.HEALTHY;
-					for (Pedestrian p : people) {
+					ListIterator<Pedestrian> it = people.listIterator();
+					while (it.hasNext()) {
+						Pedestrian p = it.next();
 						// Miramos si hay alguien en esta casilla
 						if (pos.equals(p.getPoint())) {
 							person = true;
 							status = p.getStatus();
+							it.remove();
 							break;
 						}
 					}
