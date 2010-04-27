@@ -83,7 +83,9 @@ public class PedestrianAgent extends Agent {
 			try {
 				// Carga, y crea un objeto de la clase pasada, por reflexión
 				Class cls = Class.forName(behaviour);
-				Constructor ct = cls.getConstructor(new Class[0]);
+				Constructor ct = cls.getConstructor(new Class[] { Agent.class,
+						long.class, AID.class, double.class, double.class,
+						int.class, int.class });
 				behav = (Behaviour) ct.newInstance(new Object[] { myAgent,
 						scen.getPeopleUpdateTime(), envAID, lat, lng, d, s });
 			} catch (Throwable e) {

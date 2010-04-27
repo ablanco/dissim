@@ -151,9 +151,10 @@ public class Scenario implements Serializable {
 	}
 
 	protected String[] decodeScenArray(String s) {
-		String[] result;
+		String[] result = new String[0];
 		s = s.substring(1, s.length() - 1);
-		result = s.split(",");
+		if (s.length() > 0)
+			result = s.split(",");
 		return result;
 	}
 
