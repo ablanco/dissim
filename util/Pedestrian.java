@@ -1,6 +1,8 @@
 package util;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import util.jcoord.LatLng;
 
@@ -17,10 +19,11 @@ public class Pedestrian implements Serializable {
 	private int status = HEALTHY;
 	private String id = null;
 	private Point point = null;
-	private String rankClass = "behaviours.people.ranking.SafepointRank";
+	private String behaviour = "behaviours.people.SafepointPedestrianBehav";
 	private int vision = -1;
 	private int speed = -1;
 	private int clones = 1;
+	private Set<LatLng> objectives = null;
 
 	public Pedestrian(Point point) {
 		this.point = point;
@@ -77,29 +80,48 @@ public class Pedestrian implements Serializable {
 		this.status = status;
 	}
 
-	public void setRankClass(String rankClass) {
-		this.rankClass = rankClass;
+	public void setBehaviourClass(String behaviour) {
+		this.behaviour = behaviour;
 	}
 
-	public String getRankClass() {
-		return rankClass;
+	public String getBehaviourClass() {
+		return behaviour;
 	}
 
 	public int getVision() {
 		return vision;
 	}
-	
+
 	public int getSpeed() {
 		return speed;
 	}
-	
+
 	public int getClones() {
 		return clones;
 	}
-	
+
 	public void setScenData(int vision, int speed, int clones) {
 		this.vision = vision;
 		this.speed = speed;
 		this.clones = clones;
+	}
+
+	public boolean addObjective(LatLng coord) {
+		if (objectives == null)
+			objectives = new HashSet<LatLng>();
+
+		return objectives.add(coord);
+	}
+
+	public Set<LatLng> getObjectives() {
+		return objectives;
+	}
+
+	public Object[] getChooseArgs() {
+		if (behaviour.equals("behaviours.people.KnownSafepointPedestrianBehav")) {
+			return new Object[] { objectives };
+		} else {
+			return new Object[0];
+		}
 	}
 }

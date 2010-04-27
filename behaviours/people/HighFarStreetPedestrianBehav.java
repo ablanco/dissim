@@ -14,7 +14,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.people.ranking;
+package behaviours.people;
+
+import jade.core.AID;
+import jade.core.Agent;
 
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -22,20 +25,26 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import osm.Osm;
+
 import util.HexagonalGrid;
 import util.Point;
 import util.java.NoDuplicatePointsSet;
 
-public class HighFarStreetRank implements Ranking {
+@SuppressWarnings("serial")
+public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 
 	private Hashtable<String, Integer> scores;
 
-	@Override
-	public Point choose(Set<Point> adjacents, Point position, int vision,
-			int speed) throws YouAreDeadException {
+	public HighFarStreetPedestrianBehav(Agent a, long period, AID env,
+			double lat, double lng, int d, int s) {
+		super(a, period, env, lat, lng, d, s);
+	}
 
+	@Override
+	protected Point choose(Set<Point> adjacents) throws YouAreDeadException,
+			YouAreSafeException {
 		if (position != null) {
-			adjacents = RankingUtils.filterByStreetView(adjacents, position);
+			adjacents = PedestrianUtils.filterByStreetView(adjacents, position);
 			adjacents.add(position);
 		}
 
@@ -50,7 +59,7 @@ public class HighFarStreetRank implements Ranking {
 			// Las casillas que no son calles se ignoran
 		}
 
-		if (RankingUtils.detectFloodDeath(dry, position))
+		if (PedestrianUtils.detectFloodDeath(dry, position))
 			throw new YouAreDeadException("Surrounded by water :(");
 
 		scores = new Hashtable<String, Integer>(dry.size());
@@ -92,7 +101,7 @@ public class HighFarStreetRank implements Ranking {
 		}
 
 		// Equilibramos ambas escalas de puntos
-		double factor = dry.size() / (vision * 2);
+		double factor = dry.size() / (d * 2);
 		factor *= 2; // Damos preferencia a huir del agua
 		// Puntuamos según la distancia media al agua
 		if (water.size() > 0) {
@@ -106,7 +115,7 @@ public class HighFarStreetRank implements Ranking {
 			}
 		}
 
-		return getBest(adjacents, dry, position, speed);
+		return getBest(adjacents, dry, position, s);
 	}
 
 	private void score(String key, int points) {
@@ -130,7 +139,7 @@ public class HighFarStreetRank implements Ranking {
 				for (int i = 0; i < speed; i++) {
 					// Se puede llegar a él?
 					aux = HexagonalGrid.nearestHexagon(aux, pt);
-					aux = RankingUtils.findHexagon(adjacents, aux);
+					aux = PedestrianUtils.findHexagon(adjacents, aux);
 					// No entra en casillas con agua y sólo se mueve por calles
 					if (aux.getW() > 0
 							|| Osm.getBigType(aux.getS()) != Osm.Roads) {
@@ -153,6 +162,10 @@ public class HighFarStreetRank implements Ranking {
 		}
 
 		return result;
+	}
+
+	@Override
+	protected void chooseArgs(Object[] args) {
 	}
 
 }

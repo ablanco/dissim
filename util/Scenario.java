@@ -203,6 +203,15 @@ public class Scenario implements Serializable {
 						.parseDouble(person[0]), Double.parseDouble(person[1])));
 				p.setScenData(Integer.parseInt(person[2]), Integer
 						.parseInt(person[3]), Integer.parseInt(person[4]));
+				String[] objectives = decodeScenArray(person[5]);
+				for (int i = 0; i < objectives.length; i++) {
+					String lat = objectives[i];
+					i++;
+					String lng = objectives[i];
+					LatLng obj = new LatLng(Double.parseDouble(lat), Double
+							.parseDouble(lng));
+					p.addObjective(obj);
+				}
 				addPeople(p);
 			} else if (pair[0].equals("updateTimeKml")) {
 				setUpdateKMLPeriod(Long.parseLong(pair[1]));

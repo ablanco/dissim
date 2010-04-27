@@ -14,7 +14,10 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.people.ranking;
+package behaviours.people;
+
+import jade.core.AID;
+import jade.core.Agent;
 
 import java.util.Random;
 import java.util.Set;
@@ -23,11 +26,17 @@ import java.util.TreeSet;
 import util.HexagonalGrid;
 import util.Point;
 
-public class FarFromWaterRank implements Ranking {
+@SuppressWarnings("serial")
+public class FarFromWaterPedestrianBehav extends PedestrianBehav {
+
+	public FarFromWaterPedestrianBehav(Agent a, long period, AID env, double lat,
+			double lng, int d, int s) {
+		super(a, period, env, lat, lng, d, s);
+	}
 
 	@Override
-	public Point choose(Set<Point> adjacents, Point position, int vision,
-			int speed) throws YouAreDeadException {
+	protected Point choose(Set<Point> adjacents) throws YouAreDeadException,
+			YouAreSafeException {
 		if (position != null)
 			adjacents.add(position);
 
@@ -74,6 +83,10 @@ public class FarFromWaterRank implements Ranking {
 		}
 
 		return result;
+	}
+
+	@Override
+	protected void chooseArgs(Object[] args) {
 	}
 
 }

@@ -29,29 +29,25 @@ import util.AgentHelper;
 import util.Pedestrian;
 import util.Point;
 import behaviours.AdjacentsGridBehav;
-import behaviours.people.ranking.Ranking;
-import behaviours.people.ranking.YouAreDeadException;
-import behaviours.people.ranking.YouAreSafeException;
 
 @SuppressWarnings("serial")
-public class RunawayBehav extends CyclicBehaviour {
+public abstract class PedestrianBehav extends CyclicBehaviour {
 
 	private AID env;
-	private Ranking rank;
 	private double lat; // Posición en coordenadas
 	private double lng;
-	private int d; // Distancia de visión
-	private int s; // Velocidad
+	protected int d; // Distancia de visión
+	protected int s; // Velocidad
 	private String type = AdjacentsGridBehav.LAT_LNG;
 	private long period;
 	private long previous;
 	private int step = 0;
 	private MessageTemplate mt = MessageTemplate.MatchAll();
-	private Point position = null; // Posición en columna y fila
+	protected Point position = null; // Posición en columna y fila
 	private int status = Pedestrian.HEALTHY;
 
-	public RunawayBehav(Agent a, long period, AID env, double lat, double lng,
-			int d, int s, Ranking rank) {
+	public PedestrianBehav(Agent a, long period, AID env, double lat, double lng,
+			int d, int s) {
 		super(a);
 		if (env == null)
 			throw new IllegalArgumentException(
@@ -66,7 +62,6 @@ public class RunawayBehav extends CyclicBehaviour {
 			this.s = d;
 		else
 			this.s = s;
-		this.rank = rank;
 		previous = System.currentTimeMillis();
 	}
 
@@ -102,7 +97,8 @@ public class RunawayBehav extends CyclicBehaviour {
 
 					Point pmejor = null;
 					try {
-						pmejor = rank.choose(adjacents, position, d, s);
+						// pmejor = rank.choose(adjacents, position, d, s);
+						pmejor = choose(adjacents);
 					} catch (YouAreDeadException e) {
 						AgentHelper.send(myAgent, env, ACLMessage.CANCEL,
 								"register-people", myAgent.getLocalName());
@@ -167,4 +163,9 @@ public class RunawayBehav extends CyclicBehaviour {
 			break;
 		}
 	}
+
+	protected abstract Point choose(Set<Point> adjacents)
+			throws YouAreDeadException, YouAreSafeException;
+
+	protected abstract void chooseArgs(Object[] args);
 }

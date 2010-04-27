@@ -14,15 +14,28 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.people.ranking;
-
-import java.util.Set;
+package behaviours.people;
 
 import util.Point;
 
-public interface Ranking {
+public class YouAreSafeException extends Exception {
 
-	public Point choose(Set<Point> adjacents, Point position, int vision,
-			int speed) throws YouAreDeadException, YouAreSafeException;
+	private static final long serialVersionUID = 1L;
+
+	private Point position;
+
+	public YouAreSafeException(Point position) {
+		super();
+		this.position = position;
+	}
+
+	public YouAreSafeException(Point position, String msg) {
+		super(msg);
+		this.position = position;
+	}
+
+	public Point getPosition() {
+		return position;
+	}
 
 }

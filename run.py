@@ -174,11 +174,9 @@ else:
     fich.write('\nhour=' + time[1])
     print('\nÁREA DE LA SIMULACIÓN\n')
     NW = raw_input('Coordenadas (con el formato Lat,Lng) NorOeste del área de simulación: ')
-    NW = NW.split(',')
-    fich.write('\nNW=[' + NW[0] + ',' + NW[1] + ']')
+    fich.write('\nNW=[' + NW + ']')
     SE = raw_input('Coordenadas (con el formato Lat,Lng) SudEste del área de simulación: ')
-    SE = SE.split(',')
-    fich.write('\nSE=[' + SE[0] + ',' + SE[1] + ']')
+    fich.write('\nSE=[' + SE + ']')
     tileSize = raw_input('Diámetro (en metros) de la circunferencia que circunscribe a los hexágonos: ')
     fich.write('\ntileSize=' + tileSize)
     precision = raw_input('Precisión en altura (1 una unidad de altura equivale a 1/precision metros): ')
@@ -197,8 +195,7 @@ else:
     nws = int(raw_input('Número de entradas de agua: '))
     for i in range(nws):
         ws = raw_input('Coordenadas (Lat,Lng) de la entrada de agua ' + str(i) + ': ')
-        ws = ws.split(',')
-        fich.write('\nwaterSource=[' + ws[0] + ',' + ws[1] + ',')
+        fich.write('\nwaterSource=[' + ws)
         wws = int(raw_input('Cantidad de agua de dicha entrada (en litros por ' + timeRealWS + ' minutos): '))
         wws = wws / 1000 # paso a metros cúbicos
         area = (3 * math.sqrt(3) * ((int(tileSize)/2)**2)) / 2 # área del hexágono
@@ -206,21 +203,29 @@ else:
         wws = int(round(h * int(precision))) # altura en unidades de altura
         if wws < 1:
             wws = 1
-        fich.write(str(wws) + ']')
+        fich.write(',' + str(wws) + ']')
     print('\nPERSONAS\n')
     timePeople = raw_input('Tiempo (en milisegundos) entre actualizaciones de los agentes humanos: ')
     fich.write('\nupdateTimePeople=' + timePeople)
     npeople = int(raw_input('Número de grupos de agentes humanos en la simulación: '))
     for i in range(npeople):
         person = raw_input('Coordenadas (Lat,Lng) del peatón ' + str(i) + ': ')
-        person = person.split(',')
-        fich.write('\nperson=[' + person[0] + ',' + person[1])
+        fich.write('\nperson=[' + person)
         person = raw_input('Distancia de visión del peatón (en hexágonos): ')
         fich.write(',' + person)
         person = raw_input('Velocidad (distancia en hexágonos a la que es capaz de moverse en un paso) del peatón: ')
         fich.write(',' + person)
         person = raw_input('Número de clones (agentes en el grupo): ')
-        fich.write(',' + person + ']')
+        fich.write(',' + person + ',[')
+        first = True
+        while person != '':
+            person = raw_input('Coordenadas (Lat,Lng) de un refugio objetivo (deja en blanco para no añadir más): ')
+            if person != '' and first:
+                fich.write(person)
+                first = False
+            elif person != '':
+                fich.write(',' + person)
+        fich.write(']]')
     print('\nVISORES\n')
     timeKml = raw_input('Período (en milisegundos) de actualización del generador de KML: ')
     fich.write('\nupdateTimeKml=' + timeKml)

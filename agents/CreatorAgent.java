@@ -136,8 +136,8 @@ public class CreatorAgent extends Agent {
 				while (people.hasNext()) {
 					Pedestrian p = people.next();
 					LatLng pos = p.getPos();
-					arguments = new Object[] { p.getRankClass(),
-							Double.toString(pos.getLat()),
+					arguments = new Object[] { p.getBehaviourClass(),
+							p.getChooseArgs(), Double.toString(pos.getLat()),
 							Double.toString(pos.getLng()),
 							Integer.toString(p.getVision()),
 							Integer.toString(p.getSpeed()) };

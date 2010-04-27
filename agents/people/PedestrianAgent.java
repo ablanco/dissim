@@ -18,6 +18,7 @@ package agents.people;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 
 import java.lang.reflect.Constructor;
@@ -26,38 +27,28 @@ import util.AgentHelper;
 import util.jcoord.LatLng;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
-import behaviours.people.RunawayBehav;
-import behaviours.people.ranking.Ranking;
 
 @SuppressWarnings("serial")
 public class PedestrianAgent extends Agent {
 
-	private Ranking rank = null;
+	private String behaviour = null;
+	Object[] chooseArgs = null;
 	private double lat;
 	private double lng;
 	private int d;
 	private int s;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args.length == 5) {
-			try {
-				// Carga, y crea un objeto de la clase pasada, por reflexión
-				Class cls = Class.forName((String) args[0]);
-				Constructor ct = cls.getConstructor(new Class[0]);
-				rank = (Ranking) ct.newInstance(new Object[0]);
-			} catch (Throwable e) {
-				e.printStackTrace();
-				doDelete();
-			}
-
-			lat = Double.parseDouble((String) args[1]);
-			lng = Double.parseDouble((String) args[2]);
-			d = Integer.parseInt((String) args[3]);
-			s = Integer.parseInt((String) args[4]);
+		if (args.length == 6) {
+			behaviour = (String) args[0];
+			chooseArgs = (Object[]) args[1];
+			lat = Double.parseDouble((String) args[2]);
+			lng = Double.parseDouble((String) args[3]);
+			d = Integer.parseInt((String) args[4]);
+			s = Integer.parseInt((String) args[5]);
 		} else {
 			throw new IllegalArgumentException(getLocalName()
 					+ " - Wrong number of arguments: " + args.length);
@@ -68,6 +59,7 @@ public class PedestrianAgent extends Agent {
 
 	protected class ContinuePA extends ReceiveScenarioBehav {
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public void action() {
 			String env = Integer.toString(scen.getEnviromentByCoord(new LatLng(
@@ -87,8 +79,18 @@ public class PedestrianAgent extends Agent {
 				}
 			}
 
-			myAgent.addBehaviour(new RunawayBehav(myAgent, scen
-					.getPeopleUpdateTime(), envAID, lat, lng, d, s, rank));
+			Behaviour behav = null;
+			try {
+				// Carga, y crea un objeto de la clase pasada, por reflexión
+				Class cls = Class.forName(behaviour);
+				Constructor ct = cls.getConstructor(new Class[0]);
+				behav = (Behaviour) ct.newInstance(new Object[] { myAgent,
+						scen.getPeopleUpdateTime(), envAID, lat, lng, d, s });
+			} catch (Throwable e) {
+				e.printStackTrace();
+				doDelete();
+			}
+			myAgent.addBehaviour(behav);
 
 			done = true;
 		}

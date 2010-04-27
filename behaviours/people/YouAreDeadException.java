@@ -14,28 +14,18 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.people.ranking;
+package behaviours.people;
 
-import util.Point;
-
-public class YouAreSafeException extends Exception {
+public class YouAreDeadException extends Exception {
 
 	private static final long serialVersionUID = 1L;
-
-	private Point position;
-
-	public YouAreSafeException(Point position) {
+	
+	public YouAreDeadException() {
 		super();
-		this.position = position;
 	}
-
-	public YouAreSafeException(Point position, String msg) {
+	
+	public YouAreDeadException(String msg) {
 		super(msg);
-		this.position = position;
-	}
-
-	public Point getPosition() {
-		return position;
 	}
 
 }

@@ -14,29 +14,40 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.people.ranking;
+package behaviours.people;
 
+import jade.core.AID;
+import jade.core.Agent;
+
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import java.util.Random;
 import java.util.Set;
 
 import osm.Osm;
+
 import util.HexagonalGrid;
 import util.Point;
 import util.java.NoDuplicatePointsSet;
+import util.jcoord.LatLng;
 
-public class SafepointRank implements Ranking {
+@SuppressWarnings("serial")
+public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
-	private Random rnd = new Random(System.currentTimeMillis());
-	private int direction = RankingUtils.randomDirection(rnd);
+	private Set<Point> objectives = new HashSet<Point>(0);
+
+	public KnownSafepointPedestrianBehav(Agent a, long period, AID env, double lat,
+			double lng, int d, int s) {
+		super(a, period, env, lat, lng, d, s);
+	}
 
 	@Override
-	public Point choose(Set<Point> adjacents, Point position, int vision,
-			int speed) throws YouAreDeadException, YouAreSafeException {
+	protected Point choose(Set<Point> adjacents) throws YouAreDeadException,
+			YouAreSafeException {
+		Point result = null;
 
 		if (position != null) {
-			adjacents = RankingUtils.filterByStreetView(adjacents, position);
+			adjacents = PedestrianUtils.filterByStreetView(adjacents, position);
 			adjacents.add(position);
 
 			// Si ya está en un refugio no se mueve ni muere ni nada
@@ -58,48 +69,49 @@ public class SafepointRank implements Ranking {
 			// Las casillas que no son calles ni refugios se ignoran
 		}
 
-		if (RankingUtils.detectFloodDeath(dry, position))
+		if (PedestrianUtils.detectFloodDeath(dry, position))
 			throw new YouAreDeadException("Surrounded by water :(");
 
-		if (position == null) {
-			return RankingUtils.farInSetFromSet(dry, water);
-		} else {
-			if (safe.size() == 0) {
-				// Caso en que no tiene refugio a la vista
-				Point p = null;
+		// Primera ejecución
+		if (position == null)
+			return PedestrianUtils.nearInSetToSet(dry, objectives);
 
-				if (water.size() != 0) {
-					p = RankingUtils.farInSetFromSet(dry, water);
-					p = RankingUtils.accessible(adjacents, position, p, speed);
-				}
+		if (objectives.size() > 0 || safe.size() > 0) {
+			if (safe.size() < 0) {
+				// No hay ningún refugio a la vista
+				int best = Integer.MIN_VALUE;
 
-				// Si no ha visto agua se mueve al azar, pero manteniendo una
-				// dirección
-				if (p == null) {
-					int intentos = 3;
+				// Puntuamos cada punto
+				for (Point pt : dry) {
+					Point nearObj = null;
+					int objective = Integer.MAX_VALUE;
+					// Buscamos el objetivo más cercano y la distancia al mismo
+					for (Point obj : objectives) {
+						int dist = HexagonalGrid.distance(pt, obj);
+						if (dist < objective) {
+							objective = dist;
+							nearObj = obj;
+						}
+					}
 
-					// Si está en una intersección escoge una calle al azar
-					if (RankingUtils.intersection(position, direction, dry))
-						direction = RankingUtils
-								.randomDirection(rnd, direction);
+					int wasser = 0;
+					// Distancia a las casillas inundadas
+					for (Point wpt : water) {
+						wasser += HexagonalGrid.distance(pt, wpt);
+					}
 
-					while (intentos > 0 && p == null) {
-						p = RankingUtils.getPointByDirection(dry, direction);
-						p = RankingUtils.accessible(adjacents, position, p,
-								speed);
-						// Si no puede avanzar en esa dirección cambia a otra al
-						// azar
-						if (p == null)
-							direction = RankingUtils.randomDirection(rnd);
-						intentos--;
+					int score = score(objective, wasser, (int) pt.getZ());
+
+					if (score > best) {
+						best = score;
+						result = nearObj;
 					}
 				}
 
-				direction = RankingUtils.getDirection(position, p);
-				return p;
+				result = PedestrianUtils
+						.accessible(adjacents, position, result, s);
 			} else {
-				// Caso en que ve uno o más refugios
-
+				// Hay refugio a la vista
 				LinkedList<Point> sortedSafe = new LinkedList<Point>();
 				for (Point pt : safe) {
 					// Ordenamos los refugios por distancia
@@ -123,16 +135,35 @@ public class SafepointRank implements Ranking {
 					}
 				}
 
-				Point result = null;
 				// Buscamos el refugio más cercano que esté accesible
 				for (Point pt : sortedSafe) {
-					result = RankingUtils.accessible(adjacents, position, pt,
-							speed);
+					result = PedestrianUtils
+							.accessible(adjacents, position, pt, s);
 					if (result != null)
 						break;
 				}
-				return result;
 			}
 		}
+
+		if (result == null) {
+			// En el caso en que no sepa donde hay refugios o no sea posible
+			// acceder a ninguno
+			// TODO result = fallbackRank.choose(adjacents, position, vision, speed);
+		}
+
+		return result;
 	}
+
+	private int score(int objective, int water, int elevation) {
+		int score = 0;
+		return score;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void chooseArgs(Object[] args) {
+		Set<LatLng> geoObj = (Set<LatLng>) args[0];
+		// TODO pasar a point
+	}
+
 }

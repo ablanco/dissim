@@ -14,7 +14,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.people.ranking;
+package behaviours.people;
 
 import java.util.Iterator;
 import java.util.Random;
@@ -25,7 +25,7 @@ import util.HexagonalGrid;
 import util.Point;
 import util.java.NoDuplicatePointsSet;
 
-public class RankingUtils {
+public class PedestrianUtils {
 
 	public static final int NORTH = 0;
 	public static final int SOUTH = 1;
