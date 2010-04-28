@@ -14,7 +14,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.people;
+package behaviours.people.flood;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -22,6 +22,10 @@ import jade.core.Agent;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+
+import behaviours.people.PedestrianBehav;
+import behaviours.people.YouAreDeadException;
+import behaviours.people.YouAreSafeException;
 
 import util.HexagonalGrid;
 import util.Point;

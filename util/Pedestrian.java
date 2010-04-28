@@ -19,7 +19,7 @@ public class Pedestrian implements Serializable {
 	private int status = HEALTHY;
 	private String id = null;
 	private Point point = null;
-	private String behaviour = "behaviours.people.KnownSafepointPedestrianBehav";
+	private String behaviour = "behaviours.people.flood.KnownSafepointPedestrianBehav";
 	private int vision = -1;
 	private int speed = -1;
 	private int clones = 1;
@@ -118,7 +118,8 @@ public class Pedestrian implements Serializable {
 	}
 
 	public Object[] getChooseArgs() {
-		if (behaviour.equals("behaviours.people.KnownSafepointPedestrianBehav")) {
+		if (behaviour
+				.equals("behaviours.people.flood.KnownSafepointPedestrianBehav")) {
 			return new Object[] { objectives };
 		} else {
 			return new Object[0];

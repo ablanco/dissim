@@ -14,7 +14,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package behaviours.people;
+package behaviours.people.flood;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -30,6 +30,10 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import behaviours.QueryGridBehav;
+import behaviours.people.PedestrianBehav;
+import behaviours.people.PedestrianUtils;
+import behaviours.people.YouAreDeadException;
+import behaviours.people.YouAreSafeException;
 
 import osm.Osm;
 import util.AgentHelper;
@@ -92,9 +96,11 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 			return PedestrianUtils.nearInSetToSet(dry, objectives);
 
 		if (objectives.size() > 0 || safe.size() > 0) {
-			if (safe.size() < 0) {
+			if (safe.size() == 0) {
 				// No hay ningún refugio a la vista
 				int best = Integer.MIN_VALUE;
+				int distPos = Integer.MAX_VALUE;
+				boolean calcDistPos = true;
 
 				// Puntuamos cada punto
 				for (Point pt : dry) {
@@ -107,15 +113,26 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 							objective = dist;
 							nearObj = obj;
 						}
+						if (calcDistPos) {
+							dist = HexagonalGrid.distance(position, obj);
+							if (dist < distPos)
+								distPos = dist;
+						}
 					}
+					calcDistPos = false;
 
 					int wasser = 0;
 					// Distancia a las casillas inundadas
-					for (Point wpt : water) {
+					for (Point wpt : water)
 						wasser += HexagonalGrid.distance(pt, wpt);
-					}
+					if (water.size() != 0)
+						wasser /= water.size();
 
-					int score = score(objective, wasser, (int) pt.getZ());
+					int score = score(distPos, objective, wasser, position
+							.getZ(), (int) pt.getZ());
+					System.out.println("[" + distPos + "," + objective + ","
+							+ wasser + "," + position.getZ() + "," + pt.getZ()
+							+ "] -> " + score);
 
 					if (score > best) {
 						best = score;
@@ -169,9 +186,34 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		return result;
 	}
 
-	private int score(int objective, int water, int elevation) {
-		int score = 0;
-		return score;
+	/**
+	 * Returns the score of the tile
+	 * 
+	 * @param distancePosition
+	 *            Distance from the position of the agent to the nearest
+	 *            objective (reference)
+	 * @param objective
+	 *            Distance to the nearest objective (less is better)
+	 * @param water
+	 *            Distance to water (more is better)
+	 * @param elevation
+	 *            Elevation of the tile (more is better)
+	 * @return
+	 */
+	private int score(int distancePosition, int objective, int water,
+			int elevationPosition, int elevation) {
+		float aux = distancePosition / 100;
+		float obj = Math.abs(100 - (objective / aux));
+		aux = d / 100;
+		float wat = 0;
+		if (aux != 0)
+			wat = water / aux;
+		aux = elevation - elevationPosition;
+		float aux2 = elevationPosition / 100;
+		float elev = 0;
+		if (aux2 != 0)
+			elev = aux / aux2;
+		return Math.round((obj + wat + elev) / 3.0F);
 	}
 
 	@SuppressWarnings("unchecked")
