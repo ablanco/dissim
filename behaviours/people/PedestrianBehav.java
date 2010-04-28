@@ -28,6 +28,7 @@ import java.util.Set;
 import util.AgentHelper;
 import util.Pedestrian;
 import util.Point;
+import util.Scenario;
 import behaviours.AdjacentsGridBehav;
 
 @SuppressWarnings("serial")
@@ -45,9 +46,10 @@ public abstract class PedestrianBehav extends CyclicBehaviour {
 	private MessageTemplate mt = MessageTemplate.MatchAll();
 	protected Point position = null; // Posición en columna y fila
 	private int status = Pedestrian.HEALTHY;
+	protected Scenario scen;
 
-	public PedestrianBehav(Agent a, long period, AID env, double lat, double lng,
-			int d, int s) {
+	public PedestrianBehav(Agent a, long period, AID env, Scenario scen,
+			double lat, double lng, int d, int s) {
 		super(a);
 		if (env == null)
 			throw new IllegalArgumentException(
@@ -62,6 +64,7 @@ public abstract class PedestrianBehav extends CyclicBehaviour {
 			this.s = d;
 		else
 			this.s = s;
+		this.scen = scen;
 		previous = System.currentTimeMillis();
 	}
 
@@ -167,5 +170,5 @@ public abstract class PedestrianBehav extends CyclicBehaviour {
 	protected abstract Point choose(Set<Point> adjacents)
 			throws YouAreDeadException, YouAreSafeException;
 
-	protected abstract void chooseArgs(Object[] args);
+	public abstract void chooseArgs(Object[] args);
 }

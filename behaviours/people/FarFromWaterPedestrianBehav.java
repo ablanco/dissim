@@ -25,13 +25,14 @@ import java.util.TreeSet;
 
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
 
 @SuppressWarnings("serial")
 public class FarFromWaterPedestrianBehav extends PedestrianBehav {
 
-	public FarFromWaterPedestrianBehav(Agent a, long period, AID env, double lat,
-			double lng, int d, int s) {
-		super(a, period, env, lat, lng, d, s);
+	public FarFromWaterPedestrianBehav(Agent a, long period, AID env,
+			Scenario scen, double lat, double lng, int d, int s) {
+		super(a, period, env, scen, lat, lng, d, s);
 	}
 
 	@Override
@@ -86,7 +87,7 @@ public class FarFromWaterPedestrianBehav extends PedestrianBehav {
 	}
 
 	@Override
-	protected void chooseArgs(Object[] args) {
+	public void chooseArgs(Object[] args) {
 	}
 
 }

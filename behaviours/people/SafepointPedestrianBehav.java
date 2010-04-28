@@ -26,9 +26,9 @@ import java.util.Set;
 
 import osm.Osm;
 
-
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
 import util.java.NoDuplicatePointsSet;
 
 @SuppressWarnings("serial")
@@ -37,9 +37,9 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 	private Random rnd = new Random(System.currentTimeMillis());
 	private int direction = PedestrianUtils.randomDirection(rnd);
 
-	public SafepointPedestrianBehav(Agent a, long period, AID env, double lat,
-			double lng, int d, int s) {
-		super(a, period, env, lat, lng, d, s);
+	public SafepointPedestrianBehav(Agent a, long period, AID env,
+			Scenario scen, double lat, double lng, int d, int s) {
+		super(a, period, env, scen, lat, lng, d, s);
 	}
 
 	@Override
@@ -90,12 +90,13 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 
 					// Si está en una intersección escoge una calle al azar
 					if (PedestrianUtils.intersection(position, direction, dry))
-						direction = PedestrianUtils
-								.randomDirection(rnd, direction);
+						direction = PedestrianUtils.randomDirection(rnd,
+								direction);
 
 					while (intentos > 0 && p == null) {
 						p = PedestrianUtils.getPointByDirection(dry, direction);
-						p = PedestrianUtils.accessible(adjacents, position, p, s);
+						p = PedestrianUtils.accessible(adjacents, position, p,
+								s);
 						// Si no puede avanzar en esa dirección cambia a otra al
 						// azar
 						if (p == null)
@@ -135,8 +136,8 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 				Point result = null;
 				// Buscamos el refugio más cercano que esté accesible
 				for (Point pt : sortedSafe) {
-					result = PedestrianUtils
-							.accessible(adjacents, position, pt, s);
+					result = PedestrianUtils.accessible(adjacents, position,
+							pt, s);
 					if (result != null)
 						break;
 				}
@@ -146,7 +147,7 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 	}
 
 	@Override
-	protected void chooseArgs(Object[] args) {
+	public void chooseArgs(Object[] args) {
 	}
 
 }

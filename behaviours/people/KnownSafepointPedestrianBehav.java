@@ -18,32 +18,47 @@ package behaviours.people;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Set;
 
-import osm.Osm;
+import behaviours.QueryGridBehav;
 
+import osm.Osm;
+import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
 import util.java.NoDuplicatePointsSet;
 import util.jcoord.LatLng;
 
 @SuppressWarnings("serial")
 public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
-	private Set<Point> objectives = new HashSet<Point>(0);
+	private Set<Point> objectives = null;
+	private SafepointPedestrianBehav fallback;
 
-	public KnownSafepointPedestrianBehav(Agent a, long period, AID env, double lat,
-			double lng, int d, int s) {
-		super(a, period, env, lat, lng, d, s);
+	public KnownSafepointPedestrianBehav(Agent a, long period, AID env,
+			Scenario scen, double lat, double lng, int d, int s) {
+		super(a, period, env, scen, lat, lng, d, s);
+		fallback = new SafepointPedestrianBehav(a, period, env, scen, lat, lng,
+				d, s);
 	}
 
 	@Override
 	protected Point choose(Set<Point> adjacents) throws YouAreDeadException,
 			YouAreSafeException {
+		// Si los objetivos aún no se han pasado a tiles abortamos
+		if (objectives == null)
+			return null;
+
 		Point result = null;
 
 		if (position != null) {
@@ -108,8 +123,8 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 					}
 				}
 
-				result = PedestrianUtils
-						.accessible(adjacents, position, result, s);
+				result = PedestrianUtils.accessible(adjacents, position,
+						result, s);
 			} else {
 				// Hay refugio a la vista
 				LinkedList<Point> sortedSafe = new LinkedList<Point>();
@@ -137,8 +152,8 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 				// Buscamos el refugio más cercano que esté accesible
 				for (Point pt : sortedSafe) {
-					result = PedestrianUtils
-							.accessible(adjacents, position, pt, s);
+					result = PedestrianUtils.accessible(adjacents, position,
+							pt, s);
 					if (result != null)
 						break;
 				}
@@ -148,7 +163,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		if (result == null) {
 			// En el caso en que no sepa donde hay refugios o no sea posible
 			// acceder a ninguno
-			// TODO result = fallbackRank.choose(adjacents, position, vision, speed);
+			result = fallback.choose(adjacents);
 		}
 
 		return result;
@@ -161,9 +176,84 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void chooseArgs(Object[] args) {
+	public void chooseArgs(Object[] args) {
 		Set<LatLng> geoObj = (Set<LatLng>) args[0];
-		// TODO pasar a point
+		if (geoObj == null) // Evitar que salte un null pointer
+			geoObj = new HashSet<LatLng>(0);
+		myAgent.addBehaviour(new GeoToPosBehav(myAgent, geoObj));
+	}
+
+	protected void setPosObjective(Set<Point> posObj, GeoToPosBehav behav) {
+		objectives = posObj;
+		myAgent.removeBehaviour(behav);
+	}
+
+	protected class GeoToPosBehav extends CyclicBehaviour {
+
+		private Set<Point> posObj;
+		private int step = 0;
+		private Iterator<LatLng> it;
+		private MessageTemplate mt;
+		private DFAgentDescription[] envs = null;
+
+		public GeoToPosBehav(Agent agt, Set<LatLng> geoObj) {
+			super(agt);
+			posObj = new NoDuplicatePointsSet(geoObj.size());
+			it = geoObj.iterator();
+		}
+
+		@Override
+		public void action() {
+			switch (step) {
+			case 0:
+				if (it.hasNext()) {
+					LatLng obj = it.next();
+
+					String env = Integer.toString(scen
+							.getEnviromentByCoord(obj));
+					// Obtener agente entorno
+					if (envs == null)
+						envs = AgentHelper.search(myAgent, "grid-querying");
+					AID envAID = null;
+					for (DFAgentDescription df : envs) {
+						String name = df.getName().getLocalName();
+						name = name.substring(name.indexOf("-") + 1, name
+								.lastIndexOf("-"));
+						if (name.equals(env)) {
+							envAID = df.getName();
+							break;
+						}
+					}
+
+					String content = QueryGridBehav.COORD_TO_TILE + " "
+							+ obj.getLat() + " " + obj.getLng();
+					mt = AgentHelper.send(myAgent, envAID, ACLMessage.REQUEST,
+							"query-grid", content);
+					step = 1;
+				} else {
+					// Hemos terminado!
+					setPosObjective(posObj, this);
+					step = -1;
+					return;
+				}
+				break;
+			case 1:
+				ACLMessage msg = myAgent.receive(mt);
+				if (msg != null) {
+					String[] data = msg.getContent().split(" ");
+					Point p = new Point(Integer.parseInt(data[0]), Integer
+							.parseInt(data[1]));
+					posObj.add(p);
+					step = 0;
+				} else {
+					block();
+				}
+				break;
+			default:
+				return;
+			}
+		}
+
 	}
 
 }

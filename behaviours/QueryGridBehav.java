@@ -20,10 +20,15 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import util.HexagonalGrid;
+import util.Point;
+import util.jcoord.LatLng;
 
 public class QueryGridBehav extends CyclicBehaviour {
 
 	private static final long serialVersionUID = 5059242741715871473L;
+	public static final String ELEVATION = "elev";
+	public static final String COORD_TO_TILE = "ctt";
+	public static final String TILE_TO_COORD = "ttc";
 
 	private HexagonalGrid grid;
 
@@ -36,15 +41,29 @@ public class QueryGridBehav extends CyclicBehaviour {
 		MessageTemplate mt = MessageTemplate.MatchConversationId("query-grid");
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
-			// Mensaje CFP recibido, hay que procesarlo
+			// Mensaje recibido, hay que procesarlo
 			String pos = msg.getContent();
-			String[] coord = pos.split(" ");
-			short value = grid.getValue(Integer.parseInt(coord[0]), Integer
-					.parseInt(coord[1]));
+			String[] data = pos.split(" ");
+			String content = "";
+
+			if (data[0].equals(ELEVATION)) {
+				content = Short.toString(grid.getValue(Integer
+						.parseInt(data[1]), Integer.parseInt(data[2])));
+			} else if (data[0].equals(COORD_TO_TILE)) {
+				Point p = grid.coordToTile(new LatLng(Double
+						.parseDouble(data[1]), Double.parseDouble(data[2])));
+				content = Integer.toString(p.getCol()) + " "
+						+ Integer.toString(p.getRow());
+			} else if (data[0].equals(TILE_TO_COORD)) {
+				LatLng coord = grid.tileToCoord(new Point(Integer
+						.parseInt(data[1]), Integer.parseInt(data[2])));
+				content = Double.toString(coord.getLat()) + " "
+						+ Double.toString(coord.getLng());
+			}
 
 			ACLMessage reply = msg.createReply();
 			reply.setPerformative(ACLMessage.INFORM);
-			reply.setContent(Short.toString(value));
+			reply.setContent(content);
 			myAgent.send(reply);
 		} else {
 			block();

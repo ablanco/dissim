@@ -151,10 +151,31 @@ public class Scenario implements Serializable {
 	}
 
 	protected String[] decodeScenArray(String s) {
-		String[] result = new String[0];
 		s = s.substring(1, s.length() - 1);
-		if (s.length() > 0)
-			result = s.split(",");
+		String[] result = new String[] { s };
+		if (s.length() > 0) {
+			ArrayList<String> data = new ArrayList<String>();
+			int i = 0;
+			i = s.indexOf(',');
+			while (i >= 0) {
+				int j = s.indexOf('[');
+				if (j == 0) {
+					// El siguiente elem a procesar es un []
+					j = s.indexOf(']');
+					data.add(s.substring(0, j + 1));
+					s = s.substring(j + 1);
+				} else {
+					// El siguiente elem a procesar no es un []
+					data.add(s.substring(0, i));
+					s = s.substring(i + 1);
+				}
+				i = s.indexOf(',');
+			}
+			if (s.length() > 0)
+				data.add(s);
+			result = new String[data.size()];
+			result = data.toArray(result);
+		}
 		return result;
 	}
 
@@ -205,7 +226,7 @@ public class Scenario implements Serializable {
 				p.setScenData(Integer.parseInt(person[2]), Integer
 						.parseInt(person[3]), Integer.parseInt(person[4]));
 				String[] objectives = decodeScenArray(person[5]);
-				for (int i = 0; i < objectives.length; i++) {
+				for (int i = 0; i < objectives.length && objectives.length > 1; i++) {
 					String lat = objectives[i];
 					i++;
 					String lng = objectives[i];

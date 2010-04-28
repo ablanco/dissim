@@ -28,6 +28,7 @@ import osm.Osm;
 
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
 import util.java.NoDuplicatePointsSet;
 
 @SuppressWarnings("serial")
@@ -36,8 +37,8 @@ public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 	private Hashtable<String, Integer> scores;
 
 	public HighFarStreetPedestrianBehav(Agent a, long period, AID env,
-			double lat, double lng, int d, int s) {
-		super(a, period, env, lat, lng, d, s);
+			Scenario scen, double lat, double lng, int d, int s) {
+		super(a, period, env, scen, lat, lng, d, s);
 	}
 
 	@Override
@@ -165,7 +166,7 @@ public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 	}
 
 	@Override
-	protected void chooseArgs(Object[] args) {
+	public void chooseArgs(Object[] args) {
 	}
 
 }

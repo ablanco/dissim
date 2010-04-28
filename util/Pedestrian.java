@@ -19,7 +19,7 @@ public class Pedestrian implements Serializable {
 	private int status = HEALTHY;
 	private String id = null;
 	private Point point = null;
-	private String behaviour = "behaviours.people.SafepointPedestrianBehav";
+	private String behaviour = "behaviours.people.KnownSafepointPedestrianBehav";
 	private int vision = -1;
 	private int speed = -1;
 	private int clones = 1;

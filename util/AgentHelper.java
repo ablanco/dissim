@@ -179,7 +179,8 @@ public class AgentHelper {
 				}
 			}
 		}
-		msg.setReplyWith(Long.toString(System.currentTimeMillis()));
+		msg.setReplyWith(convId + " - "
+				+ Long.toString(System.currentTimeMillis()));
 		sender.send(msg);
 		return MessageTemplate.MatchInReplyTo(msg.getReplyWith());
 	}
