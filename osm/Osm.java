@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +31,6 @@ import org.xml.sax.SAXException;
 
 import util.HexagonalGrid;
 import util.Point;
-import util.java.NoDuplicatePointsSet;
 import util.java.TempFiles;
 import util.java.Wget;
 
@@ -138,16 +136,16 @@ public class Osm {
 		try {
 			docBuilder = docBuilderFactory.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			System.out.println("Wrong parser configuration: " + e.getMessage());
+			System.err.println("Wrong parser configuration: " + e.getMessage());
 			return null;
 		}
 		try {
 			doc = docBuilder.parse(sourceFile);
 		} catch (SAXException e) {
-			System.out.println("Wrong XML file structure: " + e.getMessage());
+			System.err.println("Wrong XML file structure: " + e.getMessage());
 			return null;
 		} catch (IOException e) {
-			System.out.println("Could not read source file: " + e.getMessage());
+			System.err.println("Could not read source file: " + e.getMessage());
 		}
 		System.out.println("XML file parsed");
 		return doc;
@@ -164,10 +162,10 @@ public class Osm {
 		OsmMap osmMap = OsmMap.getMap(grid);
 		for (OsmRelation r : osmMap.getRelations()) {
 			if (r.getType() > Undefined) {
-				System.err.println("Escribiendo Relations " + r);
+//				System.err.println("**Escribiendo Relations " + r);
 				setStreetValue(r, grid);
 			} else {
-				System.err.println("No se ha escrito: " + r);
+//				System.err.println("No se ha escrito: " + r);
 			}
 		}
 
@@ -175,7 +173,7 @@ public class Osm {
 			if (w.getType() > Undefined) {
 				setStreetValue(w, grid);
 			} else {
-				System.err.println("No se ha escrito: " + w);
+//				System.err.println("No se ha escrito: " + w);
 			}
 		}
 
@@ -245,21 +243,12 @@ public class Osm {
 	 * @return
 	 */
 	public static boolean setStreetValue(OsmNode n, HexagonalGrid grid) {
-		return setStreetValue(n.getPoint(), n.getType(), grid);
-	}
-
-	/**
-	 * Valido para cualquier OsmNode, añadimos en la matriz de calles, siempre
-	 * que sea mayor, el valor especificado en type
-	 * 
-	 * @param n
-	 * @param type
-	 * @param grid
-	 * @return
-	 */
-	public static boolean setStreetValue(OsmNode n, short type,
-			HexagonalGrid grid) {
-		return setStreetValue(n.getPoint(), type, grid);
+		if (grid.getBox().contains(n.getCoord()) && !n.isSimpleNode()) {
+			// Si esta dentro del grid y es un nodo especial
+			Point point = grid.coordToTile(n.getCoord());
+			return setStreetValue(point, n.getType(), grid);
+		}
+		return false;
 	}
 
 	/**
@@ -269,170 +258,51 @@ public class Osm {
 	 * @param grid
 	 */
 	public static void setStreetValue(OsmWay w, HexagonalGrid grid) {
+		w.getBox().intersection(grid.getBox());
 		short type = w.getType();
+		for (Point p : w.getLines(grid)) {
+			// System.err.println("Escribiendo punto "+p+" de way "+w.getId());
+			setStreetValue(p, type, grid);
+		}
 
-		// Solo para carretas
-		Iterator<OsmNode> it = w.getWay().iterator();
-		OsmNode prev = null;
-		if (it.hasNext()) {
-			prev = it.next();
-		}
-		while (it.hasNext()) {
-			OsmNode curr = it.next();
-			setStreetValue(type, prev, curr, grid);
-			prev = curr;
-		}
-		if ((type > Undefined && type < Land) || type > Roads) {
-			// Los demas tipos pueden formar sectores
-			Point p = whereToFill(w, grid);
-			if (p != null) {
-				fill(p, type, grid);
+		if (w.isClosedLine() && !isRoad(type)) {
+//			System.err.println("Detectada linea cerrada " + w.getBox() + ", "
+//					+ w.getWay());
+
+			Point nW = grid.coordToTile(w.getBox().getNw());
+			Point sE = grid.coordToTile(w.getBox().getSe());
+			
+			for (int col = nW.getCol(); col <= sE.getCol(); col++) {
+				for (int row = nW.getRow(); row <= sE.getRow(); row++) {
+					Point p = new Point(col, row);
+					// System.err.println("Dimesiones lina cerrada "+nW+", "+sE);
+					if (w.isIntoPoligon(grid.tileToCoord(p))) {
+						// System.err.println("Linea Cerrada punto "+p+" de way "+w.getId());
+						setStreetValue(p, type, grid);
+					}
+				}
 			}
 		}
-
 	}
 
 	public static void setStreetValue(OsmRelation r, HexagonalGrid grid) {
-		for (OsmMember m : r.getMembers()) {
-			// Pintamos los bordes
-			setStreetValue(m.getWay(), grid);
-		}
-		// Aqui tenemos que rellenar con valores el medio de estos dos members
-		setStreetValue(r.getType(), r.getMembers(), grid);
-
-	}
-
-	public static void setStreetValue(short type, List<OsmMember> members,
-			HexagonalGrid grid) {
-		// Algoritmo de cubo de pintura, detectar bordes
-		System.err.println("Empezando a rellenar");
-		ListIterator<OsmMember> m = members.listIterator();
-		while (m.hasNext()) {
-			OsmMember member1 = m.next();
-			if (m.hasNext()) {
-				ListIterator<OsmMember> sigm = members.listIterator(m
-						.nextIndex());
-				OsmMember member2 = sigm.next();
-
-				Point a = member1.getWay().getWay().get(0).getPoint();
-				Point b = member2.getWay().getWay().get(0).getPoint();
-				if (a.getCol() > b.getCol()) {
-					System.err.println("Rellenando a la derecha " + a + " > "
-							+ b);
-					fill(new Point(a.getCol() - 1, a.getRow()), type, grid);
-				} else {
-					System.err.println("Rellenando a la izq" + a + " < " + b);
-					fill(new Point(b.getCol() + 1, b.getRow()), type, grid);
-				}
-			}
-		}
+		// TODO algo cutre, mejorar, asumo que los members vienen ordenados en
+		// pares de dos consecutivos, cosa que no creo que sea cierta
+//		short type = r.getType();
+//		Iterator<OsmMember> m = r.getMembers().iterator();
+//		while (m.hasNext()) {
+//			OsmMember m1 = m.next();
+//			if (m.hasNext()) {
+//				OsmMember m2 = m.next();
+//				OsmWay w = OsmWay.join(m1.getWay(), m2.getWay(), r.getType(),
+//						grid.getBox());
+//				setStreetValue(w, grid);
+//			}
+//		}
 	}
 
 	/**
-	 * Dado un camino cerrado, nos da un punto interior de esa curva
-	 * 
-	 * @param w
-	 * @param grid
-	 * @return
-	 */
-	private static Point whereToFill(OsmWay w, HexagonalGrid grid) {
-		System.err.println("Buscando interior " + w);
-		for (OsmNode node : w.getWay()) {
-			NoDuplicatePointsSet adyacentes = grid
-					.getAdjacents(node.getPoint());
-			int maxCol = grid.getColumns();
-			int maxRow = grid.getRows();
-			short type = w.getType();
-			for (Point p : adyacentes) {
-				if (type > grid.getStreetValue(p)) {
-					System.err.println("\tProbando con " + p);
-					int col = p.getCol();
-					int row = p.getRow();
-					boolean north = false;
-					boolean south = false;
-					boolean east = false;
-					boolean west = false;
-					while (row > 0 && !north) {
-						if (grid.getStreetValue(new Point(col, row--)) == type) {
-							north = true;
-						}
-					}
-					if (north) {
-						System.err.println("\t Ha encontrado Norte [" + col
-								+ "," + row + "]");
-						row = p.getRow();
-						while (row < maxRow && !south) {
-							if (grid.getStreetValue(new Point(col, row++)) == type) {
-								south = true;
-							}
-						}
-						if (south) {
-							System.err.println("\t Ha encontrado Sur [" + col
-									+ "," + row + "]");
-							row = p.getRow();
-							while (col < maxCol && !east) {
-								if (grid.getStreetValue(new Point(col++, row)) == type) {
-									east = true;
-								}
-							}
-							if (east) {
-								System.err.println("\t Ha encontrado Este ["
-										+ col + "," + row + "]");
-								col = p.getCol();
-								while (col > 0 && !west) {
-									if (grid.getStreetValue(new Point(col--,
-											row)) == type) {
-										west = true;
-									}
-								}
-								if (west) {
-									System.err
-											.println("\t Ha encontrado Oeste ["
-													+ col + "," + row + "]");
-									System.err.println("\t\t Insetando " + p);
-									return p;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		System.err.println("No se ha encontrado donde insertar :(");
-		return null;
-	}
-
-	public static void fill(Point p, short type, HexagonalGrid grid) {
-		NoDuplicatePointsSet adyacents = grid.getAdjacents(p);
-		// System.err.println("Se ha llamado a Fill con typo "+type+" y hay "+grid.getStreetValue(p));
-		if (type > grid.getStreetValue(p)) {
-			setStreetValue(p, type, grid);
-			for (Point point : adyacents) {
-				// Esto se supone que funciona porque los bordes ya estan
-				// pintados y porque no repinta ningun borde
-				if (type > grid.getStreetValue(point)) {
-					fill(point, type, grid);
-				}
-			}
-		}
-	}
-
-	public static void setStreetValue(short type, OsmNode a, OsmNode b,
-			HexagonalGrid grid) {
-		Point pointA = a.getPoint();
-		Point pointB = b.getPoint();
-		setStreetValue(a, type, grid);
-		while (!pointA.equals(pointB)) {
-			// Mientras no hayamos llegado al destino
-			pointA = HexagonalGrid.nearestHexagon(pointA, pointB);
-			// Añadimos punto a la carretera
-			setStreetValue(pointA, type, grid);
-		}
-		setStreetValue(b, type, grid);
-	}
-
-	/**
-	 * Given a Node Returns a Full of Info Node
+	 * Given a list of tags, retunrs the type
 	 * 
 	 * @param node
 	 * @return
@@ -715,5 +585,24 @@ public class Osm {
 			return "Undefined " + type;
 		}
 
+	}
+
+	/**
+	 * Tal como esta definido atualmente la forma de escribir las carreteras en
+	 * el StreetGrid pues al cruzarse dos caminos iguales, se incrementa el
+	 * valor en una unidad, resultando las intersecciones impares.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static boolean isIntersection(short value) {
+		return isRoad(value) && (value % 2 != 0);
+	}
+
+	/**
+	 * Deveuvel true si el value pertenece al intervalo roads
+	 */
+	public static boolean isRoad(short value) {
+		return (value > Land) && (value < Roads);
 	}
 }

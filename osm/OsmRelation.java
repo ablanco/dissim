@@ -6,8 +6,11 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
+import util.jcoord.LatLngBox;
+
 public class OsmRelation {
 	private long id;
+	private LatLngBox box;
 	private List<OsmMember> members;
 	private List<OsmTag> tags;
 	private short type = Osm.Undefined;
@@ -16,6 +19,7 @@ public class OsmRelation {
 		this.id = id;
 		members = new ArrayList<OsmMember>();
 		tags = new ArrayList<OsmTag>();
+		box = new LatLngBox();
 	}
 
 	public long getId() {
@@ -29,6 +33,10 @@ public class OsmRelation {
 	public List<OsmTag> getTags() {
 		return tags;
 	}
+	
+	public LatLngBox getBox() {
+		return box;
+	}
 
 	public void setType(short type) {
 		this.type = type;
@@ -40,6 +48,7 @@ public class OsmRelation {
 
 	public boolean addMember(OsmMember member) {
 		if (member != null) {
+			box.addToBox(member.getWay());
 			return members.add(member);
 		} else {
 			return false;
@@ -90,7 +99,9 @@ public class OsmRelation {
 			node = node.getNextSibling();
 		}
 		if (relation.getMembers().size() > 0) {
-			short type = Osm.getNodeType(relation.getTags());
+//			short type = Osm.getNodeType(relation.getTags());
+			//Cojemos el tipo del primer member que tenga
+			short type = relation.getMembers().get(0).getType();
 			if (type == Osm.Undefined) {
 				relation.setType(relation.getMembers().get(0).getType());
 			} else {

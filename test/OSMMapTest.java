@@ -33,7 +33,7 @@ public class OSMMapTest {
 //		 NW = new LatLng(29.953, -90.088, (short)10);
 //		 SE =new LatLng( 29.940, -90.070, (short)10);
 
-		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 30);
+		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 10);
 
 		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
 		Snapshot snapShot = new Snapshot("OSMMapTest", "", grid,

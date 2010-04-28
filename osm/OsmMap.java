@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -86,7 +85,7 @@ public class OsmMap {
 	}
 
 	public boolean isIn(OsmNode n) {
-		return mapBox.isIn(n.getCoord());
+		return mapBox.contains(n.getCoord());
 	}
 
 	@Override
@@ -113,8 +112,10 @@ public class OsmMap {
 	 * @return
 	 */
 	public static OsmMap getMap(HexagonalGrid grid) {
-		LatLng NW = grid.getArea()[0];
-		LatLng SE = grid.getArea()[1];
+		LatLngBox box = grid.getBox();
+		
+		LatLng NW = box.getNw();
+		LatLng SE = box.getSe();
 
 		// Open Streets Maps uses a differente mapBox, NE, SW
 		String url = "http://api.openstreetmap.org/api/0.6/map?bbox=";
@@ -145,52 +146,31 @@ public class OsmMap {
 		// <bounds minlat="29.925797" minlon="-90.075409" maxlat="29.947426"
 		// maxlon="-90.046214"/>
 		// Pasamos de todo eso
-		osmMap.setMapBox(new LatLngBox(NW, SE));
+		osmMap.setMapBox(grid.getBox());
 		node = node.getFirstChild().getNextSibling().getNextSibling();
 		// Seguimos con todos los demás atributos
 		while (node != null) {
 			String type = node.getNodeName();
 			if (type.equalsIgnoreCase("node")) {
 				OsmNode nd = OsmNode.getNode(node);
-				if (!nd.isSimpleNode()) {
-					// Solo añadimos los puntos de los sitios de interes
-					nd.setPoint(grid.coordToTile(nd.getCoord()));
-				}
+//				if (!nd.isSimpleNode()) {
+//					// Solo añadimos los puntos de los sitios de interes
+//					nd.setPoint(grid.coordToTile(nd.getCoord()));
+//				}
 				// System.err.println("\t" + nd);
 				osmMap.addNode(nd);
 			} else if (type.equalsIgnoreCase("way")) {
 				OsmWay w = OsmWay.getOsmWay(node, osmMap.getNodes());
-				ListIterator<OsmNode> it = w.getWay().listIterator();
-				boolean first = false;
-				boolean last = false;
-				while (it.hasNext()) {
-					OsmNode n = it.next();
-					if (!osmMap.isIn(n)) {
-						//Estamos dentro de los puntos fuera
-						if (first && !last){
-							//Es el primero que se queda fuera
-							n.setPoint(grid.coordToTile(n.getCoord()));
-							last = true; 
-						}
-						//Tenemos que borrar todos los que estan fuera
-					} else {
-						// Estamos dentro
-						if (!first && it.hasPrevious()){
-							OsmNode prev = it.previous();
-							prev.setPoint(grid.coordToTile(n.getCoord()));
-							it.next();
-							first = true;
-						}
-						n.setPoint(grid.coordToTile(n.getCoord()));
-					}
-				}
-				
-				// System.err.println("\t" + w);
-				w.cleanNodes();
+				//Actualizamos el Box a los valores del grid principal
 				osmMap.addWay(w);
 			} else if (type.equalsIgnoreCase("relation")) {
 				OsmRelation r = OsmRelation.getRelation(node, osmMap.getWays());
 				// System.err.println("\t" + r);
+				//Actualizamos a un box general 
+				for (OsmMember member : r.getMembers()){
+					r.getBox().addToBox(member.getWay());
+				}
+				//Y ahora con los valores del grid principal
 				osmMap.addRelation(r);
 			} else if (type.equalsIgnoreCase("#text")) {
 				// skipping

@@ -1,9 +1,8 @@
 package test;
 
-import java.util.HashSet;
-
-import util.Point;
-
+import osm.OsmEdge;
+import util.jcoord.LatLng;
+import util.jcoord.LatLngBox;
 
 public class dummyTest {
 
@@ -11,12 +10,7 @@ public class dummyTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		HashSet<Point> p = new HashSet<Point>();
-		p.add(new Point(0, 0));
-		p.add(new Point(0,3));
-		p.add(new Point(0,1));
-		System.err.println(p.size());
-		
+		System.err.println(Math.max(-9, -18));
 	}
 
 }

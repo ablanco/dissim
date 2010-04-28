@@ -25,7 +25,6 @@ public class Point implements Comparable<Point>, Serializable {
 	private int col;
 	private int row;
 	private short z;
-	private boolean isIn = true;
 	private short w = 0;
 	private short s = 0;
 	private int hash;
@@ -47,21 +46,12 @@ public class Point implements Comparable<Point>, Serializable {
 		this(xyz[0], xyz[1], (short) xyz[2]);
 	}
 
-	// Optional data constructors
-	public Point(int col, int row, short z, boolean isIn) {
-		this(col, row, z);
-		this.isIn = isIn;
-	}
-
 	public Point(int col, int row, short z, short w, short s) {
 		this(col, row, z);
 		this.w = w;
 		this.s = s;
 	}
 
-	public boolean isIn() {
-		return isIn;
-	}
 
 	public boolean isAdyacent(Point p) {
 		return Math.abs(col - p.getCol()) < 2 && Math.abs(row - p.getRow()) < 2

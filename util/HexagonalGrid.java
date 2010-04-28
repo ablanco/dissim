@@ -31,6 +31,7 @@ import osm.Osm;
 import util.java.NoDuplicatePointsSet;
 import util.java.TempFiles;
 import util.jcoord.LatLng;
+import util.jcoord.LatLngBox;
 import webservices.AltitudeWS;
 
 public class HexagonalGrid implements Serializable {
@@ -57,10 +58,13 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Grid data
 	 */
+	
+	private LatLngBox box;
+	
 	protected int columns;
 	protected int rows;
-	protected int offX; // Index of the 0,0 tile
-	protected int offY;
+	protected int offCol; // Index of the 0,0 tile
+	protected int offRow;
 	protected short[][] gridTerrain;
 	/**
 	 * External border
@@ -82,11 +86,11 @@ public class HexagonalGrid implements Serializable {
 	 */
 	private short precision = -1;
 
-	public HexagonalGrid(LatLng NW, LatLng SE, int offX, int offY, int tileSize) {
+	public HexagonalGrid(LatLng NW, LatLng SE, int offCol, int offRow, int tileSize) {
 		this.NW = NW;
 		this.SE = SE;
-		this.offX = offX;
-		this.offY = offY;
+		this.offCol = offCol;
+		this.offRow = offRow;
 		this.tileSize = tileSize;
 
 		// Calcular el tamaño de la rejilla en función de la distancia real y el
@@ -101,6 +105,8 @@ public class HexagonalGrid implements Serializable {
 
 		// ilat = (NW.getLat() - SE.getLat()) / row;
 		// ilng = (NW.getLng() - SE.getLng()) / col;
+		
+		box = new LatLngBox(NW, SE, tileSize);
 
 		gridTerrain = new short[col][row];
 		northTerrain = new short[col + 2];
@@ -134,8 +140,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public short setTerrainValue(int col, int row, short value) {
-		col -= offX;
-		row -= offY;
+		col -= offCol;
+		row -= offRow;
 		short old;
 		if (row == -1) {
 			old = northTerrain[col + 1];
@@ -157,8 +163,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public short getTerrainValue(int col, int row) {
-		col -= offX;
-		row -= offY;
+		col -= offCol;
+		row -= offRow;
 		short value;
 		if (row == -1) {
 			value = northTerrain[col + 1];
@@ -175,8 +181,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public short setStreetValue(int col, int row, short value) {
-		col -= offX;
-		row -= offY;
+		col -= offCol;
+		row -= offRow;
 		short old;
 		if (row == -1) {
 			old = northStreets[col + 1];
@@ -202,8 +208,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public short getStreetValue(int col, int row) {
-		col -= offX;
-		row -= offY;
+		col -= offCol;
+		row -= offRow;
 		short value;
 		if (row == -1) {
 			value = northStreets[col + 1];
@@ -238,6 +244,9 @@ public class HexagonalGrid implements Serializable {
 		return getTerrainValue(x, y);
 	}
 
+	public LatLngBox getBox() {
+		return box;
+	}
 	public int getColumns() {
 		return columns;
 	}
@@ -247,11 +256,11 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	public int getOffX() {
-		return offX;
+		return offCol;
 	}
 
 	public int getOffY() {
-		return offY;
+		return offRow;
 	}
 
 	/**
@@ -264,8 +273,8 @@ public class HexagonalGrid implements Serializable {
 	 *         adyacente
 	 */
 	public int[][] getAdjacentsIndexes(int x, int y) {
-		x -= offX;
-		y -= offY;
+		x -= offCol;
+		y -= offRow;
 		int[][] adjacents = new int[6][2];
 		int cont = 0;
 
@@ -301,8 +310,8 @@ public class HexagonalGrid implements Serializable {
 
 		int[][] result = new int[cont][2];
 		for (int i = 0; i < cont; i++) {
-			result[i][0] = adjacents[i][0] + offX;
-			result[i][1] = adjacents[i][1] + offY;
+			result[i][0] = adjacents[i][0] + offCol;
+			result[i][1] = adjacents[i][1] + offRow;
 		}
 		return result;
 	}
@@ -368,8 +377,8 @@ public class HexagonalGrid implements Serializable {
 		if (NW == null || SE == null)
 			throw new IllegalStateException(
 					"Simulation area hasn't been defined yet.");
-		col -= offX;
-		row -= offY;
+		col -= offCol;
+		row -= offRow;
 
 		double lat = NW.getLat();
 		double lng = NW.getLng();
@@ -384,7 +393,7 @@ public class HexagonalGrid implements Serializable {
 		lng += ilng * col;
 		lat -= ilat * row;
 
-		return new LatLng(lat, lng, getValue(col + offX, row + offY));
+		return new LatLng(lat, lng, getValue(col + offCol, row + offRow));
 	}
 
 	public LatLng tileToCoord(Point p) {
@@ -401,19 +410,11 @@ public class HexagonalGrid implements Serializable {
 		if (tileSize < 0)
 			throw new IllegalStateException(
 					"The size of the tiles hasn't been defined yet.");
-		boolean isIn = true;
-		if (!coord.isContainedIn(NW, SE)) {
-			// Si no esta contenida en el BOX hay que corregirlo para que lo
-			// pueda aproximar
-			isIn = false;
-			coord.setLatLngIntoBox(NW, SE);
-		}
-		// Esta dentro de nuestro mapBox, no hay problema
 		int[] aprox = calculateSize(NW, coord, tileSize);
 		int col = aprox[0];
 		int row = aprox[1];
-		col += offX;
-		row += offY;
+		col += offCol;
+		row += offRow;
 		// Buscamos la minima distancia
 		double distMin = coord.distance(tileToCoord(col, row));
 		boolean mejor = true;
@@ -432,7 +433,7 @@ public class HexagonalGrid implements Serializable {
 				}
 			}
 		}
-		return new Point(col, row, getValue(col, row), isIn);
+		return new Point(col, row, getValue(col, row));
 	}
 
 	/**
@@ -446,8 +447,8 @@ public class HexagonalGrid implements Serializable {
 		int[] aprox = calculateSize(NW, coord, tileSize);
 		int x = aprox[0];
 		int y = aprox[1];
-		x += offX;
-		y += offY;
+		x += offCol;
+		y += offRow;
 		return new Point(x, y);
 	}
 
@@ -478,8 +479,8 @@ public class HexagonalGrid implements Serializable {
 			throw new IllegalStateException(
 					"Precision hasn't been defined yet.");
 
-		int endX = offX + columns;
-		int endY = offY + rows;
+		int endX = offCol + columns;
+		int endY = offRow + rows;
 
 		if (!random) {
 			File tmp = TempFiles.getDefaultTempDir();
@@ -501,8 +502,8 @@ public class HexagonalGrid implements Serializable {
 					bw = new BufferedWriter(new FileWriter(f));
 					int total = (rows + 2) * (columns + 2);
 					int cont = 0;
-					for (int i = offX - 1; i <= endX; i++) {
-						for (int j = offY - 1; j <= endY; j++) {
+					for (int i = offCol - 1; i <= endX; i++) {
+						for (int j = offRow - 1; j <= endY; j++) {
 							LatLng coord = tileToCoord(i, j);
 							double value = AltitudeWS.getElevation(coord);
 							short alt = Scenario
@@ -544,8 +545,8 @@ public class HexagonalGrid implements Serializable {
 		} else {
 			// Alturas aleatorias
 			Random rnd = new Random(System.currentTimeMillis());
-			for (int i = offX - 1; i <= endX; i++) {
-				for (int j = offY - 1; j <= endY; j++) {
+			for (int i = offCol - 1; i <= endX; i++) {
+				for (int j = offRow - 1; j <= endY; j++) {
 					setTerrainValue(i, j, (short) rnd.nextInt(200));
 				}
 			}

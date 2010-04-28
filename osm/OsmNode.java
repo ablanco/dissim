@@ -6,12 +6,10 @@ import java.util.List;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import util.Point;
 import util.jcoord.LatLng;
 
 public class OsmNode implements Comparable<OsmNode> {
 	protected long id;
-	protected Point point = null;
 	protected LatLng coord;
 	protected List<OsmTag> tags;
 	private short type = Osm.Undefined;
@@ -43,13 +41,6 @@ public class OsmNode implements Comparable<OsmNode> {
 		this.coord = coord;
 	}
 
-	public void setPoint(Point point) {
-		this.point = point;
-	}
-
-	public Point getPoint() {
-		return point;
-	}
 
 	public long getId() {
 		return id;
@@ -92,12 +83,7 @@ public class OsmNode implements Comparable<OsmNode> {
 
 	@Override
 	public String toString() {
-		String result = "Node Id: " + id + " ";
-		if (point != null) {
-			result += point.toString();
-		} else {
-			result += coord.toString() + " ";
-		}
+		String result = "Node Id: " + id + ": "+coord.toString() + ", ";
 		for (OsmTag tag : tags) {
 			result += tag.toString() + " ";
 		}

@@ -48,8 +48,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	public short setWaterValue(int col, int row, short value) {
-		col -= offX;
-		row -= offY;
+		col -= offCol;
+		row -= offRow;
 		short old;
 		if (row == -1) {
 			old = northWater[col + 1];
@@ -71,8 +71,8 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	public short getWaterValue(int col, int row) {
-		col -= offX;
-		row -= offY;
+		col -= offCol;
+		row -= offRow;
 		short value;
 		if (row == -1) {
 			value = northWater[col + 1];
@@ -148,7 +148,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	public Set<Point> getModCoordAndReset() {
 		ModifiedTilesSet result = modTiles;
-		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offX, offY);
+		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offCol, offRow);
 		return result.withoutNulls();
 	}
 

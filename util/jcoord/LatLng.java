@@ -18,6 +18,16 @@ import java.io.Serializable;
  */
 public class LatLng implements Comparable<LatLng>, Serializable {
 
+	public static final int Same = 0;
+	public static final int Above = 1;
+	public static final int Above_Rigth = 2;
+	public static final int Rigth = 3;
+	public static final int Below_Rigth = 4;
+	public static final int Below = 5;
+	public static final int Below_Left = 6;
+	public static final int Left = 7;
+	public static final int Above_Left = 8;
+
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -71,7 +81,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @since 1.0
 	 */
 	public String toString() {
-		return "(" + lat + ", " + lng + ", " + this.altitude + ")";
+		return "(" + lat + ", " + lng + ")";
 	}
 
 	/**
@@ -355,6 +365,14 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		return lng;
 	}
 
+	public void setLat(double lat) {
+		this.lat = lat;
+	}
+
+	public void setLng(double lng) {
+		this.lng = lng;
+	}
+
 	/**
 	 *Return the altitude in decimeters
 	 * 
@@ -408,10 +426,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		}
 	}
 
-	public LatLng addIncs(double lat, double lng){
-		return new LatLng(round(this.lat+lat), round(this.lng+lng));
-	}
-
 	/**
 	 * @author Manuel Gomar Acosta
 	 * @param coord
@@ -452,30 +466,82 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	/**
-	 * Transform the coordinates to the nearest (orthogonally) that is contained
-	 * in the box defined by params
+	 * Posicion absoluta de la coordenada c, respecto a mi poscion, mirar
+	 * variables estaticas
 	 * 
-	 * @author Manuel Gomar
-	 * @param NW
-	 * @param SE
+	 * @param c
 	 * @return
 	 */
-	public void setLatLngIntoBox(LatLng NW, LatLng SE) {
-		if (lat > NW.getLat()) {
-			lat = NW.getLat();
-		} else if (lat < SE.getLat()) {
-			lat = SE.getLat();
+	public int absolutePosition(LatLng c) {
+		if (lat == c.getLat()) {
+			if (c.getLng() > lng) {
+				return Rigth;
+			} else if (c.getLng() < lng)
+				return Left;
+			else {
+				return Same;
+			}
 		}
 
-		if (lng < NW.getLng()) {
-			lng = NW.getLng();
-		} else if (lng > SE.getLng()) {
-			lng = SE.getLng();
+		if (lng == c.getLng()) {
+			if (c.getLat() > lat)
+				return Above;
+			return Below;
+		}
+
+		if (c.getLat() > lat) {
+			if (c.getLng() > lng)
+				return Above_Rigth;
+			return Above_Left;
+		} else {
+			if (c.getLng() > lng)
+				return Below_Rigth;
+			return Below_Left;
 		}
 	}
-	
-	public static double round(double c){
+
+	/**
+	 * Por encima o al mismo nivel
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public boolean isAboveOf(LatLng c) {
+		return lat > c.getLat();
+	}
+
+	/**
+	 * Por debajo o igual
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public boolean isBelowOf(LatLng c) {
+		return lat < c.getLat();
+	}
+
+	/**
+	 * A la derecha o igual
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public boolean isRigthOf(LatLng c) {
+		return lng > c.getLng();
+	}
+
+	/**
+	 * A la izquierda o igual
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public boolean isLeftOf(LatLng c) {
+		return lng < c.getLng();
+	}
+
+	public static double round(double c) {
 		long l = (long) (c * Math.pow(10, 6));
-		return l/Math.pow(10, 6);
+		return l / Math.pow(10, 6);
 	}
 }
