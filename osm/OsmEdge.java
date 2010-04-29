@@ -35,7 +35,7 @@ public class OsmEdge {
 	private LatLng b;
 	private double alpha;
 	private double beta;
-	private int[] v;
+	private double[] v;
 
 	public OsmEdge(OsmNode na, OsmNode nb) {
 		this(na.getCoord(), nb.getCoord());
@@ -52,31 +52,31 @@ public class OsmEdge {
 
 		switch (a.absolutePosition(b)) {
 		case LatLng.Same:
-			v = new int[] { 0, 0 };
+			v = new double[] { 0, 0 };
 			break;
 		case LatLng.Above:
-			v = new int[] { 1, 0 };
+			v = new double[] { 0.75, 0 };
 			break;
 		case LatLng.Above_Rigth:
-			v = new int[] { 1, 1 };
+			v = new double[] { 0.5, 0.5 };
 			break;
 		case LatLng.Above_Left:
-			v = new int[] { 1, -1 };
+			v = new double[] { 0.5, -0.5 };
 			break;
 		case LatLng.Below:
-			v = new int[] { -1, 0 };
+			v = new double[] { -0.75, 0 };
 			break;
 		case LatLng.Below_Rigth:
-			v = new int[] { -1, 1 };
+			v = new double[] { -0.5, 0.5 };
 			break;
 		case LatLng.Below_Left:
-			v = new int[] { -1, -1 };
+			v = new double[] { -0.5, -0.5 };
 			break;
 		case LatLng.Left:
-			v = new int[] { 0, -1 };
+			v = new double[] { 0, -0.75 };
 			break;
 		case LatLng.Rigth:
-			v = new int[] { 0, 1 };
+			v = new double[] { 0, 0.75 };
 			break;
 		default:
 			break;
@@ -208,8 +208,8 @@ public class OsmEdge {
 		// estan permitidos, por lo que hacemos los incrementos mas pequeños el
 		// problema es que tendremos que al discretizar nos dara algunos puntos
 		// repetidos
-		double ilat = box.getIlat() * v[0] * 0.5;
-		double ilng = box.getIlng() * v[1] * 0.5;
+		double ilat = box.getIlat() * v[0];
+		double ilng = box.getIlng() * v[1];
 
 		if (Double.isInfinite(alpha)) {
 			// Hay un problema con las funciones que para un x devuelve mas de

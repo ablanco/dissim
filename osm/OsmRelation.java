@@ -66,6 +66,18 @@ public class OsmRelation {
 	public boolean isEmpty() {
 		return members.isEmpty();
 	}
+	
+	/**
+	 * Devuelve una lista de joins de memebers, el resultado de emparejar a cada way con su pareja.
+	 * @param gridBox
+	 * @return
+	 */
+	public List<OsmWay> matchMembers(LatLngBox gridBox){
+		//TODO emparejarlos ... match.com funcionara??
+		List<OsmWay> list = new ArrayList<OsmWay>();
+		list.add(OsmWay.join(members.get(1).getWay(), members.get(2).getWay(),type,gridBox));
+		return null;
+	}
 
 	@Override
 	public String toString() {
@@ -74,8 +86,9 @@ public class OsmRelation {
 		for (OsmTag tag : tags) {
 			result.append(tag + ", ");
 		}
+		result.append("\n");
 		for (OsmMember m : members) {
-			result.append(m + "\n");
+			result.append("\t"+m + "\n");
 		}
 		return result.toString();
 	}

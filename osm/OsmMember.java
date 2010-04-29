@@ -49,7 +49,7 @@ public class OsmMember {
 
 	@Override
 	public String toString() {
-		return "Member, ref: "+ref+", type: "+type+", role: "+role+" || "+way;
+		return "Member, ref: "+ref+", type: "+type+", role: "+role+" || "+way.getWay();
 	}
 	public static OsmMember getMember(Node node,
 			Hashtable<Long, OsmWay> ways) {

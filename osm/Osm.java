@@ -19,7 +19,6 @@ package osm;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -286,19 +285,9 @@ public class Osm {
 	}
 
 	public static void setStreetValue(OsmRelation r, HexagonalGrid grid) {
-		// TODO algo cutre, mejorar, asumo que los members vienen ordenados en
-		// pares de dos consecutivos, cosa que no creo que sea cierta
-//		short type = r.getType();
-//		Iterator<OsmMember> m = r.getMembers().iterator();
-//		while (m.hasNext()) {
-//			OsmMember m1 = m.next();
-//			if (m.hasNext()) {
-//				OsmMember m2 = m.next();
-//				OsmWay w = OsmWay.join(m1.getWay(), m2.getWay(), r.getType(),
-//						grid.getBox());
-//				setStreetValue(w, grid);
-//			}
-//		}
+		for (OsmWay joins : r.matchMembers(grid.getBox())){
+			setStreetValue(joins, grid);
+		}
 	}
 
 	/**
