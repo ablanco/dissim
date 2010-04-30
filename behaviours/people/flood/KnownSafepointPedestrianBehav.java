@@ -208,7 +208,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		float elev = 0;
 		if (aux2 != 0)
 			elev = aux / aux2;
-		elev *= 0.2F; // TODO ajuste temporal
+		elev *= 0.2F; // TODO Ajuste temporal por alturas aleatorias
 		// System.out.println(obj+" "+wat+" "+elev);
 		return Math.round((obj + wat + elev) / 3.0F);
 	}

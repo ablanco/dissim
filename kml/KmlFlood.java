@@ -70,8 +70,8 @@ public class KmlFlood {
 		folder = container.createAndAddFolder().withName(name).withDescription(
 				"From: " + beginTime + " To :" + endTime);
 		// For each tile who has changed ever, creates hexagon
-		int offCol = fGrid.getOffX();
-		int offRow = fGrid.getOffY();
+		int offCol = fGrid.getOffCol();
+		int offRow = fGrid.getOffRow();
 		Map<Short, Collection<Point>> floods = new TreeMap<Short, Collection<Point>>();
 		Collection<Point> flooded;
 		// Collection<Point> flooded = new SortedSet<Point>();

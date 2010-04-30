@@ -73,7 +73,7 @@ public class OsmRelation {
 	 * @return
 	 */
 	public List<OsmWay> matchMembers(LatLngBox gridBox){
-		//TODO emparejarlos ... match.com funcionara??
+		//TODO Emparejarlos ... match.com funcionara??
 		List<OsmWay> list = new ArrayList<OsmWay>();
 		list.add(OsmWay.join(members.get(1).getWay(), members.get(2).getWay(),type,gridBox));
 		return null;

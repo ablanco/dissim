@@ -88,10 +88,10 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			// La escala de colores se calcula ahora (una única vez)
 			min = Short.MAX_VALUE;
 			max = Short.MIN_VALUE;
-			int endX = grid.getOffX() + grid.getColumns();
-			int endY = grid.getOffY() + grid.getRows();
-			for (int i = grid.getOffX(); i < endX; i++) {
-				for (int j = grid.getOffY(); j < endY; j++) {
+			int endX = grid.getOffCol() + grid.getColumns();
+			int endY = grid.getOffRow() + grid.getRows();
+			for (int i = grid.getOffCol(); i < endX; i++) {
+				for (int j = grid.getOffRow(); j < endY; j++) {
 					short value = grid.getValue(i, j);
 					if (value < min)
 						min = value;
@@ -135,18 +135,18 @@ public class HexagonalGridPane extends JPanel implements Scrollable {
 			if (diff > 0)
 				inc = 256.0 / ((double) diff);
 
-			int endX = grid.getOffX() + grid.getColumns();
-			int endY = grid.getOffY() + grid.getRows();
-			for (int i = grid.getOffX(); i < endX; i++) {
-				for (int j = grid.getOffY(); j < endY; j++) {
+			int endX = grid.getOffCol() + grid.getColumns();
+			int endY = grid.getOffRow() + grid.getRows();
+			for (int i = grid.getOffCol(); i < endX; i++) {
+				for (int j = grid.getOffRow(); j < endY; j++) {
 					int posX;
 					if (j % 2 == 0) { // Fila par
 						posX = (hexWidth / 2)
-								+ ((i - grid.getOffX()) * hexWidth);
+								+ ((i - grid.getOffCol()) * hexWidth);
 					} else { // Fila impar
-						posX = hexWidth + ((i - grid.getOffX()) * hexWidth);
+						posX = hexWidth + ((i - grid.getOffCol()) * hexWidth);
 					}
-					int posY = radius + ((j - grid.getOffY()) * hexHeight);
+					int posY = radius + ((j - grid.getOffRow()) * hexHeight);
 
 					// Generar hexágono
 					Polygon hex = new Hexagon2D(posX, posY, radius);

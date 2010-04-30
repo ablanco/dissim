@@ -78,7 +78,7 @@ public class KmlBase implements Updateable {
 			// Escribimos el kml
 			createKmzFile(kml, file.getAbsolutePath());
 		} else {
-			// TODO Cancelado el guardar, ¿hacer algo?
+			// TODO Cancelado el guardar, el KML se pierde
 		}
 	}
 

@@ -58,9 +58,9 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Grid data
 	 */
-	
+
 	private LatLngBox box;
-	
+
 	protected int columns;
 	protected int rows;
 	protected int offCol; // Index of the 0,0 tile
@@ -86,7 +86,8 @@ public class HexagonalGrid implements Serializable {
 	 */
 	private short precision = -1;
 
-	public HexagonalGrid(LatLng NW, LatLng SE, int offCol, int offRow, int tileSize) {
+	public HexagonalGrid(LatLng NW, LatLng SE, int offCol, int offRow,
+			int tileSize) {
 		this.NW = NW;
 		this.SE = SE;
 		this.offCol = offCol;
@@ -105,7 +106,7 @@ public class HexagonalGrid implements Serializable {
 
 		// ilat = (NW.getLat() - SE.getLat()) / row;
 		// ilng = (NW.getLng() - SE.getLng()) / col;
-		
+
 		box = new LatLngBox(NW, SE, tileSize);
 
 		gridTerrain = new short[col][row];
@@ -247,6 +248,7 @@ public class HexagonalGrid implements Serializable {
 	public LatLngBox getBox() {
 		return box;
 	}
+
 	public int getColumns() {
 		return columns;
 	}
@@ -255,11 +257,11 @@ public class HexagonalGrid implements Serializable {
 		return rows;
 	}
 
-	public int getOffX() {
+	public int getOffCol() {
 		return offCol;
 	}
 
-	public int getOffY() {
+	public int getOffRow() {
 		return offRow;
 	}
 

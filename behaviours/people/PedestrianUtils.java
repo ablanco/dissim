@@ -233,6 +233,7 @@ public class PedestrianUtils {
 		if (freeAdjc.size() == 0)
 			return true;
 		return false;
+		// TODO a veces no funciona, depurar
 	}
 
 	/**

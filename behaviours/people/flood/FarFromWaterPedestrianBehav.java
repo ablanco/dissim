@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import behaviours.people.PedestrianBehav;
+import behaviours.people.PedestrianUtils;
 import behaviours.people.YouAreDeadException;
 import behaviours.people.YouAreSafeException;
 
@@ -60,8 +61,7 @@ public class FarFromWaterPedestrianBehav extends PedestrianBehav {
 
 		// Si no tiene casillas secas a su alrededor está rodeado y
 		// se ahoga
-		// TODO Mejorar detección de muerte
-		if (dry.size() == 0)
+		if (PedestrianUtils.detectFloodDeath(dry, position))
 			throw new YouAreDeadException("Surrounded by water :(");
 
 		if (water.size() > 0) {

@@ -150,8 +150,8 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	private Object getEnv(int x, int y) {
 		// Comprobar si la casilla es de la corona y por lo tanto pertence a
 		// otro entorno
-		if (x < grid.getOffX() || (x - grid.getOffX()) >= grid.getColumns()
-				|| y < grid.getOffY() || (y - grid.getOffY()) >= grid.getRows()) {
+		if (x < grid.getOffCol() || (x - grid.getOffCol()) >= grid.getColumns()
+				|| y < grid.getOffRow() || (y - grid.getOffRow()) >= grid.getRows()) {
 			String env = Integer.toString(scen.getEnviromentByPosition(x, y));
 
 			// System.out.println(myAgent.getLocalName()+" Bazinga! "+x+","+y);
@@ -181,8 +181,8 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 	}
 
 	private void innerBorder(int x, int y) {
-		int ix = x - grid.getOffX();
-		int iy = y - grid.getOffY();
+		int ix = x - grid.getOffCol();
+		int iy = y - grid.getOffRow();
 		if (ix == 0 || ix == (grid.getColumns() - 1) || iy == 0
 				|| iy == (grid.getRows() - 1)) {
 			int cx = x;

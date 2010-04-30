@@ -218,7 +218,6 @@ public class OsmWay implements Comparable<OsmWay> {
 
 	@Override
 	public int hashCode() {
-		// TODO Auto-generated method stub
 		return (int) id;
 	}
 

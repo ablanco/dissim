@@ -20,7 +20,7 @@ import osm.Osm;
 import util.Hexagon2D;
 import util.HexagonalGrid;
 
-public class MapPane extends JPanel implements Scrollable{
+public class MapPane extends JPanel implements Scrollable {
 
 	/**
 	 * 
@@ -36,9 +36,8 @@ public class MapPane extends JPanel implements Scrollable{
 	public Dimension updateGrid(HexagonalGrid grid, Dimension dim) {
 		size = dim;
 		this.grid = grid;
-//		setSize(size);
-		
-		
+		// setSize(size);
+
 		// Calcular el radio de los hexágonos a representar
 		int radiusX = (int) (((size.width / grid.getColumns()) / 2) * 1.1);
 		int radiusY = (int) (((size.height / grid.getRows()) / 2) * 1.3);
@@ -54,16 +53,15 @@ public class MapPane extends JPanel implements Scrollable{
 		this.hexWidth = p.xpoints[4] - p.xpoints[2];
 		this.hexHeight = p.ypoints[1] - p.ypoints[3];
 
-		int width = ((hexWidth * grid.getColumns())  + (hexWidth /2 ));
+		int width = ((hexWidth * grid.getColumns()) + (hexWidth / 2));
 		int height = (hexHeight * grid.getRows());
-		
-		size =  new Dimension(width, height);
+
+		size = new Dimension(width, height);
 		setSize(size);
 		return size;
 		// repaint();
 	}
 
-	// TODO Rotar
 	@Override
 	public void paint(Graphics g) {
 		if (grid != null) {
@@ -83,30 +81,30 @@ public class MapPane extends JPanel implements Scrollable{
 					BasicStroke.JOIN_ROUND);
 			g2.setStroke(stroke);
 
-			
-			int endX = grid.getOffX() + grid.getColumns();
-			int endY = grid.getOffY() + grid.getRows();
-			for (int i = grid.getOffX(); i < endX; i++) {
-				for (int j = grid.getOffY(); j < endY; j++) {
+			int endX = grid.getOffCol() + grid.getColumns();
+			int endY = grid.getOffRow() + grid.getRows();
+			for (int i = grid.getOffCol(); i < endX; i++) {
+				for (int j = grid.getOffRow(); j < endY; j++) {
 					int posX;
 					if (j % 2 == 0) { // Fila par
 						posX = (hexWidth / 2)
-								+ ((i - grid.getOffX()) * hexWidth);
+								+ ((i - grid.getOffCol()) * hexWidth);
 					} else { // Fila impar
-						posX = hexWidth + ((i - grid.getOffX()) * hexWidth);
+						posX = hexWidth + ((i - grid.getOffCol()) * hexWidth);
 					}
-					int posY = radius + ((j - grid.getOffY()) * hexHeight);
+					int posY = radius + ((j - grid.getOffRow()) * hexHeight);
 
 					// Generar hexágono
 					Polygon hex = new Hexagon2D(posX, posY, radius);
 					// Dibujar y colorear según la altura
 					short value = grid.getStreetValue(i, j);
 					if (value > Osm.Raw_Field) {
-						//Pintamos todos los elementos relevantes
+						// Pintamos todos los elementos relevantes
 						g2.setColor(Osm.getColor(value));
 						// System.err.println("pintando en "+i+","+j+", ");
 					} else {
-						//No pintamos lo que es menor que Raw_File porque esas cosas de momento no las reconocemos
+						// No pintamos lo que es menor que Raw_File porque esas
+						// cosas de momento no las reconocemos
 						g2.setColor(Color.WHITE);
 					}
 					g2.fillPolygon(hex);
@@ -114,7 +112,6 @@ public class MapPane extends JPanel implements Scrollable{
 			}
 		}
 	}
-
 
 	public void setGrid(HexagonalGrid grid) {
 		this.grid = grid;

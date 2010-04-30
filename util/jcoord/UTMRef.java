@@ -273,18 +273,4 @@ public class UTMRef {
 	public short getAltitude() {
 		return altitude;
 	}
-
-	/**
-	 * Add meters to nording easting position
-	 * 
-	 * @author Manuel Gomar
-	 * @param x
-	 * @param y
-	 */
-	public void addNorthingEasting(double x, double y) {
-		// TODO Problemas con los Limites de UTM
-		easting += y;
-		northing -= x;
-	}
-
 }
