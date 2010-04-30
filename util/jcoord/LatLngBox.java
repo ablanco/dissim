@@ -1,8 +1,12 @@
 package util.jcoord;
 
+import java.io.Serializable;
+
 import osm.OsmWay;
 
-public class LatLngBox {
+public class LatLngBox implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	public static final int IN = 0;
 	public static final int ABOVE = 1; // TODO estan repetidos?? en latlng
@@ -126,13 +130,13 @@ public class LatLngBox {
 			change = contains(c);
 			if (!change) {
 				if (c.isAboveOf(nW))
-					nW = new LatLng(c.getLat(),nW.getLng());
+					nW = new LatLng(c.getLat(), nW.getLng());
 				if (c.isLeftOf(nW))
-					nW = new LatLng(nW.getLat(),c.getLng());				
+					nW = new LatLng(nW.getLat(), c.getLng());
 				if (c.isBelowOf(sE))
-					sE = new LatLng(c.getLat(),sE.getLng());
+					sE = new LatLng(c.getLat(), sE.getLng());
 				if (c.isRigthOf(sE))
-					sE = new LatLng(sE.getLat(),c.getLng());
+					sE = new LatLng(sE.getLat(), c.getLng());
 			}
 		}
 		return change;
@@ -186,18 +190,17 @@ public class LatLngBox {
 		return s.toString();
 	}
 
-	
-	private double smallest(double a, double b){
+	private double smallest(double a, double b) {
 		if (a > 0)
 			return Math.min(a, b);
 		return Math.max(a, b);
 	}
 
 	public void intersection(LatLngBox box) {
-		nW = new LatLng(smallest(nW.getLat(), box.getNw().getLat()),
-				smallest(nW.getLng(), box.getNw().getLng()));
-		sE = new LatLng(smallest(sE.getLat(), box.getSe().getLat()),
-				smallest(sE.getLng(), box.getSe().getLng()));
+		nW = new LatLng(smallest(nW.getLat(), box.getNw().getLat()), smallest(
+				nW.getLng(), box.getNw().getLng()));
+		sE = new LatLng(smallest(sE.getLat(), box.getSe().getLat()), smallest(
+				sE.getLng(), box.getSe().getLng()));
 		tileSize = box.getTileSize();
 	}
 

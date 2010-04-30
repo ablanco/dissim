@@ -130,9 +130,6 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 					int score = score(distPos, objective, wasser, position
 							.getZ(), (int) pt.getZ());
-					System.out.println("[" + distPos + "," + objective + ","
-							+ wasser + "," + position.getZ() + "," + pt.getZ()
-							+ "] -> " + score);
 
 					if (score > best) {
 						best = score;
@@ -200,19 +197,19 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 	 *            Elevation of the tile (more is better)
 	 * @return
 	 */
-	private int score(int distancePosition, int objective, int water,
-			int elevationPosition, int elevation) {
-		float aux = distancePosition / 100;
-		float obj = Math.abs(100 - (objective / aux));
-		aux = d / 100;
-		float wat = 0;
-		if (aux != 0)
-			wat = water / aux;
-		aux = elevation - elevationPosition;
-		float aux2 = elevationPosition / 100;
+	private int score(float distancePosition, float objective, float water,
+			float elevationPosition, float elevation) {
+		float obj = ((distancePosition - objective) * 100.0F) / d;
+
+		float wat = (water * 100.0F) / d;
+
+		float aux = elevation - elevationPosition;
+		float aux2 = elevationPosition / 100.0F;
 		float elev = 0;
 		if (aux2 != 0)
 			elev = aux / aux2;
+		elev *= 0.2F; // TODO ajuste temporal
+		// System.out.println(obj+" "+wat+" "+elev);
 		return Math.round((obj + wat + elev) / 3.0F);
 	}
 
