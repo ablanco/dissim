@@ -4,15 +4,15 @@ import osm.OsmWay;
 
 public class LatLngBox {
 
-	public static final int In = 0;
-	public static final int Above = 1;
-	public static final int Above_Rigth = 2;
-	public static final int Rigth = 3;
-	public static final int Below_Rigth = 4;
-	public static final int Below = 5;
-	public static final int Below_Left = 6;
-	public static final int Left = 7;
-	public static final int Above_Left = 8;
+	public static final int IN = 0;
+	public static final int ABOVE = 1; // TODO estan repetidos?? en latlng
+	public static final int ABOVE_RIGHT = 2;
+	public static final int RIGHT = 3;
+	public static final int BELOW_RIGHT = 4;
+	public static final int BELOW = 5;
+	public static final int BELOW_LEFT = 6;
+	public static final int LEFT = 7;
+	public static final int ABOVE_LEFT = 8;
 
 	/**
 	 * Northern Wester point
@@ -60,30 +60,30 @@ public class LatLngBox {
 	public int absoluteBoxPosition(LatLng c) {
 		if (c.getLat() > nW.getLat()) {
 			if (c.getLng() < nW.getLng()) {
-				return Above_Left;
+				return ABOVE_LEFT;
 			} else if (c.getLng() > sE.getLng()) {
-				return Above_Rigth;
+				return ABOVE_RIGHT;
 			} else {
-				return Above;
+				return ABOVE;
 			}
 		}
 
 		if (c.getLat() < sE.getLat()) {
 			if (c.getLng() < nW.getLng()) {
-				return Below_Left;
+				return BELOW_LEFT;
 			} else if (c.getLng() > sE.getLng()) {
-				return Below_Rigth;
+				return BELOW_RIGHT;
 			} else {
-				return Below;
+				return BELOW;
 			}
 		}
 
 		if (c.getLng() < nW.getLng()) {
-			return Left;
+			return LEFT;
 		} else if (c.getLng() > sE.getLng()) {
-			return Rigth;
+			return RIGHT;
 		} else {
-			return In;
+			return IN;
 		}
 	}
 

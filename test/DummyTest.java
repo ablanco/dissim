@@ -1,10 +1,6 @@
 package test;
 
-import osm.OsmEdge;
-import util.jcoord.LatLng;
-import util.jcoord.LatLngBox;
-
-public class dummyTest {
+public class DummyTest {
 
 	/**
 	 * @param args

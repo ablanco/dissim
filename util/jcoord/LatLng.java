@@ -18,15 +18,15 @@ import java.io.Serializable;
  */
 public class LatLng implements Comparable<LatLng>, Serializable {
 
-	public static final int Same = 0;
-	public static final int Above = 1;
-	public static final int Above_Rigth = 2;
-	public static final int Rigth = 3;
-	public static final int Below_Rigth = 4;
-	public static final int Below = 5;
-	public static final int Below_Left = 6;
-	public static final int Left = 7;
-	public static final int Above_Left = 8;
+	public static final int SAME = 0;
+	public static final int ABOVE = 1; // Están repetidos?? en latlngbox
+	public static final int ABOVE_RIGHT = 2;
+	public static final int RIGHT = 3;
+	public static final int BELOW_RIGHT = 4;
+	public static final int BELOW = 5;
+	public static final int BELOW_LEFT = 6;
+	public static final int LEFT = 7;
+	public static final int ABOVE_LEFT = 8;
 
 	private static final long serialVersionUID = 1L;
 
@@ -95,14 +95,14 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		return lng + ", " + lat + ", " + this.altitude;
 	}
 
-	/**
+	/*
 	 * Convert this latitude and longitude into an OSGB (Ordnance Survey of
 	 * Great Britain) grid reference.
 	 * 
 	 * @return the converted OSGB grid reference
+	 * 
 	 * @since 1.0
-	 */
-	/*
+	 * 
 	 * public OSRef toOSRef() { RefEll airy1830 = new RefEll(6377563.396,
 	 * 6356256.909); double OSGB_F0 = 0.9996012717; double N0 = -100000.0;
 	 * double E0 = 400000.0; double phi0 = Math.toRadians(49.0); double lambda0
@@ -365,10 +365,18 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		return lng;
 	}
 
+	/**
+	 * @author Manuel Gomar Acosta
+	 * @param lat
+	 */
 	public void setLat(double lat) {
 		this.lat = lat;
 	}
 
+	/**
+	 * @author Manuel Gomar Acosta
+	 * @param lng
+	 */
 	public void setLng(double lng) {
 		this.lng = lng;
 	}
@@ -466,43 +474,45 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	/**
-	 * Posicion absoluta de la coordenada c, respecto a mi poscion, mirar
-	 * variables estaticas
+	 * Posición absoluta de la coordenada c, respecto a mi posción, mirar
+	 * variables estáticas
 	 * 
+	 * @author Manuel Gomar Acosta
 	 * @param c
 	 * @return
 	 */
 	public int absolutePosition(LatLng c) {
 		if (lat == c.getLat()) {
 			if (c.getLng() > lng) {
-				return Rigth;
+				return RIGHT;
 			} else if (c.getLng() < lng)
-				return Left;
+				return LEFT;
 			else {
-				return Same;
+				return SAME;
 			}
 		}
 
 		if (lng == c.getLng()) {
 			if (c.getLat() > lat)
-				return Above;
-			return Below;
+				return ABOVE;
+			return BELOW;
 		}
 
 		if (c.getLat() > lat) {
 			if (c.getLng() > lng)
-				return Above_Rigth;
-			return Above_Left;
+				return ABOVE_RIGHT;
+			return ABOVE_LEFT;
 		} else {
 			if (c.getLng() > lng)
-				return Below_Rigth;
-			return Below_Left;
+				return BELOW_RIGHT;
+			return BELOW_LEFT;
 		}
 	}
 
 	/**
 	 * Por encima o al mismo nivel
 	 * 
+	 * @author Manuel Gomar Acosta
 	 * @param c
 	 * @return
 	 */
@@ -513,6 +523,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	/**
 	 * Por debajo o igual
 	 * 
+	 * @author Manuel Gomar Acosta
 	 * @param c
 	 * @return
 	 */
@@ -523,6 +534,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	/**
 	 * A la derecha o igual
 	 * 
+	 * @author Manuel Gomar Acosta
 	 * @param c
 	 * @return
 	 */
@@ -533,6 +545,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	/**
 	 * A la izquierda o igual
 	 * 
+	 * @author Manuel Gomar Acosta
 	 * @param c
 	 * @return
 	 */
@@ -540,6 +553,11 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		return lng < c.getLng();
 	}
 
+	/**
+	 * @author Manuel Gomar Acosta
+	 * @param c
+	 * @return
+	 */
 	public static double round(double c) {
 		long l = (long) (c * Math.pow(10, 6));
 		return l / Math.pow(10, 6);

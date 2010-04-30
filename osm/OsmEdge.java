@@ -51,31 +51,31 @@ public class OsmEdge {
 		beta = sol[1];
 
 		switch (a.absolutePosition(b)) {
-		case LatLng.Same:
+		case LatLng.SAME:
 			v = new double[] { 0, 0 };
 			break;
-		case LatLng.Above:
+		case LatLng.ABOVE:
 			v = new double[] { 0.75, 0 };
 			break;
-		case LatLng.Above_Rigth:
+		case LatLng.ABOVE_RIGHT:
 			v = new double[] { 0.5, 0.5 };
 			break;
-		case LatLng.Above_Left:
+		case LatLng.ABOVE_LEFT:
 			v = new double[] { 0.5, -0.5 };
 			break;
-		case LatLng.Below:
+		case LatLng.BELOW:
 			v = new double[] { -0.75, 0 };
 			break;
-		case LatLng.Below_Rigth:
+		case LatLng.BELOW_RIGHT:
 			v = new double[] { -0.5, 0.5 };
 			break;
-		case LatLng.Below_Left:
+		case LatLng.BELOW_LEFT:
 			v = new double[] { -0.5, -0.5 };
 			break;
-		case LatLng.Left:
+		case LatLng.LEFT:
 			v = new double[] { 0, -0.75 };
 			break;
-		case LatLng.Rigth:
+		case LatLng.RIGHT:
 			v = new double[] { 0, 0.75 };
 			break;
 		default:
@@ -145,40 +145,40 @@ public class OsmEdge {
 			out = b;
 		}
 		switch (box.absoluteBoxPosition(out)) {
-		case LatLngBox.Above:
+		case LatLngBox.ABOVE:
 			cut = getX(box.getNw());
 			break;
-		case LatLngBox.Above_Rigth:
+		case LatLngBox.ABOVE_RIGHT:
 			cut = getX(box.getNw());
 			if (cut.isRigthOf(box.getSe())) {
 				// Corta por encima de la lat maxima
 				cut = getY(box.getSe());
 			}
 			break;
-		case LatLngBox.Rigth:
+		case LatLngBox.RIGHT:
 			cut = getY(box.getSe());
 			break;
-		case LatLngBox.Below_Rigth:
+		case LatLngBox.BELOW_RIGHT:
 			cut = getY(box.getSe());
 			if (cut.isBelowOf(box.getSe())) {
 				// Corta por debajo de la lng minims
 				cut = getX(box.getSe());
 			}
 			break;
-		case LatLngBox.Below:
+		case LatLngBox.BELOW:
 			cut = getX(box.getSe());
 			break;
-		case LatLngBox.Below_Left:
+		case LatLngBox.BELOW_LEFT:
 			cut = getY(box.getNw());
 			if (cut.isBelowOf(box.getSe())) {
 				// Corta por debajo de la lng minima
 				cut = getX(box.getSe());
 			}
 			break;
-		case LatLngBox.Left:
+		case LatLngBox.LEFT:
 			cut = getY(box.getNw());
 			break;
-		case LatLngBox.Above_Left:
+		case LatLngBox.ABOVE_LEFT:
 			cut = getY(box.getNw());
 			if (cut.isAboveOf(box.getNw())) {
 				// Corta por encima de la lat maxima

@@ -1,60 +1,55 @@
 package test;
 
-import osm.OsmEdge;
-import util.HexagonalGrid;
-import util.jcoord.LatLng;
-import util.jcoord.LatLngBox;
-
 public class LatLngBoxTest {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		LatLngBox box = new LatLngBox(new LatLng(3.0, -3.0), new LatLng(-3.0,
-				3.0), 100000);
+//		LatLngBox box = new LatLngBox(new LatLng(3.0, -3.0), new LatLng(-3.0,
+//				3.0), 100000);
 
-		LatLng a = new LatLng(2, -2);
-		LatLng b = new LatLng(2, 2);
-		LatLng c = new LatLng(-2, -2);
-		LatLng d = new LatLng(-2, 2);
-		LatLng e = new LatLng(5, -4);
-		LatLng f = new LatLng(4, -5);
-		LatLng g = new LatLng(5, 4);
-		LatLng h = new LatLng(4, 5);
-		LatLng i = new LatLng(-4, 5);
-		LatLng j = new LatLng(-5, 4);
-		LatLng k = new LatLng(-5, -4);
-		LatLng l = new LatLng(-4, -5);
-		LatLng m = new LatLng(0, -5);
-		LatLng n = new LatLng(0, 5);
-		LatLng o = new LatLng(5, 0);
-		LatLng p = new LatLng(-5, 0);
+//		LatLng a = new LatLng(2, -2);
+//		LatLng b = new LatLng(2, 2);
+//		LatLng c = new LatLng(-2, -2);
+//		LatLng d = new LatLng(-2, 2);
+//		LatLng e = new LatLng(5, -4);
+//		LatLng f = new LatLng(4, -5);
+//		LatLng g = new LatLng(5, 4);
+//		LatLng h = new LatLng(4, 5);
+//		LatLng i = new LatLng(-4, 5);
+//		LatLng j = new LatLng(-5, 4);
+//		LatLng k = new LatLng(-5, -4);
+//		LatLng l = new LatLng(-4, -5);
+//		LatLng m = new LatLng(0, -5);
+//		LatLng n = new LatLng(0, 5);
+//		LatLng o = new LatLng(5, 0);
+//		LatLng p = new LatLng(-5, 0);
 
-		OsmEdge ab = new OsmEdge(a, b);
-		OsmEdge ba = new OsmEdge(b, a);
-		OsmEdge bd = new OsmEdge(b, d);
-		OsmEdge db = new OsmEdge(d, b);
-		OsmEdge dc = new OsmEdge(d, c);
-		OsmEdge cd = new OsmEdge(c, d);
-		OsmEdge ac = new OsmEdge(a, c);
-		OsmEdge ca = new OsmEdge(c, a);
-		OsmEdge ae = new OsmEdge(a, e);
-		OsmEdge ea = new OsmEdge(e, a);
-		OsmEdge af = new OsmEdge(a, f);
-		OsmEdge fa = new OsmEdge(f, a);
-		OsmEdge ao = new OsmEdge(a, o);
-		OsmEdge bg = new OsmEdge(b, g);
-		OsmEdge bh = new OsmEdge(b, h);
-		OsmEdge bn = new OsmEdge(b, n);
-		OsmEdge cl = new OsmEdge(c, l);
-		OsmEdge ck = new OsmEdge(c, k);
-		OsmEdge dj = new OsmEdge(d, j);
-		OsmEdge di = new OsmEdge(d, i);
-		OsmEdge dp = new OsmEdge(d, p);
-		OsmEdge dn = new OsmEdge(d, n);
-		OsmEdge ce = new OsmEdge(c, e);
-		OsmEdge cf = new OsmEdge(c, f);
+//		OsmEdge ab = new OsmEdge(a, b);
+//		OsmEdge ba = new OsmEdge(b, a);
+//		OsmEdge bd = new OsmEdge(b, d);
+//		OsmEdge db = new OsmEdge(d, b);
+//		OsmEdge dc = new OsmEdge(d, c);
+//		OsmEdge cd = new OsmEdge(c, d);
+//		OsmEdge ac = new OsmEdge(a, c);
+//		OsmEdge ca = new OsmEdge(c, a);
+//		OsmEdge ae = new OsmEdge(a, e);
+//		OsmEdge ea = new OsmEdge(e, a);
+//		OsmEdge af = new OsmEdge(a, f);
+//		OsmEdge fa = new OsmEdge(f, a);
+//		OsmEdge ao = new OsmEdge(a, o);
+//		OsmEdge bg = new OsmEdge(b, g);
+//		OsmEdge bh = new OsmEdge(b, h);
+//		OsmEdge bn = new OsmEdge(b, n);
+//		OsmEdge cl = new OsmEdge(c, l);
+//		OsmEdge ck = new OsmEdge(c, k);
+//		OsmEdge dj = new OsmEdge(d, j);
+//		OsmEdge di = new OsmEdge(d, i);
+//		OsmEdge dp = new OsmEdge(d, p);
+//		OsmEdge dn = new OsmEdge(d, n);
+//		OsmEdge ce = new OsmEdge(c, e);
+//		OsmEdge cf = new OsmEdge(c, f);
 
 		// Probando Next
 		// System.err.println(ab);
