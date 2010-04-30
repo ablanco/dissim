@@ -19,22 +19,20 @@ package behaviours.people.flood;
 import jade.core.AID;
 import jade.core.Agent;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Random;
 import java.util.Set;
 
+import osm.Osm;
+import util.HexagonalGrid;
+import util.Point;
+import util.Scenario;
 import behaviours.people.PedestrianBehav;
 import behaviours.people.PedestrianUtils;
 import behaviours.people.YouAreDeadException;
 import behaviours.people.YouAreSafeException;
-
-import osm.Osm;
-
-import util.HexagonalGrid;
-import util.Point;
-import util.Scenario;
-import util.java.NoDuplicatePointsSet;
 
 @SuppressWarnings("serial")
 public class SafepointPedestrianBehav extends PedestrianBehav {
@@ -60,9 +58,9 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 		}
 
 		// Separar casillas inundadas de las secas, y buscar refugios
-		Set<Point> water = new NoDuplicatePointsSet(adjacents.size());
-		Set<Point> dry = new NoDuplicatePointsSet(adjacents.size());
-		Set<Point> safe = new NoDuplicatePointsSet(adjacents.size());
+		Set<Point> water = new HashSet<Point>(adjacents.size());
+		Set<Point> dry = new HashSet<Point>(adjacents.size());
+		Set<Point> safe = new HashSet<Point>(adjacents.size());
 		for (Point pt : adjacents) {
 			if (pt.getW() > 0)
 				water.add(pt);

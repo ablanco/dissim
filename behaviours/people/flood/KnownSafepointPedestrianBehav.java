@@ -29,19 +29,17 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Set;
 
-import behaviours.QueryGridBehav;
-import behaviours.people.PedestrianBehav;
-import behaviours.people.PedestrianUtils;
-import behaviours.people.YouAreDeadException;
-import behaviours.people.YouAreSafeException;
-
 import osm.Osm;
 import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
 import util.Scenario;
-import util.java.NoDuplicatePointsSet;
 import util.jcoord.LatLng;
+import behaviours.QueryGridBehav;
+import behaviours.people.PedestrianBehav;
+import behaviours.people.PedestrianUtils;
+import behaviours.people.YouAreDeadException;
+import behaviours.people.YouAreSafeException;
 
 @SuppressWarnings("serial")
 public class KnownSafepointPedestrianBehav extends PedestrianBehav {
@@ -75,9 +73,9 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		}
 
 		// Separar casillas inundadas de las secas, y buscar refugios
-		Set<Point> water = new NoDuplicatePointsSet(adjacents.size());
-		Set<Point> dry = new NoDuplicatePointsSet(adjacents.size());
-		Set<Point> safe = new NoDuplicatePointsSet(adjacents.size());
+		Set<Point> water = new HashSet<Point>(adjacents.size());
+		Set<Point> dry = new HashSet<Point>(adjacents.size());
+		Set<Point> safe = new HashSet<Point>(adjacents.size());
 		for (Point pt : adjacents) {
 			if (pt.getW() > 0)
 				water.add(pt);
@@ -237,7 +235,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 		public GeoToPosBehav(Agent agt, Set<LatLng> geoObj) {
 			super(agt);
-			posObj = new NoDuplicatePointsSet(geoObj.size());
+			posObj = new HashSet<Point>(geoObj.size());
 			it = geoObj.iterator();
 		}
 

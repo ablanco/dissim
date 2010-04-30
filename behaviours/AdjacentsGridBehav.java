@@ -21,10 +21,10 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 import util.HexagonalGrid;
 import util.Point;
-import util.java.NoDuplicatePointsSet;
 import util.jcoord.LatLng;
 
 public class AdjacentsGridBehav extends CyclicBehaviour {
@@ -50,7 +50,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 			String pos = msg.getContent();
 			String[] data = pos.split(" ");
 			String type = data[0];
-			NoDuplicatePointsSet adjacents = null;
+			HashSet<Point> adjacents = null;
 			int x;
 			int y;
 
@@ -72,10 +72,9 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				d = Integer.parseInt(data[3]);
 
 			adjacents = grid.getAdjacents(new Point(x, y));
-			NoDuplicatePointsSet adj1 = adjacents;
+			HashSet<Point> adj1 = adjacents;
 			while (d > 1) {
-				NoDuplicatePointsSet adj2 = new NoDuplicatePointsSet(adj1
-						.size() * 6);
+				HashSet<Point> adj2 = new HashSet<Point>(adj1.size() * 6);
 				for (Point pt : adj1) {
 					adj2.addAll(grid.getAdjacents(pt));
 				}

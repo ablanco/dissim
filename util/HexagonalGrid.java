@@ -25,10 +25,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 import osm.Osm;
-import util.java.NoDuplicatePointsSet;
 import util.java.TempFiles;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
@@ -346,11 +346,11 @@ public class HexagonalGrid implements Serializable {
 	 * @param p
 	 *            Point
 	 * 
-	 * @return NoDuplicatePointsSet adjacents to p
+	 * @return HashSet<Point> adjacents to p
 	 */
-	public NoDuplicatePointsSet getAdjacents(Point p) {
+	public HashSet<Point> getAdjacents(Point p) {
 		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
-		NoDuplicatePointsSet result = new NoDuplicatePointsSet(indexes.length);
+		HashSet<Point> result = new HashSet<Point>(indexes.length);
 		for (int i = 0; i < indexes.length; i++) {
 			result.add(new Point(indexes[i][0], indexes[i][1], getValue(
 					indexes[i][0], indexes[i][1])));

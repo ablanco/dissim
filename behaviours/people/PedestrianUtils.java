@@ -16,6 +16,7 @@
 
 package behaviours.people;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
@@ -23,7 +24,6 @@ import java.util.Set;
 import osm.Osm;
 import util.HexagonalGrid;
 import util.Point;
-import util.java.NoDuplicatePointsSet;
 
 public class PedestrianUtils {
 
@@ -43,7 +43,7 @@ public class PedestrianUtils {
 	public static Set<Point> filterByStreetView(Set<Point> adjacents,
 			Point position) {
 		// Sólo las casillas que puede ver desde su calle
-		Set<Point> aux = new NoDuplicatePointsSet(adjacents.size() + 1);
+		Set<Point> aux = new HashSet<Point>(adjacents.size() + 1);
 		for (Point pt : adjacents) {
 			Point auxpt = position;
 			// Buscamos que llegue en línea a través de una calle
@@ -220,7 +220,7 @@ public class PedestrianUtils {
 	public static boolean detectFloodDeath(Set<Point> dry, Point position) {
 		// Si no tiene casillas secas a su alrededor está rodeado y
 		// se ahoga
-		Set<Point> freeAdjc = new NoDuplicatePointsSet(7);
+		Set<Point> freeAdjc = new HashSet<Point>(7);
 		if (position != null) {
 			// Sólo las adyacentes a distancia 1
 			for (Point pt : dry) {

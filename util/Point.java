@@ -37,9 +37,8 @@ public class Point implements Comparable<Point>, Serializable {
 		this.col = col;
 		this.row = row;
 		this.z = z;
-		hash = (int) (Math.pow(col + 10, 2) * row);
-		// TODO tiene colisiones
-		// por ejemplo, los ptos (-1,81) y (71,1) dan el mismo hash: 6561
+		String s = col + "," + row;
+		hash = s.hashCode();
 	}
 
 	public Point(int[] xyz) {
@@ -51,7 +50,6 @@ public class Point implements Comparable<Point>, Serializable {
 		this.w = w;
 		this.s = s;
 	}
-
 
 	public boolean isAdyacent(Point p) {
 		return Math.abs(col - p.getCol()) < 2 && Math.abs(row - p.getRow()) < 2
@@ -90,10 +88,6 @@ public class Point implements Comparable<Point>, Serializable {
 	@Override
 	public int hashCode() {
 		return hash;
-	}
-
-	public String hashPos() {
-		return col + "," + row;
 	}
 
 	public int getCol() {

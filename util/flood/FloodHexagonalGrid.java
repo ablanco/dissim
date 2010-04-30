@@ -16,12 +16,12 @@
 
 package util.flood;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import util.HexagonalGrid;
 import util.Point;
 import util.java.ModifiedTilesSet;
-import util.java.NoDuplicatePointsSet;
 import util.jcoord.LatLng;
 
 public class FloodHexagonalGrid extends HexagonalGrid {
@@ -133,9 +133,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
-	public NoDuplicatePointsSet getAdjacents(Point p) {
+	public HashSet<Point> getAdjacents(Point p) {
 		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
-		NoDuplicatePointsSet result = new NoDuplicatePointsSet(indexes.length);
+		HashSet<Point> result = new HashSet<Point>(indexes.length);
 		for (int i = 0; i < indexes.length; i++) {
 			int[] tile = indexes[i];
 			Point adj = new Point(tile[0], tile[1], getValue(tile[0], tile[1]),
