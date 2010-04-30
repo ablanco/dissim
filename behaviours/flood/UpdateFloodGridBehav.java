@@ -32,15 +32,12 @@ import util.AgentHelper;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
-import util.java.Logger;
 import behaviours.InterGridBehav;
 
+@SuppressWarnings("serial")
 public class UpdateFloodGridBehav extends TickerBehaviour {
 
-	private static final long serialVersionUID = 8964259995058162322L;
-
 	private FloodHexagonalGrid grid;
-	private Logger logger = new Logger();
 	private FloodScenario scen;
 	private Map<String, Object> envs = new Hashtable<String, Object>();
 
@@ -49,17 +46,11 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		super(a, scen.getFloodUpdateTime());
 		this.grid = grid;
 		this.scen = scen;
-		// logger = Scenario.getCurrentScenario().getDefaultLogger();
-		logger.disable();
 	}
 
 	@Override
 	protected void onTick() {
-		long time = System.currentTimeMillis();
-
 		Set<Point> set = grid.getModCoordAndReset();
-		logger.debugln(myAgent.getLocalName());
-		logger.debugln("Modified tiles set size: " + set.size());
 		Iterator<Point> it = set.iterator();
 		// Por cada casilla modificada
 		while (it.hasNext()) {
@@ -120,9 +111,6 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				increase(adjCoord[0], adjCoord[1], water);
 			}
 		}
-
-		time = System.currentTimeMillis() - time;
-		logger.debugln("UpdateFloodGridBehav took " + time + " ms");
 	}
 
 	private short decrease(int x, int y, int ix, int iy, short w) {

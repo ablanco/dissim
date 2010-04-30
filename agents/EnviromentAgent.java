@@ -36,7 +36,6 @@ import util.HexagonalGrid;
 import util.Pedestrian;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
-import util.java.Logger;
 import util.jcoord.LatLng;
 import behaviours.AdjacentsGridBehav;
 import behaviours.InterGridBehav;
@@ -52,7 +51,6 @@ import behaviours.people.RegisterPeopleBehav;
 public class EnviromentAgent extends Agent {
 
 	private HexagonalGrid grid = null;
-	private Logger logger = new Logger(); // TODO logger
 	private DateAndTime dateTime = null;
 	private Map<String, Pedestrian> people = new Hashtable<String, Pedestrian>();
 
@@ -70,7 +68,7 @@ public class EnviromentAgent extends Agent {
 			int offY = Integer.parseInt((String) args[6]);
 			grid = new FloodHexagonalGrid(NW, SE, offX, offY, tileSize);
 		} else {
-			logger.errorln(getLocalName() + " wrong arguments.");
+			System.err.println(getLocalName() + " wrong arguments.");
 			doDelete();
 		}
 
@@ -84,9 +82,9 @@ public class EnviromentAgent extends Agent {
 		try {
 			DFService.deregister(this);
 		} catch (FIPAException fe) {
-			fe.printStackTrace(logger.getError());
+			fe.printStackTrace();
 		}
-		logger.println("Enviroment-agent " + getAID().getName()
+		System.out.println("Enviroment-agent " + getAID().getName()
 				+ " terminating.");
 	}
 
@@ -95,7 +93,7 @@ public class EnviromentAgent extends Agent {
 		@Override
 		public void action() {
 			grid.setPrecision(scen.getPrecision());
-			
+
 			System.out.println("DESCARGANDO ALTURAS DEL TERRENO");
 			System.out.println("Matriz " + grid.getColumns() + "x"
 					+ grid.getRows() + " - Tarda unos minutos.");
@@ -106,10 +104,10 @@ public class EnviromentAgent extends Agent {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 			System.out.println("PROCESANDO INFORMACIÓN SOBRE CALLES");
 			grid.obtainStreetInfo();
-			
+
 			dateTime = scen.getStartTime();
 
 			List<String> services = new ArrayList<String>(10);
@@ -151,8 +149,9 @@ public class EnviromentAgent extends Agent {
 			DFAgentDescription[] result = AgentHelper
 					.search(myAgent, "creator");
 			if (result.length != 1) {
-				logger.errorln("Error searching for the creator agent. Found "
-						+ result.length + " agents.");
+				System.err
+						.println("Error searching for the creator agent. Found "
+								+ result.length + " agents.");
 				doDelete();
 			}
 			AID creatorAID = result[0].getName();

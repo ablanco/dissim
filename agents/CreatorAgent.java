@@ -30,7 +30,6 @@ import util.Pedestrian;
 import util.Scenario;
 import util.flood.FloodScenario;
 import util.flood.WaterSource;
-import util.java.Logger;
 import util.jcoord.LatLng;
 import behaviours.CreateAgentBehav;
 
@@ -38,7 +37,6 @@ import behaviours.CreateAgentBehav;
 public class CreatorAgent extends Agent {
 
 	private Scenario scen = null;
-	private Logger logger = new Logger();
 
 	@Override
 	protected void setup() {
@@ -168,7 +166,7 @@ public class CreatorAgent extends Agent {
 					reply.setContentObject(scen);
 					myAgent.send(reply);
 				} catch (IOException e) {
-					e.printStackTrace(logger.getError());
+					e.printStackTrace();
 				}
 			} else {
 				block();

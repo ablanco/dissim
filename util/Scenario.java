@@ -353,7 +353,8 @@ public class Scenario implements Serializable {
 	}
 
 	public void setNumEnv(int numEnv) {
-		// TODO En realidad los que no valen son los primos
+		// TODO En realidad valen todos, aunque los primos son muy poco
+		// adecuados
 		if (!(numEnv == 1 || (numEnv % 2) == 0))
 			throw new IllegalArgumentException(
 					"Number of enviroments must be one or even");
@@ -397,7 +398,13 @@ public class Scenario implements Serializable {
 		System.out.println("GLOBAL: NW " + globalNW.toString() + " SE "
 				+ globalSE.toString());
 
-		// TODO Mejorar división en entornos
+		/*
+		 * TODO Mejorar división en entornos. Habría que quedarse con los dos
+		 * divisores más adecuados según la forma del área a simular. Por
+		 * ejemplo, para un área cuadrada de la que se quisieran 16 entornos
+		 * habría que dividirla en 4 y 4. Pero si fuera muy alagarda sería mejor
+		 * dividirla en 8 y 2. Es complicado de calcular.
+		 */
 		int mitt = numEnv / 2;
 		diflat = diflat / 2.0;
 		diflng = diflng / ((double) mitt);
