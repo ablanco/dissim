@@ -108,6 +108,7 @@ public class Statistics implements Updateable {
 			csv.write(String.valueOf(dead));
 			csv.write(String.valueOf(safe));
 			csv.write(time);
+			csv.endRecord();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
