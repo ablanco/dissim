@@ -37,6 +37,7 @@ import util.Scenario;
 @SuppressWarnings("serial")
 public class SyndicateBehav extends CyclicBehaviour {
 
+	private long defaultPeriod = 500;
 	private Scenario scen;
 	private Map<String, Object[]> subscribers = new Hashtable<String, Object[]>();
 	private HexagonalGrid grid;
@@ -121,6 +122,11 @@ public class SyndicateBehav extends CyclicBehaviour {
 			behav = new SendUpdateBehav(myAgent, scen.getUpdateKMLPeriod(),
 					receivers, convId, grid, dateTime, people, scen.getName(),
 					scen.getDescription());
+		} else {
+			// Default case
+			behav = new SendUpdateBehav(myAgent, defaultPeriod, receivers,
+					"default-updateable", grid, dateTime, people, scen
+							.getName(), scen.getDescription());
 		}
 		return behav;
 	}
