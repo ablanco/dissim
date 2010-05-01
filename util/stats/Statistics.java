@@ -85,7 +85,7 @@ public class Statistics implements Updateable {
 		int alive = 0;
 		int dead = 0;
 		int safe = 0;
-		String time = snap.getDateTime().toString();
+		String time = snap.getDateTime().toOooDate();
 		for (Pedestrian p : people) {
 			// Por cada pedestrian averiguamos su estado
 			switch (p.getStatus()) {

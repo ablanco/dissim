@@ -54,6 +54,12 @@ public class DateAndTime implements Serializable {
 						.get(Calendar.MINUTE));
 	}
 
+	public String toOooDate() {
+		return g.get(Calendar.DAY_OF_MONTH) + "/" + g.get(Calendar.MONTH) + "/"
+				+ g.get(Calendar.YEAR) + " " + g.get(Calendar.HOUR_OF_DAY)
+				+ ":" + g.get(Calendar.MINUTE);
+	}
+
 	@Override
 	public String toString() {
 		// dateTime (AAAA-MM-DDThh:mm:ssZ)
