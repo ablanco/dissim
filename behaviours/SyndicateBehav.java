@@ -57,8 +57,10 @@ public class SyndicateBehav extends CyclicBehaviour {
 	@Override
 	public void action() {
 		MessageTemplate mt = MessageTemplate.and(MessageTemplate.or(
-				MessageTemplate.MatchConversationId("syndicate-visor"),
-				MessageTemplate.MatchConversationId("syndicate-kml")),
+				MessageTemplate.or(MessageTemplate
+						.MatchConversationId("syndicate-visor"),
+						MessageTemplate.MatchConversationId("syndicate-kml")),
+				MessageTemplate.MatchConversationId("syndicate-statistics")),
 				MessageTemplate.or(MessageTemplate
 						.MatchPerformative(ACLMessage.SUBSCRIBE),
 						MessageTemplate.MatchPerformative(ACLMessage.CANCEL)));

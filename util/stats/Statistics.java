@@ -31,15 +31,17 @@ import util.Updateable;
 public class Statistics implements Updateable {
 
 	private Snapshot snap = null;
-	private CsvWriter csv= null;
+	private CsvWriter csv = null;
 	/**
 	 * Orden de Columnas
 	 */
-	private final String[] colums = new String[] {"Still Running","Are Dead","Are Saved","Current Time"};
+	private final String[] colums = new String[] { "Still Running", "Are Dead",
+			"Are Saved", "Current Time" };
 
 	@Override
 	public void finish() {
-		csv.close();
+		if (csv != null)
+			csv.close();
 	}
 
 	@Override
@@ -53,10 +55,10 @@ public class Statistics implements Updateable {
 		int returnVal = fc.showSaveDialog(null);
 		// Pedimos al usuario que nos diga dónde guardar el fichero
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();		
+			File file = fc.getSelectedFile();
 			// Escribimos el kml
 			csv = new CsvWriter(file.getPath());
-			//Creo las Columnas
+			// Creo las Columnas
 			try {
 				csv.writeRecord(colums);
 			} catch (IOException e) {
@@ -65,7 +67,6 @@ public class Statistics implements Updateable {
 		} else {
 			// TODO Cancelado el guardar, la estadistica se pierde
 		}
-		
 	}
 
 	@Override
@@ -74,20 +75,19 @@ public class Statistics implements Updateable {
 			throw new IllegalArgumentException(
 					"The argument isn't a Snapshot instance");
 
-		// Sólo se considera el estado final de la simulación
-		snap = (Snapshot) obj;
-		
-		if (snap == null)
+		if (obj == null || csv == null)
 			return; // Nada que procesar
 
+		snap = (Snapshot) obj;
+
 		List<Pedestrian> people = snap.getPeople();
-		
-		int alive =0;
+
+		int alive = 0;
 		int dead = 0;
 		int safe = 0;
 		String time = snap.getDateTime().toString();
 		for (Pedestrian p : people) {
-			//Por cada pedestrian averiguamos su estado
+			// Por cada pedestrian averiguamos su estado
 			switch (p.getStatus()) {
 			case Pedestrian.DEAD:
 				dead++;
@@ -100,11 +100,11 @@ public class Statistics implements Updateable {
 				break;
 			default:
 				break;
-			}			
+			}
 		}
 		try {
-			//Escribimos esta fila, respetando el orden
-			csv.write(String.valueOf(alive));		
+			// Escribimos esta fila, respetando el orden
+			csv.write(String.valueOf(alive));
 			csv.write(String.valueOf(dead));
 			csv.write(String.valueOf(safe));
 			csv.write(time);
