@@ -11,11 +11,11 @@ public class OsmEdge {
 	/**
 	 * Dentro de un Box
 	 */
-	public static final int In = 0;
+	public static final int In = 1;
 	/**
 	 * Fuera de un Box
 	 */
-	public static final int Out = 1;
+	public static final int Out = 0;
 	/**
 	 * Corta al Box estan el borde A dentro
 	 */
@@ -28,22 +28,21 @@ public class OsmEdge {
 	/**
 	 * Coordenada inicial [y,x]
 	 */
-	private LatLng a;
+	private OsmNode nodeA;
+	private OsmNode nodeB;
 	/**
 	 * Coordenada final [y,x]
 	 */
-	private LatLng b;
 	private double alpha;
 	private double beta;
 	private double[] v;
 
-	public OsmEdge(OsmNode na, OsmNode nb) {
-		this(na.getCoord(), nb.getCoord());
-	}
+	public OsmEdge(OsmNode nA, OsmNode nB) {
+		this.nodeA = nA;
+		this.nodeB = nB;		
 
-	public OsmEdge(LatLng a, LatLng b) {
-		this.a = a;
-		this.b = b;
+		LatLng a = nA.getCoord();
+		LatLng b = nB.getCoord();
 
 		Eqn eqn = new Eqn(a, b);
 		double sol[] = eqn.solve();
@@ -84,6 +83,14 @@ public class OsmEdge {
 	}
 
 	// gets y sets
+	public OsmNode getNodeA(){
+		return nodeA;
+	}
+	
+	public OsmNode getNodeB() {
+		return nodeB;
+	}
+	
 	/**
 	 * Dado una latitud, resuelve la ecuacion y=alpha * x + beta
 	 * 
@@ -121,13 +128,35 @@ public class OsmEdge {
 	 * @return
 	 */
 	public int cutType(LatLngBox box) {
-		if (box.contains(a) && box.contains(b))
+		if (box.contains(nodeA) && box.contains(nodeB))
 			return In;
-		if (box.contains(a))
+		if (box.contains(nodeA))
 			return Cuts_A;
-		if (box.contains(b))
+		if (box.contains(nodeB))
 			return Cuts_B;
 		return Out;
+	}
+	//Metodos
+	
+	/**
+	 * Devuelve El nodo que corta al box, el Nodo A o null si los dos estan fuera
+	 */
+	public OsmNode getCutNode(LatLngBox box){
+		switch (cutType(box)) {
+		case Cuts_A:
+			//nodeA esta dentro, devuelvo B
+			return cutOff(box).getNodeB();
+		case Cuts_B:
+			//nodeB esta dentro, devuelvo A
+			return cutOff(box).getNodeA();
+		case In:
+			return nodeA;
+		case Out:
+		default:
+			return null;
+		}
+			
+		
 	}
 
 	/**
@@ -138,67 +167,71 @@ public class OsmEdge {
 	 * @return
 	 */
 	public OsmEdge cutOff(LatLngBox box) {
-		LatLng cut = null;
-		LatLng out = a;
+		OsmNode cut = nodeB.clone();
 		// Averiguamos cual de las dos esta fuera
-		if (box.contains(a)) {
-			out = b;
+		if (box.contains(nodeB)) {
+			cut = nodeA.clone();
 		}
-		switch (box.absoluteBoxPosition(out)) {
+		switch (box.absoluteBoxPosition(cut)) {
 		case LatLngBox.ABOVE:
-			cut = getX(box.getNw());
+			cut.setCoord(getX(box.getNw()));
 			break;
 		case LatLngBox.ABOVE_RIGHT:
-			cut = getX(box.getNw());
-			if (cut.isRigthOf(box.getSe())) {
+			cut.setCoord(getX(box.getNw()));
+			if (cut.getCoord().isRigthOf(box.getSe())) {
 				// Corta por encima de la lat maxima
-				cut = getY(box.getSe());
+				cut.setCoord(getY(box.getSe()));
 			}
 			break;
 		case LatLngBox.RIGHT:
-			cut = getY(box.getSe());
+			cut.setCoord(getY(box.getSe()));
 			break;
 		case LatLngBox.BELOW_RIGHT:
-			cut = getY(box.getSe());
-			if (cut.isBelowOf(box.getSe())) {
+			cut.setCoord(getY(box.getSe()));
+			if (cut.getCoord().isBelowOf(box.getSe())) {
 				// Corta por debajo de la lng minims
-				cut = getX(box.getSe());
+				cut.setCoord(getX(box.getSe()));
 			}
 			break;
 		case LatLngBox.BELOW:
-			cut = getX(box.getSe());
+			cut.setCoord(getX(box.getSe()));
 			break;
 		case LatLngBox.BELOW_LEFT:
-			cut = getY(box.getNw());
-			if (cut.isBelowOf(box.getSe())) {
+			cut.setCoord(getY(box.getNw()));
+			if (cut.getCoord().isBelowOf(box.getSe())) {
 				// Corta por debajo de la lng minima
-				cut = getX(box.getSe());
+				cut.setCoord(getX(box.getSe()));
 			}
 			break;
 		case LatLngBox.LEFT:
-			cut = getY(box.getNw());
+			cut.setCoord(getY(box.getNw()));
 			break;
 		case LatLngBox.ABOVE_LEFT:
-			cut = getY(box.getNw());
-			if (cut.isAboveOf(box.getNw())) {
+			cut.setCoord(getY(box.getNw()));
+			if (cut.getCoord().isAboveOf(box.getNw())) {
 				// Corta por encima de la lat maxima
-				cut = getX(box.getNw());
+				cut.setCoord(getX(box.getNw()));
 			}
 			break;
+		case LatLngBox.IN:
+			return new OsmEdge(nodeA,nodeB);
 		default:
-			// Si se llega aqui es porque es in, y eso no deberia pasar
+			//No deberia llegar aqui
 			return null;
 		}
 
 		// Mantenemos la direccion A -> B de la arista
-		if (box.contains(a)) {
-			return new OsmEdge(a, cut);
+		if (box.contains(nodeA)) {
+			return new OsmEdge(nodeA, cut);
 		} else {
-			return new OsmEdge(cut, b);
+			return new OsmEdge(cut, nodeB);
 		}
 	}
 
 	// metodos
+	public LatLng next(OsmNode curr, LatLngBox box) {
+		return next(curr.getCoord(), box);
+	}
 	/**
 	 * Nos da el siguiente punto correspondiente a la recta, segun los
 	 * incrementos marcados por el box
@@ -226,7 +259,8 @@ public class OsmEdge {
 
 	public List<LatLng> getLine(LatLngBox box) {
 		List<LatLng> list = new ArrayList<LatLng>();
-		LatLng curr = a;
+		LatLng curr = nodeA.getCoord();
+		LatLng b = nodeB.getCoord();
 		// System.err.println("Linea de " + this);
 		while (!box.closeTo(curr, b)) {
 			// System.err.println("osmEdge "+curr+"->"+b);
@@ -248,7 +282,7 @@ public class OsmEdge {
 
 	@Override
 	public String toString() {
-		return "A: " + a + ", B: " + b + ", (" + alpha + "," + beta + "), ("
+		return "A: " + nodeA + ", B: " + nodeB + ", (" + alpha + "," + beta + "), ("
 				+ v[0] + "," + v[1] + ")";
 		// return "A: " + a + ", B: " + b;
 		// return "y=x"+alpha+"+"+beta;

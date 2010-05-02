@@ -8,7 +8,7 @@ import org.w3c.dom.Node;
 
 import util.jcoord.LatLng;
 
-public class OsmNode implements Comparable<OsmNode> {
+public class OsmNode implements Comparable<OsmNode>, Cloneable {
 	protected long id;
 	protected LatLng coord;
 	protected List<OsmTag> tags;
@@ -18,6 +18,11 @@ public class OsmNode implements Comparable<OsmNode> {
 
 	private OsmNode(long id) {
 		this.id = id;
+		tags = new ArrayList<OsmTag>();
+	}
+	
+	public OsmNode(LatLng c){
+		coord = c;
 		tags = new ArrayList<OsmTag>();
 	}
 
@@ -83,11 +88,22 @@ public class OsmNode implements Comparable<OsmNode> {
 
 	@Override
 	public String toString() {
-		String result = "Node Id: " + id + ": "+coord.toString() + ", ";
+		String result = "Node Id: " + id + ": "+coord.toString();
 		for (OsmTag tag : tags) {
-			result += tag.toString() + " ";
+			result += ", "+ tag.toString();
 		}
 		return result;
+	}
+	
+	@Override
+	protected OsmNode clone(){		
+		OsmNode n = new OsmNode(id);
+		n.setCoord(new LatLng(coord.getLat(), coord.getLng(), coord.getAltitude()));
+		n.setType(type);
+		for (OsmTag t : tags){
+			n.addTag(t);
+		}
+		return n;
 	}
 
 	public static OsmNode getNode(Node node) {

@@ -3,7 +3,6 @@ package osm;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.w3c.dom.Node;
 
@@ -87,6 +86,15 @@ public class OsmWay implements Comparable<OsmWay> {
 		}
 		return false;
 	}
+	
+	protected boolean addAllToWay(List<OsmNode> nodes) {
+		if (nodes.isEmpty())
+		return false;
+		for (OsmNode node : nodes){
+			addToWay(node);
+		}
+		return true;
+	}
 
 	private boolean addTag(OsmTag tag) {
 		if (tag != null) {
@@ -108,6 +116,39 @@ public class OsmWay implements Comparable<OsmWay> {
 
 	public List<OsmNode> getWay() {
 		return way;
+	}
+
+	public OsmNode getFirstNode() {
+		if (!way.isEmpty()) {
+			return way.get(0);
+		}
+		return null;
+	}
+
+	/**
+	 * Devuelve la lista de nodos en orden inverso
+	 * 
+	 * @return
+	 */
+	public List<OsmNode> getReverseWay() {
+		List<OsmNode> reverse = new ArrayList<OsmNode>();
+		for (int i = way.size() - 1; i >= 0; i--) {
+			reverse.add(way.get(i));
+		}
+		return reverse;
+	}
+
+	/**
+	 * Devuelve la lista de aristas en orden inverso
+	 * 
+	 * @return
+	 */
+	public List<OsmEdge> getReverseEdge() {
+		List<OsmEdge> reverse = new ArrayList<OsmEdge>();
+		for (int i = edges.size() - 1; i >= 0; i--) {
+			reverse.add(edges.get(i));
+		}
+		return reverse;
 	}
 
 	/**
@@ -258,35 +299,59 @@ public class OsmWay implements Comparable<OsmWay> {
 	/**
 	 * Dados dos caminos, los une formando un solo poligono
 	 * 
-	 * @param way2
-	 * @param way3
+	 * @param current
+	 * @param newWay
 	 * @param type
 	 * @return
 	 */
-	public static OsmWay join(OsmWay way2, OsmWay way3, short type,
+	public static OsmWay join(OsmRelation r,
 			LatLngBox gridBox) {
 		// Pegamos todos los de la primera lista
-		System.err.println("Haciendo Join de " + way2.getId() + ", "
-				+ way2.getType() + " con " + way3.getId() + ", "
-				+ way3.getType());
+//		System.err.println("Haciendo Join de "+r);
 		OsmWay osmWay = new OsmWay(-1);
-		for (OsmNode n : way2.getWay()) {
-			if (gridBox.contains(n.getCoord())) {
-				osmWay.addToWay(n);
-			}
+//		OsmNode last = null;
+		for (OsmMember m : r.getMembers()){
+			OsmWay way = m.getWay();
+//			System.err.println("\t"+way);
+//			if (last != null && last.getCoord().distance(way.getFirstNode().getCoord()) < gridBox.getTileSize() * 3){
+//				System.err.println("Reverse Join");
+//				osmWay.addAllToWay(reverseJoin(way, gridBox));
+//			}else{
+//				System.err.println("Normal Join");
+				osmWay.addAllToWay(normalJoin(way, gridBox));
+//			}
+//			last = osmWay.getLastNode();
 		}
-		// Le añadimos los de la segunda lista pero al reves
-		ListIterator<OsmNode> reverseList = way3.getWay().listIterator();
-		while (reverseList.hasPrevious()) {
-			OsmNode prev = reverseList.previous();
-			if (gridBox.contains(prev.getCoord())) {
-				osmWay.addToWay(prev);
-			}
-		}
-		// Unimos el ultimo de la segunda, con el primero de la primera
+		
+		// Cerramos el camino, Unimos el ultimo de la segunda, con el primero de la primera
 		osmWay.addToWay(osmWay.getNode(0));
-		osmWay.setType(type);
+		osmWay.setType(r.getType());
+//		System.err.println("\t Resultado " + osmWay);
 		// Adaptamos el box
 		return osmWay;
 	}
+
+//	private static List<OsmNode> reverseJoin(OsmWay way, LatLngBox gridBox) {
+//		List<OsmNode> reverseList = new ArrayList<OsmNode>();
+//		for (OsmEdge e : way.getReverseEdge()) {
+//			OsmNode n = e.getCutNode(gridBox);
+//			if (n != null) {
+//				reverseList.add(n);
+//			}
+//		}
+//		return reverseList;
+//	}
+
+	
+	private static List<OsmNode> normalJoin(OsmWay way, LatLngBox gridBox) {
+		List<OsmNode> normalList = new ArrayList<OsmNode>();
+		for (OsmEdge e : way.getEdges()) {
+			OsmNode n = e.getCutNode(gridBox);
+			if (n != null) {
+				normalList.add(n);
+			}
+		}
+		return normalList;
+	}
+
 }

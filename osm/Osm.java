@@ -203,7 +203,7 @@ public class Osm {
 				// System.err.println("Escribiendo en " + p + " el valor " +
 				// type);
 				grid.setStreetValue(p, (short) (type + 1));
-			} catch (Exception e) {
+			} catch (ArrayIndexOutOfBoundsException e) {
 				System.err
 						.println("Se ha producido un error al intentar insertar "
 								+ p + ", del tipo " + (type + 1));
@@ -217,7 +217,7 @@ public class Osm {
 				// System.err.println("Escribiendo en " + p + " el valor " +
 				// type);
 				grid.setStreetValue(p, type);
-			} catch (Exception e) {
+			} catch (ArrayIndexOutOfBoundsException e) {
 				System.err
 						.println("Se ha producido un error al intentar insertar "
 								+ p + ", del tipo " + type);
@@ -267,10 +267,19 @@ public class Osm {
 		if (w.isClosedLine() && !isRoad(type)) {
 //			System.err.println("Detectada linea cerrada " + w.getBox() + ", "
 //					+ w.getWay());
-
-			Point nW = grid.coordToTile(w.getBox().getNw());
-			Point sE = grid.coordToTile(w.getBox().getSe());
-			
+			Point nW;
+			Point sE;
+			// A veces me salgo ... para esos momentos ...
+//			try{
+			nW = grid.coordToTile(w.getBox().getNw());
+//			}catch (ArrayIndexOutOfBoundsException e) {
+//				nW = new Point(0+grid.getOffCol(),0+grid.getOffRow());
+//			}
+//			try{
+				sE = grid.coordToTile(w.getBox().getSe());
+//			}catch (ArrayIndexOutOfBoundsException e) {
+//				sE = new Point(grid.getColumns()+grid.getOffCol(), grid.getRows()+grid.getOffRow());
+//			}
 			for (int col = nW.getCol(); col <= sE.getCol(); col++) {
 				for (int row = nW.getRow(); row <= sE.getRow(); row++) {
 					Point p = new Point(col, row);
@@ -285,9 +294,8 @@ public class Osm {
 	}
 
 	public static void setStreetValue(OsmRelation r, HexagonalGrid grid) {
-		for (OsmWay joins : r.matchMembers(grid.getBox())){
-			setStreetValue(joins, grid);
-		}
+		OsmWay way = OsmWay.join(r, grid.getBox());
+			setStreetValue(way, grid);
 	}
 
 	/**

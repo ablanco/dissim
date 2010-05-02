@@ -2,6 +2,8 @@ package util.jcoord;
 
 import java.io.Serializable;
 
+import osm.OsmEdge;
+import osm.OsmNode;
 import osm.OsmWay;
 
 public class LatLngBox implements Serializable {
@@ -61,6 +63,22 @@ public class LatLngBox implements Serializable {
 		return tileSize;
 	}
 
+	/**
+	 * Given a OsmNode Returns IN, ABOVE, ABOVE_RIGHT, RIGHT, BELOW_RIGHT, BELOW,
+	 * BELOW_LEFT, LEFT, ABOVE_LEFT
+	 * @param n
+	 * @return
+	 */
+	public int absoluteBoxPosition(OsmNode n){
+		return absoluteBoxPosition(n.getCoord());
+	}
+	/**
+	 * Given a Latlng Returns IN, ABOVE, ABOVE_RIGHT, RIGHT, BELOW_RIGHT, BELOW,
+	 * BELOW_LEFT, LEFT, ABOVE_LEFT
+	 * 
+	 * @param c
+	 * @return
+	 */
 	public int absoluteBoxPosition(LatLng c) {
 		if (c.getLat() > nW.getLat()) {
 			if (c.getLng() < nW.getLng()) {
@@ -160,10 +178,28 @@ public class LatLngBox implements Serializable {
 		return contains(box.getNw()) && contains(box.getSe());
 	}
 
+	/**
+	 * Return true if Latlng is in the box NW, SE
+	 * 
+	 * @param c
+	 * @return
+	 */
 	public boolean contains(LatLng c) {
 		return c.isContainedIn(nW, sE);
 	}
 
+	public boolean contains(OsmNode n) {
+		return contains(n.getCoord());
+	}
+
+	public boolean contains(OsmEdge e){
+		return contains(e.getNodeA()) || contains(e.getNodeB());
+	}
+	
+	public boolean cutsBox(OsmEdge e){
+		return contains(e) && !(contains(e.getNodeA()) && contains(e.getNodeB()));
+	}
+	
 	public boolean isDefined() {
 		return nW != null && sE != null && ilat != 0 && ilng != 0
 				&& tileSize != 0;

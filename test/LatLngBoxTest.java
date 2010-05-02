@@ -1,67 +1,70 @@
 package test;
 
+import osm.OsmEdge;
+import osm.OsmNode;
+import util.jcoord.LatLng;
+import util.jcoord.LatLngBox;
+
 public class LatLngBoxTest {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-//		LatLngBox box = new LatLngBox(new LatLng(3.0, -3.0), new LatLng(-3.0,
-//				3.0), 100000);
+		LatLngBox box = new LatLngBox(new LatLng(3.0, -3.0), new LatLng(-3.0,
+				3.0), 100000);
 
-//		LatLng a = new LatLng(2, -2);
-//		LatLng b = new LatLng(2, 2);
-//		LatLng c = new LatLng(-2, -2);
-//		LatLng d = new LatLng(-2, 2);
-//		LatLng e = new LatLng(5, -4);
-//		LatLng f = new LatLng(4, -5);
-//		LatLng g = new LatLng(5, 4);
-//		LatLng h = new LatLng(4, 5);
-//		LatLng i = new LatLng(-4, 5);
-//		LatLng j = new LatLng(-5, 4);
-//		LatLng k = new LatLng(-5, -4);
-//		LatLng l = new LatLng(-4, -5);
-//		LatLng m = new LatLng(0, -5);
-//		LatLng n = new LatLng(0, 5);
-//		LatLng o = new LatLng(5, 0);
-//		LatLng p = new LatLng(-5, 0);
+		OsmNode a = new OsmNode(new LatLng(2, -2));
+		OsmNode b = new OsmNode(new LatLng(2, 2));
+		OsmNode c = new OsmNode(new LatLng(-2, -2));
+		OsmNode d = new OsmNode(new LatLng(-2, 2));
+		OsmNode e = new OsmNode(new LatLng(5, -4));
+		OsmNode f = new OsmNode(new LatLng(4, -5));
+		OsmNode g = new OsmNode(new LatLng(5, 4));
+		OsmNode h = new OsmNode(new LatLng(4, 5));
+		OsmNode i = new OsmNode(new LatLng(-4, 5));
+		OsmNode j = new OsmNode(new LatLng(-5, 4));
+		OsmNode k = new OsmNode(new LatLng(-5, -4));
+		OsmNode l = new OsmNode(new LatLng(-4, -5));
+		OsmNode m = new OsmNode(new LatLng(0, -5));
+		OsmNode n = new OsmNode(new LatLng(0, 5));
+		OsmNode o = new OsmNode(new LatLng(5, 0));
+		OsmNode p = new OsmNode(new LatLng(-5, 0));
 
-//		OsmEdge ab = new OsmEdge(a, b);
-//		OsmEdge ba = new OsmEdge(b, a);
-//		OsmEdge bd = new OsmEdge(b, d);
-//		OsmEdge db = new OsmEdge(d, b);
-//		OsmEdge dc = new OsmEdge(d, c);
-//		OsmEdge cd = new OsmEdge(c, d);
-//		OsmEdge ac = new OsmEdge(a, c);
-//		OsmEdge ca = new OsmEdge(c, a);
-//		OsmEdge ae = new OsmEdge(a, e);
-//		OsmEdge ea = new OsmEdge(e, a);
-//		OsmEdge af = new OsmEdge(a, f);
-//		OsmEdge fa = new OsmEdge(f, a);
-//		OsmEdge ao = new OsmEdge(a, o);
-//		OsmEdge bg = new OsmEdge(b, g);
-//		OsmEdge bh = new OsmEdge(b, h);
-//		OsmEdge bn = new OsmEdge(b, n);
-//		OsmEdge cl = new OsmEdge(c, l);
-//		OsmEdge ck = new OsmEdge(c, k);
-//		OsmEdge dj = new OsmEdge(d, j);
-//		OsmEdge di = new OsmEdge(d, i);
-//		OsmEdge dp = new OsmEdge(d, p);
-//		OsmEdge dn = new OsmEdge(d, n);
-//		OsmEdge ce = new OsmEdge(c, e);
-//		OsmEdge cf = new OsmEdge(c, f);
+		OsmEdge ab = new OsmEdge(a, b);
+		OsmEdge ba = new OsmEdge(b, a);
+		OsmEdge bd = new OsmEdge(b, d);
+		OsmEdge db = new OsmEdge(d, b);
+		OsmEdge dc = new OsmEdge(d, c);
+		OsmEdge cd = new OsmEdge(c, d);
+		OsmEdge ac = new OsmEdge(a, c);
+		OsmEdge ca = new OsmEdge(c, a);
+		OsmEdge ae = new OsmEdge(a, e);
+		OsmEdge ea = new OsmEdge(e, a);
+		OsmEdge af = new OsmEdge(a, f);
+		OsmEdge fa = new OsmEdge(f, a);
+		OsmEdge ao = new OsmEdge(a, o);
+		OsmEdge bg = new OsmEdge(b, g);
+		OsmEdge bh = new OsmEdge(b, h);
+		OsmEdge bn = new OsmEdge(b, n);
+		OsmEdge cl = new OsmEdge(c, l);
+		OsmEdge ck = new OsmEdge(c, k);
+		OsmEdge dj = new OsmEdge(d, j);
+		OsmEdge di = new OsmEdge(d, i);
+		OsmEdge dp = new OsmEdge(d, p);
+		OsmEdge dn = new OsmEdge(d, n);
+		OsmEdge ce = new OsmEdge(c, e);
+		OsmEdge cf = new OsmEdge(c, f);
 
-		// Probando Next
-		// System.err.println(ab);
-		// System.err.println(ba);
-		// System.err.println(ab + " next: " + ab.next(a, box));
-		// System.err.println(ba + " next: " + ba.next(b, box));
-		// System.err.println(bd + " next: " + bd.next(b, box));
-		// System.err.println(db + " next: " + db.next(d, box));
-		// System.err.println(dc + " next: " + dc.next(d, box));
-		// System.err.println(cd + " next: " + cd.next(c, box));
-		// System.err.println(ca + " next: " + ca.next(c, box));
-		// System.err.println(ac + " next: " + ac.next(a, box));
+		System.err.println("*********Probando Next");
+		 System.err.println(ab + " next:\n\t " + ab.next(a, box));
+		 System.err.println(ba + " next:\n\t " + ba.next(b, box));
+		 System.err.println(bd + " next:\n\t " + bd.next(b, box));
+		 System.err.println(db + " next:\n\t " + db.next(d, box));
+		 System.err.println(dc + " next:\n\t " + dc.next(d, box));
+		 System.err.println(cd + " next:\n\t " + cd.next(c, box));
+		 System.err.println(ca + " next:\n\t " + ca.next(c, box));
+		 System.err.println(ac + " next:\n\t " + ac.next(a, box));
 
 		// Probando Lineas
 		// System.err.println("linea "+ae+", " + ae.getLine(box));
@@ -126,49 +129,49 @@ public class LatLngBoxTest {
 //		 System.err.println("\t" + box.absoluteBoxPosition(c));
 //		 System.err.println("\t" + box.absoluteBoxPosition(d));
 
-		// Probando puntos de corte
-//		 System.err.println(LatLngBox.Above);
-//		 OsmEdge ob = new OsmEdge(o, b);
-//		 System.err.println("\t"+ao + " corta " + ao.cutOff(box));
-//		 System.err.println("\t"+ob + " corta " + ob.cutOff(box));
-//				
-//		 System.err.println(LatLngBox.Rigth);
-//		 OsmEdge nd = new OsmEdge(n, d);
-//		 System.err.println("\t"+bn + " corta " + bn.cutOff(box));
-//		 System.err.println("\t"+nd + " corta " + nd.cutOff(box));
-//		 System.err.println("\t"+dn + " corta " + dn.cutOff(box));
-//		
-//		 System.err.println(LatLngBox.Below);
-//		 OsmEdge pc = new OsmEdge(p, c);
-//		 System.err.println("\t"+dp + " corta " + dp.cutOff(box));
-//		 System.err.println("\t"+pc + " corta " + pc.cutOff(box));
-//				
-//		 System.err.println(LatLngBox.Left);
-//		 OsmEdge cm = new OsmEdge(c, m);
-//		 OsmEdge ma = new OsmEdge(m, a);
-//		 System.err.println("\t"+cm + " corta " + cm.cutOff(box));
-//		 System.err.println("\t"+ma + " corta " + ma.cutOff(box));
-//		
-//				
-//		 System.err.println(LatLngBox.Above_Left);
-//		 System.err.println("\t"+af + " corta " + af.cutOff(box));
-//		 System.err.println("\t"+ea + " corta " + ea.cutOff(box));
-//				
-//		 System.err.println(LatLngBox.Above_Rigth);
-//		 OsmEdge hb = new OsmEdge(h, b);
-//		 System.err.println("\t"+bg + " corta " + bg.cutOff(box));
-//		 System.err.println("\t"+hb + " corta " + hb.cutOff(box));
-//				
-//		
-//		 System.err.println(LatLngBox.Below_Left);
-//		 OsmEdge kc = new OsmEdge(k, c);
-//		 System.err.println("\t"+cl + " corta " + cl.cutOff(box));
-//		 System.err.println("\t"+kc + " corta " + kc.cutOff(box));
-//				
-//		 System.err.println(LatLngBox.Below_Rigth);
-//		 OsmEdge jd = new OsmEdge(j, d);
-//		 System.err.println("\t"+di + " corta " + di.cutOff(box));
-//		 System.err.println("\t"+jd + " corta " + jd.cutOff(box));
+		System.err.println("***********Probando puntos de corte");
+		 System.err.println(LatLngBox.ABOVE);
+		 OsmEdge ob = new OsmEdge(o, b);
+		 System.err.println(ao + " corta\n\t " + ao.getCutNode(box));
+		 System.err.println(ob + " corta\n\t " + ob.getCutNode(box));
+				
+		 System.err.println(LatLngBox.RIGHT);
+		 OsmEdge nd = new OsmEdge(n, d);
+		 System.err.println(bn + " corta\n\t " + bn.getCutNode(box));
+		 System.err.println(nd + " corta\n\t " + nd.getCutNode(box));
+		 System.err.println(dn + " corta\n\t " + dn.getCutNode(box));
+		
+		 System.err.println(LatLngBox.BELOW);
+		 OsmEdge pc = new OsmEdge(p, c);
+		 System.err.println(dp + " corta\n\t " + dp.getCutNode(box));
+		 System.err.println(pc + " corta\n\t " + pc.getCutNode(box));
+				
+		 System.err.println(LatLngBox.LEFT);
+		 OsmEdge cm = new OsmEdge(c, m);
+		 OsmEdge ma = new OsmEdge(m, a);
+		 System.err.println(cm + " corta\n\t " + cm.getCutNode(box));
+		 System.err.println(ma + " corta\n\t " + ma.getCutNode(box));
+		
+				
+		 System.err.println(LatLngBox.ABOVE_LEFT);
+		 System.err.println(af + " corta\n\t " + af.getCutNode(box));
+		 System.err.println(ea + " corta\n\t " + ea.getCutNode(box));
+				
+		 System.err.println(LatLngBox.ABOVE_RIGHT);
+		 OsmEdge hb = new OsmEdge(h, b);
+		 System.err.println(bg + " corta\n\t " + bg.getCutNode(box));
+		 System.err.println(hb + " corta\n\t " + hb.getCutNode(box));
+				
+		
+		 System.err.println(LatLngBox.BELOW_LEFT);
+		 OsmEdge kc = new OsmEdge(k, c);
+		 System.err.println(cl + " corta\n\t " + cl.getCutNode(box));
+		 System.err.println(kc + " corta\n\t " + kc.getCutNode(box));
+				
+		 System.err.println(LatLngBox.BELOW_RIGHT);
+		 OsmEdge jd = new OsmEdge(j, d);
+		 System.err.println(di + " corta\n\t " + di.getCutNode(box));
+		 System.err.println(jd + " corta\n\t " + jd.getCutNode(box));
 
 		// Probando interseccion de box
 //		 LatLngBox box1 = new LatLngBox(new LatLng(4.0, -4.0), new LatLng(-4.0,
