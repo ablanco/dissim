@@ -1,13 +1,11 @@
 package util.elevation;
 
-import util.Scenario;
+import util.HexagonalGrid;
 
 public class Elevation {
-	/**
-	 * Obtiene y escribe las alturas para el escenario scene
-	 * @param scene
-	 */
-	public static void getElevation(Scenario scene){
-		
+
+	public static void getElevations(HexagonalGrid grid, String server,
+			int port, String user, String pass) {
+
 	}
 }
