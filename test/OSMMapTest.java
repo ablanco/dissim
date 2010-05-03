@@ -32,8 +32,12 @@ public class OSMMapTest {
 		// Coordenadas centro ciudad
 //		 NW = new LatLng(29.953, -90.088, (short)10);
 //		 SE =new LatLng( 29.940, -90.070, (short)10);
+		 
+		 //Coordenadas con MAR
+		 NW = new LatLng(30.030250, -90.180854);
+		 SE = new LatLng(30.012607, -90.118953);
 
-		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 10);
+		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 60);
 
 		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
 		Snapshot snapShot = new Snapshot("OSMMapTest", "", grid,

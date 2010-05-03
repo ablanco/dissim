@@ -270,16 +270,16 @@ public class Osm {
 			Point nW;
 			Point sE;
 			// A veces me salgo ... para esos momentos ...
-//			try{
+			try{
 			nW = grid.coordToTile(w.getBox().getNw());
-//			}catch (ArrayIndexOutOfBoundsException e) {
-//				nW = new Point(0+grid.getOffCol(),0+grid.getOffRow());
-//			}
-//			try{
+			}catch (ArrayIndexOutOfBoundsException e) {
+				nW = new Point(0+grid.getOffCol(),0+grid.getOffRow());
+			}
+			try{
 				sE = grid.coordToTile(w.getBox().getSe());
-//			}catch (ArrayIndexOutOfBoundsException e) {
-//				sE = new Point(grid.getColumns()+grid.getOffCol(), grid.getRows()+grid.getOffRow());
-//			}
+			}catch (ArrayIndexOutOfBoundsException e) {
+				sE = new Point(grid.getColumns()+grid.getOffCol(), grid.getRows()+grid.getOffRow());
+			}
 			for (int col = nW.getCol(); col <= sE.getCol(); col++) {
 				for (int row = nW.getRow(); row <= sE.getRow(); row++) {
 					Point p = new Point(col, row);

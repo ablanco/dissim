@@ -244,10 +244,10 @@ public class OsmWay implements Comparable<OsmWay> {
 		for (OsmTag tag : tags) {
 			result.append(tag.toString() + ", ");
 		}
-		result.append("\n\t Nodes: ");
-		for (OsmNode n : way) {
-			result.append(n.toString() + ", ");
-		}
+//		result.append("\n\t Nodes: ");
+//		for (OsmNode n : way) {
+//			result.append(n.toString() + ", ");
+//		}
 
 		return result.toString();
 	}
@@ -307,7 +307,7 @@ public class OsmWay implements Comparable<OsmWay> {
 	public static OsmWay join(OsmRelation r,
 			LatLngBox gridBox) {
 		// Pegamos todos los de la primera lista
-//		System.err.println("Haciendo Join de "+r);
+		System.err.println("Haciendo Join de "+r);
 		OsmWay osmWay = new OsmWay(-1);
 //		OsmNode last = null;
 		for (OsmMember m : r.getMembers()){
@@ -317,7 +317,7 @@ public class OsmWay implements Comparable<OsmWay> {
 //				System.err.println("Reverse Join");
 //				osmWay.addAllToWay(reverseJoin(way, gridBox));
 //			}else{
-//				System.err.println("Normal Join");
+				System.err.println("Normal Join "+way);
 				osmWay.addAllToWay(normalJoin(way, gridBox));
 //			}
 //			last = osmWay.getLastNode();
@@ -326,21 +326,22 @@ public class OsmWay implements Comparable<OsmWay> {
 		// Cerramos el camino, Unimos el ultimo de la segunda, con el primero de la primera
 		osmWay.addToWay(osmWay.getNode(0));
 		osmWay.setType(r.getType());
-//		System.err.println("\t Resultado " + osmWay);
+		System.err.println("Resultado " + osmWay);
 		// Adaptamos el box
 		return osmWay;
 	}
 
-//	private static List<OsmNode> reverseJoin(OsmWay way, LatLngBox gridBox) {
-//		List<OsmNode> reverseList = new ArrayList<OsmNode>();
-//		for (OsmEdge e : way.getReverseEdge()) {
-//			OsmNode n = e.getCutNode(gridBox);
-//			if (n != null) {
-//				reverseList.add(n);
-//			}
-//		}
-//		return reverseList;
-//	}
+	@SuppressWarnings("unused")
+	private static List<OsmNode> reverseJoin(OsmWay way, LatLngBox gridBox) {
+		List<OsmNode> reverseList = new ArrayList<OsmNode>();
+		for (OsmEdge e : way.getReverseEdge()) {
+			OsmNode n = e.getCutNode(gridBox);
+			if (n != null) {
+				reverseList.add(n);
+			}
+		}
+		return reverseList;
+	}
 
 	
 	private static List<OsmNode> normalJoin(OsmWay way, LatLngBox gridBox) {
