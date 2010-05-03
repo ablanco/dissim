@@ -56,6 +56,10 @@ This software uses code from OpenWFE project (http://sourceforge.net/projects/op
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
 
+This software uses code from Java CSV project (http://sourceforge.net/projects/javacsv/), which is under a LGPLv2 license.
+
+    Copyright (C) Bruce Dunwiddie bruce@csvreader.com
+
 ############
 # WEBSITES #
 ############

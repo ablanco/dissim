@@ -30,13 +30,16 @@ import util.Updateable;
 
 public class Statistics implements Updateable {
 
-	private Snapshot snap = null;
 	private CsvWriter csv = null;
+	private int lastAlive = 0;
+	private int lastDead = 0;
+	private int lastSafe = 0;
+
 	/**
 	 * Orden de Columnas
 	 */
-	private final String[] colums = new String[] { "Still Running", "Are Dead",
-			"Are Saved", "Current Time" };
+	private final String[] colums = new String[] { "Current Time", "Alive",
+			"Dead", "Safe" };
 
 	@Override
 	public void finish() {
@@ -56,9 +59,12 @@ public class Statistics implements Updateable {
 		// Pedimos al usuario que nos diga dónde guardar el fichero
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = fc.getSelectedFile();
-			// Escribimos el kml
-			csv = new CsvWriter(file.getPath());
-			// Creo las Columnas
+			String path = file.getAbsolutePath();
+			if (!path.endsWith(".csv"))
+				path += ".csv";
+			// Creamos el escritor de CSV
+			csv = new CsvWriter(path);
+			// Escribimos el nombre de las columnas
 			try {
 				csv.writeRecord(colums);
 			} catch (IOException e) {
@@ -78,14 +84,12 @@ public class Statistics implements Updateable {
 		if (obj == null || csv == null)
 			return; // Nada que procesar
 
-		snap = (Snapshot) obj;
-
+		Snapshot snap = (Snapshot) obj;
 		List<Pedestrian> people = snap.getPeople();
-
 		int alive = 0;
 		int dead = 0;
 		int safe = 0;
-		String time = snap.getDateTime().toOooDate();
+
 		for (Pedestrian p : people) {
 			// Por cada pedestrian averiguamos su estado
 			switch (p.getStatus()) {
@@ -98,19 +102,34 @@ public class Statistics implements Updateable {
 			case Pedestrian.SAFE:
 				safe++;
 				break;
-			default:
-				break;
 			}
 		}
-		try {
-			// Escribimos esta fila, respetando el orden
-			csv.write(String.valueOf(alive));
-			csv.write(String.valueOf(dead));
-			csv.write(String.valueOf(safe));
-			csv.write(time);
-			csv.endRecord();
-		} catch (IOException e) {
-			e.printStackTrace();
+
+		boolean newData = false;
+		if (lastAlive != alive) {
+			lastAlive = alive;
+			newData = true;
+		}
+		if (lastDead != dead) {
+			lastDead = dead;
+			newData = true;
+		}
+		if (lastSafe != safe) {
+			lastSafe = safe;
+			newData = true;
+		}
+
+		if (newData) {
+			try {
+				// Escribimos esta fila, respetando el orden
+				csv.write(snap.getDateTime().toOooDate());
+				csv.write(String.valueOf(alive));
+				csv.write(String.valueOf(dead));
+				csv.write(String.valueOf(safe));
+				csv.endRecord();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
