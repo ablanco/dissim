@@ -1,4 +1,4 @@
-package util.elevation;
+package elevation;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +11,6 @@ import util.HexagonalGrid;
 import util.Point;
 import util.Scenario;
 import util.jcoord.LatLng;
-import webservices.AltitudeWS;
 
 public class Elevation {
 
@@ -45,7 +44,7 @@ public class Elevation {
 					value = (short) getPointAltitude(rs);
 				} else {
 					// No existen datos en nuestra base de datos
-					double elev = AltitudeWS.getElevation(coord);
+					double elev = ElevationWS.getElevation(coord);
 					// Los añadimos
 					executeSqlQuery(con, insertNewElevation(coord, elev));
 					value = Scenario.doubleToInner(grid.getPrecision(), elev);

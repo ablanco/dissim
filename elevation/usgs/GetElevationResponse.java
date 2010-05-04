@@ -1,5 +1,5 @@
 
-package webservices.gov.usgs.gisdata.xmlwebservices2;
+package elevation.usgs;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,4 +3,4 @@
  * 
  */
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://gisdata.usgs.gov/XMLWebServices2/", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package webservices.gov.usgs.gisdata.xmlwebservices2;
+package elevation.usgs;

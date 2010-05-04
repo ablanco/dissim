@@ -14,25 +14,26 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package webservices;
+package elevation;
 
 import java.util.List;
 
 import javax.xml.ws.WebServiceException;
 
+import elevation.usgs.ElevationService;
+import elevation.usgs.ElevationServiceSoap;
+import elevation.usgs.GetAllElevationsResponse.GetAllElevationsResult;
+import elevation.usgs.GetElevationResponse.GetElevationResult;
+
 import util.jcoord.LatLng;
-import webservices.gov.usgs.gisdata.xmlwebservices2.ElevationService;
-import webservices.gov.usgs.gisdata.xmlwebservices2.ElevationServiceSoap;
-import webservices.gov.usgs.gisdata.xmlwebservices2.GetAllElevationsResponse.GetAllElevationsResult;
-import webservices.gov.usgs.gisdata.xmlwebservices2.GetElevationResponse.GetElevationResult;
 
 //http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL
 
-public class AltitudeWS {
+public class ElevationWS {
 
 	private static ElevationServiceSoap service = null;
 
-	private AltitudeWS() {
+	private ElevationWS() {
 		// Inaccesible - Clase no instanciable
 	}
 

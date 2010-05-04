@@ -21,8 +21,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
+import elevation.Elevation;
+
 import osm.Osm;
-import util.elevation.Elevation;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
 

@@ -1,5 +1,5 @@
 
-package webservices.gov.usgs.gisdata.xmlwebservices2;
+package elevation.usgs;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,13 +26,13 @@ public class ElevationService
 {
 
     private final static URL ELEVATIONSERVICE_WSDL_LOCATION;
-    private final static Logger logger = Logger.getLogger(webservices.gov.usgs.gisdata.xmlwebservices2.ElevationService.class.getName());
+    private final static Logger logger = Logger.getLogger(elevation.usgs.ElevationService.class.getName());
 
     static {
         URL url = null;
         try {
             URL baseUrl;
-            baseUrl = webservices.gov.usgs.gisdata.xmlwebservices2.ElevationService.class.getResource(".");
+            baseUrl = elevation.usgs.ElevationService.class.getResource(".");
             url = new URL(baseUrl, "http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL");
         } catch (MalformedURLException e) {
             logger.warning("Failed to create URL for the wsdl Location: 'http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL', retrying as a local file");

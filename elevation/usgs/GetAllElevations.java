@@ -1,5 +1,5 @@
 
-package webservices.gov.usgs.gisdata.xmlwebservices2;
+package elevation.usgs;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -21,8 +21,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="X_Value" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="Y_Value" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="Elevation_Units" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="Source_Layer" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="Elevation_Only" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -35,12 +33,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "xValue",
     "yValue",
-    "elevationUnits",
-    "sourceLayer",
-    "elevationOnly"
+    "elevationUnits"
 })
-@XmlRootElement(name = "getElevation")
-public class GetElevation {
+@XmlRootElement(name = "getAllElevations")
+public class GetAllElevations {
 
     @XmlElement(name = "X_Value")
     protected String xValue;
@@ -48,10 +44,6 @@ public class GetElevation {
     protected String yValue;
     @XmlElement(name = "Elevation_Units")
     protected String elevationUnits;
-    @XmlElement(name = "Source_Layer")
-    protected String sourceLayer;
-    @XmlElement(name = "Elevation_Only")
-    protected String elevationOnly;
 
     /**
      * Gets the value of the xValue property.
@@ -123,54 +115,6 @@ public class GetElevation {
      */
     public void setElevationUnits(String value) {
         this.elevationUnits = value;
-    }
-
-    /**
-     * Gets the value of the sourceLayer property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSourceLayer() {
-        return sourceLayer;
-    }
-
-    /**
-     * Sets the value of the sourceLayer property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setSourceLayer(String value) {
-        this.sourceLayer = value;
-    }
-
-    /**
-     * Gets the value of the elevationOnly property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getElevationOnly() {
-        return elevationOnly;
-    }
-
-    /**
-     * Sets the value of the elevationOnly property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setElevationOnly(String value) {
-        this.elevationOnly = value;
     }
 
 }

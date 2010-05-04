@@ -1,5 +1,5 @@
 
-package webservices.gov.usgs.gisdata.xmlwebservices2;
+package elevation.usgs;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -38,7 +38,7 @@ public interface ElevationServiceSoap {
     @WebResult(name = "getElevationResult", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/")
     @RequestWrapper(localName = "getElevation", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/", className = "gov.usgs.gisdata.xmlwebservices2.GetElevation")
     @ResponseWrapper(localName = "getElevationResponse", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/", className = "gov.usgs.gisdata.xmlwebservices2.GetElevationResponse")
-    public webservices.gov.usgs.gisdata.xmlwebservices2.GetElevationResponse.GetElevationResult getElevation(
+    public elevation.usgs.GetElevationResponse.GetElevationResult getElevation(
         @WebParam(name = "X_Value", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/")
         String xValue,
         @WebParam(name = "Y_Value", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/")
@@ -63,7 +63,7 @@ public interface ElevationServiceSoap {
     @WebResult(name = "getAllElevationsResult", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/")
     @RequestWrapper(localName = "getAllElevations", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/", className = "gov.usgs.gisdata.xmlwebservices2.GetAllElevations")
     @ResponseWrapper(localName = "getAllElevationsResponse", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/", className = "gov.usgs.gisdata.xmlwebservices2.GetAllElevationsResponse")
-    public webservices.gov.usgs.gisdata.xmlwebservices2.GetAllElevationsResponse.GetAllElevationsResult getAllElevations(
+    public elevation.usgs.GetAllElevationsResponse.GetAllElevationsResult getAllElevations(
         @WebParam(name = "X_Value", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/")
         String xValue,
         @WebParam(name = "Y_Value", targetNamespace = "http://gisdata.usgs.gov/XMLWebServices2/")
