@@ -22,7 +22,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import sun.jdbc.odbc.JdbcOdbcDriver;
+import javax.xml.ws.WebServiceException;
+
 import util.HexagonalGrid;
 import util.Point;
 import util.Scenario;
@@ -34,11 +35,11 @@ public class Elevation {
 			int port, String user, String pass) {
 
 		try {
-			DriverManager.registerDriver(new JdbcOdbcDriver());
-		} catch (SQLException e) {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// TODO esto peta :(
 		Connection con = getConnection(server, port, user, pass);
 
 		// Ahora recorremos toda la matriz y buscamos/insertamos los valores de
@@ -55,24 +56,41 @@ public class Elevation {
 						ilng));
 				short value = Short.MIN_VALUE;
 
-				if (rs != null) {
-					// Existen datos en nuestra base de datos
-					value = (short) getPointAltitude(rs);
-				} else {
-					// No existen datos en nuestra base de datos
-					double elev = ElevationWS.getElevation(coord);
-					// Los añadimos
-					executeSqlQuery(con, insertNewElevation(coord, elev));
-					value = Scenario.doubleToInner(grid.getPrecision(), elev);
+				try {
+					if (rs.wasNull()) {
+						// Existen datos en nuestra base de datos
+						value = (short) getPointAltitude(rs);
+						System.err.println("En local "+coord+"+ :"+value);
+					} else {
+						// No existen datos en nuestra base de datos
+						double elev = ElevationWS.getElevation(coord);
+						// Los añadimos
+						System.err.println("En remoto "+coord+": "+Double.toString(value));
+						if (!insertNewElevation(con, coord, elev)){
+							System.err.println("No se ha podido insertar "+coord+": "+value);
+						}
+						value = Scenario.doubleToInner(grid.getPrecision(), elev);
+					}
+				} catch (WebServiceException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 
 				grid.setTerrainValue(col, row, value);
 			}
 		}
+		closeConnection(con);
 
+	}
+
+	private static void closeConnection(Connection con) {
 		try {
 			con.close();
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -88,11 +106,14 @@ public class Elevation {
 	 * @return
 	 */
 	private static String getNearPoints(LatLng coord, double ilat, double ilng) {
-		String sql = "SELECT elev FROM dissim_elevations WHERE lat BETWEEN ";
-		sql += coord.getLat() - ilat + " AND " + coord.getLat() + ilat;
+		String sql = "SELECT Elev FROM Elevations WHERE lat BETWEEN ";
+		sql += Double.toString(LatLng.round(coord.getLat() - ilat)) + " AND "
+				+ Double.toString(LatLng.round(coord.getLat() + ilat));
 		sql += " AND ";
 		sql += " lng BETWEEN ";
-		sql += coord.getLng() - ilng + " AND " + coord.getLng() + ilng;
+		sql += Double.toString(LatLng.round(coord.getLng() - ilng)) + " AND "
+				+ Double.toString(LatLng.round(coord.getLng() + ilng));
+//		System.err.println("*******Query: " + sql);
 		return sql;
 	}
 
@@ -104,9 +125,23 @@ public class Elevation {
 	 * @param elev
 	 * @return
 	 */
-	private static String insertNewElevation(LatLng coord, double elev) {
-		return "INSERT INTO dissim_elevations (" + coord.getLat() + ","
-				+ coord.getLng() + "," + elev + ")";
+	private static boolean insertNewElevation(Connection con, LatLng coord, double elev) {
+		String query = "INSERT INTO Elevations VALUES(" + coord.getLat() + ","
+				+ coord.getLng() + "," + LatLng.round(elev) + ")";
+		PreparedStatement stmt = null;
+		try {
+			stmt = con.prepareStatement(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		boolean rs = false;
+
+		try {
+			rs = stmt.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return rs;
 	}
 
 	/**
