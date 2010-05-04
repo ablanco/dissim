@@ -17,6 +17,7 @@
 package gui.Map;
 
 import jade.core.AID;
+import jade.core.Agent;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -38,9 +39,8 @@ public class VisorMap extends JFrame implements Updateable {
 	private MapPane mapPane = null;
 	private JLabel gridLbl = new JLabel();
 
-
 	public VisorMap() {
-		setSize(new Dimension(800,600));
+		setSize(new Dimension(800, 600));
 		Container c = getContentPane();
 		c.setLayout(new BorderLayout());
 		mapPane = new MapPane();
@@ -66,15 +66,20 @@ public class VisorMap extends JFrame implements Updateable {
 		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
 					"Object is not an instance of Snapshot");
-		
+
 		Snapshot snap = (Snapshot) obj;
 		gridLbl.setText(snap.getGrid().toString());
-		//Necesito hexagonalGrid para poder escribir los valores en el
+		// Necesito hexagonalGrid para poder escribir los valores en el
 		mapPane.updateGrid(snap.getGrid(), getSize());
 	}
 
 	@Override
 	public String getConversationId() {
 		return "visor";
+	}
+
+	@Override
+	public void setAgent(Agent agt) {
+		// Empty
 	}
 }

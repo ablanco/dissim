@@ -17,6 +17,7 @@
 package gui;
 
 import jade.core.AID;
+import jade.core.Agent;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -78,6 +79,11 @@ public class VisorFrame extends JFrame implements Updateable {
 	@Override
 	public String getConversationId() {
 		return "visor";
+	}
+
+	@Override
+	public void setAgent(Agent agt) {
+		// Empty
 	}
 
 }

@@ -17,6 +17,7 @@
 package kml;
 
 import jade.core.AID;
+import jade.core.Agent;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,26 +47,32 @@ public class KmlBase implements Updateable {
 	protected Kml kml;
 	protected Folder folder;
 
-	/**
-	 * En este kml almacenaremos toda la informacion de las inundaciones
+	/*
+	 * En este kml almacenaremos toda la información de las inundaciones
 	 */
 	private KmlFlood kFlood;
-	/**
-	 * En este kml almacenaremos toda la informacion de las personas que
-	 * afectadas por alguna catastrofe
+	/*
+	 * En este kml almacenaremos toda la información de las personas afectadas
+	 * por alguna catastrofe
 	 */
 	private KmlPeople kPeople;
 
-	/**
-	 * Aqui iremos almacenando la informacion que va cambiando para cada
+	/*
+	 * Aquí iremos almacenando la información que va cambiando para cada
 	 * escenario al que estemos subscrito, el map es para organizarlo mejor, el
-	 * nombre de cada escenario deberia de ser unico
+	 * nombre de cada escenario deberia de ser único
 	 */
 	private Map<String, KmlInf> inf;
+	private Agent myAgent = null;
 
 	public KmlBase() {
 		kml = new Kml();
 		inf = new TreeMap<String, KmlInf>();
+	}
+
+	@Override
+	public void setAgent(Agent agt) {
+		myAgent = agt;
 	}
 
 	@Override
@@ -74,11 +81,12 @@ public class KmlBase implements Updateable {
 		int returnVal = fc.showSaveDialog(null);
 		// Pedimos al usuario que nos diga dónde guardar el fichero
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();		
+			File file = fc.getSelectedFile();
 			// Escribimos el kml
 			createKmzFile(kml, file.getAbsolutePath());
 		} else {
-			// TODO Cancelado el guardar, el KML se pierde
+			if (myAgent != null)
+				myAgent.doDelete();
 		}
 	}
 
@@ -253,19 +261,19 @@ public class KmlBase implements Updateable {
 	 *            borders of the polygon
 	 */
 	public static void drawPolygon(Placemark placeMark, Kpolygon kpolygon) {
-		if (kpolygon == null || kpolygon.getOuterLine().size()==0) {
+		if (kpolygon == null || kpolygon.getOuterLine().size() == 0) {
 			throw new IllegalArgumentException(
-			"El borde exterior del poligono no puede ser 0");
+					"El borde exterior del poligono no puede ser 0");
 		}
 		Polygon kmlPolygon = placeMark.createAndSetPolygon().withExtrude(true)
 				.withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
 		LinearRing outer = kmlPolygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
-		//Pintamos la linea exterior del poligono
+		// Pintamos la linea exterior del poligono
 		outer.withCoordinates(kpolygon.getOuterLine());
 
-		//Si el poligono tiene huecos los pintamos
+		// Si el poligono tiene huecos los pintamos
 		for (List<Coordinate> inn : kpolygon.getInnerLines()) {
 			LinearRing inner = kmlPolygon.createAndAddInnerBoundaryIs()
 					.createAndSetLinearRing();

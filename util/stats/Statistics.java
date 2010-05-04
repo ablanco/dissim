@@ -17,6 +17,7 @@
 package util.stats;
 
 import jade.core.AID;
+import jade.core.Agent;
 
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +35,7 @@ public class Statistics implements Updateable {
 	private int lastAlive = 0;
 	private int lastDead = 0;
 	private int lastSafe = 0;
+	private Agent myAgent = null;
 
 	/**
 	 * Orden de Columnas
@@ -71,7 +73,8 @@ public class Statistics implements Updateable {
 				e.printStackTrace();
 			}
 		} else {
-			// TODO Cancelado el guardar, la estadistica se pierde
+			if (myAgent != null)
+				myAgent.doDelete();
 		}
 	}
 
@@ -131,6 +134,11 @@ public class Statistics implements Updateable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	public void setAgent(Agent agt) {
+		myAgent = agt;
 	}
 
 }

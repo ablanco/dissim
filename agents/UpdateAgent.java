@@ -55,6 +55,11 @@ public class UpdateAgent extends Agent {
 			throw new IllegalArgumentException("Wrong number of arguments.");
 		}
 
+		if (client == null)
+			doDelete();
+
+		client.setAgent(this);
+
 		// Obtener agentes entorno
 		DFAgentDescription[] result = AgentHelper.search(this, "syndicate");
 		envAID = new AID[envs.length];

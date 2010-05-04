@@ -17,8 +17,11 @@
 package util;
 
 import jade.core.AID;
+import jade.core.Agent;
 
 public interface Updateable {
+	
+	public void setAgent(Agent agt);
 
 	public void init();
 
