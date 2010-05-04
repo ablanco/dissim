@@ -22,8 +22,8 @@ public class Elevation {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		//TODO esto peta :(
-		Connection con = getConnectio(server, port, user, pass);
+		// TODO esto peta :(
+		Connection con = getConnection(server, port, user, pass);
 		// Ahora recorremos toda la matriz y buscamos/insertamos los valores de
 		// las alturas
 		double ilat = grid.getBox().getIlat();
@@ -52,35 +52,38 @@ public class Elevation {
 	}
 
 	/**
-	 * gives an string containin the query from near points
+	 * Returns a SQL query to obtain information of the elevations near the
+	 * coordinates
 	 * 
-	 * @param centre
+	 * @param coord
 	 * @param ilat
 	 * @param ilng
 	 * @return
 	 */
-	private static String getNearPoints(LatLng centre, double ilat, double ilng) {
+	private static String getNearPoints(LatLng coord, double ilat, double ilng) {
 		String sql = "SELECT elev FROM dissim_elevations WHERE lat BETWEEN ";
-		sql += centre.getLat() - ilat + " AND " + centre.getLat() + ilat;
+		sql += coord.getLat() - ilat + " AND " + coord.getLat() + ilat;
 		sql += " AND ";
 		sql += " lng BETWEEN ";
-		sql += centre.getLng() - ilng + " AND " + centre.getLng() + ilng;
+		sql += coord.getLng() - ilng + " AND " + coord.getLng() + ilng;
 		return sql;
 	}
 
 	/**
-	 * sql query to insert this centre an elev
-	 * @param centre
+	 * Returns a SQL query to insert the elevation of the coordinates into the
+	 * database
+	 * 
+	 * @param coord
 	 * @param elev
 	 * @return
 	 */
-	private static String insertNewElevation(LatLng centre, double elev) {
-		return "INSERT INTO dissim_elevations (" + centre.getLat() + ","
-				+ centre.getLng() + "," + elev + ")";
+	private static String insertNewElevation(LatLng coord, double elev) {
+		return "INSERT INTO dissim_elevations (" + coord.getLat() + ","
+				+ coord.getLng() + "," + elev + ")";
 	}
 
 	/**
-	 * Nos da una conexion con el servidor
+	 * Returns a connection with the server
 	 * 
 	 * @param server
 	 * @param port
@@ -88,11 +91,12 @@ public class Elevation {
 	 * @param pass
 	 * @return
 	 */
-	public static Connection getConnectio(String server, int port, String user,
-			String pass) {
+	public static Connection getConnection(String server, int port,
+			String user, String pass) {
 		Connection con = null;
 		try {
-			//TODO peta :(
+			// TODO peta :(
+			// "jdbc:mysql://localhost:3306/contacts/"
 			con = DriverManager.getConnection(server, user, pass);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -101,7 +105,7 @@ public class Elevation {
 	}
 
 	/**
-	 * Dada una conexion y una consulta sql devuelve los resultados
+	 * Execute the query against the given connection
 	 * 
 	 * @param con
 	 * @param query
@@ -125,7 +129,7 @@ public class Elevation {
 	}
 
 	/**
-	 * Dada una lista de puntos de altitud, me quedo con la media
+	 * Returns the mean of a collection of elevation data
 	 * 
 	 * @param rs
 	 * @return
