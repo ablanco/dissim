@@ -1,12 +1,10 @@
 package elevation;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import sun.jdbc.odbc.JdbcOdbcDriver;
 import util.HexagonalGrid;
 import util.Point;
 import util.jcoord.LatLng;
@@ -17,13 +15,8 @@ public class Elevation {
 
 	public static void getElevations(HexagonalGrid grid, String server,
 			int port, String user, String pass) {
-
-		try {
-			DriverManager.registerDriver(new JdbcOdbcDriver());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		Connection con = getConnectio(server, port, user, pass);
+		
+		Connection con = getConnection(server, port, user, pass);
 		// Ahora recorremos toda la matriz y buscamos/insertamos los valores de
 		// las alturas
 		double ilat = grid.getBox().getIlat();
@@ -47,6 +40,13 @@ public class Elevation {
 				}
 				grid.setTerrainValue(col, row, value);
 			}
+		}
+		//cerramos la conexion
+		try {
+			con.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}
@@ -88,7 +88,7 @@ public class Elevation {
 	 * @param pass
 	 * @return
 	 */
-	public static Connection getConnectio(String server, int port, String user,
+	public static Connection getConnection(String server, int port, String user,
 			String pass) {
 		Connection con = null;
 			try { 
