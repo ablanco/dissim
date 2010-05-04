@@ -82,16 +82,16 @@ public class UpdateAgent extends Agent {
 		client.init();
 
 		// Sindicarse en el entorno
-		AgentHelper.send(this, envAID, ACLMessage.SUBSCRIBE, "syndicate-"
-				+ client.getConversationId(), getAID());
+		AgentHelper.send(this, envAID, ACLMessage.SUBSCRIBE, "syndicate",
+				new Object[] { client.getType(), getAID() });
 	}
 
 	@Override
 	protected void takeDown() {
 		if (envAID != null) {
 			// Desregistrarse en el entorno
-			AgentHelper.send(this, envAID, ACLMessage.CANCEL, "syndicate-"
-					+ client.getConversationId(), getAID());
+			AgentHelper.send(this, envAID, ACLMessage.CANCEL, "syndicate",
+					new Object[] { client.getType(), getAID() });
 		}
 		if (client != null) {
 			client.finish();

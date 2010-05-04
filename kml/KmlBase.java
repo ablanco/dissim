@@ -91,7 +91,7 @@ public class KmlBase implements Updateable {
 	}
 
 	@Override
-	public String getConversationId() {
+	public String getType() {
 		return "kml";
 	}
 

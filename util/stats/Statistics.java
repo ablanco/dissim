@@ -50,7 +50,7 @@ public class Statistics implements Updateable {
 	}
 
 	@Override
-	public String getConversationId() {
+	public String getType() {
 		return "statistics";
 	}
 

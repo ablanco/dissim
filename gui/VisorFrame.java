@@ -77,7 +77,7 @@ public class VisorFrame extends JFrame implements Updateable {
 	}
 
 	@Override
-	public String getConversationId() {
+	public String getType() {
 		return "visor";
 	}
 

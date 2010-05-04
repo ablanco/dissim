@@ -56,26 +56,22 @@ public class SyndicateBehav extends CyclicBehaviour {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate.and(MessageTemplate.or(
-				MessageTemplate.or(MessageTemplate
-						.MatchConversationId("syndicate-visor"),
-						MessageTemplate.MatchConversationId("syndicate-kml")),
-				MessageTemplate.MatchConversationId("syndicate-statistics")),
-				MessageTemplate.or(MessageTemplate
-						.MatchPerformative(ACLMessage.SUBSCRIBE),
-						MessageTemplate.MatchPerformative(ACLMessage.CANCEL)));
+		MessageTemplate mt = MessageTemplate.MatchConversationId("syndicate");
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
 			// Mensaje recibido, hay que procesarlo
+			String type = null;
 			AID aid = null;
 			try {
-				aid = (AID) msg.getContentObject();
+				Object[] data = (Object[]) msg.getContentObject();
+				type = (String) data[0];
+				aid = (AID) data[1];
 			} catch (UnreadableException e) {
 				e.printStackTrace();
 			}
 			// Sindicarse
 			if (msg.getPerformative() == ACLMessage.SUBSCRIBE && aid != null) {
-				Object[] data = subscribers.get(msg.getConversationId());
+				Object[] data = subscribers.get(type);
 				Set<AID> receivers = null;
 				if (data != null) {
 					myAgent.removeBehaviour((Behaviour) data[0]);
@@ -85,27 +81,25 @@ public class SyndicateBehav extends CyclicBehaviour {
 					receivers = new TreeSet<AID>();
 				}
 				receivers.add(aid);
-				Behaviour behav = createBehav(msg.getConversationId(),
-						receivers);
+				Behaviour behav = createBehav(type, receivers);
 				myAgent.addBehaviour(behav);
 				data[0] = behav;
 				data[1] = receivers;
-				subscribers.put(msg.getConversationId(), data);
+				subscribers.put(type, data);
 			}
 			// Desregistrarse
 			else if (msg.getPerformative() == ACLMessage.CANCEL && aid != null) {
-				Object[] data = subscribers.remove(msg.getConversationId());
+				Object[] data = subscribers.remove(type);
 				if (data != null) {
 					myAgent.removeBehaviour((Behaviour) data[0]);
 					Set<AID> receivers = (Set<AID>) data[1];
 					receivers.remove(aid);
 					if (receivers.size() > 0) {
-						Behaviour behav = createBehav(msg.getConversationId(),
-								receivers);
+						Behaviour behav = createBehav(type, receivers);
 						myAgent.addBehaviour(behav);
 						data[0] = behav;
 						data[1] = receivers;
-						subscribers.put(msg.getConversationId(), data);
+						subscribers.put(type, data);
 					}
 				}
 			}
@@ -114,21 +108,21 @@ public class SyndicateBehav extends CyclicBehaviour {
 		}
 	}
 
-	private Behaviour createBehav(String convId, Set<AID> receivers) {
+	private Behaviour createBehav(String type, Set<AID> receivers) {
 		Behaviour behav = null;
-		if (convId.equals("syndicate-visor")) {
+		if (type.equals("visor")) {
 			behav = new SendUpdateBehav(myAgent, scen.getUpdateVisorPeriod(),
-					receivers, convId, grid, dateTime, people, scen.getName(),
-					scen.getDescription());
-		} else if (convId.equals("syndicate-kml")) {
+					receivers, "update", grid, dateTime, people,
+					scen.getName(), scen.getDescription());
+		} else if (type.equals("kml")) {
 			behav = new SendUpdateBehav(myAgent, scen.getUpdateKMLPeriod(),
-					receivers, convId, grid, dateTime, people, scen.getName(),
-					scen.getDescription());
+					receivers, "update", grid, dateTime, people,
+					scen.getName(), scen.getDescription());
 		} else {
 			// Default case
 			behav = new SendUpdateBehav(myAgent, defaultPeriod, receivers,
-					"default-updateable", grid, dateTime, people, scen
-							.getName(), scen.getDescription());
+					"update", grid, dateTime, people, scen.getName(), scen
+							.getDescription());
 		}
 		return behav;
 	}

@@ -29,6 +29,6 @@ public interface Updateable {
 
 	public void finish();
 
-	public String getConversationId();
+	public String getType();
 
 }

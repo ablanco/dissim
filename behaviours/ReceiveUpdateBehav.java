@@ -22,6 +22,7 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import util.Updateable;
 
@@ -47,7 +48,8 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 
 		@Override
 		public void action() {
-			ACLMessage msg = myAgent.receive();
+			ACLMessage msg = myAgent.receive(MessageTemplate
+					.MatchConversationId("update"));
 			if (msg != null) {
 				// Mensaje recibido, hay que procesarlo
 				try {
@@ -61,7 +63,7 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 					System.err.println("Sender: "
 							+ msg.getSender().getLocalName() + " - Receiver: "
 							+ myAgent.getLocalName() + " - Client: "
-							+ client.getConversationId());
+							+ client.getType());
 					e.printStackTrace();
 				}
 			} else {
