@@ -33,7 +33,7 @@ __creator = "God:agents.CreatorAgent"
 __configPath = os.environ['HOME'] + "/.dissim/"
 __scenPath = __configPath + "scen/" # default
 __DB_server = "localhost" # default
-__DB_port = 3306 # default
+__DB_port = '3306' # default
 __DB_user = os.environ['USER'] # default
 __DB_pass = "password" # default
 
@@ -207,10 +207,10 @@ else:
     if rndTerrain != 'True':
         db_server = raw_input('Servidor de la base de datos de alturas (default para la configuración por defecto): ')
     if db_server == 'default':
-        db_server = DBServer
-        db_port = DBPort
-        db_user = DBUser
-        db_pass = DBPass
+        db_server = __DB_server
+        db_port = __DB_port
+        db_user = __DB_user
+        db_pass = __DB_pass
     else:
         db_port = raw_input('Puerto: ')
         db_user = raw_input('Usuario: ')
