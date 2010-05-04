@@ -1,19 +1,3 @@
-//    Flood and evacuation simulator using multi-agent technology
-//    Copyright (C) 2010 Alejandro Blanco and Manuel Gomar
-//
-//    This program is free software: you can redistribute it and/or modify
-//    it under the terms of the GNU General Public License as published by
-//    the Free Software Foundation, either version 3 of the License, or
-//    (at your option) any later version.
-//
-//    This program is distributed in the hope that it will be useful,
-//    but WITHOUT ANY WARRANTY; without even the implied warranty of
-//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//    GNU General Public License for more details.
-//
-//    You should have received a copy of the GNU General Public License
-//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 package elevation;
 
 import java.sql.Connection;
@@ -25,8 +9,9 @@ import java.sql.SQLException;
 import sun.jdbc.odbc.JdbcOdbcDriver;
 import util.HexagonalGrid;
 import util.Point;
-import util.Scenario;
 import util.jcoord.LatLng;
+
+import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 public class Elevation {
 
@@ -38,34 +23,28 @@ public class Elevation {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		// TODO esto peta :(
-		Connection con = getConnection(server, port, user, pass);
-
+		Connection con = getConnectio(server, port, user, pass);
 		// Ahora recorremos toda la matriz y buscamos/insertamos los valores de
 		// las alturas
-		double ilat = grid.getIncs()[0];
-		double ilng = grid.getIncs()[1];
-
-		int endCol = grid.getOffCol() + grid.getColumns();
-		int endRow = grid.getOffRow() + grid.getRows();
-		for (int col = grid.getOffCol(); col < endCol; col++) {
-			for (int row = grid.getOffRow(); row < endRow; row++) {
-				LatLng coord = grid.tileToCoord(new Point(col, row));
-				ResultSet rs = executeSqlQuery(con, getNearPoints(coord, ilat,
-						ilng));
-				short value = Short.MIN_VALUE;
-
+		double ilat = grid.getBox().getIlat();
+		double ilng = grid.getBox().getIlng();
+		for (int col = 0; col < grid.getColumns(); col++) {
+			for (int row = 0; row < grid.getRows(); row++) {
+				LatLng centre = grid.tileToCoord(new Point(col, row));
+				ResultSet rs = executeSqlQuerry(con, getNearPoints(centre,
+						ilat, ilng));
+				short value;
 				if (rs != null) {
 					// Existen datos en nuestra base de datos
 					value = (short) getPointAltitude(rs);
+
 				} else {
 					// No existen datos en nuestra base de datos
-					double elev = ElevationWS.getElevation(coord);
+					double elev = ElevationWS.getElevation(centre);
 					// Los añadimos
-					executeSqlQuery(con, insertNewElevation(coord, elev));
-					value = Scenario.doubleToInner(grid.getPrecision(), elev);
+					executeSqlQuerry(con, insertNewElevation(centre, elev));
+					value = (short) elev;
 				}
-
 				grid.setTerrainValue(col, row, value);
 			}
 		}
@@ -73,38 +52,35 @@ public class Elevation {
 	}
 
 	/**
-	 * Returns a SQL query to obtain information of the elevations near the
-	 * coordinates
+	 * gives an string containin the query from near points
 	 * 
-	 * @param coord
+	 * @param centre
 	 * @param ilat
 	 * @param ilng
 	 * @return
 	 */
-	private static String getNearPoints(LatLng coord, double ilat, double ilng) {
+	private static String getNearPoints(LatLng centre, double ilat, double ilng) {
 		String sql = "SELECT elev FROM dissim_elevations WHERE lat BETWEEN ";
-		sql += coord.getLat() - ilat + " AND " + coord.getLat() + ilat;
+		sql += centre.getLat() - ilat + " AND " + centre.getLat() + ilat;
 		sql += " AND ";
 		sql += " lng BETWEEN ";
-		sql += coord.getLng() - ilng + " AND " + coord.getLng() + ilng;
+		sql += centre.getLng() - ilng + " AND " + centre.getLng() + ilng;
 		return sql;
 	}
 
 	/**
-	 * Returns a SQL query to insert the elevation of the coordinates into the
-	 * database
-	 * 
-	 * @param coord
+	 * sql query to insert this centre an elev
+	 * @param centre
 	 * @param elev
 	 * @return
 	 */
-	private static String insertNewElevation(LatLng coord, double elev) {
-		return "INSERT INTO dissim_elevations (" + coord.getLat() + ","
-				+ coord.getLng() + "," + elev + ")";
+	private static String insertNewElevation(LatLng centre, double elev) {
+		return "INSERT INTO dissim_elevations (" + centre.getLat() + ","
+				+ centre.getLng() + "," + elev + ")";
 	}
 
 	/**
-	 * Returns a connection with the server
+	 * Nos da una conexion con el servidor
 	 * 
 	 * @param server
 	 * @param port
@@ -112,27 +88,39 @@ public class Elevation {
 	 * @param pass
 	 * @return
 	 */
-	public static Connection getConnection(String server, int port,
-			String user, String pass) {
+	public static Connection getConnectio(String server, int port, String user,
+			String pass) {
 		Connection con = null;
-		try {
-			// TODO peta :(
-			// "jdbc:mysql://localhost:3306/contacts/"
-			con = DriverManager.getConnection(server, user, pass);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+			try { 
+//				Driver dBDriver = (Driver) Class.forName("com.mysql.jdbc.Driver").newInstance();
+//				DriverManager.registerDriver(dBDriver);
+//				con = DriverManager.getConnection(server+":"+port, user, pass);
+				
+				MysqlDataSource dataSource = new MysqlDataSource();
+				dataSource.setUser(user);
+				dataSource.setPassword(pass);
+				dataSource.setDatabaseName(user);				
+				dataSource.setServerName(server);
+				dataSource.setPort(port);
+
+				con = dataSource.getConnection();
+			
+			} catch (SQLException e) {
+				e.printStackTrace();
+			
+			}
+		
 		return con;
 	}
 
 	/**
-	 * Execute the query against the given connection
+	 * Dada una conexion y una consulta sql devuelve los resultados
 	 * 
 	 * @param con
 	 * @param query
 	 * @return
 	 */
-	public static ResultSet executeSqlQuery(Connection con, String query) {
+	public static ResultSet executeSqlQuerry(Connection con, String query) {
 		PreparedStatement stmt = null;
 		try {
 			stmt = con.prepareStatement(query);
@@ -150,7 +138,7 @@ public class Elevation {
 	}
 
 	/**
-	 * Returns the mean of a collection of elevation data
+	 * Dada una lista de puntos de altitud, me quedo con la media
 	 * 
 	 * @param rs
 	 * @return
