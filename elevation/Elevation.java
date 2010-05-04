@@ -52,24 +52,25 @@ public class Elevation {
 		for (int col = grid.getOffCol(); col < endCol; col++) {
 			for (int row = grid.getOffRow(); row < endRow; row++) {
 				LatLng coord = grid.tileToCoord(new Point(col, row));
-				ResultSet rs = executeSqlQuery(con, getNearPoints(coord, ilat,
-						ilng));
+				PreparedStatement stmt = getNearPoints(con, coord, ilat, ilng);
+
 				short value = Short.MIN_VALUE;
 
 				try {
-					if (rs.wasNull()) {
+					if (stmt.getUpdateCount() > 0) {
+						ResultSet rs = stmt.getResultSet();
 						// Existen datos en nuestra base de datos
 						value = (short) getPointAltitude(rs);
-						System.err.println("En local "+coord+"+ :"+value);
+						System.err.println("En local " + coord + "+ :" + value);
 					} else {
 						// No existen datos en nuestra base de datos
 						double elev = ElevationWS.getElevation(coord);
 						// Los añadimos
-						System.err.println("En remoto "+coord+": "+Double.toString(value));
-						if (!insertNewElevation(con, coord, elev)){
-							System.err.println("No se ha podido insertar "+coord+": "+value);
-						}
-						value = Scenario.doubleToInner(grid.getPrecision(), elev);
+						System.err.println("En remoto " + coord + ": "
+								+ Double.toString(value));
+						insertNewElevation(con, coord, elev);
+						value = Scenario.doubleToInner(grid.getPrecision(),
+								elev);
 					}
 				} catch (WebServiceException e) {
 					// TODO Auto-generated catch block
@@ -105,16 +106,33 @@ public class Elevation {
 	 * @param ilng
 	 * @return
 	 */
-	private static String getNearPoints(LatLng coord, double ilat, double ilng) {
-		String sql = "SELECT Elev FROM Elevations WHERE lat BETWEEN ";
-		sql += Double.toString(LatLng.round(coord.getLat() - ilat)) + " AND "
-				+ Double.toString(LatLng.round(coord.getLat() + ilat));
-		sql += " AND ";
+	private static PreparedStatement getNearPoints(Connection con,
+			LatLng coord, double ilat, double ilng) {
+		double maxLat = Math.max(LatLng.round(coord.getLat() - ilat), LatLng
+				.round(coord.getLat() + ilat));
+		double minLat = Math.min(LatLng.round(coord.getLat() - ilat), LatLng
+				.round(coord.getLat() + ilat));
+
+		double maxLng = Math.max(LatLng.round(coord.getLng() - ilng), LatLng
+				.round(coord.getLng() + ilng));
+		double minLng = Math.min(LatLng.round(coord.getLng() - ilng), LatLng
+				.round(coord.getLng() + ilng));
+
+		String sql = "SELECT Elev FROM Elevations WHERE (lat BETWEEN ";
+		sql += Double.toString(minLat) + " AND " + Double.toString(maxLat);
+		sql += " )AND( ";
 		sql += " lng BETWEEN ";
-		sql += Double.toString(LatLng.round(coord.getLng() - ilng)) + " AND "
-				+ Double.toString(LatLng.round(coord.getLng() + ilng));
-//		System.err.println("*******Query: " + sql);
-		return sql;
+		sql += Double.toString(minLng) + " AND " + Double.toString(maxLng)+")";
+		System.err.println("*******Query: " + sql);
+		PreparedStatement stmt = null;
+		try {
+			stmt = con.prepareStatement(sql);
+			stmt.execute();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return stmt;
 	}
 
 	/**
@@ -125,23 +143,17 @@ public class Elevation {
 	 * @param elev
 	 * @return
 	 */
-	private static boolean insertNewElevation(Connection con, LatLng coord, double elev) {
+	private static void insertNewElevation(Connection con, LatLng coord,
+			double elev) {
 		String query = "INSERT INTO Elevations VALUES(" + coord.getLat() + ","
 				+ coord.getLng() + "," + LatLng.round(elev) + ")";
 		PreparedStatement stmt = null;
 		try {
 			stmt = con.prepareStatement(query);
+			stmt.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		boolean rs = false;
-
-		try {
-			rs = stmt.execute();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rs;
 	}
 
 	/**
@@ -173,21 +185,15 @@ public class Elevation {
 	 * @param query
 	 * @return
 	 */
-	public static ResultSet executeSqlQuery(Connection con, String query) {
+	public static PreparedStatement executeSqlQuery(Connection con, String query) {
 		PreparedStatement stmt = null;
 		try {
 			stmt = con.prepareStatement(query);
+			stmt.executeQuery();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		ResultSet rs = null;
-
-		try {
-			rs = stmt.executeQuery();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return rs;
+		return stmt;
 	}
 
 	/**
