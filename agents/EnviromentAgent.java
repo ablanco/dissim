@@ -24,7 +24,6 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -94,14 +93,14 @@ public class EnviromentAgent extends Agent {
 		public void action() {
 			grid.setPrecision(scen.getPrecision());
 
-			System.out.println("DESCARGANDO ALTURAS DEL TERRENO");
-			System.out.println("Matriz " + grid.getColumns() + "x"
-					+ grid.getRows() + " - Tarda unos minutos.");
+			System.out.println("OBTENIENDO ALTURAS DEL TERRENO");
+			// System.out.println("Matriz " + grid.getColumns() + "x"
+			// + grid.getRows() + " - Tarda unos minutos.");
 			try {
-				grid.obtainTerrainElevation(scen.getRandomAltitudes());
+				grid.obtainTerrainElevation(scen.getRandomAltitudes(), scen
+						.getDB_Server(), scen.getDB_Port(), scen.getDB_User(),
+						scen.getDB_Pass());
 			} catch (IllegalStateException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
 				e.printStackTrace();
 			}
 

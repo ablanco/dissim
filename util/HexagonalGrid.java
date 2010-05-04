@@ -16,28 +16,21 @@
 
 package util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
 import osm.Osm;
-import util.java.TempFiles;
+import util.elevation.Elevation;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
-import webservices.AltitudeWS;
 
 public class HexagonalGrid implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private LatLngBox box;
 	/**
 	 * Coordinates of simulation area (rectangle) NW means North West point
 	 */
@@ -58,9 +51,6 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Grid data
 	 */
-
-	private LatLngBox box;
-
 	protected int columns;
 	protected int rows;
 	protected int offCol; // Index of the 0,0 tile
@@ -104,10 +94,7 @@ public class HexagonalGrid implements Serializable {
 		ilat = LatLng.round(Math.abs(NW.getLat() - SE.getLat()) / row);
 		ilng = LatLng.round(Math.abs(NW.getLng() - SE.getLng()) / col);
 
-		// ilat = (NW.getLat() - SE.getLat()) / row;
-		// ilng = (NW.getLng() - SE.getLng()) / col;
-
-		box = new LatLngBox(NW, SE, tileSize);
+		box = new LatLngBox(NW, SE, tileSize); // TODO para qué?
 
 		gridTerrain = new short[col][row];
 		northTerrain = new short[col + 2];
@@ -470,82 +457,28 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Call a webservice to obtain the elevation of all tiles of the grid
+	 * Obtains (or generates a random one) the elevation data for this grid
 	 * 
+	 * @param random
+	 * @param server
+	 * @param port
+	 * @param user
+	 * @param pass
 	 * @throws IllegalStateException
-	 * @throws IOException
 	 */
-	public void obtainTerrainElevation(boolean random)
-			throws IllegalStateException, IOException {
-		if (precision <= 0)
-			throw new IllegalStateException(
-					"Precision hasn't been defined yet.");
-
-		int endX = offCol + columns;
-		int endY = offRow + rows;
+	public void obtainTerrainElevation(boolean random, String server, int port,
+			String user, String pass) throws IllegalStateException {
 
 		if (!random) {
-			File tmp = TempFiles.getDefaultTempDir();
-			String fname = NW.getLat() + "-" + NW.getLng() + "-" + SE.getLat()
-					+ "-" + SE.getLng() + "-" + tileSize;
-			File f = new File(tmp, fname);
-			boolean empty = false;
-			try {
-				empty = f.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			if (precision <= 0)
+				throw new IllegalStateException(
+						"Precision hasn't been defined yet.");
 
-			if (empty) {
-				BufferedWriter bw = null;
-				try {
-					// Descargamos la altura y la escribimos a disco para
-					// futuras simulaciones
-					bw = new BufferedWriter(new FileWriter(f));
-					int total = (rows + 2) * (columns + 2);
-					int cont = 0;
-					for (int i = offCol - 1; i <= endX; i++) {
-						for (int j = offRow - 1; j <= endY; j++) {
-							LatLng coord = tileToCoord(i, j);
-							double value = AltitudeWS.getElevation(coord);
-							short alt = Scenario
-									.doubleToInner(precision, value);
-							setTerrainValue(i, j, alt);
-							bw.write(i + "," + j + "=" + alt + "\n");
-							cont++;
-							System.out.println("Obtenidas " + cont + " de "
-									+ total + " alturas\r");
-						}
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					if (bw != null)
-						bw.close();
-				}
-			} else {
-				// Si ya estaban los datos en el disco los leemos
-				BufferedReader br = null;
-				String[] data;
-				String[] coord;
-				String line;
-				try {
-					br = new BufferedReader(new FileReader(f));
-					while ((line = br.readLine()) != null) {
-						data = line.split("=");
-						coord = data[0].split(",");
-						setTerrainValue(Integer.parseInt(coord[0]), Integer
-								.parseInt(coord[1]), Short.parseShort(data[1]));
-					}
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} finally {
-					if (br != null)
-						br.close();
-				}
-			}
+			Elevation.getElevations(this, server, port, user, pass);
 		} else {
 			// Alturas aleatorias
+			int endX = offCol + columns;
+			int endY = offRow + rows;
 			Random rnd = new Random(System.currentTimeMillis());
 			for (int i = offCol - 1; i <= endX; i++) {
 				for (int j = offRow - 1; j <= endY; j++) {
@@ -583,6 +516,10 @@ public class HexagonalGrid implements Serializable {
 
 	public void setPrecision(short precision) {
 		this.precision = precision;
+	}
+
+	public short getPrecision() {
+		return precision;
 	}
 
 	// STATIC DATA AND METHODS

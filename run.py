@@ -32,6 +32,10 @@ __name = '-name DisSim'
 __creator = "God:agents.CreatorAgent"
 __configPath = os.environ['HOME'] + "/.dissim/"
 __scenPath = __configPath + "scen/" # default
+__DB_server = "localhost" # default
+__DB_port = 3306 # default
+__DB_user = os.environ['USER'] # default
+__DB_pass = "password" # default
 
 # DEFINICIÓN DE FUNCIONES
 
@@ -82,17 +86,30 @@ if not(os.access(__configPath, os.F_OK)):
 if not(os.access(__configPath + "config.conf", os.F_OK)):
     fich = open(__configPath + 'config.conf', 'w')
     fich.write('scenPath=' + __scenPath)
+    fich.write('\nDBServer=' + __DB_server)
+    fich.write('\nDBPort=' + __DB_port)
+    fich.write('\nDBUser=' + __DB_user)
+    fich.write('\nDBPass=' + __DB_pass)
     fich.close()
 else:
     # cargamos la configuración
     fich = open(__configPath + 'config.conf', 'r')
     data = fich.readlines()
+    fich.close()
     for d in data:
         d = d.replace('\n','')
         pair = d.split('=')
         if pair[0] == 'scenPath':
             __scenPath = pair[1]
-    fich.close()
+        elif pair[0] == 'DBServer':
+            __DB_server = pair[1]
+        elif pair[0] == 'DBPort':
+            __DB_port = pair[1]
+        elif pair[0] == 'DBUser':
+            __DB_user = pair[1]
+        elif pair[0] == 'DBPass':
+            __DB_pass = pair[1]
+
 # si no existe ya creamos el directorio con los escenarios
 if not(os.access(__scenPath, os.F_OK)):
     os.makedirs(__scenPath)
@@ -185,6 +202,23 @@ else:
     fich.write('\nnumEnvs=' + nenvs)
     rndTerrain = raw_input('¿Terreno aleatorio? (True|False): ')
     fich.write('\nrandomTerrain=' + rndTerrain)
+    # datos de la conexión a la base de datos de alturas
+    db_server = 'default'
+    if rndTerrain != 'True':
+        db_server = raw_input('Servidor de la base de datos de alturas (default para la configuración por defecto): ')
+    if db_server == 'default':
+        db_server = DBServer
+        db_port = DBPort
+        db_user = DBUser
+        db_pass = DBPass
+    else:
+        db_port = raw_input('Puerto: ')
+        db_user = raw_input('Usuario: ')
+        db_pass = raw_input('Contraseña: ')
+    fich.write('\nDBServer=' + db_server)
+    fich.write('\nDBPort=' + db_port)
+    fich.write('\nDBUser=' + db_user)
+    fich.write('\nDBPass=' + db_pass)
     print('\nENTRADA DE AGUA\n')
     timeFlood = raw_input('Período (en milisegundos) de la actualización del agua en el terreno: ')
     fich.write('\nupdateTimeFlood=' + timeFlood)

@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import sun.jdbc.odbc.JdbcOdbcDriver;
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
 import util.jcoord.LatLng;
 import webservices.AltitudeWS;
 
@@ -24,27 +25,32 @@ public class Elevation {
 		}
 		// TODO esto peta :(
 		Connection con = getConnection(server, port, user, pass);
+
 		// Ahora recorremos toda la matriz y buscamos/insertamos los valores de
 		// las alturas
-		double ilat = grid.getBox().getIlat();
-		double ilng = grid.getBox().getIlng();
-		for (int col = 0; col < grid.getColumns(); col++) {
-			for (int row = 0; row < grid.getRows(); row++) {
-				LatLng centre = grid.tileToCoord(new Point(col, row));
-				ResultSet rs = executeSqlQuerry(con, getNearPoints(centre,
-						ilat, ilng));
-				short value;
+		double ilat = grid.getIncs()[0];
+		double ilng = grid.getIncs()[1];
+
+		int endCol = grid.getOffCol() + grid.getColumns();
+		int endRow = grid.getOffRow() + grid.getRows();
+		for (int col = grid.getOffCol(); col < endCol; col++) {
+			for (int row = grid.getOffRow(); row < endRow; row++) {
+				LatLng coord = grid.tileToCoord(new Point(col, row));
+				ResultSet rs = executeSqlQuery(con, getNearPoints(coord, ilat,
+						ilng));
+				short value = Short.MIN_VALUE;
+
 				if (rs != null) {
 					// Existen datos en nuestra base de datos
 					value = (short) getPointAltitude(rs);
-
 				} else {
 					// No existen datos en nuestra base de datos
-					double elev = AltitudeWS.getElevation(centre);
+					double elev = AltitudeWS.getElevation(coord);
 					// Los añadimos
-					executeSqlQuerry(con, insertNewElevation(centre, elev));
-					value = (short) elev;
+					executeSqlQuery(con, insertNewElevation(coord, elev));
+					value = Scenario.doubleToInner(grid.getPrecision(), elev);
 				}
+
 				grid.setTerrainValue(col, row, value);
 			}
 		}
@@ -111,7 +117,7 @@ public class Elevation {
 	 * @param query
 	 * @return
 	 */
-	public static ResultSet executeSqlQuerry(Connection con, String query) {
+	public static ResultSet executeSqlQuery(Connection con, String query) {
 		PreparedStatement stmt = null;
 		try {
 			stmt = con.prepareStatement(query);
