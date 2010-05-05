@@ -91,6 +91,7 @@ public class Scenario implements Serializable {
 	private int dbPort = -1;
 	private String dbUser = null;
 	private String dbPass = null;
+	private String dbDriver = null;
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -251,13 +252,15 @@ public class Scenario implements Serializable {
 			} else if (pair[0].equals("randomTerrain")) {
 				setRandomAltitudes(Boolean.parseBoolean(pair[1]));
 			} else if (pair[0].equals("DBServer")) {
-				setDB_Server(pair[1]);
+				setDbServer(pair[1]);
 			} else if (pair[0].equals("DBPort")) {
-				setDB_Port(Integer.parseInt(pair[1]));
+				setDbPort(Integer.parseInt(pair[1]));
 			} else if (pair[0].equals("DBUser")) {
-				setDB_User(pair[1]);
+				setDbUser(pair[1]);
 			} else if (pair[0].equals("DBPass")) {
-				setDB_Pass(pair[1]);
+				setDbPass(pair[1]);
+			} else if (pair[0].equals("DBDriver")) {
+				setDbDriver(pair[1]);
 			}
 		}
 	}
@@ -509,49 +512,59 @@ public class Scenario implements Serializable {
 		return randomAltitudes;
 	}
 
-	public String getDB_Server() {
+	public String getDbServer() {
 		return dbServer;
 	}
 
-	public void setDB_Server(String dbServer) {
+	public void setDbServer(String dbServer) {
 		if (dbServer == null)
-			throw new IllegalArgumentException("The server cannot be null");
+			throw new IllegalArgumentException("The DB server cannot be null");
 
 		this.dbServer = dbServer;
 	}
 
-	public int getDB_Port() {
+	public int getDbPort() {
 		return dbPort;
 	}
 
-	public void setDB_Port(int dbPort) {
+	public void setDbPort(int dbPort) {
 		if (dbPort < 1024 || dbPort > 65535)
 			throw new IllegalArgumentException(
-					"Port must be between 1024 and 65535");
+					"DB port must be between 1024 and 65535");
 
 		this.dbPort = dbPort;
 	}
 
-	public String getDB_User() {
+	public String getDbUser() {
 		return dbUser;
 	}
 
-	public void setDB_User(String dbUser) {
+	public void setDbUser(String dbUser) {
 		if (dbUser == null)
-			throw new IllegalArgumentException("The user cannot be null");
+			throw new IllegalArgumentException("The DB user cannot be null");
 
 		this.dbUser = dbUser;
 	}
 
-	public String getDB_Pass() {
+	public String getDbPass() {
 		return dbPass;
 	}
 
-	public void setDB_Pass(String dbPass) {
+	public void setDbPass(String dbPass) {
 		if (dbPass == null)
-			throw new IllegalArgumentException("The password cannot be null");
+			throw new IllegalArgumentException("The DB password cannot be null");
 
 		this.dbPass = dbPass;
+	}
+
+	public String getDbDriver() {
+		return dbDriver;
+	}
+
+	public void setDbDriver(String dbDriver) {
+		if (dbDriver == null)
+			throw new IllegalArgumentException("The DB driver cannot be null");
+		this.dbDriver = dbDriver;
 	}
 
 }

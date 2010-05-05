@@ -465,17 +465,19 @@ public class HexagonalGrid implements Serializable {
 	 * @param port
 	 * @param user
 	 * @param pass
+	 * @param driver
 	 * @throws IllegalStateException
 	 */
 	public void obtainTerrainElevation(boolean random, String server, int port,
-			String user, String pass) throws IllegalStateException {
+			String user, String pass, String driver)
+			throws IllegalStateException {
 
 		if (!random) {
 			if (precision <= 0)
 				throw new IllegalStateException(
 						"Precision hasn't been defined yet.");
 
-			Elevation.getElevations(this, server, port, user, pass);
+			Elevation.getElevations(this, server, port, user, pass, driver);
 		} else {
 			// Alturas aleatorias
 			int endX = offCol + columns;

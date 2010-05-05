@@ -21,6 +21,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Hashtable;
 
 import javax.xml.ws.WebServiceException;
 
@@ -29,13 +30,25 @@ import util.Point;
 import util.Scenario;
 import util.jcoord.LatLng;
 
+/*
+ * SQLite -> http://www.zentus.com/sqlitejdbc/
+ * MySQL -> http://dev.mysql.com/downloads/connector/j/
+ * Postgre -> http://jdbc.postgresql.org/
+ */
+
 public class Elevation {
 
+	private static Hashtable<String, String> classNames;
+
 	public static void getElevations(HexagonalGrid grid, String server,
-			int port, String user, String pass) {
+			int port, String user, String pass, String driver) {
+		classNames = new Hashtable<String, String>(3);
+		classNames.put("mysql", "com.mysql.jdbc.Driver");
+		classNames.put("postgresql", "org.postgresql.Driver");
+		classNames.put("sqlite", "org.sqlite.JDBC");
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName(classNames.get(driver));
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -60,7 +73,7 @@ public class Elevation {
 					if (stmt.getUpdateCount() > 0) {
 						ResultSet rs = stmt.getResultSet();
 						// Existen datos en nuestra base de datos
-						value = (short) getPointAltitude(rs);
+						value = (short) getPointElevation(rs);
 						System.err.println("En local " + coord + "+ :" + value);
 					} else {
 						// No existen datos en nuestra base de datos
@@ -122,7 +135,8 @@ public class Elevation {
 		sql += Double.toString(minLat) + " AND " + Double.toString(maxLat);
 		sql += " )AND( ";
 		sql += " lng BETWEEN ";
-		sql += Double.toString(minLng) + " AND " + Double.toString(maxLng)+")";
+		sql += Double.toString(minLng) + " AND " + Double.toString(maxLng)
+				+ ")";
 		System.err.println("*******Query: " + sql);
 		PreparedStatement stmt = null;
 		try {
@@ -165,7 +179,7 @@ public class Elevation {
 	 * @param pass
 	 * @return
 	 */
-	public static Connection getConnection(String server, int port,
+	private static Connection getConnection(String server, int port,
 			String user, String pass) {
 		Connection con = null;
 		try {
@@ -179,30 +193,12 @@ public class Elevation {
 	}
 
 	/**
-	 * Execute the query against the given connection
-	 * 
-	 * @param con
-	 * @param query
-	 * @return
-	 */
-	public static PreparedStatement executeSqlQuery(Connection con, String query) {
-		PreparedStatement stmt = null;
-		try {
-			stmt = con.prepareStatement(query);
-			stmt.executeQuery();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return stmt;
-	}
-
-	/**
 	 * Returns the mean of a collection of elevation data
 	 * 
 	 * @param rs
 	 * @return
 	 */
-	public static double getPointAltitude(ResultSet rs) {
+	private static double getPointElevation(ResultSet rs) {
 		int count = 0;
 		double acum = 0;
 		try {

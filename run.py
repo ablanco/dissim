@@ -36,6 +36,7 @@ __DB_server = "localhost" # default
 __DB_port = '3306' # default
 __DB_user = os.environ['USER'] # default
 __DB_pass = "password" # default
+__DB_driver = "mysql" # default
 
 # DEFINICIÓN DE FUNCIONES
 
@@ -90,6 +91,7 @@ if not(os.access(__configPath + "config.conf", os.F_OK)):
     fich.write('\nDBPort=' + __DB_port)
     fich.write('\nDBUser=' + __DB_user)
     fich.write('\nDBPass=' + __DB_pass)
+    fich.write('\nDBDriver=' + __DB_driver)
     fich.close()
 else:
     # cargamos la configuración
@@ -109,6 +111,8 @@ else:
             __DB_user = pair[1]
         elif pair[0] == 'DBPass':
             __DB_pass = pair[1]
+        elif pair[0] == 'DBDriver':
+            __DB_driver = pair[1]
 
 # si no existe ya creamos el directorio con los escenarios
 if not(os.access(__scenPath, os.F_OK)):
@@ -203,22 +207,24 @@ else:
     rndTerrain = raw_input('¿Terreno aleatorio? (True|False): ')
     fich.write('\nrandomTerrain=' + rndTerrain)
     # datos de la conexión a la base de datos de alturas
-    db_server = 'default'
     if rndTerrain != 'True':
         db_server = raw_input('Servidor de la base de datos de alturas (default para la configuración por defecto): ')
-    if db_server == 'default':
-        db_server = __DB_server
-        db_port = __DB_port
-        db_user = __DB_user
-        db_pass = __DB_pass
-    else:
-        db_port = raw_input('Puerto: ')
-        db_user = raw_input('Usuario: ')
-        db_pass = raw_input('Contraseña: ')
-    fich.write('\nDBServer=' + db_server)
-    fich.write('\nDBPort=' + db_port)
-    fich.write('\nDBUser=' + db_user)
-    fich.write('\nDBPass=' + db_pass)
+        if db_server == 'default':
+            db_server = __DB_server
+            db_port = __DB_port
+            db_user = __DB_user
+            db_pass = __DB_pass
+            db_driver = __DB_driver
+        else:
+            db_port = raw_input('Puerto: ')
+            db_user = raw_input('Usuario: ')
+            db_pass = raw_input('Contraseña: ')
+            db_driver = raw_input('JDBC Driver (Ejemplos: mysql, sqlite, postgresql): ')
+        fich.write('\nDBServer=' + db_server)
+        fich.write('\nDBPort=' + db_port)
+        fich.write('\nDBUser=' + db_user)
+        fich.write('\nDBPass=' + db_pass)
+        fich.write('\nDBDriver=' + db_driver)
     print('\nENTRADA DE AGUA\n')
     timeFlood = raw_input('Período (en milisegundos) de la actualización del agua en el terreno: ')
     fich.write('\nupdateTimeFlood=' + timeFlood)
