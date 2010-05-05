@@ -186,7 +186,7 @@ public class Elevation {
 			int port, String db, String user, String pass) {
 		Connection con = null;
 		// prototipo de url "jdbc:mysql://localhost:3306/JunkDB"
-		String url = "jdbc:" + driver + "://" + server;
+		String url = "jdbc:" + driver + ":" + server;
 		if (port >= 0)
 			url += ":" + Integer.toString(port);
 		if (db != null)
