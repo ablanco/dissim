@@ -113,7 +113,7 @@ public class OsmMap {
 	 */
 	public static OsmMap getMap(HexagonalGrid grid) {
 		LatLngBox box = grid.getBox();
-		
+
 		LatLng NW = box.getNw();
 		LatLng SE = box.getSe();
 
@@ -153,25 +153,27 @@ public class OsmMap {
 			String type = node.getNodeName();
 			if (type.equalsIgnoreCase("node")) {
 				OsmNode nd = OsmNode.getNode(node);
-//				if (!nd.isSimpleNode()) {
-//					// Solo añadimos los puntos de los sitios de interes
-//					nd.setPoint(grid.coordToTile(nd.getCoord()));
-//				}
+				// if (!nd.isSimpleNode()) {
+				// // Solo añadimos los puntos de los sitios de interes
+				// nd.setPoint(grid.coordToTile(nd.getCoord()));
+				// }
 				// System.err.println("\t" + nd);
 				osmMap.addNode(nd);
 			} else if (type.equalsIgnoreCase("way")) {
 				OsmWay w = OsmWay.getOsmWay(node, osmMap.getNodes());
-				//Actualizamos el Box a los valores del grid principal
+				// Actualizamos el Box a los valores del grid principal
 				osmMap.addWay(w);
 			} else if (type.equalsIgnoreCase("relation")) {
 				OsmRelation r = OsmRelation.getRelation(node, osmMap.getWays());
 				// System.err.println("\t" + r);
-				//Actualizamos a un box general 
-				for (OsmMember member : r.getMembers()){
-					r.getBox().addToBox(member.getWay());
+				// Actualizamos a un box general
+				if (r != null) {
+					for (OsmMember member : r.getMembers()) {
+						r.getBox().addToBox(member.getWay());
+					}
+					// Y ahora con los valores del grid principal
+					osmMap.addRelation(r);
 				}
-				//Y ahora con los valores del grid principal
-				osmMap.addRelation(r);
 			} else if (type.equalsIgnoreCase("#text")) {
 				// skipping
 			} else {

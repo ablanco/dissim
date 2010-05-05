@@ -237,7 +237,7 @@ public class OsmEdge {
 	 * incrementos marcados por el box
 	 */
 	public LatLng next(LatLng curr, LatLngBox box) {
-		// Al no ser adyacencia octogonal, algunos movimientos +1+1, -1-1, no
+		// Al no ser adyacencia octogonal, algunos movimientos 0,1, 0,-1, no
 		// estan permitidos, por lo que hacemos los incrementos mas pequeños el
 		// problema es que tendremos que al discretizar nos dara algunos puntos
 		// repetidos

@@ -307,7 +307,7 @@ public class OsmWay implements Comparable<OsmWay> {
 	public static OsmWay join(OsmRelation r,
 			LatLngBox gridBox) {
 		// Pegamos todos los de la primera lista
-		System.err.println("Haciendo Join de "+r);
+//		System.err.println("Haciendo Join de "+r);
 		OsmWay osmWay = new OsmWay(-1);
 //		OsmNode last = null;
 		for (OsmMember m : r.getMembers()){
@@ -317,7 +317,7 @@ public class OsmWay implements Comparable<OsmWay> {
 //				System.err.println("Reverse Join");
 //				osmWay.addAllToWay(reverseJoin(way, gridBox));
 //			}else{
-				System.err.println("Normal Join "+way);
+//				System.err.println("Normal Join "+way);
 				osmWay.addAllToWay(normalJoin(way, gridBox));
 //			}
 //			last = osmWay.getLastNode();
@@ -326,7 +326,7 @@ public class OsmWay implements Comparable<OsmWay> {
 		// Cerramos el camino, Unimos el ultimo de la segunda, con el primero de la primera
 		osmWay.addToWay(osmWay.getNode(0));
 		osmWay.setType(r.getType());
-		System.err.println("Resultado " + osmWay);
+//		System.err.println("Resultado " + osmWay);
 		// Adaptamos el box
 		return osmWay;
 	}

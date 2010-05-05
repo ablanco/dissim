@@ -23,8 +23,8 @@ public class OSMMapTest {
 		LatLng NW;
 		LatLng SE;
 		// Coordenadas con un rio en medio:
-		 NW = new LatLng(29.947426,-90.075409);
-		 SE = new LatLng(29.925797, -90.046214);
+//		 NW = new LatLng(29.947426,-90.075409);
+//		 SE = new LatLng(29.925797, -90.046214);
 
 		// Coordenadas solo rio
 //		NW = new LatLng(29.939898, -90.064604);
@@ -37,7 +37,7 @@ public class OSMMapTest {
 		 NW = new LatLng(30.030250, -90.180854);
 		 SE = new LatLng(30.012607, -90.118953);
 
-		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 60);
+		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 20);
 
 		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
 		Snapshot snapShot = new Snapshot("OSMMapTest", "", grid,
