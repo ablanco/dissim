@@ -37,6 +37,7 @@ __DB_port = '3306' # default
 __DB_user = os.environ['USER'] # default
 __DB_pass = "password" # default
 __DB_driver = "mysql" # default
+__DB_db = "db" # default
 
 # DEFINICIÓN DE FUNCIONES
 
@@ -92,6 +93,7 @@ if not(os.access(__configPath + "config.conf", os.F_OK)):
     fich.write('\nDBUser=' + __DB_user)
     fich.write('\nDBPass=' + __DB_pass)
     fich.write('\nDBDriver=' + __DB_driver)
+    fich.write('\nDBDb=' + __DB_db)
     fich.close()
 else:
     # cargamos la configuración
@@ -113,6 +115,8 @@ else:
             __DB_pass = pair[1]
         elif pair[0] == 'DBDriver':
             __DB_driver = pair[1]
+        elif pair[0] == 'DBDb':
+            __DB_db = pair[1]
 
 # si no existe ya creamos el directorio con los escenarios
 if not(os.access(__scenPath, os.F_OK)):
@@ -215,16 +219,23 @@ else:
             db_user = __DB_user
             db_pass = __DB_pass
             db_driver = __DB_driver
+            db_db = __DB_db
         else:
-            db_port = raw_input('Puerto: ')
-            db_user = raw_input('Usuario: ')
-            db_pass = raw_input('Contraseña: ')
+            db_port = raw_input('Puerto (-1 para nulo): ')
+            db_user = raw_input('Usuario (None para nulo): ')
+            if db_user != 'None':
+                db_pass = raw_input('Contraseña: ')
             db_driver = raw_input('JDBC Driver (Ejemplos: mysql, sqlite, postgresql): ')
+            db_db = raw_input('Nombre de la base de datos (None para nulo): ')
         fich.write('\nDBServer=' + db_server)
-        fich.write('\nDBPort=' + db_port)
-        fich.write('\nDBUser=' + db_user)
-        fich.write('\nDBPass=' + db_pass)
+        if int(db_port) > 0:
+            fich.write('\nDBPort=' + db_port)
+        if db_user != 'None':
+            fich.write('\nDBUser=' + db_user)
+            fich.write('\nDBPass=' + db_pass)
         fich.write('\nDBDriver=' + db_driver)
+        if db_db != 'None':
+            fich.write('\nDBDb=' + db_db)
     print('\nENTRADA DE AGUA\n')
     timeFlood = raw_input('Período (en milisegundos) de la actualización del agua en el terreno: ')
     fich.write('\nupdateTimeFlood=' + timeFlood)

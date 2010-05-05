@@ -98,8 +98,8 @@ public class EnviromentAgent extends Agent {
 			// + grid.getRows() + " - Tarda unos minutos.");
 			try {
 				grid.obtainTerrainElevation(scen.getRandomAltitudes(), scen
-						.getDbServer(), scen.getDbPort(), scen.getDbUser(),
-						scen.getDbPass(), scen.getDbDriver());
+						.getDbServer(), scen.getDbPort(), scen.getDbDb(), scen
+						.getDbUser(), scen.getDbPass(), scen.getDbDriver());
 			} catch (IllegalStateException e) {
 				e.printStackTrace();
 			}

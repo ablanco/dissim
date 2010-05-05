@@ -36,7 +36,7 @@ import util.jcoord.LatLng;
 public class Elevation {
 
 	public static void getElevations(HexagonalGrid grid, String server,
-			int port, String user, String pass, String driver) {
+			int port, String db, String user, String pass, String driver) {
 		String clase = null;
 		if (driver.equals("mysql")) {
 			clase = "com.mysql.jdbc.Driver";
@@ -52,7 +52,7 @@ public class Elevation {
 			e.printStackTrace();
 			return;
 		}
-		Connection con = getConnection(server, port, user, pass);
+		Connection con = getConnection(driver, server, port, db, user, pass);
 
 		// Ahora recorremos toda la matriz y buscamos/insertamos los valores de
 		// las alturas
@@ -175,17 +175,27 @@ public class Elevation {
 	/**
 	 * Returns a connection with the server
 	 * 
+	 * @param driver
 	 * @param server
 	 * @param port
 	 * @param user
 	 * @param pass
 	 * @return
 	 */
-	private static Connection getConnection(String server, int port,
-			String user, String pass) {
+	private static Connection getConnection(String driver, String server,
+			int port, String db, String user, String pass) {
 		Connection con = null;
+		// prototipo de url "jdbc:mysql://localhost:3306/JunkDB"
+		String url = "jdbc:" + driver + "://" + server;
+		if (port >= 0)
+			url += ":" + Integer.toString(port);
+		if (db != null)
+			url += "/" + db;
 		try {
-			con = DriverManager.getConnection(server, user, pass);
+			if (user == null)
+				con = DriverManager.getConnection(url);
+			else
+				con = DriverManager.getConnection(url, user, pass);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

@@ -92,6 +92,7 @@ public class Scenario implements Serializable {
 	private String dbUser = null;
 	private String dbPass = null;
 	private String dbDriver = null;
+	private String dbDb = null;
 
 	// This class shouldn't be used directly, that's why the constructor is
 	// protected
@@ -261,6 +262,8 @@ public class Scenario implements Serializable {
 				setDbPass(pair[1]);
 			} else if (pair[0].equals("DBDriver")) {
 				setDbDriver(pair[1]);
+			} else if (pair[0].equals("DBDb")) {
+				setDbDb(pair[1]);
 			}
 		}
 	}
@@ -540,9 +543,6 @@ public class Scenario implements Serializable {
 	}
 
 	public void setDbUser(String dbUser) {
-		if (dbUser == null)
-			throw new IllegalArgumentException("The DB user cannot be null");
-
 		this.dbUser = dbUser;
 	}
 
@@ -551,9 +551,6 @@ public class Scenario implements Serializable {
 	}
 
 	public void setDbPass(String dbPass) {
-		if (dbPass == null)
-			throw new IllegalArgumentException("The DB password cannot be null");
-
 		this.dbPass = dbPass;
 	}
 
@@ -565,6 +562,14 @@ public class Scenario implements Serializable {
 		if (dbDriver == null)
 			throw new IllegalArgumentException("The DB driver cannot be null");
 		this.dbDriver = dbDriver;
+	}
+
+	public String getDbDb() {
+		return dbDb;
+	}
+
+	public void setDbDb(String dbDb) {
+		this.dbDb = dbDb;
 	}
 
 }
