@@ -23,8 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Hashtable;
 
-import javax.xml.ws.WebServiceException;
-
 import util.HexagonalGrid;
 import util.Point;
 import util.Scenario;
@@ -50,7 +48,6 @@ public class Elevation {
 		try {
 			Class.forName(classNames.get(driver));
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		Connection con = getConnection(server, port, user, pass);
@@ -70,27 +67,29 @@ public class Elevation {
 				short value = Short.MIN_VALUE;
 
 				try {
-					if (stmt.getUpdateCount() > 0) {
-						ResultSet rs = stmt.getResultSet();
-						// Existen datos en nuestra base de datos
-						value = (short) getPointElevation(rs);
-						System.err.println("En local " + coord + "+ :" + value);
+					double acum = 0;
+					int counter = 0;
+					ResultSet rs = stmt.getResultSet();
+					while (rs.next()) {
+//						System.err.println(acum+", "+counter);
+						acum += rs.getDouble(1);
+						counter++;
+					}
+
+					if (counter != 0) {
+						//Quiere decir que tenemos mas de un resultado, hacemos la media
+						value = Scenario.doubleToInner(grid.getPrecision(),
+								(acum / counter));
 					} else {
-						// No existen datos en nuestra base de datos
+						//Quiere decir que no tenemos ningun resultado, lo preguntamos en el servicio web
 						double elev = ElevationWS.getElevation(coord);
-						// Los añadimos
-						System.err.println("En remoto " + coord + ": "
-								+ Double.toString(value));
 						insertNewElevation(con, coord, elev);
 						value = Scenario.doubleToInner(grid.getPrecision(),
 								elev);
 					}
-				} catch (WebServiceException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+				} catch (SQLException e1) {
+					e1.printStackTrace();
 				}
 
 				grid.setTerrainValue(col, row, value);
@@ -104,7 +103,6 @@ public class Elevation {
 		try {
 			con.close();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -131,19 +129,18 @@ public class Elevation {
 		double minLng = Math.min(LatLng.round(coord.getLng() - ilng), LatLng
 				.round(coord.getLng() + ilng));
 
-		String sql = "SELECT Elev FROM Elevations WHERE (lat BETWEEN ";
+		String sql = "SELECT Elev FROM Elevations WHERE Lat BETWEEN ";
 		sql += Double.toString(minLat) + " AND " + Double.toString(maxLat);
-		sql += " )AND( ";
-		sql += " lng BETWEEN ";
-		sql += Double.toString(minLng) + " AND " + Double.toString(maxLng)
-				+ ")";
-		System.err.println("*******Query: " + sql);
+		sql += " AND ";
+		sql += " Lng BETWEEN ";
+		sql += Double.toString(minLng) + " AND " + Double.toString(maxLng);
+
+//		System.err.println("*******Query: " + sql);
 		PreparedStatement stmt = null;
 		try {
 			stmt = con.prepareStatement(sql);
 			stmt.execute();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return stmt;
@@ -183,33 +180,12 @@ public class Elevation {
 			String user, String pass) {
 		Connection con = null;
 		try {
-			// TODO peta :(
 			// "jdbc:mysql://localhost:3306/contacts/"
 			con = DriverManager.getConnection(server, user, pass);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return con;
-	}
-
-	/**
-	 * Returns the mean of a collection of elevation data
-	 * 
-	 * @param rs
-	 * @return
-	 */
-	private static double getPointElevation(ResultSet rs) {
-		int count = 0;
-		double acum = 0;
-		try {
-			while (rs.next()) {
-				acum += rs.getDouble(0);
-				count++;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return acum / count;
 	}
 
 }
