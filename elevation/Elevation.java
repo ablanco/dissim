@@ -21,7 +21,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Hashtable;
 
 import util.HexagonalGrid;
 import util.Point;
@@ -36,19 +35,22 @@ import util.jcoord.LatLng;
 
 public class Elevation {
 
-	private static Hashtable<String, String> classNames;
-
 	public static void getElevations(HexagonalGrid grid, String server,
 			int port, String user, String pass, String driver) {
-		classNames = new Hashtable<String, String>(3);
-		classNames.put("mysql", "com.mysql.jdbc.Driver");
-		classNames.put("postgresql", "org.postgresql.Driver");
-		classNames.put("sqlite", "org.sqlite.JDBC");
+		String clase = null;
+		if (driver.equals("mysql")) {
+			clase = "com.mysql.jdbc.Driver";
+		} else if (driver.equals("postgresql")) {
+			clase = "org.postgresql.Driver";
+		} else if (driver.equals("sqlite")) {
+			clase = "org.sqlite.JDBC";
+		}
 
 		try {
-			Class.forName(classNames.get(driver));
+			Class.forName(clase);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+			return;
 		}
 		Connection con = getConnection(server, port, user, pass);
 
@@ -71,17 +73,18 @@ public class Elevation {
 					int counter = 0;
 					ResultSet rs = stmt.getResultSet();
 					while (rs.next()) {
-//						System.err.println(acum+", "+counter);
 						acum += rs.getDouble(1);
 						counter++;
 					}
 
 					if (counter != 0) {
-						//Quiere decir que tenemos mas de un resultado, hacemos la media
+						// Quiere decir que tenemos mas de un resultado, hacemos
+						// la media
 						value = Scenario.doubleToInner(grid.getPrecision(),
 								(acum / counter));
 					} else {
-						//Quiere decir que no tenemos ningun resultado, lo preguntamos en el servicio web
+						// Quiere decir que no tenemos ningun resultado, lo
+						// preguntamos en el servicio web
 						double elev = ElevationWS.getElevation(coord);
 						insertNewElevation(con, coord, elev);
 						value = Scenario.doubleToInner(grid.getPrecision(),
@@ -96,16 +99,19 @@ public class Elevation {
 			}
 		}
 		closeConnection(con);
-
 	}
 
+	/**
+	 * Close the given connection
+	 * 
+	 * @param con
+	 */
 	private static void closeConnection(Connection con) {
 		try {
 			con.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -135,7 +141,6 @@ public class Elevation {
 		sql += " Lng BETWEEN ";
 		sql += Double.toString(minLng) + " AND " + Double.toString(maxLng);
 
-//		System.err.println("*******Query: " + sql);
 		PreparedStatement stmt = null;
 		try {
 			stmt = con.prepareStatement(sql);
@@ -180,7 +185,6 @@ public class Elevation {
 			String user, String pass) {
 		Connection con = null;
 		try {
-			// "jdbc:mysql://localhost:3306/contacts/"
 			con = DriverManager.getConnection(server, user, pass);
 		} catch (SQLException e) {
 			e.printStackTrace();
