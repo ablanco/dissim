@@ -1,3 +1,19 @@
+//    Flood and evacuation simulator using multi-agent technology
+//    Copyright (C) 2010 Alejandro Blanco and Manuel Gomar
+//
+//    This program is free software: you can redistribute it and/or modify
+//    it under the terms of the GNU General Public License as published by
+//    the Free Software Foundation, either version 3 of the License, or
+//    (at your option) any later version.
+//
+//    This program is distributed in the hope that it will be useful,
+//    but WITHOUT ANY WARRANTY; without even the implied warranty of
+//    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//    GNU General Public License for more details.
+//
+//    You should have received a copy of the GNU General Public License
+//    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 package util.jcoord;
 
 import java.io.Serializable;
@@ -64,14 +80,16 @@ public class LatLngBox implements Serializable {
 	}
 
 	/**
-	 * Given a OsmNode Returns IN, ABOVE, ABOVE_RIGHT, RIGHT, BELOW_RIGHT, BELOW,
-	 * BELOW_LEFT, LEFT, ABOVE_LEFT
+	 * Given a OsmNode Returns IN, ABOVE, ABOVE_RIGHT, RIGHT, BELOW_RIGHT,
+	 * BELOW, BELOW_LEFT, LEFT, ABOVE_LEFT
+	 * 
 	 * @param n
 	 * @return
 	 */
-	public int absoluteBoxPosition(OsmNode n){
+	public int absoluteBoxPosition(OsmNode n) {
 		return absoluteBoxPosition(n.getCoord());
 	}
+
 	/**
 	 * Given a Latlng Returns IN, ABOVE, ABOVE_RIGHT, RIGHT, BELOW_RIGHT, BELOW,
 	 * BELOW_LEFT, LEFT, ABOVE_LEFT
@@ -192,14 +210,15 @@ public class LatLngBox implements Serializable {
 		return contains(n.getCoord());
 	}
 
-	public boolean contains(OsmEdge e){
+	public boolean contains(OsmEdge e) {
 		return contains(e.getNodeA()) || contains(e.getNodeB());
 	}
-	
-	public boolean cutsBox(OsmEdge e){
-		return contains(e) && !(contains(e.getNodeA()) && contains(e.getNodeB()));
+
+	public boolean cutsBox(OsmEdge e) {
+		return contains(e)
+				&& !(contains(e.getNodeA()) && contains(e.getNodeB()));
 	}
-	
+
 	public boolean isDefined() {
 		return nW != null && sE != null && ilat != 0 && ilng != 0
 				&& tileSize != 0;
