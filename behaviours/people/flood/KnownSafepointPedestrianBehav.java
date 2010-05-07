@@ -135,12 +135,13 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 					}
 				}
 
+				Point preRes = result;
 				result = PedestrianUtils.accessible(adjacents, position,
 						result, s);
 
 				// Evitar que se atasque intentando atravesar una pared
-				if (result != null)
-					if (HexagonalGrid.distance(position, result) <= (d / 3))
+				if (preRes != null && result != null)
+					if (HexagonalGrid.distance(position, preRes) <= (d / 3))
 						callFallback = true;
 			} else {
 				// Hay refugio a la vista
