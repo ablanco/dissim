@@ -93,6 +93,8 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		if (position == null)
 			return PedestrianUtils.nearInSetToSet(dry, objectives);
 
+		boolean callFallback = false;
+
 		if (objectives.size() > 0 || safe.size() > 0) {
 			if (safe.size() == 0) {
 				// No hay ningún refugio a la vista
@@ -102,15 +104,13 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 				// Puntuamos cada punto
 				for (Point pt : dry) {
-					Point nearObj = null;
 					int objective = Integer.MAX_VALUE;
 					// Buscamos el objetivo más cercano y la distancia al mismo
 					for (Point obj : objectives) {
 						int dist = HexagonalGrid.distance(pt, obj);
-						if (dist < objective) {
+						if (dist < objective)
 							objective = dist;
-							nearObj = obj;
-						}
+
 						if (calcDistPos) {
 							dist = HexagonalGrid.distance(position, obj);
 							if (dist < distPos)
@@ -119,7 +119,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 					}
 					calcDistPos = false;
 
-					int wasser = 0;
+					int wasser = d;
 					// Distancia a las casillas inundadas
 					for (Point wpt : water)
 						wasser += HexagonalGrid.distance(pt, wpt);
@@ -131,12 +131,17 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 					if (score > best) {
 						best = score;
-						result = nearObj;
+						result = pt;
 					}
 				}
 
 				result = PedestrianUtils.accessible(adjacents, position,
 						result, s);
+
+				// Evitar que se atasque intentando atravesar una pared
+				if (result != null)
+					if (HexagonalGrid.distance(position, result) <= (d / 3))
+						callFallback = true;
 			} else {
 				// Hay refugio a la vista
 				LinkedList<Point> sortedSafe = new LinkedList<Point>();
@@ -172,7 +177,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 			}
 		}
 
-		if (result == null) {
+		if (result == null || callFallback) {
 			// En el caso en que no sepa donde hay refugios o no sea posible
 			// acceder a ninguno
 			result = fallback.choose(adjacents);
@@ -198,17 +203,17 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 	private int score(float distancePosition, float objective, float water,
 			float elevationPosition, float elevation) {
 		float obj = ((distancePosition - objective) * 100.0F) / d;
+		obj *= 1.5; // 50% más de importancia a llegar al objetivo
 
 		float wat = (water * 100.0F) / d;
 
 		float aux = elevation - elevationPosition;
 		float aux2 = elevationPosition / 100.0F;
-		float elev = 0;
+		float elev = aux;
 		if (aux2 != 0)
 			elev = aux / aux2;
-		elev *= 0.2F; // TODO Ajuste temporal por alturas aleatorias
-		// System.out.println(obj+" "+wat+" "+elev);
-		return Math.round((obj + wat + elev) / 3.0F);
+		// System.out.println(obj + " " + wat + " " + elev);
+		return (int) (obj + wat + elev);
 	}
 
 	@SuppressWarnings("unchecked")
