@@ -46,6 +46,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 	private Set<Point> objectives = null;
 	private SafepointPedestrianBehav fallback;
+	private LinkedList<Point> lastMovements = new LinkedList<Point>();
 
 	public KnownSafepointPedestrianBehav(Agent a, long period, AID env,
 			Scenario scen, double lat, double lng, int d, int s) {
@@ -140,9 +141,13 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 						result, s);
 
 				// Evitar que se atasque intentando atravesar una pared
-				if (preRes != null && result != null)
-					if (HexagonalGrid.distance(position, preRes) <= (d / 3))
+				if (preRes != null && result != null
+						&& lastMovements.size() > 0) {
+					int dist = HexagonalGrid.distance(lastMovements.getFirst(),
+							lastMovements.getLast());
+					if (dist <= ((lastMovements.size() * s) / 2)) // TODO
 						callFallback = true;
+				}
 			} else {
 				// Hay refugio a la vista
 				LinkedList<Point> sortedSafe = new LinkedList<Point>();
@@ -183,6 +188,10 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 			// acceder a ninguno
 			result = fallback.choose(adjacents);
 		}
+
+		lastMovements.add(result);
+		if (lastMovements.size() > 3)
+			lastMovements.remove(0);
 
 		return result;
 	}
