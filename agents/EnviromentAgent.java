@@ -93,9 +93,8 @@ public class EnviromentAgent extends Agent {
 		public void action() {
 			grid.setPrecision(scen.getPrecision());
 
-			System.out.println("OBTENIENDO ALTURAS DEL TERRENO");
-			// System.out.println("Matriz " + grid.getColumns() + "x"
-			// + grid.getRows() + " - Tarda unos minutos.");
+			System.out.println(getLocalName()
+					+ " - Obtaining terrain elevation data");
 			try {
 				grid.obtainTerrainElevation(scen.getRandomAltitudes(), scen
 						.getDbServer(), scen.getDbPort(), scen.getDbDb(), scen
@@ -104,7 +103,7 @@ public class EnviromentAgent extends Agent {
 				e.printStackTrace();
 			}
 
-			System.out.println("PROCESANDO INFORMACIÓN SOBRE CALLES");
+			System.out.println(getLocalName() + " - Obtainig street data");
 			grid.obtainStreetInfo();
 
 			dateTime = scen.getStartTime();

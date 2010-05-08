@@ -140,13 +140,14 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 				result = PedestrianUtils.accessible(adjacents, position,
 						result, s);
 
-				// Evitar que se atasque intentando atravesar una pared
+				// Evitar que se atasque intentando atravesar una pared TODO
 				if (preRes != null && result != null
 						&& lastMovements.size() > 0) {
 					int dist = HexagonalGrid.distance(lastMovements.getFirst(),
 							lastMovements.getLast());
-					if (dist <= ((lastMovements.size() * s) / 2)) // TODO
+					if (dist <= ((lastMovements.size() * s) / 2)) {
 						callFallback = true;
+					}
 				}
 			} else {
 				// Hay refugio a la vista
@@ -186,11 +187,13 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		if (result == null || callFallback) {
 			// En el caso en que no sepa donde hay refugios o no sea posible
 			// acceder a ninguno
-			result = fallback.choose(adjacents);
+			result = PedestrianUtils.accessible(adjacents, position, fallback
+					.choose(adjacents), s);
 		}
 
-		lastMovements.add(result);
-		if (lastMovements.size() > 3)
+		if (result != null)
+			lastMovements.add(result);
+		if (lastMovements.size() > 5)
 			lastMovements.remove(0);
 
 		return result;
@@ -213,9 +216,10 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 	private int score(float distancePosition, float objective, float water,
 			float elevationPosition, float elevation) {
 		float obj = ((distancePosition - objective) * 100.0F) / d;
-		obj *= 1.5; // 50% más de importancia a llegar al objetivo
+		obj *= 1.8; // 80% más de importancia a llegar al objetivo
 
 		float wat = (water * 100.0F) / d;
+		wat *= 1.2; // 20% más de importancia a alejarse del agua
 
 		float aux = elevation - elevationPosition;
 		float aux2 = elevationPosition / 100.0F;

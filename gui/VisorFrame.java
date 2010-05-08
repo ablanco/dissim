@@ -50,7 +50,7 @@ public class VisorFrame extends JFrame implements Updateable {
 		c.add(pane, BorderLayout.CENTER);
 		c.add(gridLbl, BorderLayout.NORTH);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		this.setTitle("Visor de inundación"); // TODO Internacionalización
+		this.setTitle("Flood Visor");
 	}
 
 	@Override

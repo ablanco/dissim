@@ -48,7 +48,7 @@ public class VisorMap extends JFrame implements Updateable {
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS), BorderLayout.CENTER);
 		c.add(gridLbl, BorderLayout.NORTH);
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		this.setTitle("Visor de Mapas"); // TODO Internacionalización
+		this.setTitle("Map Visor");
 	}
 
 	@Override
