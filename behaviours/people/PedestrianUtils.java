@@ -18,6 +18,7 @@ package behaviours.people;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 
@@ -90,9 +91,9 @@ public class PedestrianUtils {
 	 * @param speed
 	 * @return
 	 */
-	public static Point accessible(Set<Point> adjacents, Point position,
-			Point destination, int speed) {
-		Point result = null;
+	public static LinkedList<Point> accessible(Set<Point> adjacents,
+			Point position, Point destination, int speed) {
+		LinkedList<Point> result = new LinkedList<Point>();
 		Point aux = position;
 		int cont = 0;
 		// Recorremos hexágonos hasta llegar a él
@@ -102,11 +103,11 @@ public class PedestrianUtils {
 					destination));
 			// Mientras la velocidad lo permita vamos avanzando hexágonos
 			if (cont <= speed)
-				result = aux;
+				result.add(aux);
 			// Miramos que no nos encontremos con obstáculos en el camino
 			if (!destination.equals(aux)) {
 				if (aux.getW() > 0 || Osm.getBigType(aux.getS()) != Osm.Roads) {
-					result = null;
+					result = new LinkedList<Point>();
 					break;
 				}
 			}

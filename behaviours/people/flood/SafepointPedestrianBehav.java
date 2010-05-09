@@ -83,7 +83,12 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 
 				if (water.size() != 0) {
 					p = PedestrianUtils.farInSetFromSet(dry, water);
-					p = PedestrianUtils.accessible(adjacents, position, p, s);
+					LinkedList<Point> aux = PedestrianUtils.accessible(
+							adjacents, position, p, s);
+					if (aux.size() > 0)
+						p = aux.getLast();
+					else
+						p = null;
 				}
 
 				// Si no ha visto agua se mueve al azar, pero manteniendo una
@@ -98,8 +103,12 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 
 					while (intentos > 0 && p == null) {
 						p = PedestrianUtils.getPointByDirection(dry, direction);
-						p = PedestrianUtils.accessible(adjacents, position, p,
-								s);
+						LinkedList<Point> aux = PedestrianUtils.accessible(
+								adjacents, position, p, s);
+						if (aux.size() > 0)
+							p = aux.getLast();
+						else
+							p = null;
 						// Si no puede avanzar en esa dirección cambia a otra al
 						// azar
 						if (p == null)
@@ -139,10 +148,12 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 				Point result = null;
 				// Buscamos el refugio más cercano que esté accesible
 				for (Point pt : sortedSafe) {
-					result = PedestrianUtils.accessible(adjacents, position,
-							pt, s);
-					if (result != null)
+					LinkedList<Point> aux = PedestrianUtils.accessible(
+							adjacents, position, pt, s);
+					if (aux.size() > 0) {
+						result = aux.getLast();
 						break;
+					}
 				}
 				return result;
 			}

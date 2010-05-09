@@ -62,7 +62,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		if (objectives == null)
 			return null;
 
-		Point result = null;
+		LinkedList<Point> result = new LinkedList<Point>();
 
 		if (position != null) {
 			adjacents = PedestrianUtils.filterByStreetView(adjacents, position);
@@ -93,8 +93,6 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		// Primera ejecución
 		if (position == null)
 			return PedestrianUtils.nearInSetToSet(dry, objectives);
-
-		boolean callFallback = false;
 
 		if (objectives.size() > 0 || safe.size() > 0) {
 			if (safe.size() == 0) {
@@ -127,28 +125,18 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 					if (water.size() != 0)
 						wasser /= water.size();
 
-					int score = score(distPos, objective, wasser, position
+					int score = score(pt, distPos, objective, wasser, position
 							.getZ(), (int) pt.getZ());
 
-					if (score > best) {
+					LinkedList<Point> aux = PedestrianUtils.accessible(
+							adjacents, position, pt, s);
+
+					if (score > best && aux.size() > 0) {
 						best = score;
-						result = pt;
+						result = aux;
 					}
 				}
 
-				Point preRes = result;
-				result = PedestrianUtils.accessible(adjacents, position,
-						result, s);
-
-				// Evitar que se atasque intentando atravesar una pared TODO
-				if (preRes != null && result != null
-						&& lastMovements.size() > 0) {
-					int dist = HexagonalGrid.distance(lastMovements.getFirst(),
-							lastMovements.getLast());
-					if (dist <= ((lastMovements.size() * s) / 2)) {
-						callFallback = true;
-					}
-				}
 			} else {
 				// Hay refugio a la vista
 				LinkedList<Point> sortedSafe = new LinkedList<Point>();
@@ -178,30 +166,35 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 				for (Point pt : sortedSafe) {
 					result = PedestrianUtils.accessible(adjacents, position,
 							pt, s);
-					if (result != null)
+					if (result.size() > 0)
 						break;
 				}
 			}
 		}
 
-		if (result == null || callFallback) {
+		if (result.size() == 0) {
 			// En el caso en que no sepa donde hay refugios o no sea posible
 			// acceder a ninguno
 			result = PedestrianUtils.accessible(adjacents, position, fallback
 					.choose(adjacents), s);
 		}
 
-		if (result != null)
-			lastMovements.add(result);
-		if (lastMovements.size() > 5)
-			lastMovements.remove(0);
+		if (result.size() > 0)
+			lastMovements.addAll(result);
+		while (lastMovements.size() > d)
+			lastMovements.removeFirst();
 
-		return result;
+		if (result.size() > 0)
+			return result.getLast();
+		else
+			return null;
 	}
 
 	/**
 	 * Returns the score of the tile
 	 * 
+	 * @param p
+	 *            Point to score
 	 * @param distancePosition
 	 *            Distance from the position of the agent to the nearest
 	 *            objective (reference)
@@ -213,8 +206,8 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 	 *            Elevation of the tile (more is better)
 	 * @return
 	 */
-	private int score(float distancePosition, float objective, float water,
-			float elevationPosition, float elevation) {
+	private int score(Point p, float distancePosition, float objective,
+			float water, float elevationPosition, float elevation) {
 		float obj = ((distancePosition - objective) * 100.0F) / d;
 		obj *= 1.8; // 80% más de importancia a llegar al objetivo
 
@@ -226,8 +219,19 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		float elev = aux;
 		if (aux2 != 0)
 			elev = aux / aux2;
-		// System.out.println(obj + " " + wat + " " + elev);
-		return (int) (obj + wat + elev);
+
+		// Penalizamos las casillas por las que acabamos de pasar
+		int penal = 0;
+		int count = 0;
+		for (Point pt : lastMovements) {
+			count++;
+			if (p.equals(pt)) {
+				penal = (300 / (d / 2)) * count;
+				break;
+			}
+		}
+
+		return (int) (obj + wat + elev - penal);
 	}
 
 	@SuppressWarnings("unchecked")
