@@ -72,37 +72,6 @@ public class KmlPeople {
 		}
 	}
 
-	// public void drawPedestrian(Pedestrian pedestrian, String begin, String
-	// end,
-	// double[] incs) {
-	// GroundOverlay groundoverlay = folder.createAndAddGroundOverlay()
-	// .withAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
-	// KmlBase.setTimeSpan(groundoverlay, begin, end);
-	// // Depending status set propper img
-	// Icon icon =
-	// groundoverlay.createAndSetIcon().withRefreshInterval(10.0).withViewBoundScale(1.0).withViewRefreshTime(10.0).withRefreshMode(RefreshMode.ON_INTERVAL).withViewRefreshMode(ViewRefreshMode.ON_STOP);
-	// switch (pedestrian.getStatus()) {
-	// case Pedestrian.HEALTHY:
-	// icon.withHref(imgPath + "healthy.png");
-	// break;
-	// case Pedestrian.HURT:
-	// icon.withHref(imgPath + "hurt.png");
-	// break;
-	// case Pedestrian.DEAD:
-	// icon.withHref(imgPath + "dead.png");
-	// break;
-	// default:
-	// break;
-	// }
-	// // Setting LatLonBox
-	// LatLng pos = pedestrian.getPos();
-	// groundoverlay.createAndSetLatLonBox().withNorth(pos.getLat() + incs[0])
-	// .withSouth(pos.getLat() - incs[0]).withEast(
-	// pos.getLng() + incs[1])
-	// .withWest(pos.getLng() - incs[1]).withRotation(45d);
-	//		
-	// }
-
 	/**
 	 * Dibuja un poligno que representa a una persona
 	 */

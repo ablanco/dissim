@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import util.Point;
+import util.Scenario;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
@@ -63,6 +64,7 @@ public class KmlFlood {
 		double[] incs = fGrid.getIncs();
 		double ilat = incs[0] * 4 / 6;
 		double ilng = incs[1] / 2;
+		short precision = fGrid.getPrecision();
 		// int tileSize = fGrid.getTileSize();
 		// Now we update the time for each update call
 		this.endTime = endTime;
@@ -131,22 +133,28 @@ public class KmlFlood {
 				List<LatLng> vertices = new ArrayList<LatLng>();
 				short deep = 0;
 				// Aprobechamos para sacar la altura media
-//				System.err.println("Sector inundado, puntos " + sector);
+				// System.err.println("Sector inundado, puntos " + sector);
 				for (Point p : sector) {
-					deep += p.getZ();
-					vertices.add(fGrid.tileToCoord(p));
+					
+					//Tenemos que obtener las coordenadas, pero pasando a altura real
+					LatLng c = fGrid.tileToCoord(p);
+					double altitude = Scenario.innerToDouble(precision, p
+							.getZ());
+					deep += altitude;
+					c.setAltitude(altitude);
+					vertices.add(c);
 				}
+				//La media de las alturas, esto es para la opacidad
 				deep = (short) (deep / sector.size());
 
 				Kpolygon kp = new Kpolygon(Kpolygon.WaterType, vertices, ilat,
 						ilng);
 				kp.setDeep(deep);
-//				System.err.println("Poligono Dibujado");
+				// System.err.println("Poligono Dibujado");
 
 				if (altitudes.add(deep)) {
 					createWaterStyleAndColor(deep);
 				}
-
 				drawWater(kp);
 			}
 		}

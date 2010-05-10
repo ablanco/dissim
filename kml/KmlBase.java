@@ -29,9 +29,11 @@ import javax.swing.JFileChooser;
 
 import util.HexagonalGrid;
 import util.Pedestrian;
+import util.Scenario;
 import util.Snapshot;
 import util.Updateable;
 import util.flood.FloodHexagonalGrid;
+import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 import de.micromata.opengis.kml.v_2_2_0.Feature;
@@ -153,10 +155,17 @@ public class KmlBase implements Updateable {
 			List<Pedestrian> pedestrians = snap.getPeople();
 			if (pedestrians != null && pedestrians.size() > 0) {
 				// Si hay personas
+				short precision = snap.getGrid().getPrecision();
 				HexagonalGrid g = snap.getGrid();
 				for (Pedestrian p : pedestrians) {
 					// Por cada persona averiguamos su status y su posicion
-					p.setPos(g.tileToCoord(p.getPoint()));
+					// Tenemos que pasar a alura real
+					LatLng c = g.tileToCoord(p.getPoint());
+					// Supongo que la persona tiene 2 metros de altura, para que
+					// se vea bien
+					c.setAltitude(Scenario.innerToDouble(precision, (short) (p
+							.getPoint().getZ() + 2)));
+					p.setPos(c);
 				}
 				kPeople.update(pedestrians, currentEnv.getName(), currentEnv
 						.getBegin(), currentEnv.getEnd(), currentEnv.getIncs());

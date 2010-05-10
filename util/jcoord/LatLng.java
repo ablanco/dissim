@@ -40,7 +40,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 */
 	private double lng;
 
-	private short altitude = 0;
+	private double altitude = 0;
 
 	/**
 	 * Create a new LatLng object to represent a latitude/longitude pair.
@@ -68,12 +68,13 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 *            the altitude in decimeters
 	 * @author Manuel Gomar Acosta
 	 */
-	public LatLng(double lat, double lng, short altitude) {
+	public LatLng(double lat, double lng, double altitude) {
 		this.lat = round(lat);
 		this.lng = round(lng);
 		this.altitude = altitude;
 	}
 
+	
 	/**
 	 * Get a String representation of this LatLng object.
 	 * 
@@ -92,7 +93,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @return a String KML friendly representation of this LatLng object
 	 */
 	public String toKmlString() {
-		return lng + ", " + lat + ", " + this.altitude;
+		return lng + ", " + lat + ", " + altitude;
 	}
 
 	/*
@@ -364,6 +365,8 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	public double getLng() {
 		return lng;
 	}
+	
+
 
 	/**
 	 * @author Manuel Gomar Acosta
@@ -387,7 +390,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @return in decimetres
 	 * @author Manuel Gomar Acosta
 	 */
-	public short getAltitude() {
+	public double getAltitude() {
 		return altitude;
 	}
 
@@ -397,7 +400,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @param altitude
 	 * @author Manuel Gomar Acosta
 	 */
-	public void setAltitude(short altitude) {
+	public void setAltitude(double altitude) {
 		this.altitude = altitude;
 	}
 
@@ -434,22 +437,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		}
 	}
 
-	/**
-	 * @author Manuel Gomar Acosta
-	 * @param coord
-	 * @param tileSize
-	 * @return
-	 */
-	public int[] degreesToMeters(LatLng coord, int tileSize) {
-		UTMRef u = this.toUTMRef();
-		UTMRef nw = coord.toUTMRef();
-
-		int y = (int) ((nw.getEasting() - u.getEasting()) / tileSize);
-		int x = (int) ((nw.getNorthing() - u.getNorthing()) / tileSize * 4 / 3) + 1;
-		int z = this.getAltitude();
-
-		return new int[] { x, y, z };
-	}
 
 	/**
 	 * If this coordinates are contained in the area defined by the diagonal
