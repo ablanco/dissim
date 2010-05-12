@@ -163,8 +163,9 @@ public class KmlBase implements Updateable {
 					LatLng c = g.tileToCoord(p.getPoint());
 					// Supongo que la persona tiene 2 metros de altura, para que
 					// se vea bien
+					// TODO Quizás algo más de altura? 5 metros?
 					c.setAltitude(Scenario.innerToDouble(precision, (short) (p
-							.getPoint().getZ() + 2)));
+							.getPoint().getZ())) + 2.0);
 					p.setPos(c);
 				}
 				kPeople.update(pedestrians, currentEnv.getName(), currentEnv

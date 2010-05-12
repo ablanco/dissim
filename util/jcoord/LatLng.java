@@ -74,7 +74,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 		this.altitude = altitude;
 	}
 
-	
 	/**
 	 * Get a String representation of this LatLng object.
 	 * 
@@ -95,48 +94,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	public String toKmlString() {
 		return lng + ", " + lat + ", " + altitude;
 	}
-
-	/*
-	 * Convert this latitude and longitude into an OSGB (Ordnance Survey of
-	 * Great Britain) grid reference.
-	 * 
-	 * @return the converted OSGB grid reference
-	 * 
-	 * @since 1.0
-	 * 
-	 * public OSRef toOSRef() { RefEll airy1830 = new RefEll(6377563.396,
-	 * 6356256.909); double OSGB_F0 = 0.9996012717; double N0 = -100000.0;
-	 * double E0 = 400000.0; double phi0 = Math.toRadians(49.0); double lambda0
-	 * = Math.toRadians(-2.0); double a = airy1830.getMaj(); double b =
-	 * airy1830.getMin(); double eSquared = airy1830.getEcc(); double phi =
-	 * Math.toRadians(getLat()); double lambda = Math.toRadians(getLng());
-	 * double E = 0.0; double N = 0.0; double n = (a - b) / (a + b); double v =
-	 * a * OSGB_F0 * Math.pow(1.0 - eSquared * Util.sinSquared(phi), -0.5);
-	 * double rho = a * OSGB_F0 * (1.0 - eSquared) Math.pow(1.0 - eSquared *
-	 * Util.sinSquared(phi), -1.5); double etaSquared = (v / rho) - 1.0; double
-	 * M = (b * OSGB_F0) (((1 + n + ((5.0 / 4.0) * n * n) + ((5.0 / 4.0) * n * n
-	 * * n)) * (phi - phi0)) - (((3 * n) + (3 * n * n) + ((21.0 / 8.0) * n * n *
-	 * n)) Math.sin(phi - phi0) * Math.cos(phi + phi0)) + ((((15.0 / 8.0) * n *
-	 * n) + ((15.0 / 8.0) * n * n * n)) Math.sin(2.0 * (phi - phi0)) * Math
-	 * .cos(2.0 * (phi + phi0))) - (((35.0 / 24.0) * n * n * n) Math.sin(3.0 *
-	 * (phi - phi0)) * Math.cos(3.0 * (phi + phi0)))); double I = M + N0; double
-	 * II = (v / 2.0) * Math.sin(phi) * Math.cos(phi); double III = (v / 24.0) *
-	 * Math.sin(phi) * Math.pow(Math.cos(phi), 3.0) (5.0 - Util.tanSquared(phi)
-	 * + (9.0 * etaSquared)); double IIIA = (v / 720.0) Math.sin(phi)
-	 * Math.pow(Math.cos(phi), 5.0) (61.0 - (58.0 * Util.tanSquared(phi)) +
-	 * Math.pow(Math.tan(phi), 4.0)); double IV = v * Math.cos(phi); double V =
-	 * (v / 6.0) * Math.pow(Math.cos(phi), 3.0) ((v / rho) -
-	 * Util.tanSquared(phi)); double VI = (v / 120.0) Math.pow(Math.cos(phi),
-	 * 5.0) (5.0 - (18.0 * Util.tanSquared(phi)) + (Math.pow(Math.tan(phi),
-	 * 4.0)) + (14 * etaSquared) - (58 * Util .tanSquared(phi) * etaSquared));
-	 * 
-	 * N = I + (II * Math.pow(lambda - lambda0, 2.0)) + (III * Math.pow(lambda -
-	 * lambda0, 4.0)) + (IIIA * Math.pow(lambda - lambda0, 6.0)); E = E0 + (IV *
-	 * (lambda - lambda0)) + (V * Math.pow(lambda - lambda0, 3.0)) + (VI *
-	 * Math.pow(lambda - lambda0, 5.0));
-	 * 
-	 * return new OSRef(E, N); }
-	 */
 
 	/**
 	 * Convert this latitude and longitude to a UTM reference.
@@ -365,8 +322,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	public double getLng() {
 		return lng;
 	}
-	
-
 
 	/**
 	 * @author Manuel Gomar Acosta
@@ -385,9 +340,9 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	/**
-	 *Return the altitude in decimeters
+	 * Returns the altitude
 	 * 
-	 * @return in decimetres
+	 * @return
 	 * @author Manuel Gomar Acosta
 	 */
 	public double getAltitude() {
@@ -436,7 +391,6 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 			return false;
 		}
 	}
-
 
 	/**
 	 * If this coordinates are contained in the area defined by the diagonal
