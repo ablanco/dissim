@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 
+import util.DateAndTime;
 import util.Pedestrian;
 import util.Snapshot;
 import util.Updateable;
@@ -125,7 +126,7 @@ public class Statistics implements Updateable {
 		if (newData) {
 			try {
 				// Escribimos esta fila, respetando el orden
-				csv.write(snap.getDateTime()); // TODO .toOooDate());
+				csv.write(DateAndTime.toOooDate(snap.getDateTime()));
 				csv.write(String.valueOf(alive));
 				csv.write(String.valueOf(dead));
 				csv.write(String.valueOf(safe));

@@ -45,6 +45,16 @@ public class DateAndTime implements Serializable {
 		parseTime(dateAndTime);
 	}
 
+	public void parseTime(String dateAndTime) {
+		// dateTime (AAAA-MM-DDThh:mm:ss)
+		String[] data = dateAndTime.split("T");
+		String[] date = data[0].split("-");
+		String[] hour = data[1].split(":");
+		g.set(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer
+				.parseInt(date[2]), Integer.parseInt(hour[0]), Integer
+				.parseInt(hour[1]), Integer.parseInt(hour[2]));
+	}
+
 	/**
 	 * Increase the date and time in given minutes
 	 * 
@@ -59,20 +69,18 @@ public class DateAndTime implements Serializable {
 						.get(Calendar.MINUTE));
 	}
 
-	public void parseTime(String dateAndTime) {
-		// dateTime (AAAA-MM-DDThh:mm:ss)
-		String[] data = dateAndTime.split("T");
-		String[] date = data[0].split("-");
-		String[] hour = data[1].split(":");
-		g.set(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer
-				.parseInt(date[2]), Integer.parseInt(hour[0]), Integer
-				.parseInt(hour[1]), Integer.parseInt(hour[2]));
-	}
-
-	public String toOooDate() {
-		return g.get(Calendar.DAY_OF_MONTH) + "/" + g.get(Calendar.MONTH) + "/"
-				+ g.get(Calendar.YEAR) + " " + g.get(Calendar.HOUR_OF_DAY)
-				+ ":" + g.get(Calendar.MINUTE);
+	/**
+	 * dateTime debe de tener este formato dateTime (AAAA-MM-DDThh:mm:ss)
+	 * 
+	 * @param dateTime
+	 * @return formato DD/MM/AAAA HH:MM
+	 */
+	public static String toOooDate(String dateTime) {
+		String[] dates = dateTime.split("T");
+		String[] date = dates[0].split("-");
+		String[] time = dates[1].split(":");
+		return date[2] + "/" + date[1] + "/" + date[0] + " " + time[0] + ":"
+				+ time[1];
 	}
 
 	@Override
