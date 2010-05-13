@@ -61,7 +61,7 @@ public class ClockAgent extends Agent {
 		@Override
 		protected void onTick() {
 			time.updateTime(minutes);
-			AgentHelper.send(myAgent, receivers, ACLMessage.INFORM, "time",
+			AgentHelper.send(myAgent, receivers, ACLMessage.INFORM, "clock",
 					time.toString());
 		}
 

@@ -27,22 +27,19 @@ import java.lang.reflect.Constructor;
 @SuppressWarnings("serial")
 public class ReceiveClockTickBehav extends CyclicBehaviour {
 
-	@SuppressWarnings("unchecked")
-	private Class onTickClass;
+	private Class<?> onTickClass;
 	private Behaviour onTickBehav = null;
 	private String dateTime = null;
 	private Object[] arguments;
 	private MessageTemplate mt = MessageTemplate.MatchConversationId("clock");
 
-	@SuppressWarnings("unchecked")
-	public ReceiveClockTickBehav(Agent agt, Class onTickClass,
+	public ReceiveClockTickBehav(Agent agt, Class<?> onTickClass,
 			Object[] arguments, String dateTime) {
 		this.onTickClass = onTickClass;
 		this.arguments = arguments;
 		this.dateTime = dateTime;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
 		ACLMessage msg = myAgent.receive(mt);
@@ -54,12 +51,15 @@ public class ReceiveClockTickBehav extends CyclicBehaviour {
 			if (onTickBehav == null) {
 				// Carga y crea un objeto de la clase pasada, por reflexión
 				try {
-					Constructor ct = onTickClass.getConstructor(Object[].class);
+					// TODO
+					Constructor<?> ct = onTickClass
+							.getConstructor(new Class[] { Object[].class });
 					onTickBehav = (Behaviour) ct.newInstance(arguments);
 				} catch (Exception e) {
 					System.err
 							.println("An error happened while creating an instance of "
 									+ onTickClass.toString());
+					e.printStackTrace();
 					myAgent.doDelete();
 				}
 			}
