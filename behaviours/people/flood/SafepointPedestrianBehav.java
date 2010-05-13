@@ -16,9 +16,6 @@
 
 package behaviours.people.flood;
 
-import jade.core.AID;
-import jade.core.Agent;
-
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.ListIterator;
@@ -28,7 +25,6 @@ import java.util.Set;
 import osm.Osm;
 import util.HexagonalGrid;
 import util.Point;
-import util.Scenario;
 import behaviours.people.PedestrianBehav;
 import behaviours.people.PedestrianUtils;
 import behaviours.people.YouAreDeadException;
@@ -40,9 +36,8 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 	private Random rnd = new Random(System.currentTimeMillis());
 	private int direction = PedestrianUtils.randomDirection(rnd);
 
-	public SafepointPedestrianBehav(Agent a, long period, AID env,
-			Scenario scen, double lat, double lng, int d, int s) {
-		super(a, period, env, scen, lat, lng, d, s);
+	public SafepointPedestrianBehav(Object[] args) {
+		super(args);
 	}
 
 	@Override

@@ -22,7 +22,7 @@ import os
 import socket
 import math
 
-__jade = "java -cp '" + os.environ['CLASSPATH'] + ":" + os.environ['JADE_HOME'] + "/*:" + os.environ['JAK_HOME'] + "/*:.' jade.Boot"
+__jade = "java -cp '" + os.environ['CLASSPATH'] + ":.' jade.Boot"
 __host = "-host " + socket.gethostname()
 __port = None
 __local_host = None
@@ -197,6 +197,10 @@ else:
     time = time.split('-')
     fich.write('\ndate=' + time[0])
     fich.write('\nhour=' + time[1])
+    tick = raw_input('Tick (en milisegundos) de la simulación: ')
+    fich.write('\ntick=' + tick)
+    minutes = raw_input('Minutos reales que corresponden a cada tick: ')
+    fich.write('\nrealTick=' + minutes)
     print('\nÁREA DE LA SIMULACIÓN\n')
     NW = raw_input('Coordenadas (con el formato Lat,Lng) NorOeste del área de simulación: ')
     fich.write('\nNW=[' + NW + ']')
@@ -237,17 +241,12 @@ else:
         if db_db != 'None':
             fich.write('\nDBDb=' + db_db)
     print('\nENTRADA DE AGUA\n')
-    timeFlood = raw_input('Período (en milisegundos) de la actualización del agua en el terreno: ')
-    fich.write('\nupdateTimeFlood=' + timeFlood)
-    timeWS = raw_input('Tiempo (en milisegundos) entre entradas de nueva agua en la inundación: ')
-    fich.write('\nupdateTimeWS=' + timeWS)
-    timeRealWS = raw_input('Tiempo real dentro de la simulación (en minutos) que representa el tiempo anterior: ')
-    fich.write('\nupdateTimeRealWS=' + timeRealWS)
     nws = int(raw_input('Número de entradas de agua: '))
     for i in range(nws):
         ws = raw_input('Coordenadas (Lat,Lng) de la entrada de agua ' + str(i) + ': ')
         fich.write('\nwaterSource=[' + ws)
-        wws = int(raw_input('Cantidad de agua de dicha entrada (en litros por ' + timeRealWS + ' minutos): '))
+        wws = int(raw_input('Cantidad de agua de dicha entrada (en litros por minutos): '))
+        wws = wws * int(minutes)
         wws = wws / 1000 # paso a metros cúbicos
         area = (3 * math.sqrt(3) * ((int(tileSize)/2)**2)) / 2 # área del hexágono
         h = wws / area # altura en metros
@@ -256,16 +255,17 @@ else:
             wws = 1
         fich.write(',' + str(wws) + ']')
     print('\nPERSONAS\n')
-    timePeople = raw_input('Tiempo (en milisegundos) entre actualizaciones de los agentes humanos: ')
-    fich.write('\nupdateTimePeople=' + timePeople)
     npeople = int(raw_input('Número de grupos de agentes humanos en la simulación: '))
     for i in range(npeople):
         person = raw_input('Coordenadas (Lat,Lng) del peatón ' + str(i) + ': ')
         fich.write('\nperson=[' + person)
-        person = raw_input('Distancia de visión del peatón (en hexágonos): ')
-        fich.write(',' + person)
-        person = raw_input('Velocidad (distancia en hexágonos a la que es capaz de moverse en un paso) del peatón: ')
-        fich.write(',' + person)
+        person = int(raw_input('Distancia de visión del peatón (en metros): '))
+        person = int(round(person / int(tileSize)))
+        fich.write(',' + str(person))
+        # Velocidad de la persona a pie: 8km/h aprox 133m/min
+        person = int(minutes) * 133 # metros que puede recorrer una persona por tick
+        person = int(round(person / int(tileSize))) # hexágonos que recorre por tick
+        fich.write(',' + str(person))
         person = raw_input('Número de clones (agentes en el grupo): ')
         fich.write(',' + person + ',[')
         first = True

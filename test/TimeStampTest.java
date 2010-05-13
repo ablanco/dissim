@@ -22,7 +22,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import kml.KmlBase;
-import util.DateAndTime;
 import util.Pedestrian;
 import util.Point;
 import util.Snapshot;
@@ -44,8 +43,8 @@ public class TimeStampTest {
 				-90.088238, (short) 10), new LatLng(29.918075, -90.053707,
 				(short) 10), 0, 0, 100);
 		Snapshot newOrleans = new Snapshot("TimeStampTest", "", grid,
-				new DateAndTime(2000, 3, 15, 15, 3),
-				new Hashtable<String, Pedestrian>());
+		// TODO new DateAndTime(2000, 3, 15, 15, 3),
+				"lol", new Hashtable<String, Pedestrian>());
 
 		KmlBase k = new KmlBase();
 		int c = newOrleans.getGrid().getColumns();
@@ -68,7 +67,7 @@ public class TimeStampTest {
 
 			k.update(newOrleans, new AID());
 			newOrleans.getPeople().clear();
-			newOrleans.updateTime(30);
+			// TODO newOrleans.updateTime(30);
 		}
 		k.finish();
 	}

@@ -16,11 +16,14 @@
 
 package behaviours;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
+
+import java.util.ArrayList;
 
 public class CreateAgentBehav extends OneShotBehaviour {
 
@@ -30,6 +33,7 @@ public class CreateAgentBehav extends OneShotBehaviour {
 	private String name;
 	private String agtClass;
 	private int clones;
+	private ArrayList<AID> newAgts;
 
 	/**
 	 * 
@@ -44,6 +48,11 @@ public class CreateAgentBehav extends OneShotBehaviour {
 	 */
 	public CreateAgentBehav(Agent agt, String name, String agtClass,
 			int clones, Object[] arguments) {
+		this(agt, name, agtClass, clones, arguments, null);
+	}
+
+	public CreateAgentBehav(Agent agt, String name, String agtClass,
+			int clones, Object[] arguments, ArrayList<AID> newAgts) {
 		super(agt);
 		if (clones <= 0)
 			throw new IllegalArgumentException(
@@ -52,6 +61,7 @@ public class CreateAgentBehav extends OneShotBehaviour {
 		this.agtClass = agtClass;
 		this.clones = clones;
 		this.arguments = arguments;
+		this.newAgts = newAgts;
 	}
 
 	@Override
@@ -63,6 +73,10 @@ public class CreateAgentBehav extends OneShotBehaviour {
 				agtctrl = container.createNewAgent(name + "-"
 						+ Integer.toString(i), agtClass, arguments);
 				agtctrl.start();
+				if (newAgts != null) {
+					AID id = new AID(agtctrl.getName(), AID.ISGUID);
+					newAgts.add(id);
+				}
 			} catch (ControllerException e) {
 				System.err.println(myAgent.getLocalName()
 						+ " -> Error creating an agent of type " + agtClass

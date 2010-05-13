@@ -16,28 +16,22 @@
 
 package behaviours.people.flood;
 
-import jade.core.AID;
-import jade.core.Agent;
-
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
+import util.HexagonalGrid;
+import util.Point;
 import behaviours.people.PedestrianBehav;
 import behaviours.people.PedestrianUtils;
 import behaviours.people.YouAreDeadException;
 import behaviours.people.YouAreSafeException;
 
-import util.HexagonalGrid;
-import util.Point;
-import util.Scenario;
-
 @SuppressWarnings("serial")
 public class FarFromWaterPedestrianBehav extends PedestrianBehav {
 
-	public FarFromWaterPedestrianBehav(Agent a, long period, AID env,
-			Scenario scen, double lat, double lng, int d, int s) {
-		super(a, period, env, scen, lat, lng, d, s);
+	public FarFromWaterPedestrianBehav(Object[] args) {
+		super(args);
 	}
 
 	@Override

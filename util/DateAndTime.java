@@ -40,6 +40,11 @@ public class DateAndTime implements Serializable {
 		g = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute, 0);
 	}
 
+	public DateAndTime(String dateAndTime) {
+		g = new GregorianCalendar();
+		parseTime(dateAndTime);
+	}
+
 	/**
 	 * Increase the date and time in given minutes
 	 * 
@@ -54,6 +59,16 @@ public class DateAndTime implements Serializable {
 						.get(Calendar.MINUTE));
 	}
 
+	public void parseTime(String dateAndTime) {
+		// dateTime (AAAA-MM-DDThh:mm:ss)
+		String[] data = dateAndTime.split("T");
+		String[] date = data[0].split("-");
+		String[] hour = data[1].split(":");
+		g.set(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer
+				.parseInt(date[2]), Integer.parseInt(hour[0]), Integer
+				.parseInt(hour[1]), Integer.parseInt(hour[2]));
+	}
+
 	public String toOooDate() {
 		return g.get(Calendar.DAY_OF_MONTH) + "/" + g.get(Calendar.MONTH) + "/"
 				+ g.get(Calendar.YEAR) + " " + g.get(Calendar.HOUR_OF_DAY)
@@ -62,7 +77,7 @@ public class DateAndTime implements Serializable {
 
 	@Override
 	public String toString() {
-		// dateTime (AAAA-MM-DDThh:mm:ssZ)
+		// dateTime (AAAA-MM-DDThh:mm:ss)
 		String month = "";
 		String day = "";
 		String hour = "";

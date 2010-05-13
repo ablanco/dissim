@@ -23,9 +23,9 @@ import util.HexagonalGrid;
 import util.Point;
 import util.jcoord.LatLng;
 
+@SuppressWarnings("serial")
 public class QueryGridBehav extends CyclicBehaviour {
 
-	private static final long serialVersionUID = 5059242741715871473L;
 	public static final String ELEVATION = "elev";
 	public static final String COORD_TO_TILE = "ctt";
 	public static final String TILE_TO_COORD = "ttc";

@@ -27,13 +27,13 @@ public class Snapshot implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private HexagonalGrid grid;
-	private DateAndTime dateTime;
+	private String dateTime;
 	private List<Pedestrian> people;
 	private String name;
 	private String description;
 
 	public Snapshot(String name, String description, HexagonalGrid grid,
-			DateAndTime dateTime, Map<String, Pedestrian> people) {
+			String dateTime, Map<String, Pedestrian> people) {
 		this.grid = grid;
 		this.dateTime = dateTime;
 		this.name = name;
@@ -51,7 +51,7 @@ public class Snapshot implements Serializable {
 		return grid;
 	}
 
-	public DateAndTime getDateTime() {
+	public String getDateTime() {
 		return dateTime;
 	}
 
@@ -65,10 +65,6 @@ public class Snapshot implements Serializable {
 
 	public String getDescription() {
 		return description;
-	}
-
-	public DateAndTime updateTime(int minutes) {
-		return dateTime.updateTime(minutes);
 	}
 
 }

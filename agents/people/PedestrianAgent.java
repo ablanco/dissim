@@ -19,15 +19,11 @@ package agents.people;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-
-import java.lang.reflect.Constructor;
-
 import util.AgentHelper;
-import util.Scenario;
 import util.jcoord.LatLng;
+import behaviours.ReceiveClockTickBehav;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
-import behaviours.people.PedestrianBehav;
 
 @SuppressWarnings("serial")
 public class PedestrianAgent extends Agent {
@@ -60,7 +56,6 @@ public class PedestrianAgent extends Agent {
 
 	protected class ContinuePA extends ReceiveScenarioBehav {
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void action() {
 			String env = Integer.toString(scen.getEnviromentByCoord(new LatLng(
@@ -80,22 +75,14 @@ public class PedestrianAgent extends Agent {
 				}
 			}
 
-			PedestrianBehav behav = null;
 			try {
-				// Carga, y crea un objeto de la clase pasada, por reflexión
-				Class cls = Class.forName(behaviour);
-				Constructor ct = cls.getConstructor(new Class[] { Agent.class,
-						long.class, AID.class, Scenario.class, double.class,
-						double.class, int.class, int.class });
-				behav = (PedestrianBehav) ct.newInstance(new Object[] {
-						myAgent, scen.getPeopleUpdateTime(), envAID, scen, lat,
-						lng, d, s });
-				behav.chooseArgs(chooseArgs);
-			} catch (Throwable e) {
+				myAgent.addBehaviour(new ReceiveClockTickBehav(myAgent, Class
+						.forName(behaviour), new Object[] { myAgent, envAID,
+						scen, lat, lng, d, s }, null));
+			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				doDelete();
 			}
-			myAgent.addBehaviour(behav);
 
 			done = true;
 		}

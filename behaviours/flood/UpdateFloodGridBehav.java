@@ -18,7 +18,7 @@ package behaviours.flood;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.TickerBehaviour;
+import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 
@@ -35,21 +35,21 @@ import util.flood.FloodScenario;
 import behaviours.InterGridBehav;
 
 @SuppressWarnings("serial")
-public class UpdateFloodGridBehav extends TickerBehaviour {
+public class UpdateFloodGridBehav extends Behaviour {
 
 	private FloodHexagonalGrid grid;
 	private FloodScenario scen;
 	private Map<String, Object> envs = new Hashtable<String, Object>();
 
-	public UpdateFloodGridBehav(Agent a, FloodScenario scen,
-			FloodHexagonalGrid grid) {
-		super(a, scen.getFloodUpdateTime());
-		this.grid = grid;
-		this.scen = scen;
+	public UpdateFloodGridBehav(Object[] args) {
+		// Agent a, FloodScenario scen, FloodHexagonalGrid grid
+		super((Agent) args[0]);
+		grid = (FloodHexagonalGrid) args[2];
+		scen = (FloodScenario) args[1];
 	}
 
 	@Override
-	protected void onTick() {
+	public void action() {
 		Set<Point> set = grid.getModCoordAndReset();
 		Iterator<Point> it = set.iterator();
 		// Por cada casilla modificada
@@ -84,11 +84,6 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 				// Hay una adyacente más alta, hay que mover agua desde la
 				// adyacente a la modificada
 				if (adjValue != value) {
-
-					// System.out.println(myAgent.getLocalName()+" From " +
-					// adjCoord[0] + ","
-					// + adjCoord[1] + " to " + coord[0] + "," + coord[1]);
-
 					short water = (short) ((adjValue - value) / 2);
 					water = decrease(adjCoord[0], adjCoord[1], coord[0],
 							coord[1], water);
@@ -100,17 +95,20 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 			// Hay una adyacente más baja, hay que mover agua desde la
 			// modificada a la más baja
 			else {
-
-				// System.out.println(myAgent.getLocalName()+" From " + coord[0]
-				// + "," + coord[1] + " to "
-				// + adjCoord[0] + "," + adjCoord[1]);
-
 				short water = (short) ((value - adjValue) / 2);
 				water = decrease(coord[0], coord[1], adjCoord[0], adjCoord[1],
 						water);
 				increase(adjCoord[0], adjCoord[1], water);
 			}
 		}
+
+		// TODO - Remove Behav
+		myAgent.removeBehaviour(this);
+	}
+
+	@Override
+	public boolean done() {
+		return false;
 	}
 
 	private short decrease(int x, int y, int ix, int iy, short w) {
@@ -151,10 +149,9 @@ public class UpdateFloodGridBehav extends TickerBehaviour {
 		// Comprobar si la casilla es de la corona y por lo tanto pertence a
 		// otro entorno
 		if (x < grid.getOffCol() || (x - grid.getOffCol()) >= grid.getColumns()
-				|| y < grid.getOffRow() || (y - grid.getOffRow()) >= grid.getRows()) {
+				|| y < grid.getOffRow()
+				|| (y - grid.getOffRow()) >= grid.getRows()) {
 			String env = Integer.toString(scen.getEnviromentByPosition(x, y));
-
-			// System.out.println(myAgent.getLocalName()+" Bazinga! "+x+","+y);
 
 			Object returnObj = envs.get(env);
 			if (returnObj == null) {

@@ -31,18 +31,6 @@ public class FloodScenario extends Scenario {
 	 * Points where enters water into the simulation
 	 */
 	private LinkedList<WaterSource> waterSources;
-	/**
-	 * Milliseconds between every update of the flooded water position
-	 */
-	private long floodUpdateTime = 50L;
-	/**
-	 * Milliseconds between messages from water sources
-	 */
-	private long waterSourceUpdateTime = 75L;
-	/**
-	 * Real simulation time (minutes) between water entrances
-	 */
-	private int waterSourceMinutes = -1;
 
 	public FloodScenario() {
 		super();
@@ -54,28 +42,13 @@ public class FloodScenario extends Scenario {
 		super.loadScenarioData(data);
 		for (String s : data) {
 			String[] pair = s.split("=");
-			if (pair[0].equals("updateTimeFlood")) {
-				setFloodUpdateTime(Long.parseLong(pair[1]));
-			} else if (pair[0].equals("updateTimeWS")) {
-				setWaterSourceUpdateTime(Long.parseLong(pair[1]));
-			} else if (pair[0].equals("updateTimeRealWS")) {
-				setWaterSourceMinutes(Integer.parseInt(pair[1]));
-			} else if (pair[0].equals("waterSource")) {
+			if (pair[0].equals("waterSource")) {
 				String[] ws = decodeScenArray(pair[1]);
 				addWaterSource(new WaterSource(new LatLng(Double
 						.parseDouble(ws[0]), Double.parseDouble(ws[1])), Short
 						.parseShort(ws[2])));
 			}
 		}
-	}
-
-	@Override
-	public void complete() {
-		if (waterSourceMinutes < 0)
-			throw new IllegalStateException(
-					"There are mandatory parameters that hasn't been defined yet.");
-
-		super.complete();
 	}
 
 	public boolean addWaterSource(WaterSource ws) {
@@ -98,34 +71,6 @@ public class FloodScenario extends Scenario {
 
 	public int waterSourcesSize() {
 		return waterSources.size();
-	}
-
-	public void setFloodUpdateTime(long floodUpdateTime) {
-		this.floodUpdateTime = floodUpdateTime;
-	}
-
-	public long getFloodUpdateTime() {
-		return floodUpdateTime;
-	}
-
-	public long getWaterSourceUpdateTime() {
-		return waterSourceUpdateTime;
-	}
-
-	public void setWaterSourceUpdateTime(long waterSourceUpdateTime) {
-		this.waterSourceUpdateTime = waterSourceUpdateTime;
-	}
-
-	public int getWaterSourceMinutes() {
-		return waterSourceMinutes;
-	}
-
-	public void setWaterSourceMinutes(int waterSourceMinutes) {
-		if (waterSourceMinutes <= 0)
-			throw new IllegalArgumentException(
-					"Time between water entrance cannot be zero or negative");
-
-		this.waterSourceMinutes = waterSourceMinutes;
 	}
 
 }

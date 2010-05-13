@@ -18,31 +18,31 @@ package agents.flood;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.lang.acl.ACLMessage;
 import util.AgentHelper;
 import util.jcoord.LatLng;
+import behaviours.ReceiveClockTickBehav;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
-import behaviours.flood.WaterSourceBehav;
 
+@SuppressWarnings("serial")
 public class WaterSourceAgent extends Agent {
 
-	private static final long serialVersionUID = -901992561566307027L;
 	private AID envAID;
 	private LatLng coord;
 	private short water;
-	private long rhythm;
 
 	@Override
 	protected void setup() {
 		// Obtener argumentos
 		Object[] args = getArguments();
-		if (args.length == 4) {
+		if (args.length == 3) {
 			double lat = Double.parseDouble((String) args[0]);
 			double lng = Double.parseDouble((String) args[1]);
 			coord = new LatLng(lat, lng);
 			water = Short.parseShort((String) args[2]);
-			rhythm = Long.parseLong((String) args[3]);
 		} else {
 			throw new IllegalArgumentException("Wrong arguments.");
 		}
@@ -50,7 +50,6 @@ public class WaterSourceAgent extends Agent {
 		addBehaviour(new RequestScenarioBehav(new ContinueWS()));
 	}
 
-	@SuppressWarnings("serial")
 	protected class ContinueWS extends ReceiveScenarioBehav {
 
 		@Override
@@ -58,8 +57,8 @@ public class WaterSourceAgent extends Agent {
 			String env = Integer.toString(scen.getEnviromentByCoord(coord));
 
 			// Obtener agentes entorno
-			DFAgentDescription[] result = AgentHelper
-					.search(myAgent, "add-water");
+			DFAgentDescription[] result = AgentHelper.search(myAgent,
+					"add-water");
 			for (DFAgentDescription df : result) {
 				String name = df.getName().getLocalName();
 				name = name.substring(name.indexOf("-") + 1, name
@@ -70,11 +69,45 @@ public class WaterSourceAgent extends Agent {
 				}
 			}
 
-			myAgent.addBehaviour(new WaterSourceBehav(myAgent, rhythm, envAID,
-					coord, water));
+			myAgent.addBehaviour(new ReceiveClockTickBehav(myAgent,
+					WaterSourceBehav.class, new Object[] { myAgent, envAID,
+							coord, water }, null));
 			done = true;
 		}
 
+	}
+
+	protected class WaterSourceBehav extends Behaviour {
+
+		private LatLng coord;
+		private short water;
+		private AID envAID;
+
+		public WaterSourceBehav(Object[] args) {
+			super((Agent) args[0]);
+			// Agent a, AID envAID, LatLng coord, short water
+			envAID = (AID) args[1];
+			coord = (LatLng) args[2];
+			water = (Short) args[3];
+		}
+
+		@Override
+		public void action() {
+			// Inundar casilla
+			String content = Double.toString(coord.getLat()) + " "
+					+ Double.toString(coord.getLng()) + " "
+					+ Short.toString(water);
+			AgentHelper.send(myAgent, envAID, ACLMessage.PROPOSE, "add-water",
+					content);
+
+			// TODO - Remove Behav
+			myAgent.removeBehaviour(this);
+		}
+
+		@Override
+		public boolean done() {
+			return false;
+		}
 	}
 
 }

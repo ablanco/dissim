@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 
 import util.AgentHelper;
-import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.flood.FloodHexagonalGrid;
@@ -39,6 +38,7 @@ import util.jcoord.LatLng;
 import behaviours.AdjacentsGridBehav;
 import behaviours.InterGridBehav;
 import behaviours.QueryGridBehav;
+import behaviours.ReceiveClockTickBehav;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
 import behaviours.SyndicateBehav;
@@ -50,7 +50,7 @@ import behaviours.people.RegisterPeopleBehav;
 public class EnviromentAgent extends Agent {
 
 	private HexagonalGrid grid = null;
-	private DateAndTime dateTime = null;
+	private String dateTime = null;
 	private Map<String, Pedestrian> people = new Hashtable<String, Pedestrian>();
 
 	@Override
@@ -106,7 +106,7 @@ public class EnviromentAgent extends Agent {
 			System.out.println(getLocalName() + " - Obtainig street data");
 			grid.obtainStreetInfo();
 
-			dateTime = scen.getStartTime();
+			dateTime = scen.getStartTime().toString();
 
 			List<String> services = new ArrayList<String>(10);
 
@@ -130,13 +130,13 @@ public class EnviromentAgent extends Agent {
 			if (scen instanceof FloodScenario) {
 				FloodScenario fscen = (FloodScenario) scen;
 				myAgent.addBehaviour(new AddWaterBehav(myAgent,
-						(FloodHexagonalGrid) grid, dateTime, fscen
-								.getWaterSourceMinutes(), parallel));
+						(FloodHexagonalGrid) grid));
 				services.add("add-water");
 
 				// Mover agua por la rejilla
-				myAgent.addBehaviour(new UpdateFloodGridBehav(myAgent, fscen,
-						(FloodHexagonalGrid) grid));
+				myAgent.addBehaviour(new ReceiveClockTickBehav(myAgent,
+						UpdateFloodGridBehav.class, new Object[] { myAgent,
+								fscen, (FloodHexagonalGrid) grid }, dateTime));
 			}
 
 			// Registrarse con el agente DF

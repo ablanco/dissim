@@ -38,6 +38,8 @@ public class Scenario implements Serializable {
 	private boolean complete = false;
 	private String description = "";
 	private String name = "";
+	private long simulationTick = 250;
+	private int realTimeTick = 5;
 	/**
 	 * 1 altitude unit means (1/precision) meters
 	 */
@@ -50,10 +52,6 @@ public class Scenario implements Serializable {
 	 * Periodo de actualización de los generadores de KML
 	 */
 	private long updateKML = 3000L;
-	/**
-	 * Periodo de actualización de los agentes persona
-	 */
-	private long updatePeople = 300L;
 	/**
 	 * Coordinates of the North West point of the simulation area
 	 */
@@ -226,8 +224,10 @@ public class Scenario implements Serializable {
 					setGeoData(NW, SE, TS);
 			} else if (pair[0].equals("numEnvs")) {
 				setNumEnv(Integer.parseInt(pair[1]));
-			} else if (pair[0].equals("updateTimePeople")) {
-				setPeopleUpdateTime(Long.parseLong(pair[1]));
+			} else if (pair[0].equals("tick")) {
+				setSimulationTick(Long.parseLong(pair[1]));
+			} else if (pair[0].equals("realTick")) {
+				setRealTimeTick(Integer.parseInt(pair[1]));
 			} else if (pair[0].equals("person")) {
 				String[] person = decodeScenArray(pair[1]);
 				Pedestrian p = new Pedestrian(new LatLng(Double
@@ -359,14 +359,6 @@ public class Scenario implements Serializable {
 
 	public void setUpdateKMLPeriod(long updateKML) {
 		this.updateKML = updateKML;
-	}
-
-	public long getPeopleUpdateTime() {
-		return updatePeople;
-	}
-
-	public void setPeopleUpdateTime(long updatePeople) {
-		this.updatePeople = updatePeople;
 	}
 
 	public int getNumEnv() {
@@ -570,6 +562,30 @@ public class Scenario implements Serializable {
 
 	public void setDbDb(String dbDb) {
 		this.dbDb = dbDb;
+	}
+
+	public Object getSimulationTick() {
+		return simulationTick;
+	}
+
+	public void setSimulationTick(long simulationTick) {
+		if (simulationTick <= 0)
+			throw new IllegalArgumentException(
+					"The simulation clock tick must be positive");
+
+		this.simulationTick = simulationTick;
+	}
+
+	public Object getRealTimeTick() {
+		return realTimeTick;
+	}
+
+	public void setRealTimeTick(int realTimeTick) {
+		if (realTimeTick <= 0)
+			throw new IllegalArgumentException(
+					"Real tick time must be positive");
+
+		this.realTimeTick = realTimeTick;
 	}
 
 }

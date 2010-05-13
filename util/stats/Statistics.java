@@ -125,7 +125,7 @@ public class Statistics implements Updateable {
 		if (newData) {
 			try {
 				// Escribimos esta fila, respetando el orden
-				csv.write(snap.getDateTime().toOooDate());
+				csv.write(snap.getDateTime()); // TODO .toOooDate());
 				csv.write(String.valueOf(alive));
 				csv.write(String.valueOf(dead));
 				csv.write(String.valueOf(safe));

@@ -70,8 +70,7 @@ public class VisorFrame extends JFrame implements Updateable {
 					"Object is not an instance of Snapshot");
 
 		Snapshot snap = (Snapshot) obj;
-		gridLbl.setText(snap.getDateTime().toString() + " "
-				+ snap.getGrid().toString());
+		gridLbl.setText(snap.getDateTime() + " " + snap.getGrid().toString());
 
 		pane.updateGrid(snap, getSize());
 	}

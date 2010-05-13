@@ -49,7 +49,7 @@ public class RequestScenarioBehav extends CyclicBehaviour {
 			mt = AgentHelper.send(myAgent, creatorAID, ACLMessage.REQUEST, null, null);
 			step = 1;
 		case 1:
-			// Recibir la información de la rejilla
+			// Recibir el escenario
 			msg = myAgent.receive(mt);
 			if (msg != null) {
 				if (msg.getPerformative() == ACLMessage.INFORM) {

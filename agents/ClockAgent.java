@@ -16,6 +16,8 @@
 
 package agents;
 
+import java.util.ArrayList;
+
 import util.AgentHelper;
 import util.DateAndTime;
 import jade.core.AID;
@@ -26,13 +28,28 @@ import jade.lang.acl.ACLMessage;
 @SuppressWarnings("serial")
 public class ClockAgent extends Agent {
 
-	protected DateAndTime time;
-	protected AID[] receivers = new AID[0];
+	private DateAndTime time;
+	private AID[] receivers;
+	private int minutes;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void setup() {
-		super.setup();
-		// TODO
+		// Obtener argumentos
+		long period = -1;
+		ArrayList<AID> rec = null;
+		Object[] args = getArguments();
+		if (args.length == 4) {
+			time = new DateAndTime((String) args[0]);
+			period = ((Long) args[1]).longValue();
+			minutes = ((Integer) args[2]).intValue();
+			rec = (ArrayList<AID>) args[3];
+		} else {
+			System.err.println(getLocalName() + " wrong arguments.");
+			doDelete();
+		}
+		receivers = rec.toArray(new AID[rec.size()]);
+		addBehaviour(new SendTimeBehav(this, period));
 	}
 
 	protected class SendTimeBehav extends TickerBehaviour {
@@ -43,6 +60,7 @@ public class ClockAgent extends Agent {
 
 		@Override
 		protected void onTick() {
+			time.updateTime(minutes);
 			AgentHelper.send(myAgent, receivers, ACLMessage.INFORM, "time",
 					time.toString());
 		}

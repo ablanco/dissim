@@ -22,7 +22,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import kml.KmlBase;
-import util.DateAndTime;
 import util.Pedestrian;
 import util.Point;
 import util.Snapshot;
@@ -48,7 +47,8 @@ public class CoverturaConexa {
 		// -90.088238, (short) 10), new LatLng(29.952260, -90.087238,
 		// (short) 10), 0, 0, 3);
 		Snapshot newOrleans = new Snapshot("ConvexCoverture", "", grid,
-				new DateAndTime(2000, 3, 15, 15, 3),
+				// TODO new DateAndTime(2000, 3, 15, 15, 3),
+				"lol",
 				new Hashtable<String, Pedestrian>());
 
 		KmlBase k = new KmlBase();
@@ -74,7 +74,7 @@ public class CoverturaConexa {
 
 			k.update(newOrleans, new AID());
 			newOrleans.getPeople().clear();
-			newOrleans.updateTime(3);
+// TODO			newOrleans.updateTime(3);
 		}
 
 		// k.update(newOrleans, new AID());

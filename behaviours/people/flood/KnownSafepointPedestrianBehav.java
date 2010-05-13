@@ -33,7 +33,6 @@ import osm.Osm;
 import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
-import util.Scenario;
 import util.jcoord.LatLng;
 import behaviours.QueryGridBehav;
 import behaviours.people.PedestrianBehav;
@@ -48,11 +47,8 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 	private SafepointPedestrianBehav fallback;
 	private LinkedList<Point> lastMovements = new LinkedList<Point>();
 
-	public KnownSafepointPedestrianBehav(Agent a, long period, AID env,
-			Scenario scen, double lat, double lng, int d, int s) {
-		super(a, period, env, scen, lat, lng, d, s);
-		fallback = new SafepointPedestrianBehav(a, period, env, scen, lat, lng,
-				d, s);
+	public KnownSafepointPedestrianBehav(Object[] args) {
+		super(args);
 	}
 
 	@Override

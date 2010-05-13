@@ -16,12 +16,14 @@
 
 package agents;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
@@ -37,6 +39,7 @@ import behaviours.CreateAgentBehav;
 public class CreatorAgent extends Agent {
 
 	private Scenario scen = null;
+	private ArrayList<AID> clockReceivers = new ArrayList<AID>();
 
 	@Override
 	protected void setup() {
@@ -75,10 +78,8 @@ public class CreatorAgent extends Agent {
 						Integer.toString(scen.getTileSize()),
 						Integer.toString(size[2]), Integer.toString(size[3]) };
 				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
-						"agents.EnviromentAgent", 1, arguments));
+						"agents.EnviromentAgent", 1, arguments, clockReceivers));
 			}
-
-			addBehaviour(new ChooseClockEnviroment());
 
 			// Esperar a que los entornos estén inicializados
 			addBehaviour(new WaitForReadyBehav());
@@ -119,11 +120,11 @@ public class CreatorAgent extends Agent {
 						arguments = new Object[] {
 								Double.toString(coord.getLat()),
 								Double.toString(coord.getLng()),
-								Short.toString(ws.getWater()),
-								Long.toString(fscen.getWaterSourceUpdateTime()) };
+								Short.toString(ws.getWater()) };
 						myAgent.addBehaviour(new CreateAgentBehav(myAgent,
 								"WaterSource" + cont,
-								"agents.flood.WaterSourceAgent", 1, arguments));
+								"agents.flood.WaterSourceAgent", 1, arguments,
+								clockReceivers));
 						cont++;
 					}
 				}
@@ -141,9 +142,16 @@ public class CreatorAgent extends Agent {
 							Integer.toString(p.getSpeed()) };
 					myAgent.addBehaviour(new CreateAgentBehav(myAgent, "Dude"
 							+ i, "agents.people.PedestrianAgent",
-							p.getClones(), arguments));
+							p.getClones(), arguments, clockReceivers));
 					i++;
 				}
+
+				// Lanzar reloj, y por tanto lanzar la simulación
+				arguments = new Object[] { scen.getStartTime().toString(),
+						scen.getSimulationTick(), scen.getRealTimeTick(),
+						clockReceivers };
+				myAgent.addBehaviour(new CreateAgentBehav(myAgent, "Clock",
+						"agents.ClockAgent", 1, arguments));
 
 				myAgent.removeBehaviour(this);
 			} else {
@@ -168,40 +176,6 @@ public class CreatorAgent extends Agent {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			} else {
-				block();
-			}
-		}
-
-	}
-
-	protected class ChooseClockEnviroment extends CyclicBehaviour {
-
-		private boolean clockEnviroment = false;
-		private int numEnvs = 0;
-
-		@Override
-		public void action() {
-			ACLMessage msg = myAgent.receive(MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.PROPOSE),
-					MessageTemplate.MatchConversationId("clock-env")));
-			if (msg != null) {
-				int perf = ACLMessage.REJECT_PROPOSAL;
-				// Sólo se le responde que sí al primero
-				if (!clockEnviroment) {
-					perf = ACLMessage.ACCEPT_PROPOSAL;
-					clockEnviroment = true;
-				}
-
-				ACLMessage reply = msg.createReply();
-				reply.setPerformative(perf);
-				myAgent.send(reply);
-
-				// Si todos los enviroments ya se han propuesto como reloj no
-				// es necesario este comportamiento
-				numEnvs++;
-				if (numEnvs == scen.getNumEnv())
-					myAgent.removeBehaviour(this);
 			} else {
 				block();
 			}

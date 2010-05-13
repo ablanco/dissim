@@ -22,7 +22,6 @@ import jade.core.AID;
 import java.util.Hashtable;
 
 import osm.Osm;
-import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Snapshot;
@@ -55,7 +54,8 @@ public class OSMMapTest {
 
 		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 20);
 
-		DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
+		// TODO DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
+		String dateTime = "lol";
 		Snapshot snapShot = new Snapshot("OSMMapTest", "", grid,
 				dateTime, new Hashtable<String, Pedestrian>());
 

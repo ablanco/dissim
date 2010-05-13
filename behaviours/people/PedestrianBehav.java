@@ -18,7 +18,7 @@ package behaviours.people;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
@@ -32,7 +32,7 @@ import util.Scenario;
 import behaviours.AdjacentsGridBehav;
 
 @SuppressWarnings("serial")
-public abstract class PedestrianBehav extends CyclicBehaviour {
+public abstract class PedestrianBehav extends Behaviour {
 
 	private AID env;
 	private double lat; // Posición en coordenadas
@@ -40,41 +40,32 @@ public abstract class PedestrianBehav extends CyclicBehaviour {
 	protected int d; // Distancia de visión
 	protected int s; // Velocidad
 	private String type = AdjacentsGridBehav.LAT_LNG;
-	private long period;
-	private long previous;
 	private int step = 0;
 	private MessageTemplate mt = MessageTemplate.MatchAll();
 	protected Point position = null; // Posición en columna y fila
 	private int status = Pedestrian.HEALTHY;
 	protected Scenario scen;
 
-	public PedestrianBehav(Agent a, long period, AID env, Scenario scen,
-			double lat, double lng, int d, int s) {
-		super(a);
-		if (env == null)
+	public PedestrianBehav(Object[] args) {
+		super((Agent) args[0]);
+		// Agent a, AID env, Scenario scen, double lat, double lng, int d, int s
+		if (args[1] == null)
 			throw new IllegalArgumentException(
 					"The enviroment AID cannot be null");
-		this.env = env;
-		this.period = period;
-		this.lat = lat;
-		this.lng = lng;
-		this.d = d;
-		if (s > d) // La velocidad no puede ser superior a la distancia de
-			// visión
-			this.s = d;
-		else
-			this.s = s;
-		this.scen = scen;
-		previous = System.currentTimeMillis();
+		env = (AID) args[1];
+		lat = (Double) args[3];
+		lng = (Double) args[4];
+		d = (Integer) args[5];
+		s = (Integer) args[6];
+		// La velocidad no puede ser superior a la distancia de visión
+		if (s > d)
+			s = d;
+		scen = (Scenario) args[2];
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
-		if ((System.currentTimeMillis() - previous) < period)
-			return; // TODO Ugly
-
-		previous = System.currentTimeMillis();
 		ACLMessage msg;
 		String content;
 		switch (step) {
@@ -100,7 +91,6 @@ public abstract class PedestrianBehav extends CyclicBehaviour {
 
 					Point pmejor = null;
 					try {
-						// pmejor = rank.choose(adjacents, position, d, s);
 						pmejor = choose(adjacents);
 					} catch (YouAreDeadException e) {
 						AgentHelper.send(myAgent, env, ACLMessage.CANCEL,
@@ -160,11 +150,18 @@ public abstract class PedestrianBehav extends CyclicBehaviour {
 				}
 
 				step = 0;
+				// TODO - Remove behaviour
+				myAgent.removeBehaviour(this);
 			} else {
 				block();
 			}
 			break;
 		}
+	}
+
+	@Override
+	public boolean done() {
+		return false;
 	}
 
 	protected abstract Point choose(Set<Point> adjacents)

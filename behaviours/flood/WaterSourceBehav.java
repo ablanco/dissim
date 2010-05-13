@@ -15,35 +15,3 @@
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package behaviours.flood;
-
-import jade.core.AID;
-import jade.core.Agent;
-import jade.core.behaviours.TickerBehaviour;
-import jade.lang.acl.ACLMessage;
-import util.AgentHelper;
-import util.jcoord.LatLng;
-
-@SuppressWarnings("serial")
-public class WaterSourceBehav extends TickerBehaviour {
-
-	private LatLng coord;
-	private short water;
-	private AID envAID;
-
-	public WaterSourceBehav(Agent a, long period, AID envAID, LatLng coord,
-			short water) {
-		super(a, period);
-		this.envAID = envAID;
-		this.coord = coord;
-		this.water = water;
-	}
-
-	@Override
-	protected void onTick() {
-		// Inundar casilla
-		String content = Double.toString(coord.getLat()) + " "
-				+ Double.toString(coord.getLng()) + " " + Short.toString(water);
-		AgentHelper.send(myAgent, envAID, ACLMessage.PROPOSE, "add-water",
-				content);
-	}
-}
