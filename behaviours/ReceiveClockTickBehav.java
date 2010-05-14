@@ -24,17 +24,19 @@ import jade.lang.acl.MessageTemplate;
 
 import java.lang.reflect.Constructor;
 
+import util.DateAndTime;
+
 @SuppressWarnings("serial")
 public class ReceiveClockTickBehav extends CyclicBehaviour {
 
 	private Class<?> onTickClass;
 	private Behaviour onTickBehav = null;
-	private String dateTime = null;
+	private DateAndTime dateTime = null;
 	private Object[] arguments;
 	private MessageTemplate mt = MessageTemplate.MatchConversationId("clock");
 
 	public ReceiveClockTickBehav(Agent agt, Class<?> onTickClass,
-			Object[] arguments, String dateTime) {
+			Object[] arguments, DateAndTime dateTime) {
 		this.onTickClass = onTickClass;
 		this.arguments = arguments;
 		this.dateTime = dateTime;
@@ -46,12 +48,11 @@ public class ReceiveClockTickBehav extends CyclicBehaviour {
 		if (msg != null) {
 			// Mensaje recibido, procesarlo
 			if (dateTime != null)
-				dateTime = msg.getContent();
+				dateTime.parseAndSetTime(msg.getContent());
 
 			if (onTickBehav == null) {
 				// Carga y crea un objeto de la clase pasada, por reflexión
 				try {
-					// TODO
 					Constructor<?> ct = onTickClass
 							.getConstructor(new Class[] { Object[].class });
 					onTickBehav = (Behaviour) ct

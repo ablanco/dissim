@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import util.AgentHelper;
+import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Snapshot;
@@ -35,13 +36,13 @@ public class SendUpdateBehav extends TickerBehaviour {
 	private Set<AID> to;
 	private String convId;
 	private HexagonalGrid grid;
-	private String dateTime;
+	private DateAndTime dateTime;
 	private Map<String, Pedestrian> people;
 	private String name;
 	private String description;
 
 	public SendUpdateBehav(Agent a, long period, Set<AID> to, String convId,
-			HexagonalGrid grid, String dateTime,
+			HexagonalGrid grid, DateAndTime dateTime,
 			Map<String, Pedestrian> people, String name, String description) {
 		super(a, period);
 		this.to = to;
@@ -56,10 +57,9 @@ public class SendUpdateBehav extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		AID[] receivers = new AID[to.size()];
-		AgentHelper
-				.send(myAgent, to.toArray(receivers), ACLMessage.INFORM,
-						convId, new Snapshot(name, description, grid, dateTime,
-								people));
+		AgentHelper.send(myAgent, to.toArray(receivers), ACLMessage.INFORM,
+				convId, new Snapshot(name, description, grid, dateTime
+						.toString(), people));
 	}
 
 }

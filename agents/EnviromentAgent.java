@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import util.AgentHelper;
+import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.flood.FloodHexagonalGrid;
@@ -50,7 +51,7 @@ import behaviours.people.RegisterPeopleBehav;
 public class EnviromentAgent extends Agent {
 
 	private HexagonalGrid grid = null;
-	private String dateTime = null;
+	private DateAndTime dateTime = null;
 	private Map<String, Pedestrian> people = new Hashtable<String, Pedestrian>();
 
 	@Override
@@ -106,7 +107,7 @@ public class EnviromentAgent extends Agent {
 			System.out.println(getLocalName() + " - Obtainig street data");
 			grid.obtainStreetInfo();
 
-			dateTime = scen.getStartTime().toString();
+			dateTime = scen.getStartTime();
 
 			List<String> services = new ArrayList<String>(10);
 
