@@ -18,14 +18,13 @@ package agents.flood;
 
 import jade.core.AID;
 import jade.core.Agent;
-import jade.core.behaviours.Behaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.lang.acl.ACLMessage;
 import util.AgentHelper;
 import util.jcoord.LatLng;
 import behaviours.ReceiveClockTickBehav;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
+import behaviours.flood.WaterSourceBehav;
 
 @SuppressWarnings("serial")
 public class WaterSourceAgent extends Agent {
@@ -75,39 +74,6 @@ public class WaterSourceAgent extends Agent {
 			done = true;
 		}
 
-	}
-
-	protected class WaterSourceBehav extends Behaviour {
-
-		private LatLng coord;
-		private short water;
-		private AID envAID;
-
-		public WaterSourceBehav(Object[] args) {
-			super((Agent) args[0]);
-			// Agent a, AID envAID, LatLng coord, short water
-			envAID = (AID) args[1];
-			coord = (LatLng) args[2];
-			water = (Short) args[3];
-		}
-
-		@Override
-		public void action() {
-			// Inundar casilla
-			String content = Double.toString(coord.getLat()) + " "
-					+ Double.toString(coord.getLng()) + " "
-					+ Short.toString(water);
-			AgentHelper.send(myAgent, envAID, ACLMessage.PROPOSE, "add-water",
-					content);
-
-			// TODO - Remove Behav
-			myAgent.removeBehaviour(this);
-		}
-
-		@Override
-		public boolean done() {
-			return false;
-		}
 	}
 
 }

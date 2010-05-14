@@ -54,7 +54,8 @@ public class ReceiveClockTickBehav extends CyclicBehaviour {
 					// TODO
 					Constructor<?> ct = onTickClass
 							.getConstructor(new Class[] { Object[].class });
-					onTickBehav = (Behaviour) ct.newInstance(arguments);
+					onTickBehav = (Behaviour) ct
+							.newInstance(new Object[] { arguments });
 				} catch (Exception e) {
 					System.err
 							.println("An error happened while creating an instance of "
@@ -65,6 +66,7 @@ public class ReceiveClockTickBehav extends CyclicBehaviour {
 			}
 
 			myAgent.addBehaviour(onTickBehav);
+//			System.out.println(onTickClass.toString() + " -> " + onTickBehav.getExecutionState());
 		} else {
 			block();
 		}

@@ -33,7 +33,6 @@ public class UpdateAgent extends Agent {
 	private AID[] envAID = null;
 	private Updateable client = null;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void setup() {
 		// Obtener argumentos
@@ -42,8 +41,8 @@ public class UpdateAgent extends Agent {
 		if (args.length == 2) {
 			try {
 				// Carga, y crea un objeto de la clase pasada, por reflexión
-				Class cls = Class.forName((String) args[0]);
-				Constructor ct = cls.getConstructor(new Class[0]);
+				Class<?> cls = Class.forName((String) args[0]);
+				Constructor<?> ct = cls.getConstructor(new Class[0]);
 				client = (Updateable) ct.newInstance(new Object[0]);
 
 				envs = ((String) args[1]).split(",");

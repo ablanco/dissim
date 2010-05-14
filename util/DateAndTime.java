@@ -42,12 +42,18 @@ public class DateAndTime implements Serializable {
 
 	public DateAndTime(String dateAndTime) {
 		g = new GregorianCalendar();
-		parseTime(dateAndTime);
+		parseAndSetTime(dateAndTime);
 	}
 
-	public void parseTime(String dateAndTime) {
+	/**
+	 * Parse the parameter dateTime and change the date and time of object to
+	 * the one parsed. dateTime must have this format: AAAA-MM-DDThh:mm:ss
+	 * 
+	 * @param dateTime
+	 */
+	public void parseAndSetTime(String dateTime) {
 		// dateTime (AAAA-MM-DDThh:mm:ss)
-		String[] data = dateAndTime.split("T");
+		String[] data = dateTime.split("T");
 		String[] date = data[0].split("-");
 		String[] hour = data[1].split(":");
 		g.set(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer
@@ -70,7 +76,7 @@ public class DateAndTime implements Serializable {
 	}
 
 	/**
-	 * dateTime debe de tener este formato dateTime (AAAA-MM-DDThh:mm:ss)
+	 * dateTime must have this format: AAAA-MM-DDThh:mm:ss
 	 * 
 	 * @param dateTime
 	 * @return formato DD/MM/AAAA HH:MM
