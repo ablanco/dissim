@@ -122,7 +122,7 @@ public class CreatorAgent extends Agent {
 								Double.toString(coord.getLng()),
 								Short.toString(ws.getWater()) };
 						myAgent.addBehaviour(new CreateAgentBehav(myAgent,
-								"WaterSource" + cont,
+								"WaterSource-" + cont,
 								"agents.flood.WaterSourceAgent", 1, arguments,
 								clockReceivers));
 						cont++;
@@ -140,8 +140,8 @@ public class CreatorAgent extends Agent {
 							Double.toString(pos.getLng()),
 							Integer.toString(p.getVision()),
 							Integer.toString(p.getSpeed()) };
-					myAgent.addBehaviour(new CreateAgentBehav(myAgent, "Dude"
-							+ i, "agents.people.PedestrianAgent",
+					myAgent.addBehaviour(new CreateAgentBehav(myAgent,
+							"Pedestrian-" + i, "agents.people.PedestrianAgent",
 							p.getClones(), arguments, clockReceivers));
 					i++;
 				}

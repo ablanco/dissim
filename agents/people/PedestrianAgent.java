@@ -78,7 +78,7 @@ public class PedestrianAgent extends Agent {
 			try {
 				myAgent.addBehaviour(new ReceiveClockTickBehav(myAgent, Class
 						.forName(behaviour), new Object[] { myAgent, envAID,
-						scen, lat, lng, d, s }, null));
+						scen, lat, lng, d, s, chooseArgs }, null));
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				doDelete();

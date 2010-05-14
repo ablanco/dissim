@@ -66,7 +66,6 @@ public class ReceiveClockTickBehav extends CyclicBehaviour {
 			}
 
 			myAgent.addBehaviour(onTickBehav);
-//			System.out.println(onTickClass.toString() + " -> " + onTickBehav.getExecutionState());
 		} else {
 			block();
 		}

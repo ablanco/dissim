@@ -61,6 +61,7 @@ public abstract class PedestrianBehav extends Behaviour {
 		if (s > d)
 			s = d;
 		scen = (Scenario) args[2];
+		chooseArgs((Object[]) args[7]);
 	}
 
 	@SuppressWarnings("unchecked")
