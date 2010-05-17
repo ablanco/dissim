@@ -50,55 +50,60 @@ public class UpdateFloodGridBehav extends Behaviour {
 
 	@Override
 	public void action() {
-		Set<Point> set = grid.getModCoordAndReset();
-		Iterator<Point> it = set.iterator();
-		// Por cada casilla modificada
-		while (it.hasNext()) {
-			Point p = it.next();
-			int[] coord = new int[] { p.getCol(), p.getRow() };
-			ArrayList<int[]> adjacents = grid.getAdjacents(coord[0], coord[1]);
-			short value = grid.getValue(coord[0], coord[1]);
+		// TODO el 250 es un mangazo
+		int times = (scen.getRealTimeTick() * 250) / grid.getTileSize();
+		for (int i = 0; i < times; i++) {
+			Set<Point> set = grid.getModCoordAndReset();
+			Iterator<Point> it = set.iterator();
+			// Por cada casilla modificada
+			while (it.hasNext()) {
+				Point p = it.next();
+				int[] coord = new int[] { p.getCol(), p.getRow() };
+				ArrayList<int[]> adjacents = grid.getAdjacents(coord[0],
+						coord[1]);
+				short value = grid.getValue(coord[0], coord[1]);
 
-			int[] adjCoord = coord;
-			short adjValue = value;
-			Iterator<int[]> itadj = adjacents.iterator();
-			// Buscamos un casilla más baja que la modificada
-			while (itadj.hasNext()) {
-				int[] tile = itadj.next();
-				if (((short) tile[2]) < adjValue) {
-					adjValue = (short) tile[2];
-					adjCoord = new int[] { tile[0], tile[1] };
-				}
-			}
-			// Si no la hay es que la modificada es más baja o igual
-			if (adjValue == value) {
-				itadj = adjacents.iterator();
-				// Buscamos una casilla más alta que la modificada
+				int[] adjCoord = coord;
+				short adjValue = value;
+				Iterator<int[]> itadj = adjacents.iterator();
+				// Buscamos un casilla más baja que la modificada
 				while (itadj.hasNext()) {
 					int[] tile = itadj.next();
-					if (((short) tile[2]) > adjValue) {
+					if (((short) tile[2]) < adjValue) {
 						adjValue = (short) tile[2];
 						adjCoord = new int[] { tile[0], tile[1] };
 					}
 				}
-				// Hay una adyacente más alta, hay que mover agua desde la
-				// adyacente a la modificada
-				if (adjValue != value) {
-					short water = (short) ((adjValue - value) / 2);
-					water = decrease(adjCoord[0], adjCoord[1], coord[0],
-							coord[1], water);
-					increase(coord[0], coord[1], water);
+				// Si no la hay es que la modificada es más baja o igual
+				if (adjValue == value) {
+					itadj = adjacents.iterator();
+					// Buscamos una casilla más alta que la modificada
+					while (itadj.hasNext()) {
+						int[] tile = itadj.next();
+						if (((short) tile[2]) > adjValue) {
+							adjValue = (short) tile[2];
+							adjCoord = new int[] { tile[0], tile[1] };
+						}
+					}
+					// Hay una adyacente más alta, hay que mover agua desde la
+					// adyacente a la modificada
+					if (adjValue != value) {
+						short water = (short) ((adjValue - value) / 2);
+						water = decrease(adjCoord[0], adjCoord[1], coord[0],
+								coord[1], water);
+						increase(coord[0], coord[1], water);
+					}
+					// ELSE Si no la hay es que no hay que hacer nada pues las
+					// alturas son las mismas
 				}
-				// ELSE Si no la hay es que no hay que hacer nada pues las
-				// alturas son las mismas
-			}
-			// Hay una adyacente más baja, hay que mover agua desde la
-			// modificada a la más baja
-			else {
-				short water = (short) ((value - adjValue) / 2);
-				water = decrease(coord[0], coord[1], adjCoord[0], adjCoord[1],
-						water);
-				increase(adjCoord[0], adjCoord[1], water);
+				// Hay una adyacente más baja, hay que mover agua desde la
+				// modificada a la más baja
+				else {
+					short water = (short) ((value - adjValue) / 2);
+					water = decrease(coord[0], coord[1], adjCoord[0],
+							adjCoord[1], water);
+					increase(adjCoord[0], adjCoord[1], water);
+				}
 			}
 		}
 

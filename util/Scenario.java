@@ -576,7 +576,12 @@ public class Scenario implements Serializable {
 		this.simulationTick = simulationTick;
 	}
 
-	public Object getRealTimeTick() {
+	/**
+	 * Returns the amount of real time in minutes that a tick represents
+	 * 
+	 * @return minutes
+	 */
+	public int getRealTimeTick() {
 		return realTimeTick;
 	}
 
