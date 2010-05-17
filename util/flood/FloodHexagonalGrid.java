@@ -19,6 +19,8 @@ package util.flood;
 import java.util.HashSet;
 import java.util.Set;
 
+import osm.Osm;
+
 import util.HexagonalGrid;
 import util.Point;
 import util.java.ModifiedTilesSet;
@@ -87,7 +89,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		}
 		return value;
 	}
-	
+
 	public short[][] getGridWater() {
 		return gridWater;
 	}
@@ -144,6 +146,29 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 			result.add(adj);
 		}
 		return result;
+	}
+
+	@Override
+	public void obtainStreetInfo() {
+		super.obtainStreetInfo();
+
+		int endCol = offCol + columns;
+		int endRow = offRow + rows;
+		for (int i = offCol - 1; i <= endCol; i++) {
+			for (int j = offRow - 1; j <= endRow; j++) {
+				short s = getStreetValue(i, j);
+				if (Osm.getType(s) == Osm.Waterway) {
+					// Es un río, lago, mar, etc...
+					short t = getTerrainValue(i, j);
+					setWaterValue(i, j, t);
+					if (t < 0) {
+						setTerrainValue(i, j, (short) (t * 1.2));
+					} else {
+						setTerrainValue(i, j, (short) 0);
+					}
+				}
+			}
+		}
 	}
 
 	public Set<Point> getModCoordAndReset() {

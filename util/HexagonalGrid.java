@@ -21,11 +21,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
-import elevation.Elevation;
-
 import osm.Osm;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
+import elevation.Elevation;
 
 public class HexagonalGrid implements Serializable {
 
