@@ -370,39 +370,4 @@ public class PedestrianUtils {
 		}
 	}
 
-	/**
-	 * Returns true if there are street tiles adjacents to position in
-	 * orthogonal direction than direction
-	 * 
-	 * @param position
-	 * @param direction
-	 * @param adjacents
-	 * @return
-	 */
-	public static boolean intersection(Point position, int direction,
-			Set<Point> adjacents) {
-		boolean result = false;
-		int col = position.getCol();
-		int row = position.getRow();
-		Point p;
-		// TODO qué pasa si la calle es de más de 1 hex de ancho? creería q es
-		// una intersección cuando no lo es
-		if (direction == NORTH || direction == SOUTH) {
-			p = findHexagon(adjacents, new Point(col - 1, row));
-			result = result || Osm.getBigType(p.getS()) == Osm.Roads;
-			if (result)
-				return result;
-			p = findHexagon(adjacents, new Point(col + 1, row));
-			result = result || Osm.getBigType(p.getS()) == Osm.Roads;
-		} else {
-			p = findHexagon(adjacents, new Point(col, row - 1));
-			result = result || Osm.getBigType(p.getS()) == Osm.Roads;
-			if (result)
-				return result;
-			p = findHexagon(adjacents, new Point(col, row + 1));
-			result = result || Osm.getBigType(p.getS()) == Osm.Roads;
-		}
-		return result;
-	}
-
 }

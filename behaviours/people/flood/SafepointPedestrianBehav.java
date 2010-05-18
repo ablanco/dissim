@@ -92,7 +92,7 @@ public class SafepointPedestrianBehav extends PedestrianBehav {
 					int intentos = 3;
 
 					// Si está en una intersección escoge una calle al azar
-					if (PedestrianUtils.intersection(position, direction, dry))
+					if (Osm.isIntersection(position.getS()))
 						direction = PedestrianUtils.randomDirection(rnd,
 								direction);
 
