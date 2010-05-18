@@ -104,7 +104,7 @@ public class EnviromentAgent extends Agent {
 				e.printStackTrace();
 			}
 
-			System.out.println(getLocalName() + " - Obtainig street data");
+			System.out.println(getLocalName() + " - Obtaining street data");
 			grid.obtainStreetInfo();
 
 			dateTime = scen.getStartTime();

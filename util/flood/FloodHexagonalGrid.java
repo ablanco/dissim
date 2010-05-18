@@ -160,11 +160,13 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 				if (Osm.getType(s) == Osm.Waterway) {
 					// Es un río, lago, mar, etc...
 					short t = getTerrainValue(i, j);
-					setWaterValue(i, j, t);
+					// 20% de profundidad
 					if (t < 0) {
+						setWaterValue(i, j, (short) (t * -0.2));
 						setTerrainValue(i, j, (short) (t * 1.2));
 					} else {
-						setTerrainValue(i, j, (short) 0);
+						setWaterValue(i, j, (short) (t * 0.2));
+						setTerrainValue(i, j, (short) (t * 0.8));
 					}
 				}
 			}

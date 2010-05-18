@@ -507,12 +507,12 @@ public class HexagonalGrid implements Serializable {
 	public String toString() {
 		String s = "Box: " + NW.toString() + ", " + SE.toString()
 				+ ", Diagonal: " + (int) NW.distance(SE) + " m ";
-		s += "\nDimensions: " + columns + "x" + rows + ", Width: "
+		s += "- Dimensions: " + columns + "x" + rows + ", Width: "
 				+ (int) NW.distance(new LatLng(NW.getLat(), SE.getLng()))
 				+ " m, Height: "
 				+ (int) NW.distance(new LatLng(SE.getLat(), NW.getLng()))
-				+ " m";
-		s += "\nTile size: " + tileSize + "m";
+				+ " m ";
+		s += "- Tile size: " + tileSize + " m";
 		return s;
 	}
 
