@@ -21,6 +21,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import util.HexagonalGrid;
@@ -50,8 +51,8 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 			String[] data = pos.split(" ");
 			String type = data[0];
 			HashSet<Point> adjacents = null;
-			int x;
-			int y;
+			int col;
+			int row;
 
 			// Si se trata de coordenadas geográficas las pasamos a coordenadas
 			// en la rejilla
@@ -59,18 +60,31 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				double lat = Double.parseDouble(data[1]);
 				double lng = Double.parseDouble(data[2]);
 				Point p = grid.coordToTile(new LatLng(lat, lng));
-				x = p.getCol();
-				y = p.getRow();
+				col = p.getCol();
+				row = p.getRow();
 			} else {
 				// Si son coordenadas de la rejilla
-				x = Integer.parseInt(data[1]);
-				y = Integer.parseInt(data[2]);
+				col = Integer.parseInt(data[1]);
+				row = Integer.parseInt(data[2]);
 			}
 			int d = 1;
-			if (data.length > 3)
+			ArrayList<int[]> otherEnv = new ArrayList<int[]>(4);
+			if (data.length > 3) {
 				d = Integer.parseInt(data[3]);
+				// Averiguamos si se sale del área de este entorno
+				if ((col - d) < grid.getOffCol())
+					otherEnv.add(new int[] { grid.getOffCol() - 1, row });
+				if ((row - d) < grid.getOffRow())
+					otherEnv.add(new int[] { col, grid.getOffRow() - 1 });
+				if ((grid.getOffCol() + grid.getColumns()) <= col)
+					otherEnv.add(new int[] {
+							grid.getOffCol() + grid.getColumns(), row });
+				if ((grid.getOffRow() + grid.getRows()) <= row)
+					otherEnv.add(new int[] { col,
+							grid.getOffRow() + grid.getRows() });
+			}
 
-			adjacents = grid.getAdjacents(new Point(x, y));
+			adjacents = grid.getAdjacents(new Point(col, row));
 			HashSet<Point> adj1 = adjacents;
 			while (d > 1) {
 				HashSet<Point> adj2 = new HashSet<Point>(adj1.size() * 6);
@@ -81,6 +95,10 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				adj1 = adj2;
 				d--;
 			}
+
+			if (otherEnv.size() > 0)
+				;
+			// TODO - Obtener adjacents de otros env
 
 			ACLMessage reply = msg.createReply();
 			reply.setPerformative(ACLMessage.INFORM);
