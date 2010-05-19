@@ -27,9 +27,8 @@ import util.HexagonalGrid;
 import util.Point;
 import util.jcoord.LatLng;
 
+@SuppressWarnings("serial")
 public class AdjacentsGridBehav extends CyclicBehaviour {
-
-	private static final long serialVersionUID = 150073372111848766L;
 
 	public static final String LAT_LNG = "latlng";
 	public static final String POSITION = "pos";
