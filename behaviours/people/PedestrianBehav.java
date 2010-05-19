@@ -45,9 +45,11 @@ public abstract class PedestrianBehav extends Behaviour {
 	protected Point position = null; // Posición en columna y fila
 	private int status = Pedestrian.HEALTHY;
 	protected Scenario scen;
+	private Agent agt;
 
 	public PedestrianBehav(Object[] args) {
 		super((Agent) args[0]);
+		agt = (Agent) args[0];
 		// Agent a, AID env, Scenario scen, double lat, double lng, int d, int s
 		if (args[1] == null)
 			throw new IllegalArgumentException(
@@ -67,6 +69,11 @@ public abstract class PedestrianBehav extends Behaviour {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
+		// Por algún motivo desconocido a veces se pone a null la variable
+		// myAgent, así que la restituimos
+		if (myAgent == null)
+			myAgent = agt;
+
 		ACLMessage msg;
 		String content;
 		switch (step) {
