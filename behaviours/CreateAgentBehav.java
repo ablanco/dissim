@@ -25,9 +25,8 @@ import jade.wrapper.ControllerException;
 
 import java.util.ArrayList;
 
+@SuppressWarnings("serial")
 public class CreateAgentBehav extends OneShotBehaviour {
-
-	private static final long serialVersionUID = -1618019490277716693L;
 
 	private Object[] arguments;
 	private String name;
