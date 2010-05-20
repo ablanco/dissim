@@ -34,7 +34,6 @@ public class InterGridBehav extends CyclicBehaviour {
 	public static final String WATER = "w";
 	public static final String WATER_SET = "wset";
 	public static final String WATER_INCREASE = "winc";
-	// public static final String WATER_REQUEST = "wreq";
 	public static final String PEOPLE = "p";
 	public static final String PEOPLE_SET = "pset";
 
