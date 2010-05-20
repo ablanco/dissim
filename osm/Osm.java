@@ -234,7 +234,7 @@ public class Osm {
 
 	/**
 	 * Solo para puntos de interes, Añadimos a la matriz de calles del grid el
-	 * Nodo Siempre que el valor que metamos sea mayor que el valor que antes
+	 * nodo Siempre que el valor que metamos sea mayor que el valor que antes
 	 * estuviera en la matriz
 	 * 
 	 * @param n
