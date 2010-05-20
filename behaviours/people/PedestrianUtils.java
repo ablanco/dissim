@@ -51,8 +51,8 @@ public class PedestrianUtils {
 			while (!pt.equals(auxpt)) {
 				auxpt = findHexagon(adjacents, HexagonalGrid.nearestHexagon(
 						auxpt, pt));
-				if (Osm.getBigType(auxpt.getS()) != Osm.Roads
-						&& Osm.getBigType(auxpt.getS()) != Osm.SafePoint) {
+				if (Osm.getGenericType(auxpt.getS()) != Osm.Roads
+						&& Osm.getGenericType(auxpt.getS()) != Osm.SafePoint) {
 					auxpt = null;
 					break;
 				}
@@ -106,7 +106,7 @@ public class PedestrianUtils {
 				result.add(aux);
 			// Miramos que no nos encontremos con obstáculos en el camino
 			if (!destination.equals(aux)) {
-				if (aux.getW() > 0 || Osm.getBigType(aux.getS()) != Osm.Roads) {
+				if (aux.getW() > 0 || Osm.getGenericType(aux.getS()) != Osm.Roads) {
 					result = new LinkedList<Point>();
 					break;
 				}

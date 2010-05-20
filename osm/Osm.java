@@ -151,20 +151,20 @@ public class Osm {
 	}
 
 	/**
-	 * Dado un HexagonalGrid se descarga de internet toda la información desde
-	 * OSM y lo actualiza
+	 * Given an hexagonal grid it's download form OSM all the street information
+	 * and updates the grid
 	 * 
-	 * @param osmMap
 	 * @param grid
+	 *            HexagonGrid
 	 */
 	public static void setOsmMapInfo(HexagonalGrid grid) {
 		OsmMap osmMap = OsmMap.getMap(grid);
 		for (OsmRelation r : osmMap.getRelations()) {
 			if (r.getType() > Undefined) {
-//				System.err.println("**Escribiendo Relations " + r);
+				// System.err.println("**Escribiendo Relations " + r);
 				setStreetValue(r, grid);
 			} else {
-//				System.err.println("No se ha escrito: " + r);
+				// System.err.println("No se ha escrito: " + r);
 			}
 		}
 
@@ -172,7 +172,7 @@ public class Osm {
 			if (w.getType() > Undefined) {
 				setStreetValue(w, grid);
 			} else {
-//				System.err.println("No se ha escrito: " + w);
+				// System.err.println("No se ha escrito: " + w);
 			}
 		}
 
@@ -186,8 +186,9 @@ public class Osm {
 	}
 
 	/**
-	 * Set Street value in point p given the type only is type is greater than
-	 * previous value
+	 * Set Street value "type" in point "p" , only is type is greater than
+	 * previous value. If values are equal, means that is an intersection, then
+	 * plus 1 to the value to make it odd
 	 * 
 	 * @param p
 	 * @param type
@@ -233,23 +234,23 @@ public class Osm {
 	}
 
 	/**
-	 * Solo para puntos de interes, Añadimos a la matriz de calles del grid el
-	 * nodo Siempre que el valor que metamos sea mayor que el valor que antes
-	 * estuviera en la matriz
+	 * Only for SafePoints, if they're not accesible (near a street) moves the
+	 * point to the nearest street
 	 * 
 	 * @param n
+	 *            OsmNode SafePoint
 	 * @param grid
 	 * @return
 	 */
 	public static boolean setStreetValue(OsmNode n, HexagonalGrid grid) {
 		if (grid.getBox().contains(n.getCoord())
-				&& Osm.getBigType(n.getType()) == Osm.SafePoint) {
+				&& Osm.getGenericType(n.getType()) == Osm.SafePoint) {
 			// Si esta dentro del grid y es un nodo SafePoint
 			Point point = grid.coordToTile(n.getCoord());
 			// Ahora tengo que mirar si es accesible
 			for (Point p : grid.getAdjacents(point)) {
 				// MIro punto por punto a ver si alguno de ellos es carretera
-				if (Osm.getBigType(grid.getStreetValue(p)) == Roads) {
+				if (Osm.getGenericType(grid.getStreetValue(p)) == Roads) {
 					return setStreetValue(p, n.getType(), grid);
 				}
 			}
@@ -264,25 +265,25 @@ public class Osm {
 				// accesible, miramos ariba/abajo/izq/der
 				if (col + i < maxCol) {
 					point = new Point(col + i, row);
-					if (Osm.getBigType(grid.getStreetValue(point)) == Roads) {
+					if (Osm.getGenericType(grid.getStreetValue(point)) == Roads) {
 						return setStreetValue(point, n.getType(), grid);
 					}
 				}
 				if (col - i > 0) {
 					point = new Point(col - i, row);
-					if (Osm.getBigType(grid.getStreetValue(point)) == Roads) {
+					if (Osm.getGenericType(grid.getStreetValue(point)) == Roads) {
 						return setStreetValue(point, n.getType(), grid);
 					}
 				}
 				if (row + i < maxRow) {
 					point = new Point(col, row + i);
-					if (Osm.getBigType(grid.getStreetValue(point)) == Roads) {
+					if (Osm.getGenericType(grid.getStreetValue(point)) == Roads) {
 						return setStreetValue(point, n.getType(), grid);
 					}
 				}
 				if (row - i > 0) {
 					point = new Point(col, row - i);
-					if (Osm.getBigType(grid.getStreetValue(point)) == Roads) {
+					if (Osm.getGenericType(grid.getStreetValue(point)) == Roads) {
 						return setStreetValue(point, n.getType(), grid);
 					}
 				}
@@ -307,20 +308,22 @@ public class Osm {
 		}
 
 		if (w.isClosedLine() && !isRoad(type)) {
-//			System.err.println("Detectada linea cerrada " + w.getBox() + ", "
-//					+ w.getWay());
+			// System.err.println("Detectada linea cerrada " + w.getBox() + ", "
+			// + w.getWay());
 			Point nW;
 			Point sE;
 			// A veces me salgo ... para esos momentos ...
-			try{
-			nW = grid.coordToTile(w.getBox().getNw());
-			}catch (ArrayIndexOutOfBoundsException e) {
-				nW = new Point(0+grid.getOffCol(),0+grid.getOffRow());
+			try {
+				nW = grid.coordToTile(w.getBox().getNw());
+			} catch (ArrayIndexOutOfBoundsException e) {
+				nW = new Point(0 + grid.getOffCol(), 0 + grid.getOffRow());
 			}
-			try{
+			try {
 				sE = grid.coordToTile(w.getBox().getSe());
-			}catch (ArrayIndexOutOfBoundsException e) {
-				sE = new Point(grid.getColumns()+grid.getOffCol(), grid.getRows()+grid.getOffRow());
+			} catch (ArrayIndexOutOfBoundsException e) {
+				sE = new Point(grid.getColumns() + grid.getOffCol(), grid
+						.getRows()
+						+ grid.getOffRow());
 			}
 			for (int col = nW.getCol(); col <= sE.getCol(); col++) {
 				for (int row = nW.getRow(); row <= sE.getRow(); row++) {
@@ -337,13 +340,13 @@ public class Osm {
 
 	public static void setStreetValue(OsmRelation r, HexagonalGrid grid) {
 		OsmWay way = OsmWay.join(r, grid.getBox());
-			setStreetValue(way, grid);
+		setStreetValue(way, grid);
 	}
 
 	/**
-	 * Given a list of tags, retunrs the type
+	 * Given a list of tags, retunrs the known type
 	 * 
-	 * @param node
+	 * @param tags
 	 * @return
 	 */
 	public static short getNodeType(List<OsmTag> tags) {
@@ -408,13 +411,19 @@ public class Osm {
 		return Undefined;
 	}
 
-	private static short getRailway(String value) {
+	/**
+	 * Given a RailWay "type", returns propper street value
+	 * 
+	 * @param type
+	 * @return
+	 */
+	private static short getRailway(String type) {
 		short key = Railway;
 		key += 2;
-		if (value.equalsIgnoreCase("rail"))
+		if (type.equalsIgnoreCase("rail"))
 			return key;
 		key += 2;
-		if (value.equalsIgnoreCase("tram"))
+		if (type.equalsIgnoreCase("tram"))
 			return key;
 		return Railway;
 	}
@@ -427,51 +436,54 @@ public class Osm {
 	}
 
 	/**
-	 * Given a highway Type Returns a Proper value for this kind of Highway Los
-	 * incrementos van de dos en dos, cuando es intersección será impar.
+	 * Given a highway "type" and "kind" Returns a Proper value for the road.
+	 * Differences between kinds are made even, because odds value are for
+	 * intersecctions
 	 * 
 	 * @param type
-	 * @param value
+	 *            : Highway, junction, traffic_calming
+	 * @param kind
+	 *            : footway, track, cycleway ....
 	 * @return
 	 */
-	private static short getHighway(String type, String value) {
+	private static short getHighway(String type, String kind) {
 		short key = Highway;
 		if (type.equalsIgnoreCase("highway")) {
 			// Higways
-			if (value.equalsIgnoreCase("footway")
-					|| value.equalsIgnoreCase("path"))
+			if (kind.equalsIgnoreCase("footway")
+					|| kind.equalsIgnoreCase("path"))
 				return key;
 			key += 2;
-			if (value.equalsIgnoreCase("track"))
+			if (kind.equalsIgnoreCase("track"))
 				return key;
 			key += 2;
-			if (value.equalsIgnoreCase("cycleway"))
+			if (kind.equalsIgnoreCase("cycleway"))
 				return key;
 			key += 2;
-			if (value.equalsIgnoreCase("residential")
-					|| value.contains("parking"))
+			if (kind.equalsIgnoreCase("residential")
+					|| kind.contains("parking"))
 				return key;
 			key += 2;
-			if (value.equalsIgnoreCase("road")
-					|| value.equalsIgnoreCase("pedestrian"))
+			if (kind.equalsIgnoreCase("road")
+					|| kind.equalsIgnoreCase("pedestrian"))
 				return key;
 			key += 2;
-			if (value.equalsIgnoreCase("service"))
+			if (kind.equalsIgnoreCase("service"))
 				return key;
 			key += 2;
-			if (value.equalsIgnoreCase("tertiary"))
+			if (kind.equalsIgnoreCase("tertiary"))
 				return key;
 			key += 2;
-			if (value.equalsIgnoreCase("secondary"))
+			if (kind.equalsIgnoreCase("secondary"))
 				return key;
 			key += 2;
-			if (value.equalsIgnoreCase("primary"))
+			if (kind.equalsIgnoreCase("primary"))
 				return key;
 			key += 2;
-			if (value.contains("trunk"))
+			if (kind.contains("trunk"))
 				return key;
 			key += 2;
-			if (value.contains("motorway"))
+			if (kind.contains("motorway"))
 				return key;
 		} else if (type.equalsIgnoreCase("junction")) {
 
@@ -484,75 +496,75 @@ public class Osm {
 	}
 
 	/**
-	 * Given a type, returns Parent Big Type
+	 * Returns Generic Type, from a specific value.
 	 * 
-	 * @param type
+	 * @param value
 	 * @return Parent Big Type
 	 */
-	public static short getBigType(short type) {
-		if (type < Raw_Field) {
+	public static short getGenericType(short value) {
+		if (value < Raw_Field) {
 			return Undefined;
-		} else if (type < Land) {
+		} else if (value < Land) {
 			return Land;
-		} else if (type < Roads) {
+		} else if (value < Roads) {
 			return Roads;
-		} else if (type < SafePoint) {
+		} else if (value < SafePoint) {
 			return SafePoint;
 		}
 		return Undefined;
 	}
 
 	/**
-	 * Given a type, returns Parent Type
+	 * Returns Parent Type, from a value
 	 * 
-	 * @param type
+	 * @param value
 	 * @return Parent Type
 	 */
-	public static short getType(short type) {
-		if (type < Raw_Field) {
+	public static short getType(short value) {
+		if (value < Raw_Field) {
 			return Undefined;
-		} else if (type < Land) {
+		} else if (value < Land) {
 			// Land Type
-			if (type < Waterway)
+			if (value < Waterway)
 				return Raw_Field;
-			if (type < Barrier)
+			if (value < Barrier)
 				return Waterway;
-			if (type < Natural)
+			if (value < Natural)
 				return Barrier;
-			if (type < Landuse)
+			if (value < Landuse)
 				return Natural;
-			if (type < Geological)
+			if (value < Geological)
 				return Landuse;
 			return Geological;
-		} else if (type < Roads) {
-			if (type < Cycleway)
+		} else if (value < Roads) {
+			if (value < Cycleway)
 				return Tracktype;
-			if (type < Aerialway)
+			if (value < Aerialway)
 				return Cycleway;
-			if (type < Railway)
+			if (value < Railway)
 				return Aerialway;
-			if (type < Highway)
+			if (value < Highway)
 				return Railway;
 			return Highway;
-		} else if (type < SafePoint) {
-			if (type < Shop)
+		} else if (value < SafePoint) {
+			if (value < Shop)
 				return Man_Made;
-			if (type < Tourism)
+			if (value < Tourism)
 				return Shop;
-			if (type < Power)
+			if (value < Power)
 				return Tourism;
-			if (type < Leisure)
+			if (value < Leisure)
 				return Power;
-			if (type < Amenity)
+			if (value < Amenity)
 				return Leisure;
 			return Amenity;
 		} else {
 			// Infrastructura
-			if (type < Military)
+			if (value < Military)
 				return Historic;
-			if (type < Building)
+			if (value < Building)
 				return Military;
-			if (type < Aeroway)
+			if (value < Aeroway)
 				return Building;
 			return Aeroway;
 		}
@@ -627,9 +639,8 @@ public class Osm {
 	}
 
 	/**
-	 * Tal como esta definido atualmente la forma de escribir las carreteras en
-	 * el StreetGrid pues al cruzarse dos caminos iguales, se incrementa el
-	 * valor en una unidad, resultando las intersecciones impares.
+	 *Return true if is a Road Value and if its an odd value (see
+	 * setStreetValue(point ...)
 	 * 
 	 * @param value
 	 * @return
@@ -639,7 +650,10 @@ public class Osm {
 	}
 
 	/**
-	 * Deveuvel true si el value pertenece al intervalo roads
+	 * Returns true if value is a Road Value
+	 * 
+	 * @param value
+	 * @return
 	 */
 	public static boolean isRoad(short value) {
 		return (value > Land) && (value < Roads);

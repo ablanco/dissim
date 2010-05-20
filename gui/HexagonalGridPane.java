@@ -166,10 +166,10 @@ public class HexagonalGridPane extends JPanel {
 
 					// Pintar el borde amarillo si hay algún tipo de calle y
 					// rojo si hay algún refugio
-					if (Osm.getBigType(grid.getStreetValue(i, j)) == Osm.Roads) {
+					if (Osm.getGenericType(grid.getStreetValue(i, j)) == Osm.Roads) {
 						g2.setColor(Color.YELLOW);
 						g2.drawPolygon(hex);
-					} else if (Osm.getBigType(grid.getStreetValue(i, j)) == Osm.SafePoint) {
+					} else if (Osm.getGenericType(grid.getStreetValue(i, j)) == Osm.SafePoint) {
 						g2.setColor(Color.RED);
 						g2.drawPolygon(hex);
 					}

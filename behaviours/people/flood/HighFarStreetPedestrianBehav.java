@@ -53,7 +53,7 @@ public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 		for (Point pt : adjacents) {
 			if (pt.getW() > 0)
 				water.add(pt);
-			else if (Osm.getBigType(pt.getS()) == Osm.Roads)
+			else if (Osm.getGenericType(pt.getS()) == Osm.Roads)
 				dry.add(pt);
 			// Las casillas que no son calles se ignoran
 		}
@@ -141,7 +141,7 @@ public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 					aux = PedestrianUtils.findHexagon(adjacents, aux);
 					// No entra en casillas con agua y sólo se mueve por calles
 					if (aux.getW() > 0
-							|| Osm.getBigType(aux.getS()) != Osm.Roads) {
+							|| Osm.getGenericType(aux.getS()) != Osm.Roads) {
 						ok = false;
 						break;
 					}
