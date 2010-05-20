@@ -22,40 +22,65 @@ import java.util.List;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
 
+/**
+ * 
+ * @author Manuel Gomar, Alejando Blanco
+ * 
+ *         This class helps to manage the points in the osm, given to points of
+ *         a way make's an edge that is much more easier to manage discretizing
+ *         into a grid
+ * 
+ */
 public class OsmEdge {
 
 	/**
-	 * Dentro de un Box
+	 * The edge is inside a given Box
 	 */
 	public static final int In = 1;
 	/**
-	 * Fuera de un Box
+	 * The edge is outside a given Box
 	 */
 	public static final int Out = 0;
 	/**
-	 * Corta al Box estan el borde A dentro
+	 * The edge is cuts a given Box, nodeA is inside the box
 	 */
 	public static final int Cuts_A = 2;
 	/**
-	 * Corta al Box estan el borde B dentro
+	 * The edge is cuts a given Box, nodeB is inside the box
 	 */
 	public static final int Cuts_B = 3;
 
 	/**
-	 * Coordenada inicial [y,x]
+	 * Node A
 	 */
 	private OsmNode nodeA;
+	/**
+	 * Node B
+	 */
 	private OsmNode nodeB;
 	/**
-	 * Coordenada final [y,x]
+	 * alpha value y = x * alpha + beta
 	 */
 	private double alpha;
+	/**
+	 * beta value y = x * alpha + beta
+	 */
 	private double beta;
+	/**
+	 * vector directions
+	 */
 	private double[] v;
 
+	/**
+	 * Given two nodes, makes and edge and determinate the line equation and
+	 * parameters
+	 * 
+	 * @param nA
+	 * @param nB
+	 */
 	public OsmEdge(OsmNode nA, OsmNode nB) {
 		this.nodeA = nA;
-		this.nodeB = nB;		
+		this.nodeB = nB;
 
 		LatLng a = nA.getCoord();
 		LatLng b = nB.getCoord();
@@ -98,44 +123,68 @@ public class OsmEdge {
 		}
 	}
 
-	// gets y sets
-	public OsmNode getNodeA(){
+	/**
+	 * 
+	 * @return get's nodeA
+	 */
+	public OsmNode getNodeA() {
 		return nodeA;
 	}
-	
+
+	/**
+	 * 
+	 * @return get's nodeB
+	 */
 	public OsmNode getNodeB() {
 		return nodeB;
 	}
-	
+
 	/**
-	 * Dado una latitud, resuelve la ecuacion y=alpha * x + beta
+	 * Given a longitude, solves y = (alpha * x)+ beta
 	 * 
-	 * @param lat
-	 * @return
+	 * @param lng
+	 *            Point we want to determinate latitude
+	 * @return Point which longitude is c, and latidude is y = (alpha * x)+ beta
 	 */
 	public LatLng getY(double lng) {
 		return new LatLng(((alpha * lng) + beta), lng);
 	}
 
+	/**
+	 * Given a coodinate c, gets its longitude, solves y = (alpha * x)+ beta
+	 * 
+	 * @param c
+	 *            Longitude we want to determinate latitude
+	 * @return Point which longitude is c, and latidude is y = (alpha * x)+ beta
+	 */
 	public LatLng getY(LatLng c) {
 		return getY(c.getLng());
 	}
 
 	/**
-	 * Dada una longitud, resuelte la ecuacion x = ( y - beta ) / alpha;
+	 * Given a latitude, solves x = ( y - beta ) / alpha
 	 * 
-	 * @param lng
-	 * @return
+	 * @param lat
+	 *            Lat we want to determinate longitude
+	 * @return Point which longitude is c, and longitude is x = ( y - beta ) /
+	 *         alpha
 	 */
 	private LatLng getX(double lat) {
 		return new LatLng(lat, ((lat - beta) / alpha));
 	}
 
+	/**
+	 * Given a coodinate c, gets its latitude, solves x = ( y - beta ) / alpha
+	 * 
+	 * @param c
+	 *            Point we want to determinate longitude
+	 * @return Point which longitude is c, and longitude is x = ( y - beta ) /
+	 *         alpha
+	 */
 	private LatLng getX(LatLng c) {
 		return getX(c.getLat());
 	}
 
-	// propiedades
 	/**
 	 * Nos dice por medio de variables estaticas cual es su relacion con un box,
 	 * si lo contiene, esta totalmente fuera, o lo corta
@@ -143,7 +192,7 @@ public class OsmEdge {
 	 * @param box
 	 * @return
 	 */
-	public int cutType(LatLngBox box) {
+	private int cutType(LatLngBox box) {
 		if (box.contains(nodeA) && box.contains(nodeB))
 			return In;
 		if (box.contains(nodeA))
@@ -152,18 +201,20 @@ public class OsmEdge {
 			return Cuts_B;
 		return Out;
 	}
-	//Metodos
-	
+
 	/**
-	 * Devuelve El nodo que corta al box, el Nodo A o null si los dos estan fuera
+	 * Given a box, if it cuts the edge, return the cut point
+	 * 
+	 * @param box
+	 * @return if exist, the point where the edge cuts the box, if not, null
 	 */
-	public OsmNode getCutNode(LatLngBox box){
+	public OsmNode getCutNode(LatLngBox box) {
 		switch (cutType(box)) {
 		case Cuts_A:
-			//nodeA esta dentro, devuelvo B
+			// nodeA esta dentro, devuelvo B
 			return cutOff(box).getNodeB();
 		case Cuts_B:
-			//nodeB esta dentro, devuelvo A
+			// nodeB esta dentro, devuelvo A
 			return cutOff(box).getNodeA();
 		case In:
 			return nodeA;
@@ -171,18 +222,18 @@ public class OsmEdge {
 		default:
 			return null;
 		}
-			
-		
+
 	}
 
 	/**
-	 * Este metodo nos da el punto de corte de esta arista con la caja, se
-	 * deberia de llamar solo si cutType(box) == Cuts
+	 * If the edge cuts the box, gives the point where it's been cut
 	 * 
+	 * @see getCutNode(LatLngBox box)
 	 * @param box
-	 * @return
+	 *            that cuts the edge
+	 * @return point where the edge is cut
 	 */
-	public OsmEdge cutOff(LatLngBox box) {
+	private OsmEdge cutOff(LatLngBox box) {
 		OsmNode cut = nodeB.clone();
 		// Averiguamos cual de las dos esta fuera
 		if (box.contains(nodeB)) {
@@ -230,9 +281,9 @@ public class OsmEdge {
 			}
 			break;
 		case LatLngBox.IN:
-			return new OsmEdge(nodeA,nodeB);
+			return new OsmEdge(nodeA, nodeB);
 		default:
-			//No deberia llegar aqui
+			// No deberia llegar aqui
 			return null;
 		}
 
@@ -244,13 +295,29 @@ public class OsmEdge {
 		}
 	}
 
-	// metodos
+	/**
+	 * Given a point int the line (curr) returns the next point according to the
+	 * box
+	 * 
+	 * @param curr
+	 *            OsmNode point of the line
+	 * @param box
+	 *            box specific values for a line
+	 * @return the next point of the line
+	 */
 	public LatLng next(OsmNode curr, LatLngBox box) {
 		return next(curr.getCoord(), box);
 	}
+
 	/**
-	 * Nos da el siguiente punto correspondiente a la recta, segun los
-	 * incrementos marcados por el box
+	 * Given a point int the line (curr) returns the next point according to the
+	 * box
+	 * 
+	 * @param curr
+	 *            point of the line
+	 * @param box
+	 *            specific values for a line
+	 * @return the next point of the line
 	 */
 	public LatLng next(LatLng curr, LatLngBox box) {
 		// Al no ser adyacencia octogonal, algunos movimientos 0,1, 0,-1, no
@@ -273,6 +340,13 @@ public class OsmEdge {
 		return getY(curr.getLng() + ilng);
 	}
 
+	/**
+	 * Get a line between nodeA and nodeB using line equations
+	 * 
+	 * @param box
+	 *            Contains parameters for building a speceific line.
+	 * @return a list of LatLng representing the line in the given box
+	 */
 	public List<LatLng> getLine(LatLngBox box) {
 		List<LatLng> list = new ArrayList<LatLng>();
 		LatLng curr = nodeA.getCoord();
@@ -297,14 +371,24 @@ public class OsmEdge {
 	}
 
 	@Override
+	/**
+	 * Redefinition of to string for a friendly view
+	 */
 	public String toString() {
-		return "A: " + nodeA + ", B: " + nodeB + ", (" + alpha + "," + beta + "), ("
-				+ v[0] + "," + v[1] + ")";
+		return "A: " + nodeA + ", B: " + nodeB + ", (" + alpha + "," + beta
+				+ "), (" + v[0] + "," + v[1] + ")";
 		// return "A: " + a + ", B: " + b;
 		// return "y=x"+alpha+"+"+beta;
 	}
 
-	public class Eqn {
+	/**
+	 * 
+	 * @author Manuel Gomar
+	 * 
+	 *         Class for calculatin line equations
+	 * 
+	 */
+	protected class Eqn {
 		private double alpha;
 		private double beta;
 		private double x0;
@@ -314,7 +398,7 @@ public class OsmEdge {
 		private double[][] coef;
 		private double[] ind;
 
-		public Eqn(LatLng a, LatLng b) {
+		protected Eqn(LatLng a, LatLng b) {
 			x0 = a.getLng();
 			y0 = a.getLat();
 			x1 = b.getLng();
@@ -325,7 +409,7 @@ public class OsmEdge {
 			ind = new double[] { y0, y1 };
 		}
 
-		public double[] solve() {
+		protected double[] solve() {
 			// System.err.println("Antes "+print());
 			multiplica(0, x1);
 			multiplica(1, x0);
@@ -338,23 +422,17 @@ public class OsmEdge {
 			return new double[] { alpha, beta };
 		}
 
-		private void multiplica(int fil, double val) {
+		protected void multiplica(int fil, double val) {
 			coef[fil][0] *= val;
 			coef[fil][1] *= val;
 			ind[fil] *= val;
 		}
 
-		private void resta(int c, int d) {
+		protected void resta(int c, int d) {
 			coef[c][0] -= coef[d][0];
 			coef[c][1] -= coef[d][1];
 			ind[c] -= ind[d];
 		}
-
-//		private String print() {
-//			return "coef: ((" + coef[0][0] + "," + coef[0][1] + "),("
-//					+ coef[1][0] + "," + coef[1][1] + ")), ind: (" + ind[0]
-//					+ "," + ind[1] + ").";
-//		}
 	}
 
 }
