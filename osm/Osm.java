@@ -35,21 +35,61 @@ import util.java.Wget;
 
 public class Osm {
 
+	/**
+	 * All Static values are form OSM types
+	 */
+	
+	/**
+	 * Small Increment for Small Classes
+	 */
 	private static final short smallClass = 10;
+	/**
+	 * Medium Increment for Small Classes
+	 */
 	private static final short mediumClass = 50;
+	/**
+	 * Big Increment for Small Classes
+	 */
 	private static final short bigClass = 100;
 
+	/**
+	 * Value for Undefined terrain type
+	 */
 	public static final short Undefined = -1;
-	// Land
+	/**
+	 * Value for Raw terrain type
+	 */
 	public static final short Raw_Field = 0;
+	/**
+	 * Interval for Water Ways terrain types + smallClass 
+	 */
 	public static final short Waterway = Raw_Field + smallClass;
+	/**
+	 * Interval for Barriers terrain types + smallClass 
+	 */
 	public static final short Barrier = Waterway + smallClass;
+	/**
+	 * Interval for Natural terrain types + smallClass 
+	 */
 	public static final short Natural = Barrier + smallClass;
+	/**
+	 * Interval for Land Uses terrain types + smallClass 
+	 */
 	public static final short Landuse = Natural + smallClass;
+	/**
+	 * Interval for Geological terrain types + smallClass 
+	 */
 	public static final short Geological = Landuse + smallClass;
+	/**
+	 * Generic value for Land Types, greater than all terrain natural values
+	 */
 	public static final short Land = 200;
-	// End Land Types
-	// Roads
+	/**End Land Types
+	 * Begin Road Types 
+	 */
+	/**
+	 * Interval for Geological terrain types + smallClass 
+	 */
 	public static final short Tracktype = Land + mediumClass;
 	public static final short Cycleway = Tracktype + mediumClass;
 	public static final short Aerialway = Tracktype + mediumClass;
