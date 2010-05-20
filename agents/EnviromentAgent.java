@@ -114,7 +114,7 @@ public class EnviromentAgent extends Agent {
 			ParallelBehaviour parallel = new ParallelBehaviour(
 					ParallelBehaviour.WHEN_ALL);
 			// Añadir comportamientos
-			parallel.addSubBehaviour(new AdjacentsGridBehav(grid));
+			parallel.addSubBehaviour(new AdjacentsGridBehav(scen, grid));
 			parallel.addSubBehaviour(new QueryGridBehav(grid));
 			parallel.addSubBehaviour(new SyndicateBehav(myAgent, grid,
 					dateTime, scen, people));

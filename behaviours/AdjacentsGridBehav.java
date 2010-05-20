@@ -16,18 +16,24 @@
 
 package behaviours;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jade.lang.acl.UnreadableException;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
+import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
 import util.jcoord.LatLng;
 
 @SuppressWarnings("serial")
@@ -35,10 +41,13 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 
 	public static final String LAT_LNG = "latlng";
 	public static final String POSITION = "pos";
+	private static final String OTHER_ENV = "other";
 
+	private Scenario scen;
 	private HexagonalGrid grid;
 
-	public AdjacentsGridBehav(HexagonalGrid grid) {
+	public AdjacentsGridBehav(Scenario scen, HexagonalGrid grid) {
+		this.scen = scen;
 		this.grid = grid;
 	}
 
@@ -73,17 +82,19 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 			ArrayList<int[]> otherEnv = new ArrayList<int[]>(4);
 			if (data.length > 3) {
 				d = Integer.parseInt(data[3]);
-				// Averiguamos si se sale del área de este entorno
-				if ((col - d) < grid.getOffCol())
-					otherEnv.add(new int[] { grid.getOffCol() - 1, row });
-				if ((row - d) < grid.getOffRow())
-					otherEnv.add(new int[] { col, grid.getOffRow() - 1 });
-				if ((grid.getOffCol() + grid.getColumns()) <= col)
-					otherEnv.add(new int[] {
-							grid.getOffCol() + grid.getColumns(), row });
-				if ((grid.getOffRow() + grid.getRows()) <= row)
-					otherEnv.add(new int[] { col,
-							grid.getOffRow() + grid.getRows() });
+				if (!type.equals(OTHER_ENV)) {
+					// Averiguamos si se sale del área de este entorno
+					if ((col - d) < grid.getOffCol())
+						otherEnv.add(new int[] { grid.getOffCol() - 1, row });
+					if ((row - d) < grid.getOffRow())
+						otherEnv.add(new int[] { col, grid.getOffRow() - 1 });
+					if ((grid.getOffCol() + grid.getColumns()) <= col)
+						otherEnv.add(new int[] {
+								grid.getOffCol() + grid.getColumns(), row });
+					if ((grid.getOffRow() + grid.getRows()) <= row)
+						otherEnv.add(new int[] { col,
+								grid.getOffRow() + grid.getRows() });
+				}
 			}
 
 			adjacents = grid.getAdjacents(new Point(col, row));
@@ -100,7 +111,9 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 
 			ACLMessage reply = msg.createReply();
 			if (otherEnv.size() > 0) {
-				// TODO
+				// Si hay que preguntar a más entornos
+				myAgent.addBehaviour(new OtherEnvsAdjacentsBehav(myAgent, col,
+						row, d, otherEnv, adjacents, reply));
 			} else {
 				myAgent.addBehaviour(new SendAdjacentsBehav(myAgent, adjacents,
 						reply));
@@ -130,6 +143,106 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				myAgent.send(msg);
 			} catch (IOException e) {
 				e.printStackTrace();
+			}
+		}
+
+	}
+
+	protected class OtherEnvsAdjacentsBehav extends CyclicBehaviour {
+
+		private int col;
+		private int row;
+		private int vision;
+		private ArrayList<int[]> outerTiles;
+		private HashSet<Point> adjacents;
+		private ACLMessage msg;
+		private int step;
+		private MessageTemplate mt;
+
+		public OtherEnvsAdjacentsBehav(Agent agt, int col, int row, int d,
+				ArrayList<int[]> outerTiles, HashSet<Point> adjacents,
+				ACLMessage msg) {
+			super(agt);
+			this.col = col;
+			this.row = row;
+			vision = d;
+			this.outerTiles = outerTiles;
+			this.adjacents = adjacents;
+			this.msg = msg;
+			step = 0;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void action() {
+			switch (step) {
+			case 0:
+				if (outerTiles.size() == 0) {
+					// No hay más casillas fuera del área, terminamos
+					step = 2;
+					break;
+				}
+
+				int[] outer = outerTiles.remove(0);
+				int d = vision
+						- HexagonalGrid.distance(col, row, outer[0], outer[1]);
+				if (d <= 0) {
+					// Si el pedestrian ve 0 adyacentes
+					break;
+				}
+
+				String env = Integer.toString(scen.getEnviromentByPosition(
+						outer[0], outer[1]));
+				if (!env.equals("-1")) {
+					// Pertenece a otro entorno, le pedimos los adyacentes
+					AID envAID = null;
+					// Obtener agentes entorno
+					DFAgentDescription[] result = AgentHelper.search(myAgent,
+							"adjacents-grid");
+					for (DFAgentDescription df : result) {
+						String name = df.getName().getLocalName();
+						name = name.substring(name.indexOf("-") + 1, name
+								.lastIndexOf("-"));
+						if (name.equals(env)) {
+							envAID = df.getName();
+							break;
+						}
+					}
+
+					// Si hemos encontrado el entorno le pedimos los adyacentes
+					if (envAID != null) {
+						String content = OTHER_ENV + " "
+								+ Integer.toString(col) + " "
+								+ Integer.toString(row) + " "
+								+ Integer.toString(d);
+
+						mt = AgentHelper.send(myAgent, envAID,
+								ACLMessage.REQUEST, "adjacents-grid", content);
+					}
+
+					step = 1;
+				}
+				break;
+			case 1:
+				ACLMessage aux = myAgent.receive(mt);
+				if (aux != null) {
+					try {
+						Set<Point> newAdjacents = (Set<Point>) aux
+								.getContentObject();
+						adjacents.addAll(newAdjacents);
+					} catch (UnreadableException e) {
+						e.printStackTrace();
+					}
+					step = 0;
+				} else {
+					block();
+				}
+				break;
+			case 2:
+				myAgent.addBehaviour(new SendAdjacentsBehav(myAgent, adjacents,
+						msg));
+				myAgent.removeBehaviour(this);
+				break;
 			}
 		}
 
