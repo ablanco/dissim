@@ -40,16 +40,20 @@ public class UpdateFloodGridBehav extends Behaviour {
 	private FloodHexagonalGrid grid;
 	private FloodScenario scen;
 	private Map<String, Object> envs = new Hashtable<String, Object>();
+	private Agent agt;
 
 	public UpdateFloodGridBehav(Object[] args) {
 		// Agent a, FloodScenario scen, FloodHexagonalGrid grid
 		super((Agent) args[0]);
+		agt = (Agent) args[0];
 		grid = (FloodHexagonalGrid) args[2];
 		scen = (FloodScenario) args[1];
 	}
 
 	@Override
 	public void action() {
+		if (myAgent == null)
+			myAgent = agt;
 		// TODO el 250 es un mangazo
 		int times = (scen.getRealTimeTick() * 250) / grid.getTileSize();
 		for (int i = 0; i < times; i++) {

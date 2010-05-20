@@ -69,8 +69,6 @@ public abstract class PedestrianBehav extends Behaviour {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
-		// Por algún motivo desconocido a veces se pone a null la variable
-		// myAgent, así que la restituimos
 		if (myAgent == null)
 			myAgent = agt;
 

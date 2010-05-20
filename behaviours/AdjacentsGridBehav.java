@@ -16,7 +16,9 @@
 
 package behaviours;
 
+import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
@@ -96,20 +98,41 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				d--;
 			}
 
-			if (otherEnv.size() > 0)
-				;
-			// TODO - Obtener adjacents de otros env
-
 			ACLMessage reply = msg.createReply();
-			reply.setPerformative(ACLMessage.INFORM);
-			try {
-				reply.setContentObject(adjacents);
-				myAgent.send(reply);
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (otherEnv.size() > 0) {
+				// TODO
+			} else {
+				myAgent.addBehaviour(new SendAdjacentsBehav(myAgent, adjacents,
+						reply));
 			}
 		} else {
 			block();
 		}
 	}
+
+	protected class SendAdjacentsBehav extends OneShotBehaviour {
+
+		private HashSet<Point> adjacents;
+		private ACLMessage msg;
+
+		public SendAdjacentsBehav(Agent agt, HashSet<Point> adjacents,
+				ACLMessage msg) {
+			super(agt);
+			this.adjacents = adjacents;
+			this.msg = msg;
+		}
+
+		@Override
+		public void action() {
+			msg.setPerformative(ACLMessage.INFORM);
+			try {
+				msg.setContentObject(adjacents);
+				myAgent.send(msg);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
 }

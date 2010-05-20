@@ -29,9 +29,11 @@ public class WaterSourceBehav extends Behaviour {
 	private LatLng coord;
 	private short water;
 	private AID envAID;
+	private Agent agt;
 
 	public WaterSourceBehav(Object[] args) {
 		super((Agent) args[0]);
+		agt = (Agent) args[0];
 		// Agent a, AID envAID, LatLng coord, short water
 		envAID = (AID) args[1];
 		coord = (LatLng) args[2];
@@ -40,6 +42,8 @@ public class WaterSourceBehav extends Behaviour {
 
 	@Override
 	public void action() {
+		if (myAgent == null)
+			myAgent = agt;
 		// Inundar casilla
 		String content = Double.toString(coord.getLat()) + " "
 				+ Double.toString(coord.getLng()) + " " + Short.toString(water);
