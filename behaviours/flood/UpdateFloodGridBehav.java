@@ -56,7 +56,6 @@ public class UpdateFloodGridBehav extends Behaviour {
 			myAgent = agt;
 		// TODO el 20 es un mangazo
 		int times = (scen.getRealTimeTick() * 20) / grid.getTileSize();
-		System.out.println(times);
 		for (int i = 0; i < times; i++) {
 			Set<Point> set = grid.getModCoordAndReset();
 			Iterator<Point> it = set.iterator();
