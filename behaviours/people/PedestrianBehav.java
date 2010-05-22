@@ -37,8 +37,14 @@ public abstract class PedestrianBehav extends Behaviour {
 	private AID env;
 	private double lat; // Posición en coordenadas
 	private double lng;
-	protected int d; // Distancia de visión
-	protected int s; // Velocidad
+	/**
+	 * Vision distance in tiles
+	 */
+	protected int d;
+	/**
+	 * Speed in tiles
+	 */
+	protected int s;
 	private String type = AdjacentsGridBehav.LAT_LNG;
 	private int step = 0;
 	private MessageTemplate mt = MessageTemplate.MatchAll();

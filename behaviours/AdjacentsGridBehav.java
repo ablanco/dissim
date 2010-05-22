@@ -113,7 +113,8 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 			if (otherEnv.size() > 0) {
 				// Si hay que preguntar a más entornos
 				myAgent.addBehaviour(new OtherEnvsAdjacentsBehav(myAgent, col,
-						row, d, otherEnv, adjacents, reply));
+						row, Integer.parseInt(data[3]), otherEnv, adjacents,
+						reply));
 			} else {
 				myAgent.addBehaviour(new SendAdjacentsBehav(myAgent, adjacents,
 						reply));
@@ -185,7 +186,8 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 
 				int[] outer = outerTiles.remove(0);
 				int d = vision
-						- HexagonalGrid.distance(col, row, outer[0], outer[1]);
+						- HexagonalGrid.distance(col, row, outer[0], outer[1])
+						+ 1;
 				if (d <= 0) {
 					// Si el pedestrian ve 0 adyacentes
 					break;
