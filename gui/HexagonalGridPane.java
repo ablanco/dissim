@@ -68,20 +68,20 @@ public class HexagonalGridPane extends JPanel {
 		people = snap.getPeople();
 
 		HexagonalGrid grid = snap.getGrid();
+
+		// Cálcular el número de columanas y filas que tiene el mapa
+		// Si llegan nuevos grids el visor descubre si el mapa es mayor
 		if (((grid.getOffCol() > offCol) || firstTime)
 				&& grid.getColumns() != 0) {
 			int aux = (grid.getOffCol() / grid.getColumns()) + 1;
-			System.out.println("col "+grid.getOffCol()+" "+aux+" "+grid.getColumns());
 			columns = grid.getColumns() * aux;
 			offCol = grid.getOffCol();
 		}
 		if (((grid.getOffRow() > offRow) || firstTime) && grid.getRows() != 0) {
 			int aux = (grid.getOffRow() / grid.getRows()) + 1;
-			System.out.println("row "+grid.getOffRow()+" "+aux+" "+grid.getRows());
 			rows = grid.getRows() * aux;
 			offRow = grid.getOffRow();
 		}
-		System.out.println(columns + " " + rows);
 
 		if (dim.height != size.height || dim.width != size.width || firstTime
 				|| newGrid) {
