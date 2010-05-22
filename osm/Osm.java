@@ -234,7 +234,7 @@ public class Osm {
 
 	/**
 	 * Solo para puntos de interes, Añadimos a la matriz de calles del grid el
-	 * Nodo Siempre que el valor que metamos sea mayor que el valor que antes
+	 * nodo Siempre que el valor que metamos sea mayor que el valor que antes
 	 * estuviera en la matriz
 	 * 
 	 * @param n
@@ -242,10 +242,52 @@ public class Osm {
 	 * @return
 	 */
 	public static boolean setStreetValue(OsmNode n, HexagonalGrid grid) {
-		if (grid.getBox().contains(n.getCoord()) && !n.isSimpleNode()) {
-			// Si esta dentro del grid y es un nodo especial
+		if (grid.getBox().contains(n.getCoord())
+				&& Osm.getBigType(n.getType()) == Osm.SafePoint) {
+			// Si esta dentro del grid y es un nodo SafePoint
 			Point point = grid.coordToTile(n.getCoord());
-			return setStreetValue(point, n.getType(), grid);
+			// Ahora tengo que mirar si es accesible
+			for (Point p : grid.getAdjacents(point)) {
+				// MIro punto por punto a ver si alguno de ellos es carretera
+				if (Osm.getBigType(grid.getStreetValue(p)) == Roads) {
+					return setStreetValue(p, n.getType(), grid);
+				}
+			}
+			// Si hemos llegado aqui es que no es accesible
+			int maxCol = grid.getColumns();
+			int maxRow = grid.getRows();
+			int col = point.getCol();
+			int row = point.getRow();
+			int i = 1;
+			while (Math.max(maxCol, maxRow) > i) {
+				// Mientras no sea accesible, pues seguimos buscando una casilla
+				// accesible, miramos ariba/abajo/izq/der
+				if (col + i < maxCol) {
+					point = new Point(col + i, row);
+					if (Osm.getBigType(grid.getStreetValue(point)) == Roads) {
+						return setStreetValue(point, n.getType(), grid);
+					}
+				}
+				if (col - i > 0) {
+					point = new Point(col - i, row);
+					if (Osm.getBigType(grid.getStreetValue(point)) == Roads) {
+						return setStreetValue(point, n.getType(), grid);
+					}
+				}
+				if (row + i < maxRow) {
+					point = new Point(col, row + i);
+					if (Osm.getBigType(grid.getStreetValue(point)) == Roads) {
+						return setStreetValue(point, n.getType(), grid);
+					}
+				}
+				if (row - i > 0) {
+					point = new Point(col, row - i);
+					if (Osm.getBigType(grid.getStreetValue(point)) == Roads) {
+						return setStreetValue(point, n.getType(), grid);
+					}
+				}
+				i++;
+			}
 		}
 		return false;
 	}
