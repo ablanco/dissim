@@ -45,6 +45,9 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 
 	private Scenario scen;
 	private HexagonalGrid grid;
+	private MessageTemplate mt = MessageTemplate.and(MessageTemplate
+			.MatchConversationId("adjacents-grid"), MessageTemplate
+			.MatchPerformative(ACLMessage.REQUEST));
 
 	public AdjacentsGridBehav(Scenario scen, HexagonalGrid grid) {
 		this.scen = scen;
@@ -53,8 +56,6 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 
 	@Override
 	public void action() {
-		MessageTemplate mt = MessageTemplate
-				.MatchConversationId("adjacents-grid");
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg != null) {
 			// Mensaje recibido, hay que procesarlo
@@ -64,6 +65,11 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 			HashSet<Point> adjacents = null;
 			int col;
 			int row;
+
+			if (data.length <= 1)
+				for (int i = 0; i < data.length; i++) {
+					System.out.println("lol " + i + " " + data[i]);
+				}
 
 			// Si se trata de coordenadas geográficas las pasamos a coordenadas
 			// en la rejilla
@@ -158,7 +164,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 		private HashSet<Point> adjacents;
 		private ACLMessage msg;
 		private int step;
-		private MessageTemplate mt;
+		private MessageTemplate mtReply;
 
 		public OtherEnvsAdjacentsBehav(Agent agt, int col, int row, int d,
 				ArrayList<int[]> outerTiles, HashSet<Point> adjacents,
@@ -218,7 +224,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 								+ Integer.toString(row) + " "
 								+ Integer.toString(d);
 
-						mt = AgentHelper.send(myAgent, envAID,
+						mtReply = AgentHelper.send(myAgent, envAID,
 								ACLMessage.REQUEST, "adjacents-grid", content);
 					}
 
@@ -226,7 +232,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				}
 				break;
 			case 1:
-				ACLMessage aux = myAgent.receive(mt);
+				ACLMessage aux = myAgent.receive(mtReply);
 				if (aux != null) {
 					try {
 						Set<Point> newAdjacents = (Set<Point>) aux

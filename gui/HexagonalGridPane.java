@@ -16,6 +16,8 @@
 
 package gui;
 
+import jade.core.AID;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,6 +28,8 @@ import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -42,7 +46,7 @@ import util.flood.FloodHexagonalGrid;
 @SuppressWarnings("serial")
 public class HexagonalGridPane extends JPanel {
 
-	private HexagonalGrid grid = null;
+	private Hashtable<String, HexagonalGrid> grids = new Hashtable<String, HexagonalGrid>();
 	private List<Pedestrian> people;
 	private int radius = -1;
 	private int hexWidth;
@@ -51,16 +55,40 @@ public class HexagonalGridPane extends JPanel {
 	private short max;
 	private Dimension size = new Dimension(300, 300);
 	private boolean firstTime = true;
+	private int columns = 0;
+	private int rows = 0;
+	private int offCol = 0;
+	private int offRow = 0;
+	private boolean newGrid = false;
 
-	public void updateGrid(Snapshot snap, Dimension dim) {
-		grid = snap.getGrid();
+	public void updateGrid(Snapshot snap, AID sender, Dimension dim) {
+		if (!grids.containsKey(sender.getName()))
+			newGrid = true;
+		grids.put(sender.getName(), snap.getGrid());
 		people = snap.getPeople();
 
-		if (dim.height != size.height || dim.width != size.width || firstTime) {
+		HexagonalGrid grid = snap.getGrid();
+		if (((grid.getOffCol() > offCol) || firstTime)
+				&& grid.getColumns() != 0) {
+			int aux = (grid.getOffCol() / grid.getColumns()) + 1;
+			System.out.println("col "+grid.getOffCol()+" "+aux+" "+grid.getColumns());
+			columns = grid.getColumns() * aux;
+			offCol = grid.getOffCol();
+		}
+		if (((grid.getOffRow() > offRow) || firstTime) && grid.getRows() != 0) {
+			int aux = (grid.getOffRow() / grid.getRows()) + 1;
+			System.out.println("row "+grid.getOffRow()+" "+aux+" "+grid.getRows());
+			rows = grid.getRows() * aux;
+			offRow = grid.getOffRow();
+		}
+		System.out.println(columns + " " + rows);
+
+		if (dim.height != size.height || dim.width != size.width || firstTime
+				|| newGrid) {
 			size = dim;
 			// Calcular el radio de los hexágonos a representar
-			int radiusX = (int) (((size.width / grid.getColumns()) / 2) * 1.1);
-			int radiusY = (int) (((size.height / grid.getRows()) / 2) * 1.3);
+			int radiusX = (int) (((size.width / columns) / 2) * 1.1);
+			int radiusY = (int) (((size.height / rows) / 2) * 1.3);
 			if (radiusX < radiusY)
 				radius = radiusX;
 			else
@@ -73,8 +101,8 @@ public class HexagonalGridPane extends JPanel {
 			hexWidth = p.xpoints[4] - p.xpoints[2];
 			hexHeight = p.ypoints[1] - p.ypoints[3];
 
-			int width = ((hexWidth * grid.getColumns()) + (hexWidth / 2));
-			int height = (hexHeight * grid.getRows());
+			int width = ((hexWidth * columns) + (hexWidth / 2));
+			int height = (hexHeight * rows);
 
 			size = new Dimension(width, height);
 			setSize(size);
@@ -105,7 +133,7 @@ public class HexagonalGridPane extends JPanel {
 
 	@Override
 	public void paint(Graphics g) {
-		if (grid != null) {
+		if (grids.size() > 0) {
 			if (people == null)
 				people = new ArrayList<Pedestrian>(1);
 
@@ -131,78 +159,85 @@ public class HexagonalGridPane extends JPanel {
 			if (diff > 0)
 				inc = 256.0 / ((double) diff);
 
-			int endX = grid.getOffCol() + grid.getColumns();
-			int endY = grid.getOffRow() + grid.getRows();
-			for (int i = grid.getOffCol(); i < endX; i++) {
-				for (int j = grid.getOffRow(); j < endY; j++) {
-					int posX;
-					if (j % 2 == 0) { // Fila par
-						posX = (hexWidth / 2)
-								+ ((i - grid.getOffCol()) * hexWidth);
-					} else { // Fila impar
-						posX = hexWidth + ((i - grid.getOffCol()) * hexWidth);
-					}
-					int posY = radius + ((j - grid.getOffRow()) * hexHeight);
+			try {
+				for (HexagonalGrid grid : grids.values()) {
+					int endX = grid.getOffCol() + grid.getColumns();
+					int endY = grid.getOffRow() + grid.getRows();
+					for (int i = grid.getOffCol(); i < endX; i++) {
+						for (int j = grid.getOffRow(); j < endY; j++) {
+							int posX;
+							if (j % 2 == 0) { // Fila par
+								posX = (hexWidth / 2) + ((i) * hexWidth);
+							} else { // Fila impar
+								posX = hexWidth + ((i) * hexWidth);
+							}
+							int posY = radius + ((j) * hexHeight);
 
-					// Generar hexágono
-					Polygon hex = new Hexagon2D(posX, posY, radius);
-					// Dibujar y colorear según la altura
-					int value = grid.getValue(i, j);
-					value -= min;
-					int color = (int) (value * inc);
-					if (color < 0)
-						color = 0;
-					if (color > 255)
-						color = 255;
-					g2.setColor(new Color(0, color, 0));
-					if (grid instanceof FloodHexagonalGrid) { // Pintar agua
-						FloodHexagonalGrid fgrid = (FloodHexagonalGrid) grid;
-						int water = fgrid.getWaterValue(i, j);
-						if (water > 0) {
-							g2.setColor(new Color(0, 0, color));
+							// Generar hexágono
+							Polygon hex = new Hexagon2D(posX, posY, radius);
+							// Dibujar y colorear según la altura
+							int value = grid.getValue(i, j);
+							value -= min;
+							int color = (int) (value * inc);
+							if (color < 0)
+								color = 0;
+							if (color > 255)
+								color = 255;
+							g2.setColor(new Color(0, color, 0));
+							if (grid instanceof FloodHexagonalGrid) {
+								// Pintar agua
+								FloodHexagonalGrid fgrid = (FloodHexagonalGrid) grid;
+								int water = fgrid.getWaterValue(i, j);
+								if (water > 0) {
+									g2.setColor(new Color(0, 0, color));
+								}
+							}
+							g2.fillPolygon(hex);
+
+							// Pintar el borde amarillo si hay algún tipo de
+							// calle y rojo si hay algún refugio
+							if (Osm.getBigType(grid.getStreetValue(i, j)) == Osm.Roads) {
+								g2.setColor(Color.YELLOW);
+								g2.drawPolygon(hex);
+							} else if (Osm
+									.getBigType(grid.getStreetValue(i, j)) == Osm.SafePoint) {
+								g2.setColor(Color.RED);
+								g2.drawPolygon(hex);
+							}
+
+							// Pintar personas
+							Point pos = new Point(i, j);
+							boolean person = false;
+							int status = Pedestrian.HEALTHY;
+							ListIterator<Pedestrian> it = people.listIterator();
+							while (it.hasNext()) {
+								Pedestrian p = it.next();
+								// Miramos si hay alguien en esta casilla
+								if (pos.equals(p.getPoint())) {
+									person = true;
+									status = p.getStatus();
+									it.remove();
+									break;
+								}
+							}
+							if (person) {
+								// Si la había la pintamos
+								if (status == Pedestrian.HEALTHY)
+									g2.setColor(Color.RED);
+								else if (status == Pedestrian.DEAD)
+									g2.setColor(Color.DARK_GRAY);
+								else if (status == Pedestrian.SAFE)
+									g2.setColor(Color.PINK);
+								Ellipse2D.Float circle = new Ellipse2D.Float(
+										posX - (radius / 2), posY
+												- (radius / 2), radius, radius);
+								g2.fill(circle);
+							}
 						}
-					}
-					g2.fillPolygon(hex);
-
-					// Pintar el borde amarillo si hay algún tipo de calle y
-					// rojo si hay algún refugio
-					if (Osm.getBigType(grid.getStreetValue(i, j)) == Osm.Roads) {
-						g2.setColor(Color.YELLOW);
-						g2.drawPolygon(hex);
-					} else if (Osm.getBigType(grid.getStreetValue(i, j)) == Osm.SafePoint) {
-						g2.setColor(Color.RED);
-						g2.drawPolygon(hex);
-					}
-
-					// Pintar personas
-					Point pos = new Point(i, j);
-					boolean person = false;
-					int status = Pedestrian.HEALTHY;
-					ListIterator<Pedestrian> it = people.listIterator();
-					while (it.hasNext()) {
-						Pedestrian p = it.next();
-						// Miramos si hay alguien en esta casilla
-						if (pos.equals(p.getPoint())) {
-							person = true;
-							status = p.getStatus();
-							it.remove();
-							break;
-						}
-					}
-					if (person) {
-						// Si la había la pintamos
-						if (status == Pedestrian.HEALTHY)
-							g2.setColor(Color.RED);
-						else if (status == Pedestrian.DEAD)
-							g2.setColor(Color.DARK_GRAY);
-						else if (status == Pedestrian.SAFE)
-							g2.setColor(Color.PINK);
-						Ellipse2D.Float circle = new Ellipse2D.Float(posX
-								- (radius / 2), posY - (radius / 2), radius,
-								radius);
-						g2.fill(circle);
 					}
 				}
+			} catch (ConcurrentModificationException e) {
+				return;
 			}
 		}
 	}

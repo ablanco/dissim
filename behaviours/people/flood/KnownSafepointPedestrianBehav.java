@@ -171,8 +171,12 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		if (result.size() == 0) {
 			// En el caso en que no sepa donde hay refugios o no sea posible
 			// acceder a ninguno
-			result = PedestrianUtils.accessible(adjacents, position, fallback
-					.choose(adjacents), s);
+			try {
+				result = PedestrianUtils.accessible(adjacents, position,
+						fallback.choose(adjacents), s);
+			} catch (Exception e) {
+				result = new LinkedList<Point>();
+			}
 		}
 
 		if (result.size() > 0)
