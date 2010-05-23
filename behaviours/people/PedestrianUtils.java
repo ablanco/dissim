@@ -231,10 +231,11 @@ public class PedestrianUtils {
 		} else {
 			freeAdjc = dry;
 		}
+
 		if (freeAdjc.size() == 0)
 			return true;
+
 		return false;
-		// TODO a veces no funciona, depurar
 	}
 
 	/**

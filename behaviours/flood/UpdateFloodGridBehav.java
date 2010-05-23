@@ -110,7 +110,7 @@ public class UpdateFloodGridBehav extends Behaviour {
 				}
 			}
 		}
-		// TODO - Remove Behav
+
 		myAgent.removeBehaviour(this);
 	}
 
