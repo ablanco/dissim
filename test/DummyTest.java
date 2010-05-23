@@ -22,8 +22,13 @@ public class DummyTest {
 		// System.err.println(Math.max(-9, -18));
 		Object a = null;
 		System.out.println(a == null);
+		System.out.println(a instanceof String);
 		a = new Object();
 		System.out.println(a == null);
+		System.out.println(a instanceof String);
+		a = "lol";
+		System.out.println(a == null);
+		System.out.println(a instanceof String);
 	}
 
 }

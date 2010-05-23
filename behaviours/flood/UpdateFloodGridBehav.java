@@ -117,6 +117,15 @@ public class UpdateFloodGridBehav extends Behaviour {
 		return false;
 	}
 
+	/**
+	 * Decrease the water level of a tile. If the tile is part of other
+	 * enviroment it does nothing.
+	 * 
+	 * @param col
+	 * @param row
+	 * @param w
+	 * @return
+	 */
 	private short decrease(int col, int row, short w) {
 		Object env = getEnv(col, row);
 		if (env != null) {
@@ -126,11 +135,19 @@ public class UpdateFloodGridBehav extends Behaviour {
 			return 0;
 		} else {
 			short result = grid.decreaseValue(col, row, w);
-			innerBorder(col, row);
+			extBorder(col, row);
 			return result;
 		}
 	}
 
+	/**
+	 * Increase the water level of a tile. If the tile is part of other
+	 * enviroment, then it tells that enviroment to update the tile.
+	 * 
+	 * @param col
+	 * @param row
+	 * @param w
+	 */
 	private void increase(int col, int row, short w) {
 		if (w != 0) {
 			Object env = getEnv(col, row);
@@ -147,18 +164,30 @@ public class UpdateFloodGridBehav extends Behaviour {
 				// ELSE no existe dicho entorno por lo tanto el agua se pierde
 			} else {
 				grid.increaseValue(col, row, w);
-				innerBorder(col, row);
+				extBorder(col, row);
 			}
 		}
 	}
 
+	/**
+	 * Search for the enviroment that owns the given tile and returns his AID.
+	 * If that enviroment doesn't exists then it return null. And if the
+	 * enviroment is the same one that is searching, then it returns a basic
+	 * Object instance.
+	 * 
+	 * @param col
+	 * @param row
+	 * @return
+	 */
 	private Object getEnv(int col, int row) {
 		// Comprobar si la casilla es de la corona y por lo tanto pertence a
 		// otro entorno
-		if (col < grid.getOffCol() || (col - grid.getOffCol()) >= grid.getColumns()
+		if (col < grid.getOffCol()
+				|| (col - grid.getOffCol()) >= grid.getColumns()
 				|| row < grid.getOffRow()
 				|| (row - grid.getOffRow()) >= grid.getRows()) {
-			String env = Integer.toString(scen.getEnviromentByPosition(col, row));
+			String env = Integer.toString(scen
+					.getEnviromentByPosition(col, row));
 
 			Object returnObj = envs.get(env);
 			if (returnObj == null) {
@@ -184,28 +213,37 @@ public class UpdateFloodGridBehav extends Behaviour {
 		return null;
 	}
 
-	private void innerBorder(int col, int row) {
+	/**
+	 * Detects if the position is at the exterior border of the enviroment (his
+	 * real area, without considering the extra border). If it's at the border,
+	 * then the method tells the enviroment that has this position in his extra
+	 * border to update it.
+	 * 
+	 * @param col
+	 * @param row
+	 */
+	private void extBorder(int col, int row) {
 		int relCol = col - grid.getOffCol();
 		int relRow = row - grid.getOffRow();
 		if (relCol == 0 || relCol == (grid.getColumns() - 1) || relRow == 0
 				|| relRow == (grid.getRows() - 1)) {
-			int cx = col;
-			int cy = row;
+			int otherEnvCol = col;
+			int otherEnvRow = row;
 			// Hay que avisar a otro entorno para que actualice su corona
 			if (relCol == 0)
-				cx--;
+				otherEnvCol--;
 			if (relRow == 0)
-				cy--;
+				otherEnvRow--;
 			if (relCol == (grid.getColumns() - 1))
-				cx++;
+				otherEnvCol++;
 			if (relRow == (grid.getRows() - 1))
-				cy++;
+				otherEnvRow++;
 
-			Object env = getEnv(cx, cy);
+			Object env = getEnv(otherEnvCol, otherEnvRow);
 			if (env instanceof AID) {
 				String content = InterGridBehav.WATER_SET + " "
-						+ Integer.toString(col) + " " + Integer.toString(row) + " "
-						+ Short.toString(grid.getWaterValue(col, row));
+						+ Integer.toString(col) + " " + Integer.toString(row)
+						+ " " + Short.toString(grid.getWaterValue(col, row));
 				AgentHelper.send(myAgent, (AID) env, ACLMessage.INFORM,
 						"intergrid", content);
 			}
