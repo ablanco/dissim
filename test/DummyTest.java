@@ -18,11 +18,12 @@ package test;
 
 public class DummyTest {
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		System.err.println(Math.max(-9, -18));
+		// System.err.println(Math.max(-9, -18));
+		Object a = null;
+		System.out.println(a == null);
+		a = new Object();
+		System.out.println(a == null);
 	}
 
 }
