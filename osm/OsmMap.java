@@ -28,6 +28,13 @@ import util.HexagonalGrid;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
 
+/**
+ * This class is an interface for the OSM, Webservice, so we can manage all
+ * usefull information about the map and manage easily
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class OsmMap {
 
 	protected Hashtable<Long, OsmWay> ways;
@@ -36,6 +43,10 @@ public class OsmMap {
 	protected List<OsmTag> tags;
 	protected LatLngBox mapBox;
 
+	/**
+	 * Empty constructor, initializes ways, nodes, tags, relations in witch all
+	 * info will be stored
+	 */
 	public OsmMap() {
 		ways = new Hashtable<Long, OsmWay>();
 		nodes = new Hashtable<Long, OsmNode>();
@@ -43,26 +54,61 @@ public class OsmMap {
 		relations = new ArrayList<OsmRelation>();
 	}
 
+	/**
+	 * Each OsmMap is contained into a box of two coordinates, NorthWest, and
+	 * SouthEast
+	 * 
+	 * @return Box containing map
+	 */
 	public LatLngBox getMapBox() {
 		return mapBox;
 	}
 
+	/**
+	 * Returns a table of all the nodes contained in the map, ordered by osm id
+	 * 
+	 * @return All the Nodes of the map
+	 */
 	public Hashtable<Long, OsmNode> getNodes() {
 		return nodes;
 	}
 
+	/**
+	 * Returns a table of all the osmWays contained in the map, ordered by osm
+	 * id
+	 * 
+	 * @return All the osmWays in the map
+	 */
 	public Hashtable<Long, OsmWay> getWays() {
 		return ways;
 	}
 
+	/**
+	 * Returns a list of all the osmRelations contained in the map
+	 * 
+	 * @return OsmRelations in the map
+	 */
 	public List<OsmRelation> getRelations() {
 		return relations;
 	}
 
+	/**
+	 * Sets Box of the map
+	 * 
+	 * @param mapBox
+	 *            new MapBox of the map
+	 */
 	public void setMapBox(LatLngBox mapBox) {
 		this.mapBox = mapBox;
 	}
 
+	/**
+	 * Adds a new osmWay to the osmWays table, only if is not null
+	 * 
+	 * @param way
+	 *            we want to add to the osmWay table
+	 * @return returns previous (if same id) value of the list
+	 */
 	public OsmWay addWay(OsmWay way) {
 		if (way != null) {
 			return ways.put(way.getId(), way);
@@ -70,6 +116,14 @@ public class OsmMap {
 		return null;
 	}
 
+	/**
+	 * Adds a new osmNode to the osmNode table, only if is not null
+	 * 
+	 * @param node
+	 *            we want to add to the osmNode table
+	 * @return previous value, if same id, null if node == null or not
+	 *         prevoiusly inserted
+	 */
 	public OsmNode addNode(OsmNode node) {
 		if (node != null) {
 			return nodes.put(node.getId(), node);
@@ -77,6 +131,13 @@ public class OsmMap {
 		return null;
 	}
 
+	/**
+	 * Adds a new osmRelation to the osmRelation list, only if is not null
+	 * 
+	 * @param relation
+	 *            we want to add to the osmNode table
+	 * @return true if added, false if not.
+	 */
 	public boolean addRelation(OsmRelation relation) {
 		if (relation != null) {
 			return relations.add(relation);
@@ -84,6 +145,13 @@ public class OsmMap {
 		return false;
 	}
 
+	/**
+	 * Checks if an osmNode is inside the map
+	 * 
+	 * @param n
+	 *            node we want to chek
+	 * @return true if is inside de Box, false if not
+	 */
 	public boolean isIn(OsmNode n) {
 		return mapBox.contains(n.getCoord());
 	}
@@ -106,10 +174,11 @@ public class OsmMap {
 	}
 
 	/**
-	 * Get info from Open Streets Maps
+	 * Get info from Open Streets Maps, it uses the OSM webservice, obtain the
+	 * xml file, parse it and puts values into the grid * @param grid we want to
+	 * obtain the info
 	 * 
-	 * @param grid
-	 * @return
+	 * @return OsmMap object containing info from OSM
 	 */
 	public static OsmMap getMap(HexagonalGrid grid) {
 		LatLngBox box = grid.getBox();
