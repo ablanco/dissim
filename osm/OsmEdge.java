@@ -26,7 +26,7 @@ import util.jcoord.LatLngBox;
  * 
  * @author Manuel Gomar, Alejando Blanco
  * 
- *         This class helps to manage the points in the osm, given to points of
+ * @category        This class helps to manage the points in the osm, given to points of
  *         a way make's an edge that is much more easier to manage discretizing
  *         into a grid
  * 

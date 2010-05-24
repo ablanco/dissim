@@ -41,12 +41,14 @@ public class FloodScenario extends Scenario {
 	protected void loadScenarioData(ArrayList<String> data) {
 		super.loadScenarioData(data);
 		for (String s : data) {
-			String[] pair = s.split("=");
-			if (pair[0].equals("waterSource")) {
-				String[] ws = decodeScenArray(pair[1]);
-				addWaterSource(new WaterSource(new LatLng(Double
-						.parseDouble(ws[0]), Double.parseDouble(ws[1])), Short
-						.parseShort(ws[2])));
+			if (!s.startsWith("#")) {
+				String[] pair = s.split("=");
+				if (pair[0].equals("waterSource")) {
+					String[] ws = decodeScenArray(pair[1]);
+					addWaterSource(new WaterSource(new LatLng(Double
+							.parseDouble(ws[0]), Double.parseDouble(ws[1])),
+							Short.parseShort(ws[2])));
+				}
 			}
 		}
 	}

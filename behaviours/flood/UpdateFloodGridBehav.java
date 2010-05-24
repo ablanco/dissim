@@ -54,8 +54,8 @@ public class UpdateFloodGridBehav extends Behaviour {
 	public void action() {
 		if (myAgent == null)
 			myAgent = agt;
-		// TODO el 250 es un mangazo
-		int times = (scen.getRealTimeTick() * 250) / grid.getTileSize();
+		// TODO el 20 es un mangazo
+		int times = (scen.getRealTimeTick() * 20) / grid.getTileSize();
 		for (int i = 0; i < times; i++) {
 			Set<Point> set = grid.getModCoordAndReset();
 			Iterator<Point> it = set.iterator();
@@ -110,7 +110,6 @@ public class UpdateFloodGridBehav extends Behaviour {
 				}
 			}
 		}
-
 		// TODO - Remove Behav
 		myAgent.removeBehaviour(this);
 	}

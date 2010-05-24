@@ -193,77 +193,81 @@ public class Scenario implements Serializable {
 		String date = null;
 		String hour = null;
 		for (String s : data) {
-			String[] pair = s.split("=");
-			if (pair[0].equals("name")) {
-				setName(pair[1]);
-			} else if (pair[0].equals("description")) {
-				setDescription(pair[1]);
-			} else if (pair[0].equals("date")) {
-				date = pair[1];
-				if (hour != null)
-					simTime = new DateAndTime(date, hour);
-			} else if (pair[0].equals("hour")) {
-				hour = pair[1];
-				if (date != null)
-					simTime = new DateAndTime(date, hour);
-			} else if (pair[0].equals("NW")) {
-				String[] nw = decodeScenArray(pair[1]);
-				NW = new LatLng(Double.parseDouble(nw[0]), Double
-						.parseDouble(nw[1]));
-				if (SE != null && TS > 0)
-					setGeoData(NW, SE, TS);
-			} else if (pair[0].equals("SE")) {
-				String[] se = decodeScenArray(pair[1]);
-				SE = new LatLng(Double.parseDouble(se[0]), Double
-						.parseDouble(se[1]));
-				if (NW != null && TS > 0)
-					setGeoData(NW, SE, TS);
-			} else if (pair[0].equals("tileSize")) {
-				TS = Integer.parseInt(pair[1]);
-				if (NW != null && SE != null)
-					setGeoData(NW, SE, TS);
-			} else if (pair[0].equals("numEnvs")) {
-				setNumEnv(Integer.parseInt(pair[1]));
-			} else if (pair[0].equals("tick")) {
-				setSimulationTick(Long.parseLong(pair[1]));
-			} else if (pair[0].equals("realTick")) {
-				setRealTimeTick(Integer.parseInt(pair[1]));
-			} else if (pair[0].equals("person")) {
-				String[] person = decodeScenArray(pair[1]);
-				Pedestrian p = new Pedestrian(new LatLng(Double
-						.parseDouble(person[0]), Double.parseDouble(person[1])));
-				p.setScenData(Integer.parseInt(person[2]), Integer
-						.parseInt(person[3]), Integer.parseInt(person[4]));
-				String[] objectives = decodeScenArray(person[5]);
-				for (int i = 0; i < objectives.length && objectives.length > 1; i++) {
-					String lat = objectives[i];
-					i++;
-					String lng = objectives[i];
-					LatLng obj = new LatLng(Double.parseDouble(lat), Double
-							.parseDouble(lng));
-					p.addObjective(obj);
+			if (!s.startsWith("#")) {
+				String[] pair = s.split("=");
+				if (pair[0].equals("name")) {
+					setName(pair[1]);
+				} else if (pair[0].equals("description")) {
+					setDescription(pair[1]);
+				} else if (pair[0].equals("date")) {
+					date = pair[1];
+					if (hour != null)
+						simTime = new DateAndTime(date, hour);
+				} else if (pair[0].equals("hour")) {
+					hour = pair[1];
+					if (date != null)
+						simTime = new DateAndTime(date, hour);
+				} else if (pair[0].equals("NW")) {
+					String[] nw = decodeScenArray(pair[1]);
+					NW = new LatLng(Double.parseDouble(nw[0]), Double
+							.parseDouble(nw[1]));
+					if (SE != null && TS > 0)
+						setGeoData(NW, SE, TS);
+				} else if (pair[0].equals("SE")) {
+					String[] se = decodeScenArray(pair[1]);
+					SE = new LatLng(Double.parseDouble(se[0]), Double
+							.parseDouble(se[1]));
+					if (NW != null && TS > 0)
+						setGeoData(NW, SE, TS);
+				} else if (pair[0].equals("tileSize")) {
+					TS = Integer.parseInt(pair[1]);
+					if (NW != null && SE != null)
+						setGeoData(NW, SE, TS);
+				} else if (pair[0].equals("numEnvs")) {
+					setNumEnv(Integer.parseInt(pair[1]));
+				} else if (pair[0].equals("tick")) {
+					setSimulationTick(Long.parseLong(pair[1]));
+				} else if (pair[0].equals("realTick")) {
+					setRealTimeTick(Integer.parseInt(pair[1]));
+				} else if (pair[0].equals("person")) {
+					String[] person = decodeScenArray(pair[1]);
+					Pedestrian p = new Pedestrian(new LatLng(Double
+							.parseDouble(person[0]), Double
+							.parseDouble(person[1])));
+					p.setScenData(Integer.parseInt(person[2]), Integer
+							.parseInt(person[3]), Integer.parseInt(person[4]));
+					String[] objectives = decodeScenArray(person[5]);
+					for (int i = 0; i < objectives.length
+							&& objectives.length > 1; i++) {
+						String lat = objectives[i];
+						i++;
+						String lng = objectives[i];
+						LatLng obj = new LatLng(Double.parseDouble(lat), Double
+								.parseDouble(lng));
+						p.addObjective(obj);
+					}
+					addPeople(p);
+				} else if (pair[0].equals("updateTimeKml")) {
+					setUpdateKMLPeriod(Long.parseLong(pair[1]));
+				} else if (pair[0].equals("updateTimeVisor")) {
+					setUpdateVisorPeriod(Long.parseLong(pair[1]));
+				} else if (pair[0].equals("precision")) {
+					setPrecision(Short.parseShort(pair[1]));
+				} else if (pair[0].equals("randomTerrain")) {
+					setRandomAltitudes(Boolean.parseBoolean(pair[1]));
+				} else if (pair[0].equals("DBServer")) {
+					setDbServer(pair[1]);
+				} else if (pair[0].equals("DBPort")) {
+					setDbPort(Integer.parseInt(pair[1]));
+				} else if (pair[0].equals("DBUser")) {
+					setDbUser(pair[1]);
+				} else if (pair[0].equals("DBPass")) {
+					setDbPass(pair[1]);
+				} else if (pair[0].equals("DBDriver")) {
+					setDbDriver(pair[1]);
+				} else if (pair[0].equals("DBDb")) {
+					setDbDb(pair[1]);
 				}
-				addPeople(p);
-			} else if (pair[0].equals("updateTimeKml")) {
-				setUpdateKMLPeriod(Long.parseLong(pair[1]));
-			} else if (pair[0].equals("updateTimeVisor")) {
-				setUpdateVisorPeriod(Long.parseLong(pair[1]));
-			} else if (pair[0].equals("precision")) {
-				setPrecision(Short.parseShort(pair[1]));
-			} else if (pair[0].equals("randomTerrain")) {
-				setRandomAltitudes(Boolean.parseBoolean(pair[1]));
-			} else if (pair[0].equals("DBServer")) {
-				setDbServer(pair[1]);
-			} else if (pair[0].equals("DBPort")) {
-				setDbPort(Integer.parseInt(pair[1]));
-			} else if (pair[0].equals("DBUser")) {
-				setDbUser(pair[1]);
-			} else if (pair[0].equals("DBPass")) {
-				setDbPass(pair[1]);
-			} else if (pair[0].equals("DBDriver")) {
-				setDbDriver(pair[1]);
-			} else if (pair[0].equals("DBDb")) {
-				setDbDb(pair[1]);
 			}
 		}
 	}
