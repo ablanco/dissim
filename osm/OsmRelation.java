@@ -24,6 +24,13 @@ import org.w3c.dom.Node;
 
 import util.jcoord.LatLngBox;
 
+/**
+ * Relations are a list of osmWays that build a complex polygon, such a river,
+ * parks ...
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class OsmRelation {
 	private long id;
 	private LatLngBox box;
@@ -38,30 +45,70 @@ public class OsmRelation {
 		box = new LatLngBox();
 	}
 
+	/**
+	 * Gets osm id for the relation
+	 * 
+	 * @return id of the relation
+	 */
 	public long getId() {
 		return id;
 	}
 
+	/**
+	 * Gets osm static value for the relation, witch is the same than the osmWay
+	 * 
+	 * @return relation type
+	 */
 	public short getType() {
 		return type;
 	}
 
+	/**
+	 * Get the list of tags containing all the info collected from OSM web
+	 * service
+	 * 
+	 * @return list of tags
+	 */
 	public List<OsmTag> getTags() {
 		return tags;
 	}
-	
+
+	/**
+	 * Gets the containing box from the entire relation
+	 * 
+	 * @return box of coordinates
+	 */
 	public LatLngBox getBox() {
 		return box;
 	}
 
+	/**
+	 * Sets an specific value for the relation
+	 * 
+	 * @param type
+	 *            static osm value
+	 */
 	public void setType(short type) {
 		this.type = type;
 	}
 
+	/**
+	 * Gets members in the relation
+	 * 
+	 * @return list of members
+	 */
 	public List<OsmMember> getMembers() {
 		return members;
 	}
 
+	/**
+	 * Add a memeber to the list of members that defines the relation. Updates
+	 * the size of the box
+	 * 
+	 * @param member
+	 *            we want to add to the relation list
+	 * @return true if inserted
+	 */
 	public boolean addMember(OsmMember member) {
 		if (member != null) {
 			box.addToBox(member.getWay());
@@ -71,6 +118,13 @@ public class OsmRelation {
 		}
 	}
 
+	/**
+	 * Adds a tag to the tag list
+	 * 
+	 * @param tag
+	 *            we want to add
+	 * @return true if not null
+	 */
 	public boolean addTag(OsmTag tag) {
 		if (tag != null) {
 			return tags.add(tag);
@@ -79,10 +133,15 @@ public class OsmRelation {
 		}
 	}
 
+	/**
+	 * Check if has any members
+	 * 
+	 * @return true if member list is not empty
+	 */
 	public boolean isEmpty() {
 		return members.isEmpty();
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer result = new StringBuffer();
@@ -92,11 +151,21 @@ public class OsmRelation {
 		}
 		result.append("\n");
 		for (OsmMember m : members) {
-			result.append("\t"+m + "\n");
+			result.append("\t" + m + "\n");
 		}
 		return result.toString();
 	}
 
+	/**
+	 * Given a xml node from OSM webservice, parse and collect the info and
+	 * returns a osmRelation,also links osmWays to the relation.
+	 * 
+	 * @param node
+	 *            xml node from osm webservice
+	 * @param ways
+	 *            from the osmMap
+	 * @return osmRelation with the members that contains our box
+	 */
 	public static OsmRelation getRelation(Node node,
 			Hashtable<Long, OsmWay> ways) {
 		OsmRelation relation = new OsmRelation(Long.parseLong(node
@@ -116,8 +185,8 @@ public class OsmRelation {
 			node = node.getNextSibling();
 		}
 		if (relation.getMembers().size() > 0) {
-//			short type = Osm.getNodeType(relation.getTags());
-			//Cojemos el tipo del primer member que tenga
+			// short type = Osm.getNodeType(relation.getTags());
+			// Cojemos el tipo del primer member que tenga
 			short type = relation.getMembers().get(0).getType();
 			if (type == Osm.Undefined) {
 				relation.setType(relation.getMembers().get(0).getType());
