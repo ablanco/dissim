@@ -21,12 +21,29 @@ import java.util.Hashtable;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+/**
+ * Class for managin related ways, providin a role and a reference
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class OsmMember {
 	private OsmWay way;
 	private String role;
 	private short type;
 	private long ref;
 
+	/**
+	 * Private constructor, initializates the OsmMeber by parameters
+	 * 
+	 * @param type
+	 *            defined by OSM static values
+	 * @param ref
+	 *            OSM id
+	 * @param way
+	 *            osmWay
+	 * @param role
+	 */
 	private OsmMember(short type, long ref, OsmWay way, String role) {
 		this.type = type;
 		this.ref = ref;
@@ -34,6 +51,9 @@ public class OsmMember {
 		this.role = role;
 	}
 
+	/**
+	 * @return true if the osmWay is empty
+	 */
 	public boolean isEmpty() {
 		return way.getWay().isEmpty();
 	}
@@ -42,18 +62,37 @@ public class OsmMember {
 		this.way = way;
 	}
 
+	/**
+	 * Role of the member, given by OSM standart
+	 * 
+	 * @return the OSM role
+	 */
 	public String getRole() {
 		return role;
 	}
 
+	/**
+	 * OSM id
+	 * 
+	 * @return Osm id
+	 */
 	public long getRef() {
 		return ref;
 	}
-	
+
+	/**
+	 * OSM static value
+	 * 
+	 * @return
+	 */
 	public short getType() {
 		return type;
 	}
 
+	/**
+	 * 
+	 * @return osmWay containing member
+	 */
 	public OsmWay getWay() {
 		return way;
 	}
@@ -65,10 +104,16 @@ public class OsmMember {
 
 	@Override
 	public String toString() {
-		return "Member, ref: "+ref+", type: "+type+", role: "+role;//+" || "+way.getWay();
+		return "Member, ref: " + ref + ", type: " + type + ", role: " + role;// +" || "+way.getWay();
 	}
-	public static OsmMember getMember(Node node,
-			Hashtable<Long, OsmWay> ways) {
+
+	/**
+	 * Parse and initalizate the values for managin a OSM member type
+	 * @param node xml node from osm webservice
+	 * @param ways already parsed and added to the map
+	 * @return parsed initializaded osmMember
+	 */
+	public static OsmMember getMember(Node node, Hashtable<Long, OsmWay> ways) {
 		NamedNodeMap attributes = node.getAttributes();
 		long ref = Long.parseLong(attributes.item(1).getNodeValue());
 		String role = attributes.item(2).getNodeValue();
