@@ -185,7 +185,7 @@ public class OsmNode implements Comparable<OsmNode>, Cloneable {
 			}
 			node = node.getNextSibling();
 		}
-		if (!osmNode.isSimpleNode()) {
+		if (osmNode.getTags().size() > 0) {
 			osmNode.setType(Osm.getNodeType(osmNode.getTags()));
 		}
 		return osmNode;
