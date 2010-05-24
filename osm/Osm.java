@@ -287,7 +287,8 @@ public class Osm {
 		}
 
 		for (OsmNode n : osmMap.getNodes().values()) {
-			if (!n.isSimpleNode()) {
+			//Solo safePoints, lo demas no me interesa
+			if (getGenericType(n.getType()) != SafePoint) {
 				// System.err.println("Escribiendo Nodes: " + n);
 				setStreetValue(n, grid);
 			}

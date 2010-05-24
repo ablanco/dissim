@@ -24,66 +24,103 @@ import org.w3c.dom.Node;
 
 import util.jcoord.LatLng;
 
+/**
+ * OsmNode class for easily managing OSM nodes
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class OsmNode implements Comparable<OsmNode>, Cloneable {
 	protected long id;
 	protected LatLng coord;
 	protected List<OsmTag> tags;
 	private short type = Osm.Undefined;
 
-	// private boolean in;
-
 	private OsmNode(long id) {
 		this.id = id;
 		tags = new ArrayList<OsmTag>();
 	}
-	
-	public OsmNode(LatLng c){
+
+	/**
+	 * Node from a position
+	 * 
+	 * @param c
+	 *            positon to place de node
+	 */
+	public OsmNode(LatLng c) {
 		coord = c;
 		tags = new ArrayList<OsmTag>();
 	}
 
+	/**
+	 * osm static value
+	 * 
+	 * @return node static value
+	 */
 	public short getType() {
 		return type;
 	}
 
+	/**
+	 * Gets tags from the node
+	 * 
+	 * @return list of tags describing the node
+	 */
 	public List<OsmTag> getTags() {
 		return tags;
 	}
 
+	/**
+	 * Gets coord from the node
+	 * 
+	 * @return geolocalization of the node
+	 */
 	public LatLng getCoord() {
 		return coord;
 	}
 
+	/**
+	 * Gets osm static value from the node
+	 * 
+	 * @param type
+	 *            node osm static value type
+	 */
 	public void setType(short type) {
 		this.type = type;
 	}
 
+	/**
+	 * Sets coord for the node
+	 * 
+	 * @param coord
+	 *            new coord for the node
+	 */
 	public void setCoord(LatLng coord) {
 		this.coord = coord;
 	}
 
-
+	/**
+	 * Gets id given by OSM
+	 * 
+	 * @return node id
+	 */
 	public long getId() {
 		return id;
 	}
 
-	public boolean isSimpleNode() {
-		if (tags.size() > 0) {
-			return false;
-		}
-		return true;
-	}
-
+	/**
+	 * Add a tag to the tags list describing the node
+	 * 
+	 * @param tag
+	 *            info
+	 * @return true if not null
+	 */
 	public boolean addTag(OsmTag tag) {
 		if (tag != null) {
 			return tags.add(tag);
 		}
 		return false;
 	}
-
-	// public void setIn(boolean in) {
-	// this.in = in;
-	// }
 
 	@Override
 	public int compareTo(OsmNode n) {
@@ -104,24 +141,32 @@ public class OsmNode implements Comparable<OsmNode>, Cloneable {
 
 	@Override
 	public String toString() {
-		String result = "Node Id: " + id + ": "+coord.toString();
+		String result = "Node Id: " + id + ": " + coord.toString();
 		for (OsmTag tag : tags) {
-			result += ", "+ tag.toString();
+			result += ", " + tag.toString();
 		}
 		return result;
 	}
-	
+
 	@Override
-	protected OsmNode clone(){		
+	protected OsmNode clone() {
 		OsmNode n = new OsmNode(id);
-		n.setCoord(new LatLng(coord.getLat(), coord.getLng(), coord.getAltitude()));
+		n.setCoord(new LatLng(coord.getLat(), coord.getLng(), coord
+				.getAltitude()));
 		n.setType(type);
-		for (OsmTag t : tags){
+		for (OsmTag t : tags) {
 			n.addTag(t);
 		}
 		return n;
 	}
 
+	/**
+	 * Given a osm xml node, parse it and initizalizates a new osmNode object.
+	 * 
+	 * @param node
+	 *            xml node from OSM webservice
+	 * @return osmNode with all the info from the node
+	 */
 	public static OsmNode getNode(Node node) {
 		NamedNodeMap attributes = node.getAttributes();
 		long id = Long.parseLong(attributes.item(0).getNodeValue());
