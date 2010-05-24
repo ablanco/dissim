@@ -65,7 +65,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 			adjacents.add(position);
 
 			// Si ya está en un refugio no se mueve ni muere ni nada
-			if (Osm.getBigType(position.getS()) == Osm.SafePoint)
+			if (Osm.getGenericType(position.getS()) == Osm.SafePoint)
 				throw new YouAreSafeException(position);
 		}
 
@@ -76,9 +76,9 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		for (Point pt : adjacents) {
 			if (pt.getW() > 0)
 				water.add(pt);
-			else if (Osm.getBigType(pt.getS()) == Osm.SafePoint)
+			else if (Osm.getGenericType(pt.getS()) == Osm.SafePoint)
 				safe.add(pt);
-			else if (Osm.getBigType(pt.getS()) == Osm.Roads)
+			else if (Osm.getGenericType(pt.getS()) == Osm.Roads)
 				dry.add(pt);
 			// Las casillas que no son calles ni refugios se ignoran
 		}
