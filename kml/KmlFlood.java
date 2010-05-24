@@ -58,6 +58,14 @@ public class KmlFlood {
 		this.container = folder;
 	}
 
+	/**
+	 * For each new call, it see witch tiles have change and updates de kml
+	 * @param oldGrid first grid to see what has changed
+	 * @param fGrid new grid
+	 * @param name of the grid
+	 * @param beginTime when begins
+	 * @param endTime when ends
+	 */
 	public void update(short[][] oldGrid, FloodHexagonalGrid fGrid,
 			String name, String beginTime, String endTime) {
 		// incs for this snapshot
@@ -161,6 +169,11 @@ public class KmlFlood {
 
 	}
 
+	/**
+	 * Draw a polygon into the kml
+	 * @param kp we want to draw
+	 * @throws IllegalArgumentException if is a null polygon
+	 */
 	private void drawWater(Kpolygon kp) {
 		if (kp == null) {
 			throw new IllegalArgumentException("El polygono no puede ser nulo");
