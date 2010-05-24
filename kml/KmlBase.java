@@ -44,6 +44,13 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 
+/**
+ * Is the base class from managing the info from the updates and parsin them
+ * into kml friendly
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class KmlBase implements Updateable {
 	public final static String folderName = "Kml";
 	protected Kml kml;
@@ -67,16 +74,29 @@ public class KmlBase implements Updateable {
 	private Map<String, KmlInf> inf;
 	private Agent myAgent = null;
 
+	/**
+	 * Public constructor, initiazlizes the kml and organizes all the listening
+	 * enviorements
+	 */
 	public KmlBase() {
 		kml = new Kml();
 		inf = new TreeMap<String, KmlInf>();
 	}
 
+	/**
+	 * Sets the agent from KML
+	 * 
+	 * @param agt
+	 *            new Agent
+	 */
 	@Override
 	public void setAgent(Agent agt) {
 		myAgent = agt;
 	}
 
+	/**
+	 * Creates the kml archives
+	 */
 	@Override
 	public void finish() {
 		JFileChooser fc = new JFileChooser();
@@ -92,16 +112,30 @@ public class KmlBase implements Updateable {
 		}
 	}
 
+	/**
+	 * Get type of the agent
+	 */
 	@Override
 	public String getType() {
 		return "kml";
 	}
 
+	/**
+	 * Initializes the map for the kmls agents
+	 */
 	@Override
 	public void init() {
 		inf = new TreeMap<String, KmlInf>();
 	}
 
+	/**
+	 * for each new scenario, it find the diferences and print them into the kml
+	 * 
+	 * @param obj
+	 *            snapshot
+	 * @param sender
+	 *            sender name
+	 */
 	@Override
 	public void update(Object obj, AID sender) throws IllegalArgumentException {
 		if (!(obj instanceof Snapshot))
@@ -174,22 +208,43 @@ public class KmlBase implements Updateable {
 		}
 	}
 
+	/**
+	 * Gets kml
+	 * 
+	 * @return kml
+	 */
 	public Kml getKml() {
 		return kml;
 	}
 
+	/**
+	 * Sets a new name from the kml folder
+	 * 
+	 * @param name
+	 *            new
+	 */
 	public void setName(String name) {
 		if (folder != null) {
 			folder.setName(name);
 		}
 	}
 
+	/**
+	 * Sets a new description to the kml
+	 * 
+	 * @param description
+	 */
 	public void setDescription(String description) {
 		if (folder != null) {
 			folder.setDescription(description);
 		}
 	}
 
+	/**
+	 * Gets the name from the kml, if not defined, returns DefaultName
+	 * 
+	 * @return name, or DefaultName if not defined
+	 */
 	public String getName() {
 		if (folder != null && folder.getName() != null
 				&& folder.getName().length() != 0)
@@ -197,6 +252,12 @@ public class KmlBase implements Updateable {
 		return "DefaultName";
 	}
 
+	/**
+	 * Gets the description from the kml, if not defined, returns
+	 * DefaultDescriptor
+	 * 
+	 * @return name, or DefaultDescriptor if not defined
+	 */
 	public String getDescription() {
 		if (folder != null && folder.getDescription() != null
 				&& folder.getDescription().length() != 0)
@@ -228,6 +289,10 @@ public class KmlBase implements Updateable {
 
 	/**
 	 * A folder is a container where you can put several things inside
+	 * @param kml
+	 * @param name
+	 * @param description
+	 * @return
 	 */
 	public static Folder newFolder(Kml kml, String name, String description) {
 		return kml.createAndSetFolder().withName(name).withOpen(false)
