@@ -24,13 +24,14 @@ import jade.lang.acl.ACLMessage;
 import java.lang.reflect.Constructor;
 
 import util.AgentHelper;
+import util.Snapshot;
 import util.Updateable;
 import behaviours.ReceiveUpdateBehav;
 
 /**
- * Agent that subcribes to an Enviroment and receives a Snapshot on a regular
- * period, and passes it to a client that must implement the Updateable
- * interface.
+ * {@link Agent} that subcribes to an {@link EnviromentAgent} and receives a
+ * {@link Snapshot} on a regular period, and passes it to a client that must
+ * implement the {@link Updateable} interface.
  * 
  * @author Alejandro Blanco, Manuel Gomar
  * 
@@ -41,7 +42,8 @@ public class UpdateAgent extends Agent {
 	private AID[] envAID = null;
 
 	/**
-	 * Object that processes the Snapshot
+	 * Object that processes the {@link Snapshot}, it must implement the
+	 * {@link Updateable} interface
 	 */
 	private Updateable client = null;
 

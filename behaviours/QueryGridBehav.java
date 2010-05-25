@@ -16,6 +16,9 @@
 
 package behaviours;
 
+import agents.EnviromentAgent;
+import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -23,6 +26,15 @@ import util.HexagonalGrid;
 import util.Point;
 import util.jcoord.LatLng;
 
+/**
+ * {@link Behaviour} that receives querys about the {@link HexagonalGrid} of an
+ * {@link EnviromentAgent}. It can return the elevation of some grid
+ * coordinates, or convert from geographical coordinates to grid coordinates and
+ * viceversa.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class QueryGridBehav extends CyclicBehaviour {
 
@@ -32,7 +44,16 @@ public class QueryGridBehav extends CyclicBehaviour {
 
 	private HexagonalGrid grid;
 
-	public QueryGridBehav(HexagonalGrid grid) {
+	/**
+	 * {@link QueryGridBehav} constructor
+	 * 
+	 * @param agt
+	 *            An {@link EnviromentAgent}
+	 * @param grid
+	 *            {@link HexagonalGrid}
+	 */
+	public QueryGridBehav(Agent agt, HexagonalGrid grid) {
+		super(agt);
 		this.grid = grid;
 	}
 

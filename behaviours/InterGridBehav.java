@@ -17,17 +17,29 @@
 package behaviours;
 
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 import java.util.Map;
 
+import agents.EnviromentAgent;
+import agents.people.PedestrianAgent;
+
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 
+/**
+ * {@link Behaviour} to receive and process {@link ACLMessage} between
+ * {@link EnviromentAgent}. These messages are related with water movement and
+ * people movement.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class InterGridBehav extends CyclicBehaviour {
 
@@ -42,6 +54,18 @@ public class InterGridBehav extends CyclicBehaviour {
 	private HexagonalGrid grid;
 	private Map<String, Pedestrian> people;
 
+	/**
+	 * {@link InterGridBehav} constructor
+	 * 
+	 * @param agt
+	 *            An {@link EnviromentAgent}
+	 * @param grid
+	 *            The {@link HexagonalGrid} of the {@link EnviromentAgent}
+	 * @param people
+	 *            {@link Map}<{@link String},{@link Pedestrian}> of
+	 *            {@link PedestrianAgent} that are moving on the area of this
+	 *            {@link EnviromentAgent}
+	 */
 	public InterGridBehav(Agent agt, HexagonalGrid grid,
 			Map<String, Pedestrian> people) {
 		super(agt);

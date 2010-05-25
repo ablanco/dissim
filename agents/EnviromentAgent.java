@@ -36,6 +36,7 @@ import util.Pedestrian;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
 import util.jcoord.LatLng;
+import agents.people.PedestrianAgent;
 import behaviours.AdjacentsGridBehav;
 import behaviours.InterGridBehav;
 import behaviours.QueryGridBehav;
@@ -48,10 +49,11 @@ import behaviours.flood.UpdateFloodGridBehav;
 import behaviours.people.RegisterPeopleBehav;
 
 /**
- * Agent that manages the terrain (grid) of a simulation's area.
+ * {@link Agent} that manages the terrain ({@link HexagonalGrid}) of a
+ * simulation's area.
  * 
- * If the disaster is a flood, then the agent manages and simulates the
- * movement of the water around the terrain.
+ * If the disaster is a flood, then the agent manages and simulates the movement
+ * of the water around the terrain.
  * 
  * @author Alejandro Blanco, Manuel Gomar
  * 
@@ -59,8 +61,18 @@ import behaviours.people.RegisterPeopleBehav;
 @SuppressWarnings("serial")
 public class EnviromentAgent extends Agent {
 
+	/**
+	 * Object that holds all the information about the terrain and water.
+	 */
 	private HexagonalGrid grid = null;
+	/**
+	 * Simulation time.
+	 */
 	private DateAndTime dateTime = null;
+	/**
+	 * {@link PedestrianAgent} that are moving in the area ofthis
+	 * {@link EnviromentAgent}
+	 */
 	private Map<String, Pedestrian> people = new Hashtable<String, Pedestrian>();
 
 	@Override
@@ -123,8 +135,9 @@ public class EnviromentAgent extends Agent {
 			ParallelBehaviour parallel = new ParallelBehaviour(
 					ParallelBehaviour.WHEN_ALL);
 			// Añadir comportamientos
-			parallel.addSubBehaviour(new AdjacentsGridBehav(scen, grid));
-			parallel.addSubBehaviour(new QueryGridBehav(grid));
+			parallel
+					.addSubBehaviour(new AdjacentsGridBehav(myAgent, scen, grid));
+			parallel.addSubBehaviour(new QueryGridBehav(myAgent, grid));
 			parallel.addSubBehaviour(new SyndicateBehav(myAgent, grid,
 					dateTime, scen, people));
 			parallel.addSubBehaviour(new InterGridBehav(myAgent, grid, people));

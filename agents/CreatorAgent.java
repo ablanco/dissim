@@ -18,6 +18,7 @@ package agents;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -36,8 +37,8 @@ import util.jcoord.LatLng;
 import behaviours.CreateAgentBehav;
 
 /**
- * Agent that loads and processes a Scenario file, and lauch the simulation that
- * the file describes creating the agents needed.
+ * {@link Agent} that loads and processes a {@link Scenario} file, and launch
+ * the simulation that the file describes creating the agents needed.
  * 
  * @author Alejandro Blanco, Manuel Gomar
  * 
@@ -46,6 +47,9 @@ import behaviours.CreateAgentBehav;
 public class CreatorAgent extends Agent {
 
 	private Scenario scen = null;
+	/**
+	 * Agents that will receive the {@link ClockAgent} ticks.
+	 */
 	private ArrayList<AID> clockReceivers = new ArrayList<AID>();
 
 	@Override
@@ -98,8 +102,9 @@ public class CreatorAgent extends Agent {
 	}
 
 	/**
-	 * Behaviour that continues creating agents, it waits until all the
-	 * enviroments are ready and then create the others agents.
+	 * {@link Behaviour} that continues creating {@link Agent}, it waits until
+	 * all the {@link EnviromentAgent} are ready and then create the others
+	 * agents.
 	 * 
 	 * @author Alejandro Blanco, Manuel Gomar
 	 * 
@@ -107,7 +112,7 @@ public class CreatorAgent extends Agent {
 	protected class WaitForReadyBehav extends CyclicBehaviour {
 
 		/**
-		 * Number of enviroments that are ready to go
+		 * Number of {@link EnviromentAgent} that are ready to go
 		 */
 		private int count = 0;
 
@@ -176,8 +181,8 @@ public class CreatorAgent extends Agent {
 	}
 
 	/**
-	 * Behaviour that sends the Scenario instance to others agents. It receives
-	 * a request and sends the instance to the sender.
+	 * {@link Behaviour} that sends the {@link Scenario} instance to others
+	 * agents. It receives a request and sends the instance to the sender.
 	 * 
 	 * @author Alejandro Blanco, Manuel Gomar
 	 * 

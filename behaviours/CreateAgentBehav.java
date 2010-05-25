@@ -18,6 +18,7 @@ package behaviours;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.AgentController;
@@ -25,6 +26,12 @@ import jade.wrapper.ControllerException;
 
 import java.util.ArrayList;
 
+/**
+ * {@link Behaviour} to create new {@link Agent}
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class CreateAgentBehav extends OneShotBehaviour {
 
@@ -35,21 +42,41 @@ public class CreateAgentBehav extends OneShotBehaviour {
 	private ArrayList<AID> newAgts;
 
 	/**
+	 * {@link CreateAgentBehav} constructor
 	 * 
 	 * @param agt
-	 *            Agente que llama a este constructor
+	 *            {@link Agent} that calls this constructor
 	 * @param name
-	 *            Nombre del agente a crear
+	 *            Name of the {@link Agent} to create
 	 * @param agtClass
-	 *            Clase del agente a crear
+	 *            {@link Class} of the {@link Agent} to create
+	 * @param clones
+	 *            Number of clones of the new {@link Agent}
 	 * @param arguments
-	 *            Argumentos a pasar al agente a crear
+	 *            Arguments for the new {@link Agent}
 	 */
 	public CreateAgentBehav(Agent agt, String name, String agtClass,
 			int clones, Object[] arguments) {
 		this(agt, name, agtClass, clones, arguments, null);
 	}
 
+	/**
+	 * {@link CreateAgentBehav} constructor
+	 * 
+	 * @param agt
+	 *            {@link Agent} that calls this constructor
+	 * @param name
+	 *            Name of the {@link Agent} to create
+	 * @param agtClass
+	 *            {@link Class} of the {@link Agent} to create
+	 * @param clones
+	 *            Number of clones of the new {@link Agent}
+	 * @param arguments
+	 *            Arguments for the new {@link Agent}
+	 * @param newAgts
+	 *            {@link ArrayList}<{@link AID}> where the new {@link Agent}
+	 *            will be included
+	 */
 	public CreateAgentBehav(Agent agt, String name, String agtClass,
 			int clones, Object[] arguments, ArrayList<AID> newAgts) {
 		super(agt);

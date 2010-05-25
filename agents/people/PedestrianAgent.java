@@ -19,6 +19,7 @@ package agents.people;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import sun.reflect.Reflection;
 import util.AgentHelper;
 import util.jcoord.LatLng;
 import behaviours.ReceiveClockTickBehav;
@@ -26,8 +27,8 @@ import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
 
 /**
- * Agent that represents a person or a group of persons. It evaluates his
- * enviroment and moves around usually trying to save himself.
+ * {@link Agent} that represents a person or a group of persons. It evaluates
+ * his enviroment and moves around usually trying to save himself.
  * 
  * @author Alejandro Blanco, Manuel Gomar
  * 
@@ -36,12 +37,12 @@ import behaviours.RequestScenarioBehav;
 public class PedestrianAgent extends Agent {
 
 	/**
-	 * Class to be instanced using Reflection API and used to choose where to
-	 * move
+	 * Class to be instanced using {@link Reflection} API and used to choose
+	 * where to move
 	 */
 	private String behaviour = null;
 	/**
-	 * Arguments to behaviour
+	 * Arguments for behaviour
 	 */
 	Object[] chooseArgs = null;
 	private double lat;

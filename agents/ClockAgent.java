@@ -26,8 +26,8 @@ import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
 /**
- * Agent that synchronizes the simulation, it sends ticks to others agents on a
- * regular period.
+ * {@link Agent} that synchronizes the simulation, it sends ticks to others
+ * agents on a regular period.
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 

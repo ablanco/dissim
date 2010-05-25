@@ -16,16 +16,34 @@
 
 package behaviours;
 
+import agents.CreatorAgent;
 import jade.core.behaviours.Behaviour;
 import util.Scenario;
 
+/**
+ * Abstract {@link Behaviour} to be extended and used by the agents that ask
+ * {@link CreatorAgent} for the {@link Scenario}
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public abstract class ReceiveScenarioBehav extends Behaviour {
 
 	protected Scenario scen = null;
 
+	/**
+	 * Variable used to control when this {@link Behaviour} has finished
+	 */
 	protected boolean done = false;
 
+	/**
+	 * {@link CreatorAgent} calls this method to set the {@link Scenario}
+	 * instance.
+	 * 
+	 * @param scen
+	 *            {@link Scenario}
+	 */
 	public void setScenario(Scenario scen) {
 		this.scen = scen;
 	}

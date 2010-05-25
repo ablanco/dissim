@@ -30,12 +30,23 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import agents.EnviromentAgent;
+
 import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
 import util.Scenario;
 import util.jcoord.LatLng;
 
+/**
+ * Processes requests and returns a {@link HashSet}<{@link Point}> with the
+ * adjacents to the given position. The position can be given on geographical
+ * coordinates or on grid coordinates. It's possible to ask for a range of
+ * adjacents sending the number os steps too.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class AdjacentsGridBehav extends CyclicBehaviour {
 
@@ -49,7 +60,18 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 			.MatchConversationId("adjacents-grid"), MessageTemplate
 			.MatchPerformative(ACLMessage.REQUEST));
 
-	public AdjacentsGridBehav(Scenario scen, HexagonalGrid grid) {
+	/**
+	 * {@link AdjacentsGridBehav} constructor
+	 * 
+	 * @param agt
+	 *            An {@link EnviromentAgent}
+	 * @param scen
+	 *            {@link Scenario}
+	 * @param grid
+	 *            {@link HexagonalGrid}
+	 */
+	public AdjacentsGridBehav(Agent agt, Scenario scen, HexagonalGrid grid) {
+		super(agt);
 		this.scen = scen;
 		this.grid = grid;
 	}
@@ -85,25 +107,29 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 				col = Integer.parseInt(data[1]);
 				row = Integer.parseInt(data[2]);
 			}
+
+			// Pasos de adyacentes
 			int d = 1;
 			ArrayList<int[]> otherEnv = new ArrayList<int[]>(4);
 			if (data.length > 3) {
 				d = Integer.parseInt(data[3]);
-				if (!type.equals(OTHER_ENV)) {
-					// Averiguamos si se sale del área de este entorno
-					if ((col - d) < grid.getOffCol())
-						otherEnv.add(new int[] { grid.getOffCol() - 1, row });
-					if ((row - d) < grid.getOffRow())
-						otherEnv.add(new int[] { col, grid.getOffRow() - 1 });
-					if ((grid.getOffCol() + grid.getColumns()) <= col)
-						otherEnv.add(new int[] {
-								grid.getOffCol() + grid.getColumns(), row });
-					if ((grid.getOffRow() + grid.getRows()) <= row)
-						otherEnv.add(new int[] { col,
-								grid.getOffRow() + grid.getRows() });
-				}
 			}
 
+			// Averiguamos si se sale del área de este entorno
+			if (!type.equals(OTHER_ENV)) {
+				if ((col - d) < grid.getOffCol())
+					otherEnv.add(new int[] { grid.getOffCol() - 1, row });
+				if ((row - d) < grid.getOffRow())
+					otherEnv.add(new int[] { col, grid.getOffRow() - 1 });
+				if ((grid.getOffCol() + grid.getColumns()) <= col)
+					otherEnv.add(new int[] {
+							grid.getOffCol() + grid.getColumns(), row });
+				if ((grid.getOffRow() + grid.getRows()) <= row)
+					otherEnv.add(new int[] { col,
+							grid.getOffRow() + grid.getRows() });
+			}
+
+			// Recopilamos los adyacentes
 			adjacents = grid.getAdjacents(new Point(col, row));
 			HashSet<Point> adj1 = adjacents;
 			while (d > 1) {
@@ -131,11 +157,27 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 		}
 	}
 
+	/**
+	 * Behaviour that actually sends the adjacents
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 * 
+	 */
 	protected class SendAdjacentsBehav extends OneShotBehaviour {
 
 		private HashSet<Point> adjacents;
 		private ACLMessage msg;
 
+		/**
+		 * {@link SendAdjacentsBehav} constructor
+		 * 
+		 * @param agt
+		 *            {@link Agent}
+		 * @param adjacents
+		 *            {@link HashSet}<{@link Point}>
+		 * @param msg
+		 *            {@link ACLMessage} to reply with.
+		 */
 		public SendAdjacentsBehav(Agent agt, HashSet<Point> adjacents,
 				ACLMessage msg) {
 			super(agt);
@@ -156,6 +198,14 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 
 	}
 
+	/**
+	 * Behaviour that asks anothers {@link EnviromentAgent} for adjacents (in
+	 * case that the position is near a frontier and some of the adjacents are
+	 * on other enviroment), waits for the answer and precesses it.
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 * 
+	 */
 	protected class OtherEnvsAdjacentsBehav extends CyclicBehaviour {
 
 		private int col;
@@ -167,6 +217,22 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 		private int step;
 		private MessageTemplate mtReply;
 
+		/**
+		 * {@link OtherEnvsAdjacentsBehav} constructor
+		 * 
+		 * @param agt
+		 *            {@link Agent}
+		 * @param col
+		 * @param row
+		 * @param d
+		 * @param outerTiles
+		 *            {@link ArrayList}<int[]> Tiles that are located on
+		 *            anothers {@link EnviromentAgent}.
+		 * @param adjacents
+		 *            {@link HashSet}<{@link Point}>
+		 * @param msg
+		 *            {@link ACLMessage} to reply with.
+		 */
 		public OtherEnvsAdjacentsBehav(Agent agt, int col, int row, int d,
 				ArrayList<int[]> outerTiles, HashSet<Point> adjacents,
 				ACLMessage msg) {

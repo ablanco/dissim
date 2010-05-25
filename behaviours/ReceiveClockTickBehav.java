@@ -24,8 +24,18 @@ import jade.lang.acl.MessageTemplate;
 
 import java.lang.reflect.Constructor;
 
+import agents.ClockAgent;
+
+import sun.reflect.Reflection;
 import util.DateAndTime;
 
+/**
+ * {@link Behaviour} that receives ticks from {@link ClockAgent} and executes
+ * another Behaviour.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class ReceiveClockTickBehav extends CyclicBehaviour {
 
@@ -35,6 +45,20 @@ public class ReceiveClockTickBehav extends CyclicBehaviour {
 	private Object[] arguments;
 	private MessageTemplate mt = MessageTemplate.MatchConversationId("clock");
 
+	/**
+	 * {@link ReceiveClockTickBehav} constructor
+	 * 
+	 * @param agt
+	 *            {@link Agent}
+	 * @param onTickClass
+	 *            {@link Class} of the {@link Behaviour} to be executed when a
+	 *            tick is received, the instance will be created using the
+	 *            {@link Reflection} API
+	 * @param arguments
+	 *            {@link Object}[] Arguments for the {@link Behaviour}
+	 * @param dateTime
+	 *            {@link DateAndTime}
+	 */
 	public ReceiveClockTickBehav(Agent agt, Class<?> onTickClass,
 			Object[] arguments, DateAndTime dateTime) {
 		this.onTickClass = onTickClass;
