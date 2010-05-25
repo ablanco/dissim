@@ -24,12 +24,20 @@ import jade.lang.acl.ACLMessage;
 import java.util.Map;
 import java.util.Set;
 
+import agents.EnvironmentAgent;
+
 import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Snapshot;
 
+/**
+ * It sends a {@link Snapshot} to some subscribers.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class SendUpdateBehav extends TickerBehaviour {
 
@@ -41,6 +49,28 @@ public class SendUpdateBehav extends TickerBehaviour {
 	private String name;
 	private String description;
 
+	/**
+	 * {@link SendUpdateBehav} constructor
+	 * 
+	 * @param a
+	 *            Usually an {@link EnvironmentAgent}
+	 * @param period
+	 * @param to
+	 *            {@link Set}<{@link AID}> containig the receivers of the
+	 *            {@link Snapshot}
+	 * @param convId
+	 *            {@link String}
+	 * @param grid
+	 *            {@link HexagonalGrid}
+	 * @param dateTime
+	 *            {@link DateAndTime}
+	 * @param people
+	 *            {@link Map}<{@link String},{@link Pedestrian}>
+	 * @param name
+	 *            {@link String} Simulation's name
+	 * @param description
+	 *            {@link String} Simulation's description
+	 */
 	public SendUpdateBehav(Agent a, long period, Set<AID> to, String convId,
 			HexagonalGrid grid, DateAndTime dateTime,
 			Map<String, Pedestrian> people, String name, String description) {

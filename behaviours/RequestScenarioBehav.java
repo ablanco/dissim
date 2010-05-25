@@ -16,7 +16,10 @@
 
 package behaviours;
 
+import agents.CreatorAgent;
 import jade.core.AID;
+import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
@@ -25,6 +28,13 @@ import jade.lang.acl.UnreadableException;
 import util.AgentHelper;
 import util.Scenario;
 
+/**
+ * {@link Behaviour} that asks the {@link CreatorAgent} for the {@link Scenario}
+ * and when receives it executes a {@link ReceiveScenarioBehav}.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class RequestScenarioBehav extends CyclicBehaviour {
 
@@ -32,7 +42,17 @@ public class RequestScenarioBehav extends CyclicBehaviour {
 	private int step = 0;
 	private MessageTemplate mt;
 
-	public RequestScenarioBehav(ReceiveScenarioBehav behav) {
+	/**
+	 * {@link RequestScenarioBehav} creator
+	 * 
+	 * @param agt
+	 *            {@link Agent}
+	 * @param behav
+	 *            {@link ReceiveScenarioBehav} that is launched when the
+	 *            {@link Scenario} arrives
+	 */
+	public RequestScenarioBehav(Agent agt, ReceiveScenarioBehav behav) {
+		super(agt);
 		this.behav = behav;
 	}
 
@@ -42,11 +62,13 @@ public class RequestScenarioBehav extends CyclicBehaviour {
 		switch (step) {
 		case 0:
 			// Obtener agente creador
-			DFAgentDescription[] result = AgentHelper.search(myAgent, "creator");
+			DFAgentDescription[] result = AgentHelper
+					.search(myAgent, "creator");
 			AID creatorAID = result[0].getName();
 
 			// Pedir Scenario
-			mt = AgentHelper.send(myAgent, creatorAID, ACLMessage.REQUEST, null, null);
+			mt = AgentHelper.send(myAgent, creatorAID, ACLMessage.REQUEST,
+					null, null);
 			step = 1;
 		case 1:
 			// Recibir el escenario

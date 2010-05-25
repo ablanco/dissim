@@ -29,21 +29,50 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import agents.EnvironmentAgent;
+import agents.UpdateAgent;
+
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Scenario;
+import util.Snapshot;
 
+/**
+ * {@link Behaviour} that manages the subscriptions and sends {@link Snapshot}
+ * to the subscribers.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class SyndicateBehav extends CyclicBehaviour {
 
 	private long defaultPeriod = 500;
 	private Scenario scen;
+	/**
+	 * The key of the map is the type of {@link UpdateAgent}. The Object[]
+	 * contains: {@link SendUpdateBehav} and {@link Set}<{@link AID}>.
+	 */
 	private Map<String, Object[]> subscribers = new Hashtable<String, Object[]>();
 	private HexagonalGrid grid;
 	private DateAndTime dateTime;
 	private Map<String, Pedestrian> people;
 
+	/**
+	 * {@link SyndicateBehav} constructor
+	 * 
+	 * @param a
+	 *            Usually an {@link EnvironmentAgent}
+	 * @param grid
+	 *            {@link HexagonalGrid}
+	 * @param dateTime
+	 *            {@link DateAndTime}
+	 * @param scen
+	 *            {@link Scenario}
+	 * @param people
+	 *            {@link Map}<{@link String},{@link Pedestrian}>
+	 */
 	public SyndicateBehav(Agent a, HexagonalGrid grid, DateAndTime dateTime,
 			Scenario scen, Map<String, Pedestrian> people) {
 		super(a);
@@ -74,14 +103,14 @@ public class SyndicateBehav extends CyclicBehaviour {
 				Object[] data = subscribers.get(type);
 				Set<AID> receivers = null;
 				if (data != null) {
-					myAgent.removeBehaviour((Behaviour) data[0]);
+					myAgent.removeBehaviour((SendUpdateBehav) data[0]);
 					receivers = (Set<AID>) data[1];
 				} else {
 					data = new Object[2];
 					receivers = new TreeSet<AID>();
 				}
 				receivers.add(aid);
-				Behaviour behav = createBehav(type, receivers);
+				SendUpdateBehav behav = createBehav(type, receivers);
 				myAgent.addBehaviour(behav);
 				data[0] = behav;
 				data[1] = receivers;
@@ -91,11 +120,11 @@ public class SyndicateBehav extends CyclicBehaviour {
 			else if (msg.getPerformative() == ACLMessage.CANCEL && aid != null) {
 				Object[] data = subscribers.remove(type);
 				if (data != null) {
-					myAgent.removeBehaviour((Behaviour) data[0]);
+					myAgent.removeBehaviour((SendUpdateBehav) data[0]);
 					Set<AID> receivers = (Set<AID>) data[1];
 					receivers.remove(aid);
 					if (receivers.size() > 0) {
-						Behaviour behav = createBehav(type, receivers);
+						SendUpdateBehav behav = createBehav(type, receivers);
 						myAgent.addBehaviour(behav);
 						data[0] = behav;
 						data[1] = receivers;
@@ -108,8 +137,17 @@ public class SyndicateBehav extends CyclicBehaviour {
 		}
 	}
 
-	private Behaviour createBehav(String type, Set<AID> receivers) {
-		Behaviour behav = null;
+	/**
+	 * It creates a {@link SendUpdateBehav} for the given subscribers
+	 * 
+	 * @param type
+	 *            {@link String} Type of the subscribers
+	 * @param receivers
+	 *            {@link Set}<{@link AID}> Subscribers
+	 * @return
+	 */
+	private SendUpdateBehav createBehav(String type, Set<AID> receivers) {
+		SendUpdateBehav behav = null;
 		if (type.equals("visor")) {
 			behav = new SendUpdateBehav(myAgent, scen.getUpdateVisorPeriod(),
 					receivers, "update", grid, dateTime, people,
