@@ -30,8 +30,8 @@ import behaviours.flood.WaterSourceBehav;
 
 /**
  * {@link Agent} that represent a water entrance to the simulation. It only
- * works with flood simulations. It sends water to an {@link EnvironmentAgent} on
- * every tick of the {@link ClockAgent}.
+ * works with flood simulations. It sends water to an {@link EnvironmentAgent}
+ * on every tick of the {@link ClockAgent}.
  * 
  * @author Alejandro Blanco, Manuel Gomar
  * 
@@ -56,7 +56,7 @@ public class WaterSourceAgent extends Agent {
 			throw new IllegalArgumentException("Wrong arguments.");
 		}
 
-		addBehaviour(new RequestScenarioBehav(new ContinueWS()));
+		addBehaviour(new RequestScenarioBehav(this, new ContinueWS()));
 	}
 
 	protected class ContinueWS extends ReceiveScenarioBehav {

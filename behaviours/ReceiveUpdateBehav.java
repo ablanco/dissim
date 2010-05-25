@@ -16,27 +16,55 @@
 
 package behaviours;
 
+import agents.UpdateAgent;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.ParallelBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
+import util.Snapshot;
 import util.Updateable;
 
+/**
+ * {@link Behaviour} that receives a {@link Snapshot} and calls the method
+ * update of an {@link Updateable} object. It parallelizes the receiving and the
+ * processing.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class ReceiveUpdateBehav extends ParallelBehaviour {
 
+	/**
+	 * Object that processes the {@link Snapshot}
+	 */
 	private Updateable client;
 
+	/**
+	 * {@link ReceiveUpdateBehav} constructor
+	 * 
+	 * @param a
+	 *            Usually an {@link UpdateAgent}
+	 * @param client
+	 *            {@link Updateable}
+	 */
 	public ReceiveUpdateBehav(Agent a, Updateable client) {
-		super(ParallelBehaviour.WHEN_ALL);
+		super(a, ParallelBehaviour.WHEN_ALL);
 		this.client = client;
 		addSubBehaviour(new ReceiveBehav(a, this));
 	}
 
+	/**
+	 * {@link Behaviour} that actually receives the {@link Snapshot}
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 * 
+	 */
 	protected class ReceiveBehav extends CyclicBehaviour {
 
 		private ParallelBehaviour parallel;
@@ -73,6 +101,13 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 
 	}
 
+	/**
+	 * {@link Behaviour} that actually calls the update method of the
+	 * {@link Updateable} object.
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 * 
+	 */
 	protected class UpdateBehav extends OneShotBehaviour {
 
 		Object content;

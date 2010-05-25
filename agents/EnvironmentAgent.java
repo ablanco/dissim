@@ -94,7 +94,7 @@ public class EnvironmentAgent extends Agent {
 		}
 
 		// Obtener Scenario
-		addBehaviour(new RequestScenarioBehav(new ContinueEnv()));
+		addBehaviour(new RequestScenarioBehav(this, new ContinueEnv()));
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class PedestrianAgent extends Agent {
 					+ " - Wrong number of arguments: " + args.length);
 		}
 
-		addBehaviour(new RequestScenarioBehav(new ContinuePA()));
+		addBehaviour(new RequestScenarioBehav(this, new ContinuePA()));
 	}
 
 	protected class ContinuePA extends ReceiveScenarioBehav {
