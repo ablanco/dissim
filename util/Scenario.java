@@ -29,6 +29,13 @@ import java.util.LinkedList;
 
 import util.jcoord.LatLng;
 
+/**
+ * This is one of the largest class in dissim, it contains all the info from the
+ * simulation area and parameters,
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class Scenario implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -92,8 +99,11 @@ public class Scenario implements Serializable {
 	private String dbDriver = null;
 	private String dbDb = null;
 
-	// This class shouldn't be used directly, that's why the constructor is
-	// protected
+	/**
+	 * This class shouldn't be used directly, that's why the constructor is
+	 * protected
+	 */
+
 	protected Scenario() {
 		// Usar clases hijas
 	}
@@ -157,6 +167,13 @@ public class Scenario implements Serializable {
 		return scen;
 	}
 
+	/**
+	 * Decode scenario array info from a string
+	 * 
+	 * @param s
+	 *            Containing scenario info
+	 * @return parameters
+	 */
 	protected String[] decodeScenArray(String s) {
 		s = s.substring(1, s.length() - 1);
 		String[] result = new String[] { s };
@@ -186,6 +203,12 @@ public class Scenario implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Initializes the scenario form an array of parameters
+	 * 
+	 * @param data
+	 *            array of parameters
+	 */
 	protected void loadScenarioData(ArrayList<String> data) {
 		LatLng NW = null;
 		LatLng SE = null;
@@ -288,22 +311,49 @@ public class Scenario implements Serializable {
 		this.tileSize = tileSize;
 	}
 
+	/**
+	 * Get upper left and lower right coordinate corners of the simulation area
+	 * 
+	 * @return
+	 */
 	public LatLng[] getSimulationArea() {
 		return new LatLng[] { globalNW, globalSE };
 	}
 
+	/**
+	 * Set a description to describe the scenario
+	 * 
+	 * @param description
+	 */
 	public void setDescription(String description) {
 		this.description = description;
 	}
 
+	/**
+	 * Gets description
+	 * 
+	 * @return
+	 */
 	public String getDescription() {
 		return description;
 	}
 
+	/**
+	 * check if scenario have all the necessary (minumun) values correctly
+	 * configured to run a simulation
+	 * 
+	 * @return true if is complete
+	 */
 	public boolean isComplete() {
 		return complete;
 	}
 
+	/**
+	 * Sets complete a true if globalNW or globalSe or simTime are not null
+	 * 
+	 * @throws IllegalStateException
+	 *             if globalNW or globalSe or simTime are null
+	 */
 	public void complete() {
 		if (globalNW == null || globalSE == null || tileSize < 0
 				|| simTime == null)
@@ -313,62 +363,154 @@ public class Scenario implements Serializable {
 		complete = true;
 	}
 
+	/**
+	 * Gets tile size of the scenario
+	 * 
+	 * @return tile size
+	 */
 	public int getTileSize() {
 		return tileSize;
 	}
 
+	/**
+	 * Sets precision in the discretization of values
+	 * 
+	 * @param precision
+	 */
 	public void setPrecision(short precision) {
 		this.precision = precision;
 	}
 
+	/**
+	 * Gets scenario precision in data
+	 * 
+	 * @return
+	 */
 	public short getPrecision() {
 		return precision;
 	}
 
+	/**
+	 * Convert double units to short applying precision
+	 * 
+	 * @param d
+	 *            unit to convert
+	 * @return a conversed unit
+	 */
 	public short doubleToInner(double d) {
 		return (short) (d * precision);
 	}
 
+	/**
+	 * Convert double units to short applying precision
+	 * 
+	 * @param precision
+	 *            of the metric
+	 * @param d
+	 *            unit to convert
+	 * @return a converted unit
+	 */
 	public static short doubleToInner(short precision, double d) {
 		return (short) (d * precision);
 	}
 
+	/**
+	 * Convert short to double unapplying precision
+	 * 
+	 * @param s
+	 *            value
+	 * @return converted unit
+	 */
 	public double innerToDouble(short s) {
 		return ((double) s) / precision;
 	}
 
+	/**
+	 * Convert short yo double unapplying precision
+	 * 
+	 * @param precision
+	 *            units
+	 * @param s
+	 *            value
+	 * @return converted unit
+	 */
 	public static double innerToDouble(short precision, short s) {
 		return ((double) s) / precision;
 	}
 
+	/**
+	 * Set name for the scenario
+	 * 
+	 * @param name
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
 
+	/**
+	 * Gets scenario name
+	 * 
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Gets the period of time that between simulation steps for the visor
+	 * 
+	 * @return time between simulation steps
+	 */
 	public long getUpdateVisorPeriod() {
 		return updateVisor;
 	}
 
+	/**
+	 * Sets the period of time that between simulation steps for the visor
+	 * 
+	 * @param updateVisor
+	 *            time between simulation steps
+	 */
 	public void setUpdateVisorPeriod(long updateVisor) {
 		this.updateVisor = updateVisor;
 	}
 
+	/**
+	 * Gets the period of time that between simulation steps for the kml
+	 * 
+	 * @param updateVisor
+	 *            time between simulation steps
+	 */
 	public long getUpdateKMLPeriod() {
 		return updateKML;
 	}
 
+	/**
+	 * Sets the period of time that between simulation steps for the kml
+	 * 
+	 * @param updateKML
+	 *            time between simulation steps
+	 */
 	public void setUpdateKMLPeriod(long updateKML) {
 		this.updateKML = updateKML;
 	}
 
+	/**
+	 * Get the numbers of environments for the simulation
+	 * 
+	 * @return number of environment
+	 */
 	public int getNumEnv() {
 		return numEnv;
 	}
 
+	/**
+	 * Sets the number of environmets for the simulation
+	 * 
+	 * @param numEnv
+	 * @throws IllegalArgumentException
+	 *             Number of enviroments must be one or even
+	 */
 	public void setNumEnv(int numEnv) {
 		// TODO En realidad valen todos, aunque los primos son muy poco
 		// adecuados
@@ -451,6 +593,13 @@ public class Scenario implements Serializable {
 		}
 	}
 
+	/**
+	 * Get the envioronment that cotains the coord
+	 * 
+	 * @param coord
+	 *            we want to place into an environment
+	 * @return envioronment that cotains the coord
+	 */
 	public int getEnviromentByCoord(LatLng coord) {
 		if (envAreas == null)
 			throw new IllegalStateException(
@@ -465,6 +614,15 @@ public class Scenario implements Serializable {
 		return -1;
 	}
 
+	/**
+	 * Get a environment that correspond to the point
+	 * 
+	 * @param x
+	 *            col
+	 * @param y
+	 *            row
+	 * @return envioronment that cotains the point
+	 */
 	public int getEnviromentByPosition(int x, int y) {
 		if (envSizes == null)
 			throw new IllegalStateException(
@@ -480,6 +638,13 @@ public class Scenario implements Serializable {
 		return -1;
 	}
 
+	/**
+	 * Adds one pedestrian to the scenario
+	 * 
+	 * @param p
+	 *            pedestrian
+	 * @return true if added
+	 */
 	public boolean addPeople(Pedestrian p) {
 		boolean result = false;
 		LatLng pos = p.getPos();
@@ -490,31 +655,74 @@ public class Scenario implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Get an iterator over pedestrians
+	 * 
+	 * @return pedestrian iterator
+	 */
 	public Iterator<Pedestrian> getPeopleIterator() {
 		return people.iterator();
 	}
 
+	/**
+	 * Set start date for the simulation
+	 * 
+	 * @param year
+	 * @param month
+	 * @param dayOfMonth
+	 * @param hourOfDay
+	 * @param minute
+	 */
 	public void setStartTime(int year, int month, int dayOfMonth,
 			int hourOfDay, int minute) {
 		simTime = new DateAndTime(year, month, dayOfMonth, hourOfDay, minute);
 	}
 
+	/**
+	 * Get start date and time of the simulation
+	 * 
+	 * @return date and time of the simulation
+	 */
 	public DateAndTime getStartTime() {
 		return simTime;
 	}
 
+	/**
+	 * Set a random altitude for the environmets of the simulation. This is
+	 * useful when you dont have real altitudes
+	 * 
+	 * @param randomAltitudes
+	 *            true if random
+	 */
 	public void setRandomAltitudes(boolean randomAltitudes) {
 		this.randomAltitudes = randomAltitudes;
 	}
 
+	/**
+	 * Get if we wanto to use random altitudes for the simulation
+	 * 
+	 * @return true if random
+	 */
 	public boolean getRandomAltitudes() {
 		return randomAltitudes;
 	}
 
+	/**
+	 * Get the data base server
+	 * 
+	 * @return dbserver
+	 */
 	public String getDbServer() {
 		return dbServer;
 	}
 
+	/**
+	 * Set the data base server
+	 * 
+	 * @param dbServer
+	 * @throws IllegalArgumentException
+	 *             The DB server cannot be null
+	 */
 	public void setDbServer(String dbServer) {
 		if (dbServer == null)
 			throw new IllegalArgumentException("The DB server cannot be null");
@@ -522,10 +730,23 @@ public class Scenario implements Serializable {
 		this.dbServer = dbServer;
 	}
 
+	/**
+	 * Gets the port for the data base
+	 * 
+	 * @return port number
+	 */
 	public int getDbPort() {
 		return dbPort;
 	}
 
+	/**
+	 * Gets the port for the data base
+	 * 
+	 * @param dbPort
+	 *            port number
+	 * @throws IllegalArgumentException
+	 *             DB port must be between 1024 and 65535
+	 */
 	public void setDbPort(int dbPort) {
 		if (dbPort < 1024 || dbPort > 65535)
 			throw new IllegalArgumentException(
@@ -534,36 +755,80 @@ public class Scenario implements Serializable {
 		this.dbPort = dbPort;
 	}
 
+	/**
+	 * Gets user for the data base
+	 * 
+	 * @return user
+	 */
 	public String getDbUser() {
 		return dbUser;
 	}
 
+	/**
+	 * sets user for the data base
+	 * 
+	 * @param dbUser
+	 *            user
+	 */
 	public void setDbUser(String dbUser) {
 		this.dbUser = dbUser;
 	}
 
+	/**
+	 * Gets password for the data base
+	 * 
+	 * @return password
+	 */
 	public String getDbPass() {
 		return dbPass;
 	}
 
+	/**
+	 * Sets password for the data base
+	 * 
+	 * @param dbPass
+	 *            password
+	 */
 	public void setDbPass(String dbPass) {
 		this.dbPass = dbPass;
 	}
 
+	/**
+	 * Gets driver for the data base
+	 * 
+	 * @return driver
+	 */
 	public String getDbDriver() {
 		return dbDriver;
 	}
 
+	/**
+	 * Sets driver for the data base
+	 * 
+	 * @param dbDriver
+	 *            driver
+	 */
 	public void setDbDriver(String dbDriver) {
 		if (dbDriver == null)
 			throw new IllegalArgumentException("The DB driver cannot be null");
 		this.dbDriver = dbDriver;
 	}
 
+	/**
+	 * Gets data base path
+	 * 
+	 * @return path to db
+	 */
 	public String getDbDb() {
 		return dbDb;
 	}
 
+	/**
+	 * Sets data base path
+	 * 
+	 * @param dbDb
+	 *            path
+	 */
 	public void setDbDb(String dbDb) {
 		this.dbDb = dbDb;
 	}
@@ -572,6 +837,12 @@ public class Scenario implements Serializable {
 		return simulationTick;
 	}
 
+	/**
+	 * Set time in miliseconds for the time limit computation of agents
+	 * 
+	 * @param simulationTick
+	 *            miliseconts
+	 */
 	public void setSimulationTick(long simulationTick) {
 		if (simulationTick <= 0)
 			throw new IllegalArgumentException(
@@ -589,6 +860,14 @@ public class Scenario implements Serializable {
 		return realTimeTick;
 	}
 
+	/**
+	 * Sets real time tha corresponds to the simulationTick
+	 * 
+	 * @param realTimeTick
+	 *            time
+	 * @throws IllegalArgumentException
+	 *             Real tick time must be positive
+	 */
 	public void setRealTimeTick(int realTimeTick) {
 		if (realTimeTick <= 0)
 			throw new IllegalArgumentException(
