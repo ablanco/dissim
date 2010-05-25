@@ -24,12 +24,10 @@ import util.jcoord.LatLngBox;
 
 /**
  * 
+ * This class helps to manage the points in the osm, given to points of a way
+ * make's an edge that is much more easier to manage discretizing into a grid
+ * 
  * @author Manuel Gomar, Alejando Blanco
- * 
- * @category        This class helps to manage the points in the osm, given to points of
- *         a way make's an edge that is much more easier to manage discretizing
- *         into a grid
- * 
  */
 public class OsmEdge {
 
@@ -76,7 +74,9 @@ public class OsmEdge {
 	 * parameters
 	 * 
 	 * @param nA
+	 *            A vertex
 	 * @param nB
+	 *            B vertex
 	 */
 	public OsmEdge(OsmNode nA, OsmNode nB) {
 		this.nodeA = nA;
@@ -124,16 +124,16 @@ public class OsmEdge {
 	}
 
 	/**
-	 * 
-	 * @return get's nodeA
+	 * Gets node A
+	 * @return nodeA
 	 */
 	public OsmNode getNodeA() {
 		return nodeA;
 	}
 
 	/**
-	 * 
-	 * @return get's nodeB
+	 * Gets node B
+	 * @return nodeB
 	 */
 	public OsmNode getNodeB() {
 		return nodeB;

@@ -28,10 +28,26 @@ import util.flood.SizeComparator;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 
+/**
+ * This class solves plenty of problems for drowin poligons given by a list of
+ * dots. It should work, or at least will show something ...
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class Kpolygon {
 
+	/**
+	 * Polygon has no type
+	 */
 	public static final int RawType = -1;
+	/**
+	 * Polygon is water
+	 */
 	public static final int WaterType = 1;
+	/**
+	 * Polygon is a Pedestrian
+	 */
 	public static final int Pedestrian = 2;
 
 	private List<Coordinate> outerLine;
@@ -40,11 +56,17 @@ public class Kpolygon {
 	private short deep;
 
 	/**
-	 * Recivimos una lista de puntos adyacentes y los ordenamos en bordes
-	 * exteriores e interiores
+	 * Given a list of dots, a type and increments for a concrete scenario, it
+	 * should create a poligon wich we can easily manage and draw into a kml
 	 * 
 	 * @param type
+	 *            of the polygon, should be one of the statics value
 	 * @param rawPolygon
+	 *            list of LatLang that describes a water sector
+	 * @param ilat
+	 *            latitude increment for the scenario
+	 * @param ilng
+	 *            longitude increment for the scenario
 	 */
 	public Kpolygon(int type, List<LatLng> rawPolygon, double ilat, double ilng) {
 		if (rawPolygon == null || rawPolygon.size() == 0) {
@@ -58,8 +80,8 @@ public class Kpolygon {
 		for (LatLng l : rawPolygon) {
 			rawEdgeList.add(getHexagonEdges(l, ilat, ilng));
 		}
-//		System.err.println("Creando polygono, obteniendas todas las aristas "
-//				+ rawEdgeList);
+		// System.err.println("Creando polygono, obteniendas todas las aristas "
+		// + rawEdgeList);
 		// TODO mejorar eficiencia
 		Collection<LinkedList<Edge>> edgeList = new TreeSet<LinkedList<Edge>>(
 				new SizeComparator());
@@ -70,12 +92,12 @@ public class Kpolygon {
 		// eficiente, pero es mucho menos complicao, creo, que lo otro.
 		while (it.hasNext()) {
 			LinkedList<Edge> curr = it.next();
-//			System.err.println("\tBorde Actual " + curr);
+			// System.err.println("\tBorde Actual " + curr);
 			edgeList = borderOperator(edgeList, curr);
 			// System.err.println("Bordes Separados "+edgeList.size()+" : "+edgeList);
 			edgeList = joinBorders(edgeList);
-//			System.err.println("\t\tBordes reordenados " + edgeList.size()
-//					+ " : " + edgeList);
+			// System.err.println("\t\tBordes reordenados " + edgeList.size()
+			// + " : " + edgeList);
 		}
 
 		Iterator<LinkedList<Edge>> e = edgeList.iterator();
@@ -87,34 +109,72 @@ public class Kpolygon {
 				innerLines.add(edgeToList(e.next()));
 			}
 		}
-//		System.err.println("\t Borde exterior " + outerLine);
-//		System.err.println("\t Bordes Interiores " + innerLines);
+		// System.err.println("\t Borde exterior " + outerLine);
+		// System.err.println("\t Bordes Interiores " + innerLines);
 	}
 
+	/**
+	 * Gets outer border from the polygon,
+	 * 
+	 * @return outer border
+	 */
 	public List<Coordinate> getOuterLine() {
 		return outerLine;
 	}
 
+	/**
+	 * Get a list of inner borders from the polygon
+	 * 
+	 * @return a list of borders
+	 */
 	public List<List<Coordinate>> getInnerLines() {
 		return innerLines;
 	}
 
+	/**
+	 * Get the type from the polygon
+	 * 
+	 * @return type
+	 */
 	public int getType() {
 		return type;
 	}
 
+	/**
+	 * Get the altitude of the polygon, relative to seea level
+	 * 
+	 * @return altitude
+	 */
 	public short getDeep() {
 		return deep;
 	}
 
+	/**
+	 * Sets altitude for the polygon, relative to seea level
+	 * 
+	 * @param deep
+	 */
 	public void setDeep(short deep) {
 		this.deep = deep;
 	}
 
-	// Posible orden? [b,c]-[a,f]+[a,b]-[f,e],+[c,d]-[e,d]
-	// public static final int[] edgeOrder = new int[]{ 1,1,2, -1,0,5, 1,0,1,
-	// -1,5,4, 1,2,3, -1,4,3};
+	/*
+	 * Posible orden? [b,c]-[a,f]+[a,b]-[f,e],+[c,d]-[e,d] public static final
+	 * int[] edgeOrder = new int[]{ 1,1,2, -1,0,5, 1,0,1, -1,5,4, 1,2,3,
+	 * -1,4,3};
+	 */
 
+	/**
+	 * Get a list of coordinates that describes the vertex of the hexagon
+	 * 
+	 * @param centre
+	 *            of the hexagon
+	 * @param ilat
+	 *            height
+	 * @param ilng
+	 *            width
+	 * @return hexagon vertex
+	 */
 	private List<Coordinate> getHexagonVertex(LatLng centre, double ilat,
 			double ilng) {
 		final double[] f = new double[] { 1, 0, 0.5, 1, -0.5, 1, -1, 0, -0.5,
@@ -130,6 +190,17 @@ public class Kpolygon {
 		return coordinates;
 	}
 
+	/**
+	 * Gets edges from an exagon centered into centre
+	 * 
+	 * @param centre
+	 *            of the hexagon
+	 * @param ilat
+	 *            heith
+	 * @param ilng
+	 *            width
+	 * @return a list of edges
+	 */
 	private LinkedList<Edge> getHexagonEdges(LatLng centre, double ilat,
 			double ilng) {
 		if (centre == null) {
@@ -147,11 +218,12 @@ public class Kpolygon {
 	}
 
 	/**
-	 * Devuelve los elementos que no aparecen en las dos listas (equivalentes)
+	 * Given two list, merge then and remove duplicates, mantaining the proper
+	 * order. Two edges are equal if A(a1,a2), B(b1,b2) -> a1=b2, a2=b1. 
 	 * 
-	 * @param h1
-	 * @param h2
-	 * @return
+	 * @param h1 list of edges
+	 * @param h2 list of edges
+	 * @return merged and ordered list edge, may contains more than one border
 	 */
 	private Collection<LinkedList<Edge>> borderOperator(
 			Collection<LinkedList<Edge>> polygonBorders,
@@ -193,8 +265,8 @@ public class Kpolygon {
 		// conexos
 
 		if (!polygonEdges.isEmpty()) {
-//			System.err.println("\t\tAun quedan por añadir Aristas "
-//					+ polygonBorders);
+			// System.err.println("\t\tAun quedan por añadir Aristas "
+			// + polygonBorders);
 			modificados.add(polygonEdges);
 		}
 		// System.err.println("\t Todos los Modificados "+modificados.size()+" : "+modificados);
@@ -202,19 +274,19 @@ public class Kpolygon {
 		// Ya tenemos todas las listas separadas, ahora las juntamos en una sola
 		// lista
 		polygonBorders.addAll(modificados);
-//		System.err.println("\t Bordes Modificados y No Modificados "
-//				+ polygonBorders.size() + " :" + polygonBorders);
+		// System.err.println("\t Bordes Modificados y No Modificados "
+		// + polygonBorders.size() + " :" + polygonBorders);
 		return polygonBorders;
 	}
 
 	/**
-	 * Separa una lista de aristas en una collecion de aristas conexas entre si
+	 * Splits into conex list. A list is conex if A(a1,a2), B(b1,b2) -> a2==b1 || b2==a1
 	 * 
-	 * @param currList
-	 * @return
+	 * @param currList may contains unconex list
+	 * @return a list of conex list
 	 */
 	private Collection<LinkedList<Edge>> split(LinkedList<Edge> currList) {
-//		System.err.println("\t\t Antes de Partir "+currList.size()+" : "+currList);
+		// System.err.println("\t\t Antes de Partir "+currList.size()+" : "+currList);
 		LinkedList<Edge> conexo = new LinkedList<Edge>();
 		Collection<LinkedList<Edge>> borders = new ArrayList<LinkedList<Edge>>();
 		while (!currList.isEmpty()) {
@@ -224,11 +296,12 @@ public class Kpolygon {
 			while (!currList.isEmpty()) {
 				Edge curr = currList.pop();
 				if (prev.isNextOf(curr)) {
-//					System.err.println("\t\t " + prev + " conexo con " + curr);
+					// System.err.println("\t\t " + prev + " conexo con " +
+					// curr);
 					conexo.add(curr);
 				} else {
-//					System.err.println("\t\t " + prev + " NO conexo con "
-//							+ curr);
+					// System.err.println("\t\t " + prev + " NO conexo con "
+					// + curr);
 					conexo = new LinkedList<Edge>();
 					conexo.add(curr);
 					borders.add(conexo);
@@ -236,15 +309,20 @@ public class Kpolygon {
 				prev = curr;
 			}
 		}
-//		System.err.println("\t\t Despues de Partir "+borders.size()+" : "+borders);
+		// System.err.println("\t\t Despues de Partir "+borders.size()+" : "+borders);
 		return borders;
 	}
 
+	/**
+	 * Looks for conex borders and joins them
+	 * @param borderList may contain unconex borders
+	 * @return a list of conex borders
+	 */
 	private Collection<LinkedList<Edge>> joinBorders(
 			Collection<LinkedList<Edge>> borderList) {
 		// Lista de bordes Final
-//		System.err.println("\t\t Tamaño entrada " + borderList.size() + " :"
-//				+ borderList);
+		// System.err.println("\t\t Tamaño entrada " + borderList.size() + " :"
+		// + borderList);
 		Collection<LinkedList<Edge>> join = new ArrayList<LinkedList<Edge>>();
 		// Iterador sobre los bordes que ya teniamos
 		Iterator<LinkedList<Edge>> bIterator = borderList.iterator();
@@ -265,23 +343,23 @@ public class Kpolygon {
 					// una modificacion
 					modificado = false;
 					LinkedList<Edge> conexo = bIterator.next();
-//					System.err.println("\t\t Mirando si " + conexo
-//							+ " es conexo con " + curr);
+					// System.err.println("\t\t Mirando si " + conexo
+					// + " es conexo con " + curr);
 					// Mientras tenga aristas por añadir
 					if (curr.getLast().isNextOf(conexo.getFirst())) {
 						// Es la continuacion, añado y borro
 						curr.addAll(conexo);
 						bIterator.remove();
 						modificado = true;
-//						System.err.println("\t\t Se ha añadido al Final "
-//								+ curr);
+						// System.err.println("\t\t Se ha añadido al Final "
+						// + curr);
 					} else if (curr.getFirst().isPreviousOf(conexo.getLast())) {
 						// Esta al principio, añado y borro
 						curr.addAll(0, conexo);
 						bIterator.remove();
 						modificado = true;
-//						System.err.println("\t\t Se ha añadido al Principio "
-//								+ curr);
+						// System.err.println("\t\t Se ha añadido al Principio "
+						// + curr);
 					}
 				}
 			}
@@ -291,15 +369,15 @@ public class Kpolygon {
 		if (!borderList.isEmpty()) {
 			join.addAll(borderList);
 		}
-//		System.err.println("\t\t Tamaño salida " + join.size() + " :" + join);
+		// System.err.println("\t\t Tamaño salida " + join.size() + " :" +
+		// join);
 		return join;
 	}
 
 	/**
-	 * Pasa una lista de Aristas a una lista de Coordinate
-	 * 
-	 * @param line
-	 * @return
+	 * List<Edge> to List<Coodnitate>
+	 * @param line <Edge>
+	 * @return lie <Coordinate>
 	 */
 	private List<Coordinate> edgeToList(List<Edge> line) {
 		List<Coordinate> lc = new ArrayList<Coordinate>();
