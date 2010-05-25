@@ -20,6 +20,13 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+/**
+ * Custom date, because GoogleEart, OpenOffice, and Java uses diferents ways to
+ * show time, so this is a facade
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class DateAndTime implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -35,11 +42,23 @@ public class DateAndTime implements Serializable {
 						.parseInt(h[2]));
 	}
 
+	/**
+	 * Uses GregorianCalendar constructor
+	 * @param year
+	 * @param month
+	 * @param dayOfMonth
+	 * @param hourOfDay
+	 * @param minute
+	 */
 	public DateAndTime(int year, int month, int dayOfMonth, int hourOfDay,
 			int minute) {
 		g = new GregorianCalendar(year, month, dayOfMonth, hourOfDay, minute, 0);
 	}
 
+	/**
+	 * Parses a date like (AAAA-MM-DDThh:mm:ss) and call GregorianCalendar constructor
+	 * @param dateAndTime
+	 */
 	public DateAndTime(String dateAndTime) {
 		g = new GregorianCalendar();
 		parseAndSetTime(dateAndTime);
@@ -90,6 +109,9 @@ public class DateAndTime implements Serializable {
 	}
 
 	@Override
+	/**
+	 * Google Earth Style
+	 */
 	public String toString() {
 		// dateTime (AAAA-MM-DDThh:mm:ss)
 		String month = "";

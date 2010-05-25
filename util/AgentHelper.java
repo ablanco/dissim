@@ -28,6 +28,12 @@ import jade.lang.acl.MessageTemplate;
 import java.io.IOException;
 import java.io.Serializable;
 
+/**
+ * Contains methods for managing frequent petitions to the agents
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class AgentHelper {
 
 	private AgentHelper() {

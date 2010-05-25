@@ -18,39 +18,79 @@ package util;
 
 import java.io.Serializable;
 
+/**
+ * Point implementation for Hexagonal Grid, contains x, y and altitude
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class Point implements Comparable<Point>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private int col;
 	private int row;
-	private short z;
+	private short altitude;
+	/**
+	 * water value
+	 */
 	private short w = 0;
+	/**
+	 * street value
+	 */
 	private short s = 0;
 	private int hash;
 
+	/**
+	 * New point from parameters
+	 * @param col
+	 * @param row
+	 */
 	public Point(int col, int row) {
 		this(col, row, (short) 0);
 	}
+	/**
+	 * New point from parameters
+	 * @param col
+	 * @param row
+	 * @param altitude altitude
+	 */
 
-	public Point(int col, int row, short z) {
+	public Point(int col, int row, short altitude) {
 		this.col = col;
 		this.row = row;
-		this.z = z;
+		this.altitude = altitude;
 		String s = col + "," + row;
 		hash = s.hashCode();
 	}
 
+	/**
+	 * New Point from array [Col, Row, Altitude]
+	 * @param xyz [Col, Row, Altitude]
+	 */
 	public Point(int[] xyz) {
 		this(xyz[0], xyz[1], (short) xyz[2]);
 	}
 
-	public Point(int col, int row, short z, short w, short s) {
-		this(col, row, z);
+	/**
+	 * New point from parameters
+	 * @param col
+	 * @param row
+	 * @param altitude
+	 * @param w water value
+	 * @param s street value
+	 */
+	public Point(int col, int row, short altitude, short w, short s) {
+		this(col, row, altitude);
 		this.w = w;
 		this.s = s;
 	}
 
+	/**
+	 * Check is p is adyacent
+	 * @param p we want to know if is adyacent to this
+	 * @return true is p is adyacent
+	 */
 	public boolean isAdyacent(Point p) {
 		return Math.abs(col - p.getCol()) < 2 && Math.abs(row - p.getRow()) < 2
 				&& !(col + 1 == p.getCol() && row + 1 == p.getRow())
@@ -82,7 +122,7 @@ public class Point implements Comparable<Point>, Serializable {
 
 	@Override
 	public String toString() {
-		return "[(" + col + "," + row + ") " + z + "]";
+		return "[(" + col + "," + row + ") " + altitude + "]";
 	}
 
 	@Override
@@ -90,22 +130,42 @@ public class Point implements Comparable<Point>, Serializable {
 		return hash;
 	}
 
+	/**
+	 * Get column number
+	 * @return
+	 */
 	public int getCol() {
 		return col;
 	}
 
+	/**
+	 * Get row number
+	 * @return
+	 */
 	public int getRow() {
 		return row;
 	}
 
+	/**
+	 * Gets altitude of the point
+	 * @return altitude
+	 */
 	public short getZ() {
-		return z;
+		return altitude;
 	}
 
+	/**
+	 * Get water value of the point
+	 * @return water value
+	 */
 	public short getW() {
 		return w;
 	}
 
+	/**
+	 * Get street value of the point <Osm>
+	 * @return
+	 */
 	public short getS() {
 		return s;
 	}
