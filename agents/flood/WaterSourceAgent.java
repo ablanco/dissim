@@ -22,7 +22,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import util.AgentHelper;
 import util.jcoord.LatLng;
 import agents.ClockAgent;
-import agents.EnviromentAgent;
+import agents.EnvironmentAgent;
 import behaviours.ReceiveClockTickBehav;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
@@ -30,7 +30,7 @@ import behaviours.flood.WaterSourceBehav;
 
 /**
  * {@link Agent} that represent a water entrance to the simulation. It only
- * works with flood simulations. It sends water to an {@link EnviromentAgent} on
+ * works with flood simulations. It sends water to an {@link EnvironmentAgent} on
  * every tick of the {@link ClockAgent}.
  * 
  * @author Alejandro Blanco, Manuel Gomar

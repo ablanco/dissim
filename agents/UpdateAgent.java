@@ -29,7 +29,7 @@ import util.Updateable;
 import behaviours.ReceiveUpdateBehav;
 
 /**
- * {@link Agent} that subcribes to an {@link EnviromentAgent} and receives a
+ * {@link Agent} that subcribes to an {@link EnvironmentAgent} and receives a
  * {@link Snapshot} on a regular period, and passes it to a client that must
  * implement the {@link Updateable} interface.
  * 

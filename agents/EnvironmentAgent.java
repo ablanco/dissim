@@ -59,7 +59,7 @@ import behaviours.people.RegisterPeopleBehav;
  * 
  */
 @SuppressWarnings("serial")
-public class EnviromentAgent extends Agent {
+public class EnvironmentAgent extends Agent {
 
 	/**
 	 * Object that holds all the information about the terrain and water.
@@ -71,7 +71,7 @@ public class EnviromentAgent extends Agent {
 	private DateAndTime dateTime = null;
 	/**
 	 * {@link PedestrianAgent} that are moving in the area ofthis
-	 * {@link EnviromentAgent}
+	 * {@link EnvironmentAgent}
 	 */
 	private Map<String, Pedestrian> people = new Hashtable<String, Pedestrian>();
 

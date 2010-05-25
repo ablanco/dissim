@@ -89,7 +89,7 @@ public class CreatorAgent extends Agent {
 						Integer.toString(scen.getTileSize()),
 						Integer.toString(size[2]), Integer.toString(size[3]) };
 				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
-						"agents.EnviromentAgent", 1, arguments, clockReceivers));
+						"agents.EnvironmentAgent", 1, arguments, clockReceivers));
 			}
 
 			// Esperar a que los entornos estén inicializados
@@ -103,7 +103,7 @@ public class CreatorAgent extends Agent {
 
 	/**
 	 * {@link Behaviour} that continues creating {@link Agent}, it waits until
-	 * all the {@link EnviromentAgent} are ready and then create the others
+	 * all the {@link EnvironmentAgent} are ready and then create the others
 	 * agents.
 	 * 
 	 * @author Alejandro Blanco, Manuel Gomar
@@ -112,7 +112,7 @@ public class CreatorAgent extends Agent {
 	protected class WaitForReadyBehav extends CyclicBehaviour {
 
 		/**
-		 * Number of {@link EnviromentAgent} that are ready to go
+		 * Number of {@link EnvironmentAgent} that are ready to go
 		 */
 		private int count = 0;
 

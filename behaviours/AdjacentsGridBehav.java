@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import agents.EnviromentAgent;
+import agents.EnvironmentAgent;
 
 import util.AgentHelper;
 import util.HexagonalGrid;
@@ -64,7 +64,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 	 * {@link AdjacentsGridBehav} constructor
 	 * 
 	 * @param agt
-	 *            An {@link EnviromentAgent}
+	 *            An {@link EnvironmentAgent}
 	 * @param scen
 	 *            {@link Scenario}
 	 * @param grid
@@ -199,7 +199,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 	}
 
 	/**
-	 * Behaviour that asks anothers {@link EnviromentAgent} for adjacents (in
+	 * Behaviour that asks anothers {@link EnvironmentAgent} for adjacents (in
 	 * case that the position is near a frontier and some of the adjacents are
 	 * on other enviroment), waits for the answer and precesses it.
 	 * 
@@ -227,7 +227,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 		 * @param d
 		 * @param outerTiles
 		 *            {@link ArrayList}<int[]> Tiles that are located on
-		 *            anothers {@link EnviromentAgent}.
+		 *            anothers {@link EnvironmentAgent}.
 		 * @param adjacents
 		 *            {@link HashSet}<{@link Point}>
 		 * @param msg
