@@ -16,56 +16,106 @@
 
 package kml;
 
+/**
+ * Contains necessary information for the updates
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class KmlInf {
-	
+
 	private short[][] waterGrid;
 	private String begin;
 	private String end;
 	private String name;
-	private double [] incs;
-	
-	public KmlInf(String name, String begin, String end, double[] incs){
+	private double[] incs;
+
+	/**
+	 * Initializes parameters to vales
+	 * 
+	 * @param name
+	 *            of the enviroment
+	 * @param begin
+	 *            time for the event
+	 * @param end
+	 *            time for the event
+	 * @param incs
+	 *            in decimal degrees for the enviroment
+	 */
+	public KmlInf(String name, String begin, String end, double[] incs) {
 		this.name = name;
 		this.begin = begin;
 		this.end = end;
 		this.incs = incs;
 	}
-	
+
+	/**
+	 * Gets begin time of this simulation step
+	 * 
+	 * @return begin time
+	 */
 	public String getBegin() {
 		return begin;
 	}
-	
+
+	/**
+	 * Gets end time of this simulation step
+	 * 
+	 * @return end time
+	 */
 	public String getEnd() {
 		return end;
 	}
-	
+
+	/**
+	 * Gets water grid from this the simulation step
+	 * 
+	 * @return water grid
+	 */
 	public short[][] getWaterGrid() {
 		return waterGrid;
 	}
-	
+
+	/**
+	 * Gets enviroment name
+	 * 
+	 * @return name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Gets degree increments for this scenario
+	 * 
+	 * @return
+	 */
 	public double[] getIncs() {
 		return incs;
 	}
-	
+
+	/**
+	 * Sets water grid
+	 * 
+	 * @param grid
+	 */
 	public void setGrid(short[][] grid) {
 		this.waterGrid = grid.clone();
 	}
-	
+
 	/**
-	 * Updates Date
-	 * @param end time of the events
+	 * Set new end date for the simulation step, end date is now begin date
+	 * 
+	 * @param end
+	 *            time of the events
 	 */
-	public void SetNewDate(String end){
+	public void SetNewDate(String end) {
 		begin = this.end;
 		this.end = end;
 	}
-	
+
 	@Override
 	public String toString() {
-		return name+", From "+begin+" to "+end;
+		return name + ", From " + begin + " to " + end;
 	}
 }
