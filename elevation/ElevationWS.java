@@ -29,6 +29,11 @@ import util.jcoord.LatLng;
 
 //http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL
 
+/**
+ * Elevation Web interface for easily managing elevations
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ */
 public class ElevationWS {
 
 	private static ElevationServiceSoap service = null;
@@ -42,6 +47,20 @@ public class ElevationWS {
 		service = serv.getElevationServiceSoap();
 	}
 
+	/**
+	 * Get elevation from a coord
+	 * 
+	 * @param coord
+	 *            of terrain
+	 * @param sourceLayer
+	 *            layer of information
+	 * @param elevationUnits
+	 *            units
+	 * @param elevationOnly
+	 *            if you want only the elevation
+	 * @return webservice string response
+	 * @throws WebServiceException
+	 */
 	public static String getElevation(LatLng coord, String sourceLayer,
 			String elevationUnits, boolean elevationOnly)
 			throws WebServiceException {
@@ -67,6 +86,14 @@ public class ElevationWS {
 		return results.get(0).toString();
 	}
 
+	/**
+	 * Gets elevation from a coord
+	 * 
+	 * @param coord
+	 *            of terrain
+	 * @return elevation of the terrain
+	 * @throws WebServiceException
+	 */
 	public static double getElevation(LatLng coord) throws WebServiceException {
 		// -1.79769313486231E+308 means no valid values were found at that point
 		double altitude = Double.MIN_VALUE;
@@ -78,6 +105,16 @@ public class ElevationWS {
 		return altitude;
 	}
 
+	/**
+	 * Gets all elevations from the webservice for the given coord
+	 * 
+	 * @param coord
+	 *            of terrain
+	 * @param elevationUnits
+	 *            units
+	 * @return webservice string response
+	 * @throws WebServiceException
+	 */
 	public static String getAllElevations(LatLng coord, String elevationUnits)
 			throws WebServiceException {
 		if (service == null)
@@ -97,6 +134,14 @@ public class ElevationWS {
 		return results.get(0).toString();
 	}
 
+	/**
+	 * Gets all elevations from the webservice for the given coord
+	 * 
+	 * @param coord
+	 *            of terrain
+	 * @return webservice string response
+	 * @throws WebServiceException
+	 */
 	public static String getAllElevations(LatLng coord)
 			throws WebServiceException {
 		return getAllElevations(coord, "METERS");

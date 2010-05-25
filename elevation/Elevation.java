@@ -33,8 +33,29 @@ import util.jcoord.LatLng;
  * Postgre -> http://jdbc.postgresql.org/
  */
 
+/**
+ * This is a cache for elevations, for the performance yo only need to download, @see
+ * ElevationWs one time the elevation and them use this cache
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ */
 public class Elevation {
 
+	/**
+	 * Interfaz for the database
+	 * 
+	 * @param grid
+	 *            scenario
+	 * @param server
+	 *            db server
+	 * @param port
+	 *            port for db
+	 * @param db
+	 *            db path
+	 * @param user
+	 * @param pass
+	 * @param driver
+	 */
 	public static void getElevations(HexagonalGrid grid, String server,
 			int port, String db, String user, String pass, String driver) {
 		String clase = null;
@@ -155,9 +176,12 @@ public class Elevation {
 	 * Returns a SQL query to insert the elevation of the coordinates into the
 	 * database
 	 * 
+	 * @param con
+	 *            conexion to the db
 	 * @param coord
+	 *            of the terrain
 	 * @param elev
-	 * @return
+	 *            of the terrain
 	 */
 	private static void insertNewElevation(Connection con, LatLng coord,
 			double elev) {

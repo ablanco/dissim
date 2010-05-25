@@ -25,6 +25,13 @@ import jade.core.Agent;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
+/**
+ * Agent for managin the time in a sincronous way, becaose we need to to know
+ * when events happend for a cuality simulation
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 @SuppressWarnings("serial")
 public class ClockAgent extends Agent {
 
