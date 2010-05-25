@@ -27,8 +27,8 @@ import util.jcoord.LatLngBox;
 import elevation.Elevation;
 
 /**
- * To simulate the scenario we need to use a discretizacion of the real world,
- * we decided to use an hexagonal map discretizacion, this class has method for
+ * To simulate the scenario we need to use a discretization of the real world,
+ * we decided to use an hexagonal map discretization, this class has method for
  * managing easily an hexagonal world
  * 
  * @author Manuel Gomar, Alejandro Blanco
