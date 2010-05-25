@@ -73,7 +73,6 @@ public class CoverturaConexa {
 
 			k.update(newOrleans, new AID());
 			newOrleans.getPeople().clear();
-// TODO			newOrleans.updateTime(3);
 		}
 
 		// k.update(newOrleans, new AID());
