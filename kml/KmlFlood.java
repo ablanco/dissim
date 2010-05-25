@@ -32,6 +32,12 @@ import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
+/**
+ * This class manages the flood updates and generates a kml flood
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class KmlFlood {
 	/**
 	 * Here are all floodLevels
@@ -53,6 +59,13 @@ public class KmlFlood {
 	private Folder container;
 	private Folder folder;
 
+	/**
+	 * Build and initializes parameters, needs a folder for showing information
+	 * in an ordered way
+	 * 
+	 * @param folder
+	 *            root folder
+	 */
 	public KmlFlood(Folder folder) {
 		altitudes = new TreeSet<Short>();
 		this.container = folder;
@@ -60,11 +73,17 @@ public class KmlFlood {
 
 	/**
 	 * For each new call, it see witch tiles have change and updates de kml
-	 * @param oldGrid first grid to see what has changed
-	 * @param fGrid new grid
-	 * @param name of the grid
-	 * @param beginTime when begins
-	 * @param endTime when ends
+	 * 
+	 * @param oldGrid
+	 *            first grid to see what has changed
+	 * @param fGrid
+	 *            new grid
+	 * @param name
+	 *            of the grid
+	 * @param beginTime
+	 *            when begins
+	 * @param endTime
+	 *            when ends
 	 */
 	public void update(short[][] oldGrid, FloodHexagonalGrid fGrid,
 			String name, String beginTime, String endTime) {
@@ -143,8 +162,9 @@ public class KmlFlood {
 				// Aprobechamos para sacar la altura media
 				// System.err.println("Sector inundado, puntos " + sector);
 				for (Point p : sector) {
-					
-					//Tenemos que obtener las coordenadas, pero pasando a altura real
+
+					// Tenemos que obtener las coordenadas, pero pasando a
+					// altura real
 					LatLng c = fGrid.tileToCoord(p);
 					double altitude = Scenario.innerToDouble(precision, p
 							.getZ());
@@ -152,7 +172,7 @@ public class KmlFlood {
 					c.setAltitude(altitude);
 					vertices.add(c);
 				}
-				//La media de las alturas, esto es para la opacidad
+				// La media de las alturas, esto es para la opacidad
 				deep = (short) (deep / sector.size());
 
 				Kpolygon kp = new Kpolygon(Kpolygon.WaterType, vertices, ilat,
@@ -171,8 +191,11 @@ public class KmlFlood {
 
 	/**
 	 * Draw a polygon into the kml
-	 * @param kp we want to draw
-	 * @throws IllegalArgumentException if is a null polygon
+	 * 
+	 * @param kp
+	 *            we want to draw
+	 * @throws IllegalArgumentException
+	 *             if is a null polygon
 	 */
 	private void drawWater(Kpolygon kp) {
 		if (kp == null) {
@@ -187,12 +210,11 @@ public class KmlFlood {
 	}
 
 	/**
-	 * Creates an style for level floodLevel but with deep z
+	 * Creates and add to the container a style and a color from a deep
+	 * parameter
 	 * 
 	 * @param floodLevel
-	 *            Level
-	 * @param z
-	 *            deep
+	 *            Deepness of the flood
 	 */
 	protected void createWaterStyleAndColor(short floodLevel) {
 		// Le damos un color medio para que se parezca a agua

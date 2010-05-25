@@ -24,6 +24,13 @@ import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
+/**
+ * This class manage all the information from pedestrians in updates and
+ * generate a kml
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class KmlPeople {
 
 	public final static String imgPath = "http://pfc.mensab.com/wp-content/uploads/2010/03/";
@@ -35,11 +42,22 @@ public class KmlPeople {
 	private String begin;
 	private String end;
 
+	/**
+	 * Build and initializes parameters, needs a folder for showing information
+	 * in an ordered way
+	 * 
+	 * @param folder
+	 *            root folder
+	 */
 	public KmlPeople(Folder folder) {
 		this.container = folder;
 		createPeopleStyle();
 	}
 
+	/**
+	 * Creates and set to container an style for pedestrians, by default
+	 * RUNNING, SAFE, DEAD
+	 */
 	protected void createPeopleStyle() {
 		// Verde
 		String safeABGR = "ff" + "00" + "ff" + "00";
@@ -56,6 +74,20 @@ public class KmlPeople {
 		// polyStyle.setColorMode(ColorMode.NORMAL);
 	}
 
+	/**
+	 * Update method for each new snapshot from the simulation
+	 * 
+	 * @param people
+	 *            list of pedestrians
+	 * @param name
+	 *            name of the enviroment
+	 * @param beginTime
+	 *            time of the simulation
+	 * @param endTime
+	 *            time of the simulation
+	 * @param incs
+	 *            to de enviroment
+	 */
 	public void update(List<Pedestrian> people, String name, String beginTime,
 			String endTime, double[] incs) {
 		folder = container.createAndAddFolder().withName(name).withDescription(
@@ -73,7 +105,10 @@ public class KmlPeople {
 	}
 
 	/**
-	 * Dibuja un poligno que representa a una persona
+	 * This class drwas a pedestrian in the given position
+	 * @param kp polygon that represents the pedestrian and position 
+	 * @param status status of the pedestrian
+	 * @throws IllegalArgumentException si el poligono es nulo
 	 */
 	public void drawPedestrian(Kpolygon kp, int status) {
 		if (kp == null) {
@@ -96,6 +131,5 @@ public class KmlPeople {
 			break;
 		}
 		KmlBase.drawPolygon(placeMark, kp);
-
 	}
 }
