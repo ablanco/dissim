@@ -27,10 +27,22 @@ import util.AgentHelper;
 import util.Updateable;
 import behaviours.ReceiveUpdateBehav;
 
+/**
+ * Agent that subcribes to an Enviroment and receives a Snapshot on a regular
+ * period, and passes it to a client that must implement the Updateable
+ * interface.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class UpdateAgent extends Agent {
 
 	private AID[] envAID = null;
+
+	/**
+	 * Object that processes the Snapshot
+	 */
 	private Updateable client = null;
 
 	@Override

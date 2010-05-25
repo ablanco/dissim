@@ -26,8 +26,8 @@ import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
 /**
- * Agent for managin the time in a sincronous way, becaose we need to to know
- * when events happend for a cuality simulation
+ * Agent that synchronizes the simulation, it sends ticks to others agents on a
+ * regular period.
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -59,6 +59,12 @@ public class ClockAgent extends Agent {
 		addBehaviour(new SendTimeBehav(this, period));
 	}
 
+	/**
+	 * Behaviour that actually sends the clock's tick.
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 * 
+	 */
 	protected class SendTimeBehav extends TickerBehaviour {
 
 		public SendTimeBehav(Agent a, long period) {

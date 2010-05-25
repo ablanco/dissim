@@ -47,6 +47,15 @@ import behaviours.flood.AddWaterBehav;
 import behaviours.flood.UpdateFloodGridBehav;
 import behaviours.people.RegisterPeopleBehav;
 
+/**
+ * Agent that manages the terrain (grid) of a simulation's area.
+ * 
+ * If the disaster is a flood, then the agent manages and simulates the
+ * movement of the water around the terrain.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class EnviromentAgent extends Agent {
 

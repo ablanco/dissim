@@ -25,10 +25,24 @@ import behaviours.ReceiveClockTickBehav;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
 
+/**
+ * Agent that represents a person or a group of persons. It evaluates his
+ * enviroment and moves around usually trying to save himself.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class PedestrianAgent extends Agent {
 
+	/**
+	 * Class to be instanced using Reflection API and used to choose where to
+	 * move
+	 */
 	private String behaviour = null;
+	/**
+	 * Arguments to behaviour
+	 */
 	Object[] chooseArgs = null;
 	private double lat;
 	private double lng;
