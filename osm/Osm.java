@@ -34,11 +34,10 @@ import util.java.TempFiles;
 import util.java.Wget;
 
 /**
+ * This class contains static methods for working with OSM web service and
+ * managing these data in an easy way
  * 
  * @author Manuel Gomar, Alejandro Blanco
- * 
- *         This class contains static methods for working with OSM web service
- *         and managing these data in an easy way
  * 
  */
 public class Osm {
@@ -287,8 +286,8 @@ public class Osm {
 		}
 
 		for (OsmNode n : osmMap.getNodes().values()) {
-			//Solo safePoints, lo demas no me interesa
-			if (getGenericType(n.getType()) != SafePoint) {
+			// Solo safePoints, lo demas no me interesa
+			if (getGenericType(n.getType()) == SafePoint) {
 				// System.err.println("Escribiendo Nodes: " + n);
 				setStreetValue(n, grid);
 			}
