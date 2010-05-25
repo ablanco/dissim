@@ -27,7 +27,7 @@ public class LatLngBox implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public static final int IN = 0;
-	public static final int ABOVE = 1; // TODO estan repetidos?? en latlng
+	public static final int ABOVE = 1;
 	public static final int ABOVE_RIGHT = 2;
 	public static final int RIGHT = 3;
 	public static final int BELOW_RIGHT = 4;

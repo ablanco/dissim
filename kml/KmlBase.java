@@ -170,8 +170,9 @@ public class KmlBase implements Updateable {
 				currentEnv.setGrid(((FloodHexagonalGrid) snap.getGrid())
 						.getGridWater());
 			}
-			// Almacenamos la informacion concreta que necesitamos
-			// TODO quizas sender.getLocalName() no sea unico, usar getName()
+			// Almacenamos la informacion concreta que necesitamos, suponemos
+			// que el nombre del sender es unico, o al menos que las colisiones
+			// son muy infimas
 			inf.put(sender.getLocalName(), currentEnv);
 		} else {
 			// Todas las demas iteraciones
@@ -195,11 +196,10 @@ public class KmlBase implements Updateable {
 					// Por cada persona averiguamos su status y su posicion
 					// Tenemos que pasar a alura real
 					LatLng c = g.tileToCoord(p.getPoint());
-					// Supongo que la persona tiene 2 metros de altura, para que
+					// Supongo que la persona tiene 5 metros de altura, para que
 					// se vea bien
-					// TODO Quizás algo más de altura? 5 metros?
 					c.setAltitude(Scenario.innerToDouble(precision, (short) (p
-							.getPoint().getZ())) + 2.0);
+							.getPoint().getZ())) + 5.0);
 					p.setPos(c);
 				}
 				kPeople.update(pedestrians, currentEnv.getName(), currentEnv
@@ -289,6 +289,7 @@ public class KmlBase implements Updateable {
 
 	/**
 	 * A folder is a container where you can put several things inside
+	 * 
 	 * @param kml
 	 * @param name
 	 * @param description

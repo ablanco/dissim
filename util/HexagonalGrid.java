@@ -94,7 +94,9 @@ public class HexagonalGrid implements Serializable {
 		ilat = LatLng.round(Math.abs(NW.getLat() - SE.getLat()) / row);
 		ilng = LatLng.round(Math.abs(NW.getLng() - SE.getLng()) / col);
 
-		box = new LatLngBox(NW, SE, tileSize); // TODO para qué?
+		// Necesitamos el box para facilitar el manejo con datos de OSM que no
+		// estan en nuestro grid pero que influyen en nuestro mapa
+		box = new LatLngBox(NW, SE, tileSize);
 
 		gridTerrain = new short[col][row];
 		northTerrain = new short[col + 2];

@@ -47,7 +47,6 @@ public class CoverturaConexa {
 		// -90.088238, (short) 10), new LatLng(29.952260, -90.087238,
 		// (short) 10), 0, 0, 3);
 		Snapshot newOrleans = new Snapshot("ConvexCoverture", "", grid,
-				// TODO new DateAndTime(2000, 3, 15, 15, 3),
 				"lol",
 				new Hashtable<String, Pedestrian>());
 

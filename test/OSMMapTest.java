@@ -54,7 +54,6 @@ public class OSMMapTest {
 
 		HexagonalGrid grid = new HexagonalGrid(NW, SE, 0, 0, 20);
 
-		// TODO DateAndTime dateTime = new DateAndTime(2008, 12, 13, 12, 5);
 		String dateTime = "lol";
 		Snapshot snapShot = new Snapshot("OSMMapTest", "", grid,
 				dateTime, new Hashtable<String, Pedestrian>());
