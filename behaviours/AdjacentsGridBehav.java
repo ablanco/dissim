@@ -66,10 +66,11 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 			int col;
 			int row;
 
-			if (data.length <= 1)
-				for (int i = 0; i < data.length; i++) {
-					System.out.println("lol " + i + " " + data[i]);
-				}
+			if (data.length <= 1) {
+				myAgent.addBehaviour(new SendAdjacentsBehav(myAgent,
+						new HashSet<Point>(), msg.createReply()));
+				return;
+			}
 
 			// Si se trata de coordenadas geográficas las pasamos a coordenadas
 			// en la rejilla

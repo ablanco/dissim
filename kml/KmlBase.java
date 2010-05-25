@@ -171,7 +171,7 @@ public class KmlBase implements Updateable {
 						.getGridWater());
 			}
 			// Almacenamos la informacion concreta que necesitamos
-			// TODO quizas sender.getLocalName() no sea unico
+			// TODO quizas sender.getLocalName() no sea unico, usar getName()
 			inf.put(sender.getLocalName(), currentEnv);
 		} else {
 			// Todas las demas iteraciones

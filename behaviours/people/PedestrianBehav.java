@@ -162,7 +162,6 @@ public abstract class PedestrianBehav extends Behaviour {
 				}
 
 				step = 0;
-				// TODO - Remove behaviour
 				myAgent.removeBehaviour(this);
 			} else {
 				block();

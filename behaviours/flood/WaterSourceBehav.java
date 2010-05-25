@@ -50,7 +50,6 @@ public class WaterSourceBehav extends Behaviour {
 		AgentHelper.send(myAgent, envAID, ACLMessage.PROPOSE, "add-water",
 				content);
 
-		// TODO - Remove Behav
 		myAgent.removeBehaviour(this);
 	}
 

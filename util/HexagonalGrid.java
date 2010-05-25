@@ -256,44 +256,45 @@ public class HexagonalGrid implements Serializable {
 	 * Devuelve los índices de los hexágonos adyacentes al pedido (6 como
 	 * máximo)
 	 * 
-	 * @param x
-	 * @param y
+	 * @param col
+	 * @param row
 	 * @return Una matriz cuyas filas representan las coordenadas de un hexágono
 	 *         adyacente
 	 */
-	public int[][] getAdjacentsIndexes(int x, int y) {
-		x -= offCol;
-		y -= offRow;
+	public int[][] getAdjacentsIndexes(int col, int row) {
+		col -= offCol;
+		row -= offRow;
 		int[][] adjacents = new int[6][2];
 		int cont = 0;
 
-		boolean par = ((y % 2) == 0);
+		boolean par = ((row % 2) == 0);
 		// Caso fila impar
-		int colIni = x;
-		int colFin = x + 1;
+		int colIni = col;
+		int colFin = col + 1;
 		// Caso fila par
 		if (par) {
-			colIni = x - 1;
-			colFin = x;
+			colIni = col - 1;
+			colFin = col;
 		}
 
-		for (int fila = y - 1; fila <= y + 1; fila++) {
-			for (int col = colIni; col <= colFin; col++) {
-				if (fila == y && col == x) {
+		for (int rowAux = row - 1; rowAux <= row + 1; rowAux++) {
+			for (int colAux = colIni; colAux <= colFin; colAux++) {
+				if (rowAux == row && colAux == col) {
 					if (par)
-						col = x + 1;
+						colAux = col + 1;
 					else
-						col = x - 1;
+						colAux = col - 1;
 				}
 				// Comprobamos que el hexágono adyacente no está fuera de la
 				// rejilla
-				if (col >= -1 && col <= columns && fila >= -1 && fila <= rows) {
-					adjacents[cont][0] = col;
-					adjacents[cont][1] = fila;
+				if (colAux >= -1 && colAux <= columns && rowAux >= -1
+						&& rowAux <= rows) {
+					adjacents[cont][0] = colAux;
+					adjacents[cont][1] = rowAux;
 					cont++;
 				}
-				if (fila == y && col == x - 1 && !par)
-					col++;
+				if (rowAux == row && colAux == col - 1 && !par)
+					colAux++;
 			}
 		}
 
@@ -308,15 +309,15 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Devuelve los hexágonos adyacentes al pedido (6 como máximo)
 	 * 
-	 * @param x
-	 * @param y
+	 * @param col
+	 * @param row
 	 * @return Una lista de arrays, cada array representa a un hexágono
 	 *         adyacente y sus elementos son: columna, fila y valor.
 	 */
-	public ArrayList<int[]> getAdjacents(int x, int y) {
+	public ArrayList<int[]> getAdjacents(int col, int row) {
 		ArrayList<int[]> result = new ArrayList<int[]>(6);
 		int[] adjacent;
-		int[][] indexes = getAdjacentsIndexes(x, y);
+		int[][] indexes = getAdjacentsIndexes(col, row);
 		for (int i = 0; i < indexes.length; i++) {
 			adjacent = new int[3];
 			adjacent[0] = indexes[i][0];
