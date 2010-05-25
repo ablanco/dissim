@@ -35,6 +35,13 @@ import util.flood.WaterSource;
 import util.jcoord.LatLng;
 import behaviours.CreateAgentBehav;
 
+/**
+ * Agent that loads and processes a Scenario file, and lauch the simulation that
+ * the file describes creating the agents needed.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class CreatorAgent extends Agent {
 
@@ -90,6 +97,13 @@ public class CreatorAgent extends Agent {
 		}
 	}
 
+	/**
+	 * Behaviour that continues creating agents, it waits until all the
+	 * enviroments are ready and then create the others agents.
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 * 
+	 */
 	protected class WaitForReadyBehav extends CyclicBehaviour {
 
 		/**
@@ -161,6 +175,13 @@ public class CreatorAgent extends Agent {
 
 	}
 
+	/**
+	 * Behaviour that sends the Scenario instance to others agents. It receives
+	 * a request and sends the instance to the sender.
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 * 
+	 */
 	protected class SendScenarioBehav extends CyclicBehaviour {
 
 		@Override
