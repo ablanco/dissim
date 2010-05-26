@@ -26,6 +26,12 @@ import util.Point;
 import util.java.ModifiedTilesSet;
 import util.jcoord.LatLng;
 
+/**
+ * Flood version of hexagonal grid, has specific methods for managing the flood
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class FloodHexagonalGrid extends HexagonalGrid {
 
 	private static final long serialVersionUID = 1L;
@@ -38,6 +44,21 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	private ModifiedTilesSet modTiles = null;
 
+	/**
+	 * New Flood hexagonal grid, like Hexagonal grid but this is better for a
+	 * flooding
+	 * 
+	 * @param NW
+	 *            Upper Left corner
+	 * @param SE
+	 *            Lower Right corner
+	 * @param offX
+	 *            column offset
+	 * @param offY
+	 *            row offset
+	 * @param tileSize
+	 *            tile size
+	 */
 	public FloodHexagonalGrid(LatLng NW, LatLng SE, int offX, int offY,
 			int tileSize) {
 		super(NW, SE, offX, offY, tileSize);
@@ -49,6 +70,18 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offX, offY);
 	}
 
+	/**
+	 * Sets a water value in a concrete position, also updates the crown if any
+	 * environment needs to update is water value
+	 * 
+	 * @param col
+	 *            column
+	 * @param row
+	 *            row
+	 * @param value
+	 *            amount of water
+	 * @return previous value
+	 */
 	public short setWaterValue(int col, int row, short value) {
 		col -= offCol;
 		row -= offRow;
@@ -72,6 +105,15 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		return old;
 	}
 
+	/**
+	 * Gets water value of a concrete position of the grid, also gives values of
+	 * the crown
+	 * 
+	 * @param col
+	 *            column
+	 * @param row
+	 * @return value
+	 */
 	public short getWaterValue(int col, int row) {
 		col -= offCol;
 		row -= offRow;
@@ -90,10 +132,22 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		return value;
 	}
 
+	/**
+	 * Get the short[][] water matriz
+	 * 
+	 * @return water matrix
+	 */
 	public short[][] getGridWater() {
 		return gridWater;
 	}
 
+	/**
+	 * Is a flood border
+	 * 
+	 * @param col
+	 * @param row
+	 * @return true if adjacent has different values
+	 */
 	public boolean isFloodBorder(int col, int row) {
 		short z = getValue(col, row);
 		for (int[] a : getAdjacents(col, row)) {
@@ -106,6 +160,12 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
+	/**
+	 * Increase the water value by increment
+	 * @param col
+	 * @param row
+	 * @param increment
+	 */
 	public void increaseValue(int x, int y, short increment) {
 		short old = getWaterValue(x, y);
 		setWaterValue(x, y, (short) (old + increment));
@@ -113,6 +173,13 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
+	/**
+	 * Decrease the water value by decrement
+	 * @param col
+	 * @param row
+	 * @param decrement
+	 * @return previous value 
+	 */
 	public short decreaseValue(int x, int y, short decrement) {
 		short result;
 		short old = getWaterValue(x, y);
@@ -130,11 +197,22 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
+	/**
+	 * Get water+terrain value
+	 * @param x column
+	 * @param y row
+	 * @return water+terrain value
+	 */
 	public short getValue(int x, int y) {
 		return (short) (getTerrainValue(x, y) + getWaterValue(x, y));
 	}
 
 	@Override
+	/**
+	 * Get adjacents of the grid, adjacents contains values of water+terrain
+	 * @param p point we want to know the adjacents
+	 * @return list of adjacents
+	 */
 	public HashSet<Point> getAdjacents(Point p) {
 		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
 		HashSet<Point> result = new HashSet<Point>(indexes.length);
@@ -149,6 +227,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	@Override
+	/**
+	 * Updates grid with osm info
+	 */
 	public void obtainStreetInfo() {
 		super.obtainStreetInfo();
 
@@ -173,6 +254,11 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		}
 	}
 
+	/**
+	 * Gets tiles that have been modified during simulation step
+	 * 
+	 * @return modified points
+	 */
 	public Set<Point> getModCoordAndReset() {
 		ModifiedTilesSet result = modTiles;
 		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offCol, offRow);
