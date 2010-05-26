@@ -215,9 +215,8 @@ public class HexagonalGridPane extends JPanel {
 								// Pintar agua
 								FloodHexagonalGrid fgrid = (FloodHexagonalGrid) grid;
 								int water = fgrid.getWaterValue(i, j);
-								if (water > 0) {
+								if (water > 0)
 									g2.setColor(new Color(0, 0, color));
-								}
 							}
 							g2.fillPolygon(hex);
 
