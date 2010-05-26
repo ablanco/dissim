@@ -23,6 +23,12 @@ import java.util.ListIterator;
 import util.Scenario;
 import util.jcoord.LatLng;
 
+/**
+ * Flood version of scenario, contains methods for easily manage the flooding
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class FloodScenario extends Scenario {
 
 	private static final long serialVersionUID = 1L;
@@ -32,12 +38,19 @@ public class FloodScenario extends Scenario {
 	 */
 	private LinkedList<WaterSource> waterSources;
 
+	/**
+	 * New Flood scenario, calls scenario constructor and
+	 */
 	public FloodScenario() {
 		super();
 		waterSources = new LinkedList<WaterSource>();
 	}
 
 	@Override
+	/**
+	 * Same that scenario version, but only for flood parameters
+	 * @param data list of parameters 
+	 */
 	protected void loadScenarioData(ArrayList<String> data) {
 		super.loadScenarioData(data);
 		for (String s : data) {
@@ -53,10 +66,19 @@ public class FloodScenario extends Scenario {
 		}
 	}
 
+	/**
+	 * Add a new water source into the scenario
+	 * 
+	 * @param ws
+	 *            water source
+	 * @return true in is contained in the box
+	 * @throws IllegalStateException
+	 *             Geographical scenario data hasn't been initialized
+	 */
 	public boolean addWaterSource(WaterSource ws) {
 		if (globalNW == null || globalSE == null)
 			throw new IllegalStateException(
-					"Geographical data hasn't been initialized");
+					"Geographical scenario data hasn't been initialized");
 
 		boolean result = false;
 		LatLng coord = ws.getCoord();
@@ -67,10 +89,20 @@ public class FloodScenario extends Scenario {
 		return result;
 	}
 
+	/**
+	 * Get an iterator over water sources in the scenario
+	 * 
+	 * @return water source iterator
+	 */
 	public ListIterator<WaterSource> waterSourcesIterator() {
 		return waterSources.listIterator();
 	}
 
+	/**
+	 * Get the number of water sources contained into the scenario
+	 * 
+	 * @return number of water sources
+	 */
 	public int waterSourcesSize() {
 		return waterSources.size();
 	}

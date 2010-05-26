@@ -188,7 +188,6 @@ public class Edge {
 		long alng = (long) Math.abs((a.getLongitude() * Math.pow(10, 6)));
 		long blat = (long) Math.abs((b.getLatitude() * Math.pow(10, 6)));
 		long blng = (long) Math.abs((b.getLongitude() * Math.pow(10, 6)));
-		// TODO mejorar
 		// System.err.println("A: "+a+", B:"+b+" resultado "+alat+"-"+blat+" vs "+alng+"-"+blng);
 		return Math.abs(alat - blat) < 3 && Math.abs(alng - blng) < 3;
 

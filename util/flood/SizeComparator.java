@@ -19,6 +19,11 @@ package util.flood;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Comparator that order incremental by size
+ * @author Manuel Gomar, Alejandro Blanco
+ *
+ */
 public class SizeComparator implements Comparator<List<Edge>>  {
 
 	@Override
