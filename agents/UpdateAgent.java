@@ -23,7 +23,6 @@ import jade.lang.acl.ACLMessage;
 
 import java.lang.reflect.Constructor;
 
-import util.AgentHelper;
 import util.Snapshot;
 import util.Updateable;
 import behaviours.ReceiveUpdateBehav;
@@ -74,7 +73,7 @@ public class UpdateAgent extends Agent {
 		client.setAgent(this);
 
 		// Obtener agentes entorno
-		DFAgentDescription[] result = AgentHelper.search(this, "syndicate");
+		DFAgentDescription[] result = AgentUtils.search(this, "syndicate");
 		envAID = new AID[envs.length];
 
 		for (int i = 0; i < envs.length; i++) {
@@ -95,7 +94,7 @@ public class UpdateAgent extends Agent {
 		client.init();
 
 		// Sindicarse en el entorno
-		AgentHelper.send(this, envAID, ACLMessage.SUBSCRIBE, "syndicate",
+		AgentUtils.send(this, envAID, ACLMessage.SUBSCRIBE, "syndicate",
 				new Object[] { client.getType(), getAID() });
 	}
 
@@ -103,7 +102,7 @@ public class UpdateAgent extends Agent {
 	protected void takeDown() {
 		if (envAID != null) {
 			// Desregistrarse en el entorno
-			AgentHelper.send(this, envAID, ACLMessage.CANCEL, "syndicate",
+			AgentUtils.send(this, envAID, ACLMessage.CANCEL, "syndicate",
 					new Object[] { client.getType(), getAID() });
 		}
 		if (client != null) {

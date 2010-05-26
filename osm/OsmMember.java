@@ -22,7 +22,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * Class for managin related ways, providin a role and a reference
+ * Class for managing related ways, providing a role and a reference
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -34,10 +34,10 @@ public class OsmMember {
 	private long ref;
 
 	/**
-	 * Private constructor, initializates the OsmMeber by parameters
+	 * Private constructor, initializates the {@link OsmMember} by parameters
 	 * 
 	 * @param type
-	 *            defined by OSM static values
+	 *            defined by {@link Osm} static values
 	 * @param ref
 	 *            OSM id
 	 * @param way
@@ -83,13 +83,14 @@ public class OsmMember {
 	/**
 	 * OSM static value
 	 * 
-	 * @return
+	 * @return type
 	 */
 	public short getType() {
 		return type;
 	}
 
 	/**
+	 * OSM way containing member
 	 * 
 	 * @return osmWay containing member
 	 */
@@ -97,6 +98,9 @@ public class OsmMember {
 		return way;
 	}
 
+	/**
+	 * Check if the given object is equal to the OSM way that contains member
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		return way.equals(obj);
@@ -108,9 +112,12 @@ public class OsmMember {
 	}
 
 	/**
-	 * Parse and initalizate the values for managin a OSM member type
-	 * @param node xml node from osm webservice
-	 * @param ways already parsed and added to the map
+	 * Parse and initalizate the values for managing a OSM member type
+	 * 
+	 * @param node
+	 *            xml node from osm
+	 * @param ways
+	 *            already parsed and added to the map
 	 * @return parsed initializaded osmMember
 	 */
 	public static OsmMember getMember(Node node, Hashtable<Long, OsmWay> ways) {

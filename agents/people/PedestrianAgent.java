@@ -20,8 +20,8 @@ import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import sun.reflect.Reflection;
-import util.AgentHelper;
 import util.jcoord.LatLng;
+import agents.AgentUtils;
 import behaviours.ReceiveClockTickBehav;
 import behaviours.ReceiveScenarioBehav;
 import behaviours.RequestScenarioBehav;
@@ -77,7 +77,7 @@ public class PedestrianAgent extends Agent {
 					lat, lng)));
 
 			// Obtener agente entorno
-			DFAgentDescription[] result = AgentHelper.search(myAgent,
+			DFAgentDescription[] result = AgentUtils.search(myAgent,
 					"adjacents-grid");
 			AID envAID = null;
 			for (DFAgentDescription df : result) {

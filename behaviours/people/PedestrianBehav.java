@@ -25,10 +25,10 @@ import jade.lang.acl.UnreadableException;
 
 import java.util.Set;
 
-import util.AgentHelper;
 import util.Pedestrian;
 import util.Point;
 import util.Scenario;
+import agents.AgentUtils;
 import agents.people.PedestrianAgent;
 import behaviours.AdjacentsGridBehav;
 
@@ -114,7 +114,7 @@ public abstract class PedestrianBehav extends Behaviour {
 						+ Integer.toString(position.getRow()) + " "
 						+ Integer.toString(d);
 			}
-			mt = AgentHelper.send(myAgent, env, ACLMessage.REQUEST,
+			mt = AgentUtils.send(myAgent, env, ACLMessage.REQUEST,
 					"adjacents-grid", content);
 			step = 1;
 		case 1:
@@ -127,7 +127,7 @@ public abstract class PedestrianBehav extends Behaviour {
 					try {
 						pmejor = choose(adjacents);
 					} catch (YouAreDeadException e) {
-						AgentHelper.send(myAgent, env, ACLMessage.CANCEL,
+						AgentUtils.send(myAgent, env, ACLMessage.CANCEL,
 								"register-people", myAgent.getLocalName());
 						myAgent.doDelete();
 						return;
@@ -152,7 +152,7 @@ public abstract class PedestrianBehav extends Behaviour {
 						if (status != Pedestrian.HEALTHY)
 							content += " " + Integer.toString(status);
 
-						mt = AgentHelper.send(myAgent, env, ACLMessage.INFORM,
+						mt = AgentUtils.send(myAgent, env, ACLMessage.INFORM,
 								"register-people", content);
 
 						step = 2;

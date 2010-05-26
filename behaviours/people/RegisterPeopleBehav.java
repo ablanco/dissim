@@ -27,10 +27,10 @@ import jade.lang.acl.MessageTemplate;
 import java.io.IOException;
 import java.util.Map;
 
-import util.AgentHelper;
 import util.Pedestrian;
 import util.Point;
 import util.Scenario;
+import agents.AgentUtils;
 import agents.EnvironmentAgent;
 import agents.people.PedestrianAgent;
 import behaviours.InterGridBehav;
@@ -98,7 +98,7 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 					people.remove(id);
 
 					// Obtener agentes entorno
-					DFAgentDescription[] result = AgentHelper.search(myAgent,
+					DFAgentDescription[] result = AgentUtils.search(myAgent,
 							"intergrid");
 					AID envAID = null;
 					for (DFAgentDescription df : result) {
@@ -116,7 +116,7 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 							+ Integer.toString(p.getCol()) + " "
 							+ Integer.toString(p.getRow()) + " "
 							+ Integer.toString(state);
-					AgentHelper.send(myAgent, envAID, ACLMessage.INFORM,
+					AgentUtils.send(myAgent, envAID, ACLMessage.INFORM,
 							"intergrid", content);
 
 					// Avisar al agente humano de cuál es su nuevo entorno

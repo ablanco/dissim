@@ -36,6 +36,11 @@ public class OsmNode implements Comparable<OsmNode>, Cloneable {
 	protected List<OsmTag> tags;
 	private short type = Osm.Undefined;
 
+	/**
+	 * {@link OsmNode} constructor
+	 * 
+	 * @param id
+	 */
 	private OsmNode(long id) {
 		this.id = id;
 		tags = new ArrayList<OsmTag>();
@@ -45,7 +50,7 @@ public class OsmNode implements Comparable<OsmNode>, Cloneable {
 	 * Node from a position
 	 * 
 	 * @param c
-	 *            positon to place de node
+	 *            positon to place the node
 	 */
 	public OsmNode(LatLng c) {
 		coord = c;
@@ -53,7 +58,7 @@ public class OsmNode implements Comparable<OsmNode>, Cloneable {
 	}
 
 	/**
-	 * osm static value
+	 * {@link Osm} static value
 	 * 
 	 * @return node static value
 	 */
@@ -80,7 +85,7 @@ public class OsmNode implements Comparable<OsmNode>, Cloneable {
 	}
 
 	/**
-	 * Gets osm static value from the node
+	 * Sets {@link Osm} static value from the node
 	 * 
 	 * @param type
 	 *            node osm static value type
@@ -161,10 +166,10 @@ public class OsmNode implements Comparable<OsmNode>, Cloneable {
 	}
 
 	/**
-	 * Given a osm xml node, parse it and initizalizates a new osmNode object.
+	 * Given a osm xml node, parses it and initializes a new osmNode object.
 	 * 
 	 * @param node
-	 *            xml node from OSM webservice
+	 *            xml node from OSM
 	 * @return osmNode with all the info from the node
 	 */
 	public static OsmNode getNode(Node node) {

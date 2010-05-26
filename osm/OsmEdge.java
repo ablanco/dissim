@@ -19,13 +19,13 @@ package osm;
 import java.util.ArrayList;
 import java.util.List;
 
+import util.flood.Edge;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
 
 /**
- * 
- * This class helps to manage the points in the osm, given to points of a way
- * make's an edge that is much more easier to manage discretizing into a grid
+ * This class helps to manage the points in the osm, given the points of a way
+ * it makes an edge that is much more easier to fit into a grid
  * 
  * @author Manuel Gomar, Alejando Blanco
  */
@@ -40,11 +40,11 @@ public class OsmEdge {
 	 */
 	public static final int Out = 0;
 	/**
-	 * The edge is cuts a given Box, nodeA is inside the box
+	 * The edge cuts a given Box, nodeA is inside the box
 	 */
 	public static final int Cuts_A = 2;
 	/**
-	 * The edge is cuts a given Box, nodeB is inside the box
+	 * The edge cuts a given Box, nodeB is inside the box
 	 */
 	public static final int Cuts_B = 3;
 
@@ -70,7 +70,7 @@ public class OsmEdge {
 	private double[] v;
 
 	/**
-	 * Given two nodes, makes and edge and determinate the line equation and
+	 * Given two nodes, makes an edge and determinates the line equation and
 	 * parameters
 	 * 
 	 * @param nA
@@ -125,6 +125,7 @@ public class OsmEdge {
 
 	/**
 	 * Gets node A
+	 * 
 	 * @return nodeA
 	 */
 	public OsmNode getNodeA() {
@@ -133,6 +134,7 @@ public class OsmEdge {
 
 	/**
 	 * Gets node B
+	 * 
 	 * @return nodeB
 	 */
 	public OsmNode getNodeB() {
@@ -151,7 +153,7 @@ public class OsmEdge {
 	}
 
 	/**
-	 * Given a coodinate c, gets its longitude, solves y = (alpha * x)+ beta
+	 * Given a coodinate c, gets his longitude, solves y = (alpha * x)+ beta
 	 * 
 	 * @param c
 	 *            Longitude we want to determinate latitude
@@ -174,7 +176,7 @@ public class OsmEdge {
 	}
 
 	/**
-	 * Given a coodinate c, gets its latitude, solves x = ( y - beta ) / alpha
+	 * Given a coodinate c, gets his latitude, solves x = ( y - beta ) / alpha
 	 * 
 	 * @param c
 	 *            Point we want to determinate longitude
@@ -186,8 +188,7 @@ public class OsmEdge {
 	}
 
 	/**
-	 * Nos dice por medio de variables estaticas cual es su relacion con un box,
-	 * si lo contiene, esta totalmente fuera, o lo corta
+	 * Relation of this {@link Edge} with the {@link LatLngBox}
 	 * 
 	 * @param box
 	 * @return
@@ -203,10 +204,11 @@ public class OsmEdge {
 	}
 
 	/**
-	 * Given a box, if it cuts the edge, return the cut point
+	 * Given a box, if it cuts the edge, returns the cut point
 	 * 
 	 * @param box
-	 * @return if exist, the point where the edge cuts the box, if not, null
+	 * @return if exists, returns the point where the edge cuts the box, if not,
+	 *         returns null
 	 */
 	public OsmNode getCutNode(LatLngBox box) {
 		switch (cutType(box)) {
@@ -226,9 +228,8 @@ public class OsmEdge {
 	}
 
 	/**
-	 * If the edge cuts the box, gives the point where it's been cut
+	 * If the edge cuts the box, returns the point where it's been cut
 	 * 
-	 * @see getCutNode(LatLngBox box)
 	 * @param box
 	 *            that cuts the edge
 	 * @return point where the edge is cut
@@ -344,7 +345,7 @@ public class OsmEdge {
 	 * Get a line between nodeA and nodeB using line equations
 	 * 
 	 * @param box
-	 *            Contains parameters for building a speceific line.
+	 *            Contains parameters for building a specefic line.
 	 * @return a list of LatLng representing the line in the given box
 	 */
 	public List<LatLng> getLine(LatLngBox box) {
@@ -371,9 +372,6 @@ public class OsmEdge {
 	}
 
 	@Override
-	/**
-	 * Redefinition of to string for a friendly view
-	 */
 	public String toString() {
 		return "A: " + nodeA + ", B: " + nodeB + ", (" + alpha + "," + beta
 				+ "), (" + v[0] + "," + v[1] + ")";
@@ -382,10 +380,9 @@ public class OsmEdge {
 	}
 
 	/**
+	 * Class for calculating line equations
 	 * 
-	 * @author Manuel Gomar
-	 * 
-	 *         Class for calculatin line equations
+	 * @author Alejandro Blanco, Manuel Gomar
 	 * 
 	 */
 	protected class Eqn {
@@ -398,6 +395,14 @@ public class OsmEdge {
 		private double[][] coef;
 		private double[] ind;
 
+		/**
+		 * {@link Eqn} constructor
+		 * 
+		 * @param a
+		 *            Point A
+		 * @param b
+		 *            Point B
+		 */
 		protected Eqn(LatLng a, LatLng b) {
 			x0 = a.getLng();
 			y0 = a.getLat();
@@ -409,6 +414,11 @@ public class OsmEdge {
 			ind = new double[] { y0, y1 };
 		}
 
+		/**
+		 * Solves the equation
+		 * 
+		 * @return alpha and beta
+		 */
 		protected double[] solve() {
 			// System.err.println("Antes "+print());
 			multiplica(0, x1);
@@ -422,13 +432,13 @@ public class OsmEdge {
 			return new double[] { alpha, beta };
 		}
 
-		protected void multiplica(int fil, double val) {
+		private void multiplica(int fil, double val) {
 			coef[fil][0] *= val;
 			coef[fil][1] *= val;
 			ind[fil] *= val;
 		}
 
-		protected void resta(int c, int d) {
+		private void resta(int c, int d) {
 			coef[c][0] -= coef[d][0];
 			coef[c][1] -= coef[d][1];
 			ind[c] -= ind[d];

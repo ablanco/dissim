@@ -16,9 +16,9 @@
 
 package behaviours.flood;
 
+import agents.AgentUtils;
 import agents.EnvironmentAgent;
 import agents.flood.WaterSourceAgent;
-import util.AgentHelper;
 import util.jcoord.LatLng;
 import jade.core.AID;
 import jade.core.Agent;
@@ -64,7 +64,7 @@ public class WaterSourceBehav extends Behaviour {
 		// Inundar casilla
 		String content = Double.toString(coord.getLat()) + " "
 				+ Double.toString(coord.getLng()) + " " + Short.toString(water);
-		AgentHelper.send(myAgent, envAID, ACLMessage.PROPOSE, "add-water",
+		AgentUtils.send(myAgent, envAID, ACLMessage.PROPOSE, "add-water",
 				content);
 
 		myAgent.removeBehaviour(this);

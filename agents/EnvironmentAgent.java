@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Pedestrian;
@@ -163,11 +162,11 @@ public class EnvironmentAgent extends Agent {
 			}
 
 			// Registrarse con el agente DF
-			AgentHelper.register(myAgent, services.toArray(new String[services
+			AgentUtils.register(myAgent, services.toArray(new String[services
 					.size()]));
 
 			// Obtener agente creador
-			DFAgentDescription[] result = AgentHelper
+			DFAgentDescription[] result = AgentUtils
 					.search(myAgent, "creator");
 			if (result.length != 1) {
 				System.err
@@ -177,7 +176,7 @@ public class EnvironmentAgent extends Agent {
 			}
 			AID creatorAID = result[0].getName();
 			// Mandar mensaje al agente creador
-			AgentHelper.send(myAgent, creatorAID, ACLMessage.CONFIRM, null,
+			AgentUtils.send(myAgent, creatorAID, ACLMessage.CONFIRM, null,
 					null);
 
 			done = true;

@@ -20,13 +20,22 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.text.html.HTML.Tag;
+
 import org.w3c.dom.Node;
 
 import util.HexagonalGrid;
 import util.Point;
+import util.flood.Edge;
 import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
 
+/**
+ * It represents a Way from OSM data.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 public class OsmWay implements Comparable<OsmWay> {
 	/**
 	 * Contains OsmNodes in a certain orden that especify the road
@@ -34,7 +43,7 @@ public class OsmWay implements Comparable<OsmWay> {
 	protected List<OsmNode> way;
 	protected long id;
 	/**
-	 * Información Extendida de WAY
+	 * Extended information of WAY
 	 */
 	protected List<OsmTag> tags;
 	/**
@@ -45,6 +54,11 @@ public class OsmWay implements Comparable<OsmWay> {
 	protected short type = Osm.Undefined;
 	private LatLngBox box = null;
 
+	/**
+	 * {@link OsmWay} constructor
+	 * 
+	 * @param id
+	 */
 	protected OsmWay(long id) {
 		this.id = id;
 		way = new ArrayList<OsmNode>();
@@ -56,7 +70,7 @@ public class OsmWay implements Comparable<OsmWay> {
 	/**
 	 * Get a list of tags from the way
 	 * 
-	 * @return list of tags
+	 * @return list of {@link Tag}
 	 */
 	public List<OsmTag> getTags() {
 		return tags;
@@ -65,7 +79,7 @@ public class OsmWay implements Comparable<OsmWay> {
 	/**
 	 * Get a list of edges in order that defines de way
 	 * 
-	 * @return list of edges
+	 * @return list of {@link Edge}
 	 */
 	public List<OsmEdge> getEdges() {
 		return edges;
@@ -74,18 +88,18 @@ public class OsmWay implements Comparable<OsmWay> {
 	/**
 	 * Get the box containingn the way
 	 * 
-	 * @return box of coordinates
+	 * @return {@link LatLngBox} of coordinates
 	 */
 	public LatLngBox getBox() {
 		return box;
 	}
 
 	/**
-	 * Gets a node identified by ind
+	 * Gets the node identified by ind
 	 * 
 	 * @param ind
 	 *            of the node
-	 * @return the node if exist
+	 * @return the {@link OsmNode} if exists
 	 */
 	public OsmNode getNode(int ind) {
 		if (!way.isEmpty() && ind >= 0 && ind < way.size()) {
@@ -95,9 +109,9 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Gets the last node of the way, if exist
+	 * Gets the last node of the way, if exists
 	 * 
-	 * @return last node, if exist, else null
+	 * @return last node, if exists, else null
 	 */
 	public OsmNode getLastNode() {
 		if (way.size() > 0)
@@ -109,7 +123,7 @@ public class OsmWay implements Comparable<OsmWay> {
 	 * Sets a new type for the way
 	 * 
 	 * @param type
-	 *            new
+	 *            new type
 	 */
 	public void setType(short type) {
 		this.type = type;
@@ -119,17 +133,17 @@ public class OsmWay implements Comparable<OsmWay> {
 	 * Sets a new box for the way
 	 * 
 	 * @param box
-	 *            new
+	 *            new {@link LatLngBox}
 	 */
 	public void setBox(LatLngBox box) {
 		this.box = box;
 	}
 
 	/**
-	 * Add a new node for the way, This is an ordered list, that means that
-	 * order is really important, and a node must be followeb by the next node
-	 * to build a good road, fortunately OSM gives the nodes in order Also
-	 * create a new edge from each new node added.
+	 * Adds a new node for the way. This is an ordered list, that means that
+	 * order is really important, and a node must be followed by the next node
+	 * to build a good road, fortunately OSM gives the nodes in order. It also
+	 * creates a new edge from each new node added.
 	 * 
 	 * @param node
 	 *            we want to add to the way
@@ -148,8 +162,8 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Append a list of nodes to the end of the way. Nodes must be in order and
-	 * must be the followin nodes from the last node
+	 * Appends a list of nodes to the end of the way. Nodes must be in order and
+	 * must be the following nodes to the last node
 	 * 
 	 * @param nodes
 	 *            list of nodes
@@ -188,7 +202,7 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Gets static value from osm that identified its type
+	 * Gets static value from {@link Osm} that identifies his type
 	 * 
 	 * @return type
 	 */
@@ -209,9 +223,9 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Get the first node of the way, if exist
+	 * Gets the first node of the way, if exists
 	 * 
-	 * @return first node of the way, if exist
+	 * @return first node of the way, if exists
 	 */
 	public OsmNode getFirstNode() {
 		if (!way.isEmpty()) {
@@ -247,9 +261,9 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Get a list of points according to a grid that represents the way. The
-	 * list of points are inside the grid and correspond of a discretization of
-	 * the values form the original way
+	 * Gets a list of points according to a grid that represents the way. The
+	 * list of points are inside the grid and correspond to a discretization of
+	 * the values from the original way
 	 * 
 	 * @param grid
 	 *            Where we want to discretize the way
@@ -278,10 +292,10 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Given a coord returns true if it is into the poligonal line
+	 * Given a coordinate returns true if it is inside the polygonal line
 	 * 
 	 * @param coord
-	 * @return
+	 * @return true if the coordinate is inside the polygonal line
 	 */
 	public boolean isIntoPoligon(LatLng coord) {
 		int counter = 0;
@@ -316,8 +330,8 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Check if the first node and last node are the same. If true is a poligon,
-	 * if false, is just a way
+	 * Check if the first node and last node are the same. If true it's a
+	 * polygon, if false, it's just a way
 	 */
 	public boolean isClosedLine() {
 		OsmNode a = getNode(0);
@@ -359,11 +373,11 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Given a parsed node from xml file from OSM webservice, builds a osmWay
-	 * with all the info
+	 * Given a parsed node from xml file from OSM, builds a {@link OsmWay} with
+	 * all the info
 	 * 
 	 * @param node
-	 *            from OSM webservice
+	 *            from OSM
 	 * @param nodes
 	 *            from osmMap
 	 * @return the way
@@ -403,12 +417,11 @@ public class OsmWay implements Comparable<OsmWay> {
 	}
 
 	/**
-	 * Dados dos caminos, los une formando un solo poligono
+	 * Join two ways
 	 * 
-	 * @param current
-	 * @param newWay
-	 * @param type
-	 * @return
+	 * @param r
+	 * @param gridBox
+	 * @return {@link OsmWay}
 	 */
 	public static OsmWay join(OsmRelation r, LatLngBox gridBox) {
 		// Pegamos todos los de la primera lista
@@ -439,6 +452,13 @@ public class OsmWay implements Comparable<OsmWay> {
 		return osmWay;
 	}
 
+	/**
+	 * Joins a way
+	 * 
+	 * @param way
+	 * @param gridBox
+	 * @return List of nodes
+	 */
 	@SuppressWarnings("unused")
 	private static List<OsmNode> reverseJoin(OsmWay way, LatLngBox gridBox) {
 		List<OsmNode> reverseList = new ArrayList<OsmNode>();
@@ -451,6 +471,13 @@ public class OsmWay implements Comparable<OsmWay> {
 		return reverseList;
 	}
 
+	/**
+	 * Joins a way
+	 * 
+	 * @param way
+	 * @param gridBox
+	 * @return List of nodes
+	 */
 	private static List<OsmNode> normalJoin(OsmWay way, LatLngBox gridBox) {
 		List<OsmNode> normalList = new ArrayList<OsmNode>();
 		for (OsmEdge e : way.getEdges()) {

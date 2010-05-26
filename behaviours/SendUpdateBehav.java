@@ -24,9 +24,9 @@ import jade.lang.acl.ACLMessage;
 import java.util.Map;
 import java.util.Set;
 
+import agents.AgentUtils;
 import agents.EnvironmentAgent;
 
-import util.AgentHelper;
 import util.DateAndTime;
 import util.HexagonalGrid;
 import util.Pedestrian;
@@ -87,7 +87,7 @@ public class SendUpdateBehav extends TickerBehaviour {
 	@Override
 	protected void onTick() {
 		AID[] receivers = new AID[to.size()];
-		AgentHelper.send(myAgent, to.toArray(receivers), ACLMessage.INFORM,
+		AgentUtils.send(myAgent, to.toArray(receivers), ACLMessage.INFORM,
 				convId, new Snapshot(name, description, grid, dateTime
 						.toString(), people));
 	}

@@ -18,7 +18,6 @@ package agents;
 
 import java.util.ArrayList;
 
-import util.AgentHelper;
 import util.DateAndTime;
 import jade.core.AID;
 import jade.core.Agent;
@@ -74,7 +73,7 @@ public class ClockAgent extends Agent {
 		@Override
 		protected void onTick() {
 			time.updateTime(minutes);
-			AgentHelper.send(myAgent, receivers, ACLMessage.INFORM, "clock",
+			AgentUtils.send(myAgent, receivers, ACLMessage.INFORM, "clock",
 					time.toString());
 		}
 

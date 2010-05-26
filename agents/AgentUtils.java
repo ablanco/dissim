@@ -14,7 +14,7 @@
 //    You should have received a copy of the GNU General Public License
 //    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package util;
+package agents;
 
 import jade.core.AID;
 import jade.core.Agent;
@@ -29,40 +29,40 @@ import java.io.IOException;
 import java.io.Serializable;
 
 /**
- * Contains methods for managing frequent petitions to the agents
+ * Common code for messaging between agents
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
  */
-public class AgentHelper {
+public class AgentUtils {
 
-	private AgentHelper() {
+	private AgentUtils() {
 		// No instanciable
 	}
 
 	/**
-	 * Search agents in the DF Service
+	 * Searches agents in the {@link DFService}
 	 * 
 	 * @param agt
 	 *            Agent who search
 	 * @param service
 	 *            Service that the searched agents must provide
-	 * @return An agent description array with the founded agents (may be empty
-	 *         if zero agents were found)
+	 * @return An agent description array with the found agents (may be empty if
+	 *         zero agents were found)
 	 */
 	public static DFAgentDescription[] search(Agent agt, String service) {
 		return search(agt, new String[] { service });
 	}
 
 	/**
-	 * Search agents in the DF Service
+	 * Searches agents in the {@link DFService}
 	 * 
 	 * @param agt
 	 *            Agent who search
 	 * @param services
 	 *            Services that the searched agents must provide
-	 * @return An agent description array with the founded agents (may be empty
-	 *         if zero agents were found)
+	 * @return An agent description array with the found agents (may be empty if
+	 *         zero agents were found)
 	 */
 	public static DFAgentDescription[] search(Agent agt, String[] services) {
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -86,7 +86,7 @@ public class AgentHelper {
 	}
 
 	/**
-	 * Register an agent into the DF Service
+	 * Registers an agent into the {@link DFService}
 	 * 
 	 * @param agt
 	 *            Agent to register
@@ -98,7 +98,7 @@ public class AgentHelper {
 	}
 
 	/**
-	 * Register an agent into the DF Service
+	 * Registers an agent into the {@link DFService}
 	 * 
 	 * @param agt
 	 *            Agent to register
@@ -125,7 +125,7 @@ public class AgentHelper {
 	}
 
 	/**
-	 * Send a message to another agent
+	 * Sends a message to another agent
 	 * 
 	 * @param sender
 	 *            Agent who sends the message
@@ -148,7 +148,7 @@ public class AgentHelper {
 	}
 
 	/**
-	 * Send a message to another agent
+	 * Sends a message to another agent
 	 * 
 	 * @param sender
 	 *            Agent who sends the message

@@ -19,8 +19,8 @@ package agents.flood;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import util.AgentHelper;
 import util.jcoord.LatLng;
+import agents.AgentUtils;
 import agents.ClockAgent;
 import agents.EnvironmentAgent;
 import behaviours.ReceiveClockTickBehav;
@@ -66,7 +66,7 @@ public class WaterSourceAgent extends Agent {
 			String env = Integer.toString(scen.getEnviromentByCoord(coord));
 
 			// Obtener agentes entorno
-			DFAgentDescription[] result = AgentHelper.search(myAgent,
+			DFAgentDescription[] result = AgentUtils.search(myAgent,
 					"add-water");
 			for (DFAgentDescription df : result) {
 				String name = df.getName().getLocalName();

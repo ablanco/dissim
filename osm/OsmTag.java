@@ -20,7 +20,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
- * Tags for containing the info contained into de xml file from OSM webservice
+ * Tags for the info contained into the xml file downloaded from OSM
  * 
  * @author Manuel Gomar, Alejando Blanco
  * 
@@ -59,12 +59,12 @@ public class OsmTag {
 	}
 
 	/**
-	 * Given a xml parsed node from OSM webservice check if has valuable info
-	 * and build a tag.
+	 * Given a xml parsed node from OSM check if has valuable info and build a
+	 * tag.
 	 * 
 	 * @param node
 	 *            from OSM webservice
-	 * @return a node if the tag has any value
+	 * @return a {@link OsmTag} if the node has any value
 	 */
 	public static OsmTag getTag(Node node) {
 		NamedNodeMap attributes = node.getAttributes();

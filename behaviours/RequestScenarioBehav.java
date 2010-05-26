@@ -16,6 +16,7 @@
 
 package behaviours;
 
+import agents.AgentUtils;
 import agents.CreatorAgent;
 import jade.core.AID;
 import jade.core.Agent;
@@ -25,7 +26,6 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
-import util.AgentHelper;
 import util.Scenario;
 
 /**
@@ -62,12 +62,12 @@ public class RequestScenarioBehav extends CyclicBehaviour {
 		switch (step) {
 		case 0:
 			// Obtener agente creador
-			DFAgentDescription[] result = AgentHelper
+			DFAgentDescription[] result = AgentUtils
 					.search(myAgent, "creator");
 			AID creatorAID = result[0].getName();
 
 			// Pedir Scenario
-			mt = AgentHelper.send(myAgent, creatorAID, ACLMessage.REQUEST,
+			mt = AgentUtils.send(myAgent, creatorAID, ACLMessage.REQUEST,
 					null, null);
 			step = 1;
 		case 1:

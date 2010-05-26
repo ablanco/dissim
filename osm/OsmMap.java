@@ -29,8 +29,8 @@ import util.jcoord.LatLng;
 import util.jcoord.LatLngBox;
 
 /**
- * This class is an interface for the OSM, Webservice, so we can manage all
- * usefull information about the map and manage easily
+ * This class is an interface for Open Street Maps so we can manage all usefull
+ * information easily
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -44,7 +44,7 @@ public class OsmMap {
 	protected LatLngBox mapBox;
 
 	/**
-	 * Empty constructor, initializes ways, nodes, tags, relations in witch all
+	 * Empty constructor, initializes ways, nodes, tags, relations in which all
 	 * info will be stored
 	 */
 	public OsmMap() {
@@ -103,7 +103,7 @@ public class OsmMap {
 	}
 
 	/**
-	 * Adds a new osmWay to the osmWays table, only if is not null
+	 * Adds a new osmWay to the osmWays table, only if it's not null
 	 * 
 	 * @param way
 	 *            we want to add to the osmWay table
@@ -117,7 +117,7 @@ public class OsmMap {
 	}
 
 	/**
-	 * Adds a new osmNode to the osmNode table, only if is not null
+	 * Adds a new osmNode to the osmNode table, only if it's not null
 	 * 
 	 * @param node
 	 *            we want to add to the osmNode table
@@ -174,9 +174,11 @@ public class OsmMap {
 	}
 
 	/**
-	 * Get info from Open Streets Maps, it uses the OSM webservice, obtain the
-	 * xml file, parse it and puts values into the grid * @param grid we want to
-	 * obtain the info
+	 * Gets info from Open Street Maps. It obtains the xml file, parses it and
+	 * puts values into the grid
+	 * 
+	 * @param grid
+	 *            we want to obtain the info for
 	 * 
 	 * @return OsmMap object containing info from OSM
 	 */

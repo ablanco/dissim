@@ -34,16 +34,16 @@ import util.java.TempFiles;
 import util.java.Wget;
 
 /**
- * This class contains static methods for working with OSM web service and
- * managing these data in an easy way
+ * This class contains static methods for working with Open Street Maps and
+ * managing this data in an easy way
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
  */
 public class Osm {
 
-	/**
-	 * All Static values are form OSM types
+	/*
+	 * All Static values are for OSM types
 	 */
 
 	/**
@@ -91,7 +91,7 @@ public class Osm {
 	 * Generic value for Land Types, greater than all terrain natural values
 	 */
 	public static final short Land = 200;
-	/**
+	/*
 	 * End Land Types Begin Road Types
 	 */
 	/**
@@ -118,10 +118,10 @@ public class Osm {
 	 * Generic value for Road Types, greater than all road values
 	 */
 	public static final short Roads = 600;
-	/**
+	/*
 	 * End Roads Begin Safe Points
 	 */
-	/**
+	/*
 	 * Open Spaces
 	 */
 	/**
@@ -149,15 +149,15 @@ public class Osm {
 	 */
 	public static final short Amenity = Leisure + mediumClass;
 
-	/**
-	 * Infrastucures
+	/*
+	 * Infrastructures
 	 */
 	/**
 	 * Historic places, ...
 	 */
 	public static final short Historic = Amenity + smallClass;
 	/**
-	 * Militari structures, places, buildings ...
+	 * Military structures, places, buildings ...
 	 */
 	public static final short Military = Historic + smallClass;
 	/**
@@ -172,7 +172,7 @@ public class Osm {
 	 * Generic value for Safes Places, greater than all places values
 	 */
 	public static final short SafePoint = 1000;
-	/**
+	/*
 	 * End Safe Points begin Others
 	 */
 	/**
@@ -192,10 +192,10 @@ public class Osm {
 	 * Given a proper url for OSM returns a file with the information
 	 * 
 	 * @param url
-	 *            Url for the web service
+	 *            Url for the petition
 	 * @param fileName
-	 *            Name for the file
-	 * @return File containing Osm url request
+	 *            Name of the new file
+	 * @return File containing OSM data
 	 */
 	public static File getOSMXmlFromURL(String url, String fileName) {
 		try {
@@ -205,18 +205,18 @@ public class Osm {
 			if (!file.exists()) {
 				if (!Wget.wget(dir.getPath(), url)) {
 					System.err
-							.println("No se ha podido descargar la informacion");
+							.println("I couldn't download the data from Open Street Maps");
 					return null;
 				} else {
 					// Si se ha descargado devolvemos el fichero
 					file = new File(dir, fileName);
-					System.out.println("Se ha descargado el archivo "
+					System.out.println("The file is downloaded "
 							+ file.getPath());
 					return file;
 				}
 			} else {
 				// Fichero ya descargado, lo devolvemos
-				System.out.println("Peticion ya en disco " + file.getName());
+				System.out.println("File already on disc " + file.getName());
 				return file;
 			}
 
@@ -228,9 +228,9 @@ public class Osm {
 	}
 
 	/**
-	 * Parses XML file and returns XML document.
+	 * Parses XML file and returns XML document
 	 * 
-	 * @param fileName
+	 * @param sourceFile
 	 *            XML file to parse
 	 * @return XML document or <B>null</B> if error occured
 	 */
@@ -260,11 +260,11 @@ public class Osm {
 	}
 
 	/**
-	 * Given an hexagonal grid it's download form OSM all the street information
-	 * and updates the grid
+	 * Given an {@link HexagonalGrid}, it downloads from OSM all the street
+	 * information and updates the grid
 	 * 
 	 * @param grid
-	 *            HexagonGrid
+	 *            {@link HexagonalGrid}
 	 */
 	public static void setOsmMapInfo(HexagonalGrid grid) {
 		OsmMap osmMap = OsmMap.getMap(grid);
@@ -296,16 +296,17 @@ public class Osm {
 	}
 
 	/**
-	 * Set Street value "type" in point "p" , only is type is greater than
-	 * previous value. If values are equal, means that is an intersection, then
-	 * plus 1 to the value to make it odd
+	 * Sets street value "type" in point "p", only if type is greater than
+	 * previous value. If values are equal, means that there is an intersection,
+	 * then add 1 to the value to make it odd
 	 * 
 	 * @param p
-	 *            Point where we want to draw
+	 *            Point
 	 * @param type
 	 *            Street Value
 	 * @param grid
-	 * @return true if the previous value was less than type, false if not
+	 * @return true if the previous value was less or equal than type, false if
+	 *         not
 	 */
 	public static boolean setStreetValue(Point p, short type, HexagonalGrid grid) {
 		short currType = grid.getStreetValue(p);
@@ -350,9 +351,9 @@ public class Osm {
 	 * point to the nearest street
 	 * 
 	 * @param n
-	 *            OsmNode SafePoint
+	 *            {@link OsmNode} SafePoint
 	 * @param grid
-	 * @return false if is not a safe point, true if has changed de value
+	 * @return false if is not a safe point, true if has changed value
 	 */
 	public static boolean setStreetValue(OsmNode n, HexagonalGrid grid) {
 		if (grid.getBox().contains(n.getCoord())
@@ -406,12 +407,12 @@ public class Osm {
 	}
 
 	/**
-	 * Añadimos a la matriz de calles el Way
+	 * Add a way to the street grid
 	 * 
 	 * @param w
-	 *            Contians the way we want to draw
+	 *            Contains the way we want to draw
 	 * @param grid
-	 *            Grid wher we want to draw
+	 *            Grid where we want to draw
 	 */
 	public static void setStreetValue(OsmWay w, HexagonalGrid grid) {
 		w.getBox().intersection(grid.getBox());
@@ -453,7 +454,7 @@ public class Osm {
 	}
 
 	/**
-	 * Set relation to HexagonalGrid
+	 * Sets relation to a {@link HexagonalGrid}
 	 * 
 	 * @param r
 	 *            A relation is a collection of ways that may be a river, a park
@@ -467,7 +468,7 @@ public class Osm {
 	}
 
 	/**
-	 * Given a list of tags, retunrs the known type
+	 * Given a list of tags, returns the type
 	 * 
 	 * @param tags
 	 *            Tags containing Osm Information about the node
@@ -536,11 +537,11 @@ public class Osm {
 	}
 
 	/**
-	 * Given a RailWay "type", returns propper street value
+	 * Given a RailWay "type", returns proper street value
 	 * 
 	 * @param type
 	 *            A railway type
-	 * @return Specific Raylway
+	 * @return Specific Railway
 	 */
 	private static short getRailway(String type) {
 		short key = Railway;
@@ -561,14 +562,14 @@ public class Osm {
 	}
 
 	/**
-	 * Given a highway "type" and "kind" Returns a Proper value for the road.
+	 * Given a highway "type" and "kind" returns a proper value for the road.
 	 * Differences between kinds are made even, because odds value are for
-	 * intersecctions
+	 * intersections
 	 * 
 	 * @param type
-	 *            : Highway, junction, traffic_calming
+	 *            Highway, junction, traffic_calming...
 	 * @param kind
-	 *            : footway, track, cycleway ....
+	 *            Footway, track, cycleway...
 	 * @return
 	 */
 	private static short getHighway(String type, String kind) {
@@ -700,8 +701,8 @@ public class Osm {
 	 * Given a type returns the proper color.
 	 * 
 	 * @param type
-	 *            Osm Tyoe
-	 * @return Returs specific color given to this value
+	 *            Osm Type
+	 * @return Returns specific color for to this value
 	 */
 	public static Color getColor(short type) {
 		short key = getType(type);
@@ -767,8 +768,8 @@ public class Osm {
 	}
 
 	/**
-	 *Return true if is a Road Value and if its an odd value (see
-	 * setStreetValue(point ...)
+	 * Returns true if it's a Road Value and odd, because that means it's an
+	 * intersection
 	 * 
 	 * @param value
 	 *            Osm Street Value

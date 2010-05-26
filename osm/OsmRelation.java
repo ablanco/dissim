@@ -25,8 +25,8 @@ import org.w3c.dom.Node;
 import util.jcoord.LatLngBox;
 
 /**
- * Relations are a list of osmWays that build a complex polygon, such a river,
- * parks ...
+ * Relations are a list of {@link OsmWay} that forms a complex polygon, such a
+ * river, parks ...
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -38,6 +38,11 @@ public class OsmRelation {
 	private List<OsmTag> tags;
 	private short type = Osm.Undefined;
 
+	/**
+	 * {@link OsmRelation} constructor
+	 * 
+	 * @param id
+	 */
 	private OsmRelation(long id) {
 		this.id = id;
 		members = new ArrayList<OsmMember>();
@@ -55,7 +60,8 @@ public class OsmRelation {
 	}
 
 	/**
-	 * Gets osm static value for the relation, witch is the same than the osmWay
+	 * Gets {@link Osm} static value for the relation, witch is the same than
+	 * the {@link OsmWay}
 	 * 
 	 * @return relation type
 	 */
@@ -64,8 +70,7 @@ public class OsmRelation {
 	}
 
 	/**
-	 * Get the list of tags containing all the info collected from OSM web
-	 * service
+	 * Get the list of tags containing all the info collected from OSM
 	 * 
 	 * @return list of tags
 	 */
@@ -86,14 +91,14 @@ public class OsmRelation {
 	 * Sets an specific value for the relation
 	 * 
 	 * @param type
-	 *            static osm value
+	 *            static {@link Osm} value
 	 */
 	public void setType(short type) {
 		this.type = type;
 	}
 
 	/**
-	 * Gets members in the relation
+	 * Gets {@link OsmMember} in the relation
 	 * 
 	 * @return list of members
 	 */
@@ -102,7 +107,7 @@ public class OsmRelation {
 	}
 
 	/**
-	 * Add a memeber to the list of members that defines the relation. Updates
+	 * Add a member to the list of members that defines the relation. Updates
 	 * the size of the box
 	 * 
 	 * @param member
@@ -157,14 +162,14 @@ public class OsmRelation {
 	}
 
 	/**
-	 * Given a xml node from OSM webservice, parse and collect the info and
-	 * returns a osmRelation,also links osmWays to the relation.
+	 * Given a xml node from OSM, parse and collect the info and returns a
+	 * {@link OsmRelation}, also links {@link OsmWay} to the relation.
 	 * 
 	 * @param node
-	 *            xml node from osm webservice
+	 *            xml node from osm
 	 * @param ways
-	 *            from the osmMap
-	 * @return osmRelation with the members that contains our box
+	 *            from the {@link OsmMap}
+	 * @return {@link OsmRelation} with the members that contains the box
 	 */
 	public static OsmRelation getRelation(Node node,
 			Hashtable<Long, OsmWay> ways) {

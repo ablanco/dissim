@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import util.AgentHelper;
 import util.Pedestrian;
 import util.Scenario;
 import util.flood.FloodScenario;
@@ -75,7 +74,7 @@ public class CreatorAgent extends Agent {
 
 			// Lo primero es ofrecer el Scenario
 			addBehaviour(new SendScenarioBehav());
-			AgentHelper.register(this, "creator");
+			AgentUtils.register(this, "creator");
 
 			// Enviroments
 			for (int i = 0; i < scen.getNumEnv(); i++) {

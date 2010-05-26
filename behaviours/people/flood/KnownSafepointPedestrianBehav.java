@@ -31,11 +31,11 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import osm.Osm;
-import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
 import util.Scenario;
 import util.jcoord.LatLng;
+import agents.AgentUtils;
 import agents.people.PedestrianAgent;
 import behaviours.QueryGridBehav;
 import behaviours.people.PedestrianBehav;
@@ -343,7 +343,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 							.getEnviromentByCoord(obj));
 					// Obtener agente entorno
 					if (envs == null)
-						envs = AgentHelper.search(myAgent, "grid-querying");
+						envs = AgentUtils.search(myAgent, "grid-querying");
 					AID envAID = null;
 					for (DFAgentDescription df : envs) {
 						String name = df.getName().getLocalName();
@@ -357,7 +357,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 					String content = QueryGridBehav.COORD_TO_TILE + " "
 							+ obj.getLat() + " " + obj.getLng();
-					mt = AgentHelper.send(myAgent, envAID, ACLMessage.REQUEST,
+					mt = AgentUtils.send(myAgent, envAID, ACLMessage.REQUEST,
 							"query-grid", content);
 					step = 1;
 				} else {

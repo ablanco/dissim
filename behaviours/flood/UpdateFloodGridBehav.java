@@ -28,10 +28,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import util.AgentHelper;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
+import agents.AgentUtils;
 import agents.EnvironmentAgent;
 import behaviours.InterGridBehav;
 
@@ -175,7 +175,7 @@ public class UpdateFloodGridBehav extends Behaviour {
 					String content = InterGridBehav.WATER_INCREASE + " "
 							+ Integer.toString(col) + " "
 							+ Integer.toString(row) + " " + Short.toString(w);
-					AgentHelper.send(myAgent, (AID) env, ACLMessage.INFORM,
+					AgentUtils.send(myAgent, (AID) env, ACLMessage.INFORM,
 							"intergrid", content);
 					grid.increaseValue(col, row, w);
 				}
@@ -210,7 +210,7 @@ public class UpdateFloodGridBehav extends Behaviour {
 			Object returnObj = envs.get(env);
 			if (returnObj == null) {
 				// Obtener agentes entorno
-				DFAgentDescription[] result = AgentHelper.search(myAgent,
+				DFAgentDescription[] result = AgentUtils.search(myAgent,
 						"intergrid");
 				for (DFAgentDescription df : result) {
 					String name = df.getName().getLocalName();
@@ -262,7 +262,7 @@ public class UpdateFloodGridBehav extends Behaviour {
 				String content = InterGridBehav.WATER_SET + " "
 						+ Integer.toString(col) + " " + Integer.toString(row)
 						+ " " + Short.toString(grid.getWaterValue(col, row));
-				AgentHelper.send(myAgent, (AID) env, ACLMessage.INFORM,
+				AgentUtils.send(myAgent, (AID) env, ACLMessage.INFORM,
 						"intergrid", content);
 			}
 		}

@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import agents.AgentUtils;
 import agents.EnvironmentAgent;
 
-import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
 import util.Scenario;
@@ -272,7 +272,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 					// Pertenece a otro entorno, le pedimos los adyacentes
 					AID envAID = null;
 					// Obtener agentes entorno
-					DFAgentDescription[] result = AgentHelper.search(myAgent,
+					DFAgentDescription[] result = AgentUtils.search(myAgent,
 							"adjacents-grid");
 					for (DFAgentDescription df : result) {
 						String name = df.getName().getLocalName();
@@ -291,7 +291,7 @@ public class AdjacentsGridBehav extends CyclicBehaviour {
 								+ Integer.toString(row) + " "
 								+ Integer.toString(d);
 
-						mtReply = AgentHelper.send(myAgent, envAID,
+						mtReply = AgentUtils.send(myAgent, envAID,
 								ACLMessage.REQUEST, "adjacents-grid", content);
 					}
 
