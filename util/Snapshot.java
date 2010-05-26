@@ -22,6 +22,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Contains all the changing info between two steps, agents will transfer this
+ * to communicate and update the simulation, each snapshot is a view of a
+ * simulation step
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class Snapshot implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -32,6 +40,20 @@ public class Snapshot implements Serializable {
 	private String name;
 	private String description;
 
+	/**
+	 * New snapshot of the step simulation
+	 * 
+	 * @param name
+	 *            of simulation
+	 * @param description
+	 *            of simulation
+	 * @param grid
+	 *            for the simulation
+	 * @param dateTime
+	 *            and time of the simulation
+	 * @param people
+	 *            involved in the simulation
+	 */
 	public Snapshot(String name, String description, HexagonalGrid grid,
 			String dateTime, Map<String, Pedestrian> people) {
 		this.grid = grid;
@@ -47,22 +69,47 @@ public class Snapshot implements Serializable {
 		}
 	}
 
+	/**
+	 * Get the Hexagonal grid, contains elevations, and streets
+	 * 
+	 * @return grid
+	 */
 	public HexagonalGrid getGrid() {
 		return grid;
 	}
 
+	/**
+	 * Get date and time of the simulation
+	 * 
+	 * @return date and time
+	 */
 	public String getDateTime() {
 		return dateTime;
 	}
 
+	/**
+	 * Get pedestrians in the scenario
+	 * 
+	 * @return pedestrians
+	 */
 	public List<Pedestrian> getPeople() {
 		return people;
 	}
 
+	/**
+	 * Get name of the simulation
+	 * 
+	 * @return name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * Get description of the simulation
+	 * 
+	 * @return description
+	 */
 	public String getDescription() {
 		return description;
 	}

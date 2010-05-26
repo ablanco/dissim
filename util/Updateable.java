@@ -19,16 +19,51 @@ package util;
 import jade.core.AID;
 import jade.core.Agent;
 
+/**
+ * Interface for updateables objects, if need to objects that will be updated,
+ * you must implement this class
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public interface Updateable {
-	
+
+	/**
+	 * Sets an agent to the object, this agent will manage the updates
+	 * 
+	 * @param agt
+	 *            Agent
+	 */
 	public void setAgent(Agent agt);
 
+	/**
+	 * Initializes parameters, if needed
+	 */
 	public void init();
 
+	/**
+	 * Receives and object, (usually a snapshot), read information and update
+	 * the state of the simulation
+	 * 
+	 * @param obj
+	 *            usually a snapshot
+	 * @param sender
+	 *            who sends the message
+	 * @throws IllegalArgumentException
+	 *             if is not the object type we where expecting
+	 */
 	public void update(Object obj, AID sender) throws IllegalArgumentException;
 
+	/**
+	 * Finalizes the object, if needed
+	 */
 	public void finish();
 
+	/**
+	 * Gets the type of the object
+	 * 
+	 * @return type
+	 */
 	public String getType();
 
 }
