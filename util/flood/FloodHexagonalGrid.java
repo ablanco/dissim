@@ -105,30 +105,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		return true;
 	}
 
-	@Override
-	public void increaseValue(int x, int y, short increment) {
-		short old = getWaterValue(x, y);
-		setWaterValue(x, y, (short) (old + increment));
-		modTiles.add(new Point(x, y));
-	}
-
-	@Override
-	public short decreaseValue(int x, int y, short decrement) {
-		short result;
-		short old = getWaterValue(x, y);
-		// El nivel de agua no puede ser menor que cero
-		if (old >= decrement) {
-			old -= decrement;
-			result = decrement;
-		} else {
-			result = old;
-			old = 0;
-		}
-		setWaterValue(x, y, old);
-		modTiles.add(new Point(x, y));
-		return result;
-	}
-
+	
 	@Override
 	public short getValue(int x, int y) {
 		return (short) (getTerrainValue(x, y) + getWaterValue(x, y));
