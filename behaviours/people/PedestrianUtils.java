@@ -40,6 +40,7 @@ public class PedestrianUtils {
 	public static final int SOUTH = 1;
 	public static final int EAST = 2;
 	public static final int WEST = 3;
+	private static final int NUM_DIR = 4;
 
 	/**
 	 * Private constructor. No instances of this class.
@@ -56,7 +57,8 @@ public class PedestrianUtils {
 	 *            {@link Set}<{@link Point}>
 	 * @param position
 	 *            {@link Point}
-	 * @return
+	 * @return The tiles in adjacents that can be viewed from position, through
+	 *         streets and safepoints
 	 */
 	public static Set<Point> filterByStreetView(Set<Point> adjacents,
 			Point position) {
@@ -88,7 +90,7 @@ public class PedestrianUtils {
 	 *            {@link Set}<{@link Point}>
 	 * @param pt
 	 *            {@link Point}
-	 * @return
+	 * @return The point in adjacents that has the same position that pt
 	 */
 	public static Point findHexagon(Set<Point> adjacents, Point pt) {
 		for (Point apt : adjacents) {
@@ -112,7 +114,9 @@ public class PedestrianUtils {
 	 *            {@link Point}
 	 * @param speed
 	 *            in tiles
-	 * @return
+	 * @return The point from adjacents that is in destination direction
+	 *         considering speed if there aren't obstacles, returns null in
+	 *         other case
 	 */
 	public static LinkedList<Point> accessible(Set<Point> adjacents,
 			Point position, Point destination, int speed) {
@@ -146,7 +150,7 @@ public class PedestrianUtils {
 	 *            {@link Set}<{@link Point}>
 	 * @param from
 	 *            {@link Point}
-	 * @return
+	 * @return The point from in that is farthest from the point from
 	 */
 	public static Point farInSetFromPoint(Set<Point> in, Point from) {
 		Point result = null;
@@ -168,7 +172,7 @@ public class PedestrianUtils {
 	 *            {@link Set}<{@link Point}>
 	 * @param from
 	 *            {@link Set}<{@link Point}>
-	 * @return
+	 * @return The point from in that is farthest from the points in from
 	 */
 	public static Point farInSetFromSet(Set<Point> in, Set<Point> from) {
 		if (from.size() == 0)
@@ -198,7 +202,7 @@ public class PedestrianUtils {
 	 *            {@link Set}<{@link Point}>
 	 * @param to
 	 *            {@link Point}
-	 * @return
+	 * @return The point from in that is the nearest to the point to
 	 */
 	public static Point nearInSetToPoint(Set<Point> in, Point to) {
 		Point result = null;
@@ -220,7 +224,7 @@ public class PedestrianUtils {
 	 *            {@link Set}<{@link Point}>
 	 * @param to
 	 *            {@link Set}<{@link Point}>
-	 * @return
+	 * @return The point from in that is the nearest to the points from to
 	 */
 	public static Point nearInSetToSet(Set<Point> in, Set<Point> to) {
 		if (to.size() == 0)
@@ -250,7 +254,7 @@ public class PedestrianUtils {
 	 *            {@link Set}<{@link Point}>
 	 * @param position
 	 *            {@link Point}
-	 * @return
+	 * @return True if the position is flooded and surrounded by water
 	 */
 	public static boolean detectFloodDeath(Set<Point> dry, Point position) {
 		// Si no tiene casillas secas a su alrededor está rodeado y
@@ -279,7 +283,7 @@ public class PedestrianUtils {
 	 *            {@link Random}
 	 * @param points
 	 *            {@link Set}<{@link Point}>
-	 * @return
+	 * @return A random point from the set
 	 */
 	public static Point randomFromSet(Random rnd, Set<Point> points) {
 		int aux = rnd.nextInt(points.size());
@@ -299,7 +303,7 @@ public class PedestrianUtils {
 	 *            {@link Point}
 	 * @param destination
 	 *            {@link Point}
-	 * @return
+	 * @return The direction to follow from position to destination
 	 */
 	public static int getDirection(Point position, Point destination) {
 		if (destination == null)
@@ -328,7 +332,7 @@ public class PedestrianUtils {
 	 * @param points
 	 *            {@link Set}<{@link Point}>
 	 * @param direction
-	 * @return
+	 * @return The point of the set that is farthest in the given direction
 	 */
 	public static Point getPointByDirection(Set<Point> points, int direction) {
 		Point result = null;
@@ -369,10 +373,10 @@ public class PedestrianUtils {
 	 * 
 	 * @param rnd
 	 *            {@link Random}
-	 * @return
+	 * @return A random direction
 	 */
 	public static int randomDirection(Random rnd) {
-		return rnd.nextInt(4);
+		return rnd.nextInt(NUM_DIR);
 	}
 
 	/**
@@ -381,13 +385,13 @@ public class PedestrianUtils {
 	 * @param rnd
 	 *            {@link Random}
 	 * @param direction
-	 * @return
+	 * @return A random direction excluding the opposite one
 	 */
 	public static int randomDirection(Random rnd, int direction) {
 		int oppo = oppositeDirection(direction);
-		int result = rnd.nextInt(3);
+		int result = rnd.nextInt(NUM_DIR - 1);
 		if (result == oppo)
-			result = 3;
+			result = NUM_DIR - 1;
 		return result;
 	}
 
@@ -395,7 +399,7 @@ public class PedestrianUtils {
 	 * Returns the opposite direction to the given one
 	 * 
 	 * @param direction
-	 * @return
+	 * @return The opposite direction to the given one
 	 */
 	public static int oppositeDirection(int direction) {
 		switch (direction) {
