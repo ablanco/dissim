@@ -27,6 +27,9 @@ import java.util.TreeMap;
 
 import javax.swing.JFileChooser;
 
+import agents.EnvironmentAgent;
+import agents.UpdateAgent;
+
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Scenario;
@@ -45,8 +48,8 @@ import de.micromata.opengis.kml.v_2_2_0.Polygon;
 import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
 
 /**
- * Is the base class from managing the info from the updates and parsin them
- * into kml friendly
+ * It's the base class for manipulate the info from the updates and write it
+ * into a kml file
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -75,8 +78,7 @@ public class KmlBase implements Updateable {
 	private Agent myAgent = null;
 
 	/**
-	 * Public constructor, initiazlizes the kml and organizes all the listening
-	 * enviorements
+	 * Public constructor, initializes the kml and organizes all environments
 	 */
 	public KmlBase() {
 		kml = new Kml();
@@ -84,10 +86,10 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Sets the agent from KML
+	 * Sets the agent for kml
 	 * 
 	 * @param agt
-	 *            new Agent
+	 *            Usually an {@link UpdateAgent}
 	 */
 	@Override
 	public void setAgent(Agent agt) {
@@ -95,7 +97,7 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Creates the kml archives
+	 * Creates and writes the kml file
 	 */
 	@Override
 	public void finish() {
@@ -113,7 +115,7 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Get type of the agent
+	 * Gets the type of client, usually used by {@link UpdateAgent}
 	 */
 	@Override
 	public String getType() {
@@ -121,7 +123,7 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Initializes the map for the kmls agents
+	 * Initializes the map for the kml agent
 	 */
 	@Override
 	public void init() {
@@ -129,12 +131,13 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * for each new scenario, it find the diferences and print them into the kml
+	 * For each new {@link Snapshot}, it finds the diferences between the new
+	 * {@link HexagonalGrid} and the previous one, and writes them into the kml
 	 * 
 	 * @param obj
-	 *            snapshot
+	 *            {@link Snapshot}
 	 * @param sender
-	 *            sender name
+	 *            {@link AID} Usually an {@link EnvironmentAgent}
 	 */
 	@Override
 	public void update(Object obj, AID sender) throws IllegalArgumentException {
@@ -209,7 +212,7 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Gets kml
+	 * Gets the kml
 	 * 
 	 * @return kml
 	 */
@@ -218,10 +221,10 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Sets a new name from the kml folder
+	 * Sets a new name for the kml folder
 	 * 
 	 * @param name
-	 *            new
+	 * 
 	 */
 	public void setName(String name) {
 		if (folder != null) {
@@ -230,7 +233,7 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Sets a new description to the kml
+	 * Sets a new description for the kml
 	 * 
 	 * @param description
 	 */
@@ -241,7 +244,7 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Gets the name from the kml, if not defined, returns DefaultName
+	 * Gets the name for the kml, if not defined returns DefaultName
 	 * 
 	 * @return name, or DefaultName if not defined
 	 */
@@ -253,7 +256,7 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Gets the description from the kml, if not defined, returns
+	 * Gets the description for the kml, if not defined returns
 	 * DefaultDescriptor
 	 * 
 	 * @return name, or DefaultDescriptor if not defined
@@ -265,7 +268,7 @@ public class KmlBase implements Updateable {
 		return "DefaultDescriptor";
 	}
 
-	/**
+	/*
 	 * Static methods
 	 */
 
@@ -278,7 +281,7 @@ public class KmlBase implements Updateable {
 		try {
 			File f = new File(fileName + ".kmz");
 			kml.marshalAsKmz(f.getPath());
-			// For debugg
+			// For debug
 			kml.marshal(new File(fileName + ".kml"));
 
 		} catch (IOException e) {
@@ -288,12 +291,12 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * A folder is a container where you can put several things inside
+	 * A folder is a container where you can put several things
 	 * 
 	 * @param kml
 	 * @param name
 	 * @param description
-	 * @return
+	 * @return A new {@link Folder}
 	 */
 	public static Folder newFolder(Kml kml, String name, String description) {
 		return kml.createAndSetFolder().withName(name).withOpen(false)
@@ -301,12 +304,12 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Adds folder to an existing Folder
+	 * Adds a subfolder to an existing folder
 	 * 
 	 * @param folder
 	 * @param name
 	 * @param description
-	 * @return
+	 * @return {@link Folder}
 	 */
 	public static Folder addFolder(Folder folder, String name,
 			String description) {
@@ -318,23 +321,23 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * A placemark to geolocate things
+	 * A placemark to geolocate things with
 	 * 
 	 * @param name
 	 *            of the placemark
-	 * @return placeMark to geolocate things
+	 * @return New {@link Placemark} to geolocate things with
 	 */
 	public static Placemark newPlaceMark(Folder folder, String name) {
 		return folder.createAndAddPlacemark().withName(name);
 	}
 
 	/**
-	 * Draw a polygon from the sequence of points
+	 * Draws a polygon from the sequence of points
 	 * 
-	 * @param name
-	 *            of the polygon
+	 * @param placeMark
+	 *            where the polygon is located
 	 * @param kpolygon
-	 *            borders of the polygon
+	 *            Borders of the polygon
 	 */
 	public static void drawPolygon(Placemark placeMark, Kpolygon kpolygon) {
 		if (kpolygon == null || kpolygon.getOuterLine().size() == 0) {
@@ -346,10 +349,10 @@ public class KmlBase implements Updateable {
 		LinearRing outer = kmlPolygon.createAndSetOuterBoundaryIs()
 				.createAndSetLinearRing();
 
-		// Pintamos la linea exterior del poligono
+		// Pintamos la línea exterior del polígono
 		outer.withCoordinates(kpolygon.getOuterLine());
 
-		// Si el poligono tiene huecos los pintamos
+		// Si el polígono tiene huecos los pintamos
 		for (List<Coordinate> inn : kpolygon.getInnerLines()) {
 			LinearRing inner = kmlPolygon.createAndAddInnerBoundaryIs()
 					.createAndSetLinearRing();
@@ -358,7 +361,7 @@ public class KmlBase implements Updateable {
 	}
 
 	/**
-	 * Sets when the event happends
+	 * Sets when the event happend
 	 * 
 	 * @param feature
 	 */

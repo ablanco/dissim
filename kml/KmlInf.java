@@ -31,16 +31,16 @@ public class KmlInf {
 	private double[] incs;
 
 	/**
-	 * Initializes parameters to vales
+	 * Initializes parameters of values
 	 * 
 	 * @param name
-	 *            of the enviroment
+	 *            of the environment
 	 * @param begin
 	 *            time for the event
 	 * @param end
 	 *            time for the event
 	 * @param incs
-	 *            in decimal degrees for the enviroment
+	 *            in decimal degrees for the environment
 	 */
 	public KmlInf(String name, String begin, String end, double[] incs) {
 		this.name = name;
@@ -68,7 +68,7 @@ public class KmlInf {
 	}
 
 	/**
-	 * Gets water grid from this the simulation step
+	 * Gets the water grid from this simulation step
 	 * 
 	 * @return water grid
 	 */
@@ -77,7 +77,7 @@ public class KmlInf {
 	}
 
 	/**
-	 * Gets enviroment name
+	 * Gets environment name
 	 * 
 	 * @return name
 	 */
@@ -88,7 +88,7 @@ public class KmlInf {
 	/**
 	 * Gets degree increments for this scenario
 	 * 
-	 * @return
+	 * @return degree increments for this scenario
 	 */
 	public double[] getIncs() {
 		return incs;
@@ -104,7 +104,7 @@ public class KmlInf {
 	}
 
 	/**
-	 * Set new end date for the simulation step, end date is now begin date
+	 * Sets new end date for the simulation step, and end date become begin date
 	 * 
 	 * @param end
 	 *            time of the events

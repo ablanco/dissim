@@ -23,14 +23,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
+import util.Scenario;
 import util.flood.Edge;
 import util.flood.SizeComparator;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.Coordinate;
 
 /**
- * This class solves plenty of problems for drowin poligons given by a list of
- * dots. It should work, or at least will show something ...
+ * This class solves plenty of problems for drawing polygons given by a list of
+ * dots
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -56,22 +57,23 @@ public class Kpolygon {
 	private short deep;
 
 	/**
-	 * Given a list of dots, a type and increments for a concrete scenario, it
-	 * should create a poligon wich we can easily manage and draw into a kml
+	 * Given a list of dots, a type and geographical increments for a concrete
+	 * {@link Scenario}, it creates a polygon which we can easily manipulate and
+	 * write into a kml
 	 * 
 	 * @param type
-	 *            of the polygon, should be one of the statics value
+	 *            of the polygon, must be one of the statics value
 	 * @param rawPolygon
-	 *            list of LatLang that describes a water sector
+	 *            list of {@link LatLng} that describes a water sector
 	 * @param ilat
-	 *            latitude increment for the scenario
+	 *            latitude increment of the scenario
 	 * @param ilng
-	 *            longitude increment for the scenario
+	 *            longitude increment of the scenario
 	 */
 	public Kpolygon(int type, List<LatLng> rawPolygon, double ilat, double ilng) {
 		if (rawPolygon == null || rawPolygon.size() == 0) {
 			throw new IllegalArgumentException(
-					"No se ha pasado una lista de vertices valida para este poligono");
+					"The list of vertices can't be null or empty");
 		}
 		this.type = type;
 		outerLine = new ArrayList<Coordinate>();
@@ -114,7 +116,7 @@ public class Kpolygon {
 	}
 
 	/**
-	 * Gets outer border from the polygon,
+	 * Gets the outer border of the polygon,
 	 * 
 	 * @return outer border
 	 */
@@ -123,7 +125,7 @@ public class Kpolygon {
 	}
 
 	/**
-	 * Get a list of inner borders from the polygon
+	 * Gets a list of inner borders of the polygon
 	 * 
 	 * @return a list of borders
 	 */
@@ -132,7 +134,7 @@ public class Kpolygon {
 	}
 
 	/**
-	 * Get the type from the polygon
+	 * Gets the type of the polygon
 	 * 
 	 * @return type
 	 */
@@ -141,18 +143,19 @@ public class Kpolygon {
 	}
 
 	/**
-	 * Get the altitude of the polygon, relative to seea level
+	 * Gets the elevation of the polygon, relative to sea level
 	 * 
-	 * @return altitude
+	 * @return elevation
 	 */
 	public short getDeep() {
 		return deep;
 	}
 
 	/**
-	 * Sets altitude for the polygon, relative to seea level
+	 * Sets elevation for the polygon, relative to sea level
 	 * 
 	 * @param deep
+	 *            elevation of the polygon
 	 */
 	public void setDeep(short deep) {
 		this.deep = deep;
@@ -165,7 +168,7 @@ public class Kpolygon {
 	 */
 
 	/**
-	 * Get a list of coordinates that describes the vertex of the hexagon
+	 * Gets a list of coordinates that describes the vertices of the hexagon
 	 * 
 	 * @param centre
 	 *            of the hexagon
@@ -173,7 +176,7 @@ public class Kpolygon {
 	 *            height
 	 * @param ilng
 	 *            width
-	 * @return hexagon vertex
+	 * @return hexagon vertices
 	 */
 	private List<Coordinate> getHexagonVertex(LatLng centre, double ilat,
 			double ilng) {
@@ -191,7 +194,7 @@ public class Kpolygon {
 	}
 
 	/**
-	 * Gets edges from an exagon centered into centre
+	 * Gets edges from an hexagon whose center is at given position
 	 * 
 	 * @param centre
 	 *            of the hexagon
@@ -218,12 +221,15 @@ public class Kpolygon {
 	}
 
 	/**
-	 * Given two list, merge then and remove duplicates, mantaining the proper
-	 * order. Two edges are equal if A(a1,a2), B(b1,b2) -> a1=b2, a2=b1. 
+	 * Given two lists, merges them and removes duplicates, mantaining the
+	 * proper order. Two edges are equal if A(a1,a2), B(b1,b2) -> a1=b2, a2=b1.
 	 * 
-	 * @param h1 list of edges
-	 * @param h2 list of edges
-	 * @return merged and ordered list edge, may contains more than one border
+	 * @param h1
+	 *            list of edges
+	 * @param h2
+	 *            list of edges
+	 * @return merged and ordered list of edges, may contain more than one
+	 *         border
 	 */
 	private Collection<LinkedList<Edge>> borderOperator(
 			Collection<LinkedList<Edge>> polygonBorders,
@@ -280,10 +286,12 @@ public class Kpolygon {
 	}
 
 	/**
-	 * Splits into conex list. A list is conex if A(a1,a2), B(b1,b2) -> a2==b1 || b2==a1
+	 * Splits into conex list. A list is conex if A(a1,a2), B(b1,b2) -> a2==b1
+	 * || b2==a1
 	 * 
-	 * @param currList may contains unconex list
-	 * @return a list of conex list
+	 * @param currList
+	 *            may contains unconex lists
+	 * @return a list of conex lists
 	 */
 	private Collection<LinkedList<Edge>> split(LinkedList<Edge> currList) {
 		// System.err.println("\t\t Antes de Partir "+currList.size()+" : "+currList);
@@ -315,7 +323,9 @@ public class Kpolygon {
 
 	/**
 	 * Looks for conex borders and joins them
-	 * @param borderList may contain unconex borders
+	 * 
+	 * @param borderList
+	 *            may contain unconex borders
 	 * @return a list of conex borders
 	 */
 	private Collection<LinkedList<Edge>> joinBorders(
@@ -375,9 +385,11 @@ public class Kpolygon {
 	}
 
 	/**
-	 * List<Edge> to List<Coodnitate>
-	 * @param line <Edge>
-	 * @return lie <Coordinate>
+	 * From {@link List}<{@link Edge}> to {@link List}<{@link Coordinate}>
+	 * 
+	 * @param line
+	 *            list of {@link Edge}
+	 * @return list of {@link Coordinate}
 	 */
 	private List<Coordinate> edgeToList(List<Edge> line) {
 		List<Coordinate> lc = new ArrayList<Coordinate>();

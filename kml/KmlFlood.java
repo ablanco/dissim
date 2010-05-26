@@ -40,7 +40,7 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
  */
 public class KmlFlood {
 	/**
-	 * Here are all floodLevels
+	 * Here are all the flood levels
 	 */
 	private Set<Short> altitudes;
 	/**
@@ -54,13 +54,13 @@ public class KmlFlood {
 	// no poner : que se ralla :D
 	protected final String water = "Water";
 	/**
-	 * Kml Folder where put all inundation info
+	 * Kml {@link Folder} where put all the flood info
 	 */
 	private Folder container;
 	private Folder folder;
 
 	/**
-	 * Build and initializes parameters, needs a folder for showing information
+	 * Builds and initializes parameters, needs a folder for showing information
 	 * in an ordered way
 	 * 
 	 * @param folder
@@ -72,10 +72,10 @@ public class KmlFlood {
 	}
 
 	/**
-	 * For each new call, it see witch tiles have change and updates de kml
+	 * For each new call, it sees which tiles have changed and updates de kml
 	 * 
 	 * @param oldGrid
-	 *            first grid to see what has changed
+	 *            previous grid
 	 * @param fGrid
 	 *            new grid
 	 * @param name
@@ -190,10 +190,10 @@ public class KmlFlood {
 	}
 
 	/**
-	 * Draw a polygon into the kml
+	 * Draws a polygon into the kml
 	 * 
 	 * @param kp
-	 *            we want to draw
+	 *            Polygon we want to draw
 	 * @throws IllegalArgumentException
 	 *             if is a null polygon
 	 */
@@ -210,11 +210,11 @@ public class KmlFlood {
 	}
 
 	/**
-	 * Creates and add to the container a style and a color from a deep
-	 * parameter
+	 * Creates and adds to the container a style and a color, considering
+	 * deepness of water
 	 * 
 	 * @param floodLevel
-	 *            Deepness of the flood
+	 *            Deepness of water
 	 */
 	protected void createWaterStyleAndColor(short floodLevel) {
 		// Le damos un color medio para que se parezca a agua

@@ -25,15 +25,13 @@ import de.micromata.opengis.kml.v_2_2_0.Folder;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 
 /**
- * This class manage all the information from pedestrians in updates and
- * generate a kml
+ * This class manages all the information of pedestrians and generates a kml
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
  */
 public class KmlPeople {
 
-	public final static String imgPath = "http://pfc.mensab.com/wp-content/uploads/2010/03/";
 	public final static String RUNNING = "running";
 	public final static String SAFE = "safe";
 	public final static String DEAD = "dead";
@@ -43,7 +41,7 @@ public class KmlPeople {
 	private String end;
 
 	/**
-	 * Build and initializes parameters, needs a folder for showing information
+	 * Builds and initializes parameters, needs a folder for showing information
 	 * in an ordered way
 	 * 
 	 * @param folder
@@ -55,7 +53,7 @@ public class KmlPeople {
 	}
 
 	/**
-	 * Creates and set to container an style for pedestrians, by default
+	 * Creates, and sets to the container, a style for pedestrians. By default:
 	 * RUNNING, SAFE, DEAD
 	 */
 	protected void createPeopleStyle() {
@@ -80,13 +78,13 @@ public class KmlPeople {
 	 * @param people
 	 *            list of pedestrians
 	 * @param name
-	 *            name of the enviroment
+	 *            name of the environment
 	 * @param beginTime
 	 *            time of the simulation
 	 * @param endTime
 	 *            time of the simulation
 	 * @param incs
-	 *            to de enviroment
+	 *            of the enviroment
 	 */
 	public void update(List<Pedestrian> people, String name, String beginTime,
 			String endTime, double[] incs) {
@@ -105,10 +103,14 @@ public class KmlPeople {
 	}
 
 	/**
-	 * This class drwas a pedestrian in the given position
-	 * @param kp polygon that represents the pedestrian and position 
-	 * @param status status of the pedestrian
-	 * @throws IllegalArgumentException si el poligono es nulo
+	 * This class draws a pedestrian in the given position
+	 * 
+	 * @param kp
+	 *            Polygon that represents the pedestrian at position
+	 * @param status
+	 *            of the pedestrian
+	 * @throws IllegalArgumentException
+	 *             if the polygon is null
 	 */
 	public void drawPedestrian(Kpolygon kp, int status) {
 		if (kp == null) {
