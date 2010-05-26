@@ -30,7 +30,8 @@ import util.jcoord.LatLng;
 //http://gisdata.usgs.gov/XMLWebServices2/Elevation_service.asmx?WSDL
 
 /**
- * Elevation Web interface for easily managing elevations
+ * Webservice client to the USGS elevation services.
+ * http://gisdata.usgs.gov/XMLWebServices/TNM_Elevation_Service.php
  * 
  * @author Manuel Gomar, Alejandro Blanco
  */
@@ -42,23 +43,26 @@ public class ElevationWS {
 		// Inaccesible - Clase no instanciable
 	}
 
+	/**
+	 * Initializes the client
+	 */
 	private static void init() {
 		ElevationService serv = new ElevationService();
 		service = serv.getElevationServiceSoap();
 	}
 
 	/**
-	 * Get elevation from a coord
+	 * Gets elevation for geographical coordinates
 	 * 
 	 * @param coord
-	 *            of terrain
+	 *            Geographical coordinates
 	 * @param sourceLayer
-	 *            layer of information
+	 *            Layer of information
 	 * @param elevationUnits
-	 *            units
+	 *            Units
 	 * @param elevationOnly
-	 *            if you want only the elevation
-	 * @return webservice string response
+	 *            If you want only the elevation
+	 * @return Webservice's string response
 	 * @throws WebServiceException
 	 */
 	public static String getElevation(LatLng coord, String sourceLayer,
@@ -66,8 +70,6 @@ public class ElevationWS {
 			throws WebServiceException {
 		if (service == null)
 			init();
-
-		// coord.toWGS84(); // WGS 1984 projection
 
 		String elevationOnlyStr;
 		if (elevationOnly)
@@ -87,11 +89,11 @@ public class ElevationWS {
 	}
 
 	/**
-	 * Gets elevation from a coord
+	 * Gets elevation for geographical coordinates
 	 * 
 	 * @param coord
-	 *            of terrain
-	 * @return elevation of the terrain
+	 *            Geographical coordinates
+	 * @return Elevation of the terrain
 	 * @throws WebServiceException
 	 */
 	public static double getElevation(LatLng coord) throws WebServiceException {
@@ -106,21 +108,20 @@ public class ElevationWS {
 	}
 
 	/**
-	 * Gets all elevations from the webservice for the given coord
+	 * Gets all elevations from the webservice for the given geographical
+	 * coordinates
 	 * 
 	 * @param coord
-	 *            of terrain
+	 *            Geographical coordinates
 	 * @param elevationUnits
-	 *            units
-	 * @return webservice string response
+	 *            Units
+	 * @return Webservice's string response
 	 * @throws WebServiceException
 	 */
 	public static String getAllElevations(LatLng coord, String elevationUnits)
 			throws WebServiceException {
 		if (service == null)
 			init();
-
-		// coord.toWGS84(); // WGS 1984 projection
 
 		GetAllElevationsResult res = service.getAllElevations(Double
 				.toString(coord.getLng()), Double.toString(coord.getLat()),
@@ -135,11 +136,12 @@ public class ElevationWS {
 	}
 
 	/**
-	 * Gets all elevations from the webservice for the given coord
+	 * Gets all elevations from the webservice for the given geographical
+	 * coordinates
 	 * 
 	 * @param coord
-	 *            of terrain
-	 * @return webservice string response
+	 *            Geographical coordinates
+	 * @return Webservice's string response
 	 * @throws WebServiceException
 	 */
 	public static String getAllElevations(LatLng coord)

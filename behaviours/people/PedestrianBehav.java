@@ -29,8 +29,16 @@ import util.AgentHelper;
 import util.Pedestrian;
 import util.Point;
 import util.Scenario;
+import agents.people.PedestrianAgent;
 import behaviours.AdjacentsGridBehav;
 
+/**
+ * {@link Behaviour} that makes a {@link PedestrianAgent} move around and save
+ * himself.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public abstract class PedestrianBehav extends Behaviour {
 
@@ -45,6 +53,9 @@ public abstract class PedestrianBehav extends Behaviour {
 	 * Speed in tiles
 	 */
 	protected int s;
+	/**
+	 * What kind of position are we working with
+	 */
 	private String type = AdjacentsGridBehav.LAT_LNG;
 	private int step = 0;
 	private MessageTemplate mt = MessageTemplate.MatchAll();
@@ -53,6 +64,17 @@ public abstract class PedestrianBehav extends Behaviour {
 	protected Scenario scen;
 	private Agent agt;
 
+	/**
+	 * {@link PedestrianAgent} constructor
+	 * 
+	 * @param args
+	 *            The array must contain an {@link Agent} (owner of the
+	 *            behaviour, usually a {@link PedestrianAgent}), an Environment
+	 *            {@link AID} (initial environment), a {@link Scenario}, a
+	 *            {@link Double} (latitude), a {@link Double} (longitude), a
+	 *            {@link Integer} (distance of vison in tiles) and a
+	 *            {@link Integer} (speed in tiles).
+	 */
 	public PedestrianBehav(Object[] args) {
 		super((Agent) args[0]);
 		agt = (Agent) args[0];
@@ -175,8 +197,26 @@ public abstract class PedestrianBehav extends Behaviour {
 		return false;
 	}
 
+	/**
+	 * Method that must be extended by the actual behaviours. It chooses where
+	 * to move from a {@link Set} of adjacents {@link Point}.
+	 * 
+	 * @param adjacents
+	 *            {@link Set}<{@link Point}>
+	 * @return
+	 * @throws YouAreDeadException
+	 *             When the agent dies
+	 * @throws YouAreSafeException
+	 *             When the agent reaches a safepoint
+	 */
 	protected abstract Point choose(Set<Point> adjacents)
 			throws YouAreDeadException, YouAreSafeException;
 
+	/**
+	 * It's used for setting extra arguments for the choose method.
+	 * 
+	 * @param args
+	 *            {@link Object}[]
+	 */
 	public abstract void chooseArgs(Object[] args);
 }

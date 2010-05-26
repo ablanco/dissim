@@ -16,14 +16,31 @@
 
 package behaviours.people;
 
+import agents.people.PedestrianAgent;
+
+/**
+ * {@link Exception} that represents that the {@link PedestrianAgent} has died.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 public class YouAreDeadException extends Exception {
 
 	private static final long serialVersionUID = 1L;
-	
+
+	/**
+	 * {@link YouAreDeadException} constructor.
+	 */
 	public YouAreDeadException() {
 		super();
 	}
-	
+
+	/**
+	 * {@link YouAreDeadException} constructor.
+	 * 
+	 * @param msg
+	 *            {@link String} Message of the {@link Exception}.
+	 */
 	public YouAreDeadException(String msg) {
 		super(msg);
 	}

@@ -35,6 +35,8 @@ import java.util.ListIterator;
 
 import javax.swing.JPanel;
 
+import agents.EnvironmentAgent;
+
 import osm.Osm;
 import util.Hexagon2D;
 import util.HexagonalGrid;
@@ -43,11 +45,21 @@ import util.Point;
 import util.Snapshot;
 import util.flood.FloodHexagonalGrid;
 
+/**
+ * 2D visor of the simulation. As a {@link JPanel} it can be embedded on others
+ * Swing components.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class HexagonalGridPane extends JPanel {
 
+	/**
+	 * Grids classified by the {@link EnvironmentAgent} that owns them
+	 */
 	private Hashtable<String, HexagonalGrid> grids = new Hashtable<String, HexagonalGrid>();
-	private List<Pedestrian> people;
+	private Hashtable<String, List<Pedestrian>> people = new Hashtable<String, List<Pedestrian>>();
 	private int radius = -1;
 	private int hexWidth;
 	private int hexHeight;
@@ -61,11 +73,21 @@ public class HexagonalGridPane extends JPanel {
 	private int offRow = 0;
 	private boolean newGrid = false;
 
+	/**
+	 * Method to call every time a new Snapshot arrives
+	 * 
+	 * @param snap
+	 *            The {@link Snapshot}
+	 * @param sender
+	 *            Usually an {@link EnvironmentAgent} {@link AID}
+	 * @param dim
+	 *            {@link Dimension}
+	 */
 	public void updateGrid(Snapshot snap, AID sender, Dimension dim) {
 		if (!grids.containsKey(sender.getName()))
 			newGrid = true;
 		grids.put(sender.getName(), snap.getGrid());
-		people = snap.getPeople();
+		people.put(sender.getName(), snap.getPeople());
 
 		HexagonalGrid grid = snap.getGrid();
 
@@ -131,12 +153,12 @@ public class HexagonalGridPane extends JPanel {
 		repaint();
 	}
 
+	/**
+	 * It paints the simulation
+	 */
 	@Override
 	public void paint(Graphics g) {
 		if (grids.size() > 0) {
-			if (people == null)
-				people = new ArrayList<Pedestrian>(1);
-
 			Graphics2D g2 = (Graphics2D) g;
 			g2.clearRect(0, 0, size.width, size.height);
 
@@ -160,7 +182,12 @@ public class HexagonalGridPane extends JPanel {
 				inc = 256.0 / ((double) diff);
 
 			try {
-				for (HexagonalGrid grid : grids.values()) {
+				for (String env : grids.keySet()) {
+					HexagonalGrid grid = grids.get(env);
+					List<Pedestrian> gridPeople = people.get(env);
+					if (gridPeople == null)
+						gridPeople = new ArrayList<Pedestrian>(0);
+
 					int endX = grid.getOffCol() + grid.getColumns();
 					int endY = grid.getOffRow() + grid.getRows();
 					for (int i = grid.getOffCol(); i < endX; i++) {
@@ -188,9 +215,8 @@ public class HexagonalGridPane extends JPanel {
 								// Pintar agua
 								FloodHexagonalGrid fgrid = (FloodHexagonalGrid) grid;
 								int water = fgrid.getWaterValue(i, j);
-								if (water > 0) {
+								if (water > 0)
 									g2.setColor(new Color(0, 0, color));
-								}
 							}
 							g2.fillPolygon(hex);
 
@@ -199,8 +225,8 @@ public class HexagonalGridPane extends JPanel {
 							if (Osm.getGenericType(grid.getStreetValue(i, j)) == Osm.Roads) {
 								g2.setColor(Color.YELLOW);
 								g2.drawPolygon(hex);
-							} else if (Osm
-									.getGenericType(grid.getStreetValue(i, j)) == Osm.SafePoint) {
+							} else if (Osm.getGenericType(grid.getStreetValue(
+									i, j)) == Osm.SafePoint) {
 								g2.setColor(Color.RED);
 								g2.drawPolygon(hex);
 							}
@@ -209,7 +235,8 @@ public class HexagonalGridPane extends JPanel {
 							Point pos = new Point(i, j);
 							boolean person = false;
 							int status = Pedestrian.HEALTHY;
-							ListIterator<Pedestrian> it = people.listIterator();
+							ListIterator<Pedestrian> it = gridPeople
+									.listIterator();
 							while (it.hasNext()) {
 								Pedestrian p = it.next();
 								// Miramos si hay alguien en esta casilla

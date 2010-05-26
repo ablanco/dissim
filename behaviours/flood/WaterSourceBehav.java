@@ -16,6 +16,8 @@
 
 package behaviours.flood;
 
+import agents.EnvironmentAgent;
+import agents.flood.WaterSourceAgent;
 import util.AgentHelper;
 import util.jcoord.LatLng;
 import jade.core.AID;
@@ -23,6 +25,12 @@ import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 
+/**
+ * {@link Behaviour} that sends water to a {@link EnvironmentAgent}
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class WaterSourceBehav extends Behaviour {
 
@@ -31,6 +39,15 @@ public class WaterSourceBehav extends Behaviour {
 	private AID envAID;
 	private Agent agt;
 
+	/**
+	 * {@link WaterSourceBehav} constructor
+	 * 
+	 * @param args
+	 *            The array must contain an {@link Agent} (owner of this
+	 *            behaviour, usually a {@link WaterSourceAgent}), an Evironment
+	 *            {@link AID}, a {@link LatLng} and a {@link Short} (water
+	 *            quantity).
+	 */
 	public WaterSourceBehav(Object[] args) {
 		super((Agent) args[0]);
 		agt = (Agent) args[0];

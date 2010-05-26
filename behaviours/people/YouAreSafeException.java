@@ -18,22 +18,51 @@ package behaviours.people;
 
 import util.Point;
 
+/**
+ * {@link Exception} that represents that the {@link PedestrianBehav} has
+ * reached a safepoint.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 public class YouAreSafeException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Safepoint reached
+	 */
 	private Point position;
 
+	/**
+	 * {@link YouAreSafeException} constructor
+	 * 
+	 * @param position
+	 *            {@link Point} Safepoint reached
+	 */
 	public YouAreSafeException(Point position) {
 		super();
 		this.position = position;
 	}
 
+	/**
+	 * {@link YouAreSafeException} constructor
+	 * 
+	 * @param position
+	 *            {@link Point} Safepoint reached
+	 * @param msg
+	 *            {@link String} Message of the {@link Exception}
+	 */
 	public YouAreSafeException(Point position, String msg) {
 		super(msg);
 		this.position = position;
 	}
 
+	/**
+	 * Returns the safepoint reached
+	 * 
+	 * @return {@link Point}
+	 */
 	public Point getPosition() {
 		return position;
 	}

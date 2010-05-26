@@ -16,6 +16,10 @@
 
 package behaviours.people.flood;
 
+import jade.core.AID;
+import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
+
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -25,20 +29,55 @@ import java.util.Set;
 import osm.Osm;
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
+import agents.people.PedestrianAgent;
 import behaviours.people.PedestrianBehav;
 import behaviours.people.PedestrianUtils;
 import behaviours.people.YouAreDeadException;
 import behaviours.people.YouAreSafeException;
 
+/**
+ * {@link Behaviour} that extends {@link PedestrianBehav} and chooses the
+ * {@link Point} from adjacents that is some kind of road/street, is high and is
+ * far from water.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 
+	/**
+	 * Score of the adjacents {@link Point}s
+	 */
 	private Hashtable<String, Integer> scores;
 
+	/**
+	 * {@link HighFarStreetPedestrianBehav} constructor
+	 * 
+	 * @param args
+	 *            The array must contain an {@link Agent} (owner of the
+	 *            behaviour, usually a {@link PedestrianAgent}), an Environment
+	 *            {@link AID} (initial environment), a {@link Scenario}, a
+	 *            {@link Double} (latitude), a {@link Double} (longitude), a
+	 *            {@link Integer} (distance of vison in tiles) and a
+	 *            {@link Integer} (speed in tiles).
+	 */
 	public HighFarStreetPedestrianBehav(Object[] args) {
 		super(args);
 	}
 
+	/**
+	 * It chooses where to move from a {@link Set} of adjacents {@link Point}.
+	 * 
+	 * @param adjacents
+	 *            {@link Set}<{@link Point}>
+	 * @return
+	 * @throws YouAreDeadException
+	 *             When the agent dies
+	 * @throws YouAreSafeException
+	 *             When the agent reaches a safepoint
+	 */
 	@Override
 	protected Point choose(Set<Point> adjacents) throws YouAreDeadException,
 			YouAreSafeException {
@@ -117,6 +156,14 @@ public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 		return getBest(adjacents, dry, position, s);
 	}
 
+	/**
+	 * Increase the score of a {@link Point}
+	 * 
+	 * @param key
+	 *            {@link String} representation of the {@link Point}
+	 * @param points
+	 *            Score to add
+	 */
 	private void score(String key, int points) {
 		Integer prev = scores.get(key);
 		if (prev != null)
@@ -124,6 +171,20 @@ public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 		scores.put(key, new Integer(points));
 	}
 
+	/**
+	 * Returns the best accessible {@link Point}, if there isn't one returns
+	 * null.
+	 * 
+	 * @param adjacents
+	 *            {@link Set}<{@link Point}>
+	 * @param dry
+	 *            {@link Set}<{@link Point}>
+	 * @param position
+	 *            {@link Point}
+	 * @param speed
+	 *            in tiles
+	 * @return {@link Point}
+	 */
 	private Point getBest(Set<Point> adjacents, Set<Point> dry, Point position,
 			int speed) {
 		Point result = null;
@@ -163,8 +224,15 @@ public class HighFarStreetPedestrianBehav extends PedestrianBehav {
 		return result;
 	}
 
+	/**
+	 * It's used for setting extra arguments for the choose method.
+	 * 
+	 * @param args
+	 *            {@link Object}[]
+	 */
 	@Override
 	public void chooseArgs(Object[] args) {
+		// Empty
 	}
 
 }

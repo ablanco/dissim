@@ -18,6 +18,7 @@ package behaviours.people.flood;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
@@ -33,13 +34,24 @@ import osm.Osm;
 import util.AgentHelper;
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
 import util.jcoord.LatLng;
+import agents.people.PedestrianAgent;
 import behaviours.QueryGridBehav;
 import behaviours.people.PedestrianBehav;
 import behaviours.people.PedestrianUtils;
 import behaviours.people.YouAreDeadException;
 import behaviours.people.YouAreSafeException;
 
+/**
+ * {@link Behaviour} that extends {@link PedestrianBehav} and chooses the
+ * {@link Point} from adjacents that is nearest to a previously known safepoint.
+ * If it isn't accessible then calls the choose method from
+ * {@link SafepointPedestrianBehav}.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
@@ -47,10 +59,32 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 	private SafepointPedestrianBehav fallback;
 	private LinkedList<Point> lastMovements = new LinkedList<Point>();
 
+	/**
+	 * {@link KnownSafepointPedestrianBehav} constructor
+	 * 
+	 * @param args
+	 *            The array must contain an {@link Agent} (owner of the
+	 *            behaviour, usually a {@link PedestrianAgent}), an Environment
+	 *            {@link AID} (initial environment), a {@link Scenario}, a
+	 *            {@link Double} (latitude), a {@link Double} (longitude), a
+	 *            {@link Integer} (distance of vison in tiles) and a
+	 *            {@link Integer} (speed in tiles).
+	 */
 	public KnownSafepointPedestrianBehav(Object[] args) {
 		super(args);
 	}
 
+	/**
+	 * It chooses where to move from a {@link Set} of adjacents {@link Point}.
+	 * 
+	 * @param adjacents
+	 *            {@link Set}<{@link Point}>
+	 * @return
+	 * @throws YouAreDeadException
+	 *             When the agent dies
+	 * @throws YouAreSafeException
+	 *             When the agent reaches a safepoint
+	 */
 	@Override
 	protected Point choose(Set<Point> adjacents) throws YouAreDeadException,
 			YouAreSafeException {
@@ -194,7 +228,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 	 * Returns the score of the tile
 	 * 
 	 * @param p
-	 *            Point to score
+	 *            {@link Point} to score
 	 * @param distancePosition
 	 *            Distance from the position of the agent to the nearest
 	 *            objective (reference)
@@ -234,6 +268,10 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		return (int) (obj + wat + elev - penal);
 	}
 
+	/**
+	 * The array must contain a {@link Set}<{@link LatLng}> with the
+	 * geographical coordinates of the previously known safepoints.
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void chooseArgs(Object[] args) {
@@ -243,19 +281,51 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		myAgent.addBehaviour(new GeoToPosBehav(myAgent, geoObj));
 	}
 
+	/**
+	 * Sets the objectives as a set of grid coordinates of the previously known
+	 * safepoints.
+	 * 
+	 * @param posObj
+	 *            {@link Set}<{@link Point}>
+	 * @param behav
+	 *            {@link GeoToPosBehav}
+	 */
 	protected void setPosObjective(Set<Point> posObj, GeoToPosBehav behav) {
 		objectives = posObj;
 		myAgent.removeBehaviour(behav);
 	}
 
+	/**
+	 * {@link Behaviour} that converts a {@link Set} of geographical coordinates
+	 * on a {@link Set} of grid coordinates.
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 * 
+	 */
 	protected class GeoToPosBehav extends CyclicBehaviour {
 
+		/**
+		 * {@link Set}<{@link Point}> with the grid coordinates
+		 */
 		private Set<Point> posObj;
 		private int step = 0;
+		/**
+		 * {@link Iterator}<{@link LatLng}> of the geographical coordinates to
+		 * convert
+		 */
 		private Iterator<LatLng> it;
 		private MessageTemplate mt;
 		private DFAgentDescription[] envs = null;
 
+		/**
+		 * {@link GeoToPosBehav} constructor
+		 * 
+		 * @param agt
+		 *            Usually a {@link PedestrianAgent}
+		 * @param geoObj
+		 *            {@link Set}<{@link LatLng}> of geographical coordinates to
+		 *            convert into grid coordinates.
+		 */
 		public GeoToPosBehav(Agent agt, Set<LatLng> geoObj) {
 			super(agt);
 			posObj = new HashSet<Point>(geoObj.size());

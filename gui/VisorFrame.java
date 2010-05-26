@@ -26,15 +26,31 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import agents.EnvironmentAgent;
+import agents.UpdateAgent;
+
 import util.Snapshot;
 import util.Updateable;
 
+/**
+ * Visor in 2D of the simulation, embedded in a window. It should be used
+ * through an {@link UpdateAgent}.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class VisorFrame extends JFrame implements Updateable {
 
+	/**
+	 * Actual visor
+	 */
 	private HexagonalGridPane pane = null;
 	private JLabel gridLbl = new JLabel();
 
+	/**
+	 * {@link VisorFrame} constructor
+	 */
 	public VisorFrame() {
 		setSize(new Dimension(800, 600));
 		Container c = getContentPane();
@@ -56,6 +72,10 @@ public class VisorFrame extends JFrame implements Updateable {
 		this.dispose();
 	}
 
+	/**
+	 * This method is usually called by an {@link UpdateAgent} every time it
+	 * receives a new {@link Snapshot} from {@link EnvironmentAgent}.
+	 */
 	@Override
 	public void update(Object obj, AID sender) throws IllegalArgumentException {
 		if (!(obj instanceof Snapshot))

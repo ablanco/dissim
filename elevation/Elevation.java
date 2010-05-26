@@ -34,27 +34,38 @@ import util.jcoord.LatLng;
  */
 
 /**
- * This is a cache for elevations, for the performance yo only need to download, @see
- * ElevationWs one time the elevation and them use this cache
+ * Utilities to obtain the elevation data for a {@link HexagonalGrid}, in the
+ * form of static methods. It queries a DataBase for the data, and if it doesn't
+ * find it there the uses a webservice to obatin it, and updates the DataBase.
+ * 
+ * @see ElevationWS
  * 
  * @author Manuel Gomar, Alejandro Blanco
  */
 public class Elevation {
 
+	private Elevation() {
+		// No instanciable
+	}
+
 	/**
-	 * Interfaz for the database
+	 * Method that obtains the elevation data for all the {@link Point} in the
+	 * {@link HexagonalGrid}. It uses JDBC for the DataBase connection.
 	 * 
 	 * @param grid
-	 *            scenario
+	 *            {@link HexagonalGrid} to obtain the elevation data for
 	 * @param server
-	 *            db server
+	 *            Url of the DataBase server
 	 * @param port
-	 *            port for db
+	 *            DataBase port
 	 * @param db
-	 *            db path
+	 *            Name of the DataBase
 	 * @param user
+	 *            DataBase user
 	 * @param pass
+	 *            DataBase password of the user
 	 * @param driver
+	 *            JDBC driver to use
 	 */
 	public static void getElevations(HexagonalGrid grid, String server,
 			int port, String db, String user, String pass, String driver) {
@@ -140,8 +151,11 @@ public class Elevation {
 	 * coordinates
 	 * 
 	 * @param coord
+	 *            Position
 	 * @param ilat
+	 *            Range on latitude
 	 * @param ilng
+	 *            Range on longitude
 	 * @return
 	 */
 	private static PreparedStatement getNearPoints(Connection con,
@@ -177,11 +191,11 @@ public class Elevation {
 	 * database
 	 * 
 	 * @param con
-	 *            conexion to the db
+	 *            Connection to the DataBase
 	 * @param coord
-	 *            of the terrain
+	 *            Coordinates of the point to insert
 	 * @param elev
-	 *            of the terrain
+	 *            Elevation of the point
 	 */
 	private static void insertNewElevation(Connection con, LatLng coord,
 			double elev) {
@@ -200,10 +214,15 @@ public class Elevation {
 	 * Returns a connection with the server
 	 * 
 	 * @param driver
+	 *            Driver of the DataBase
 	 * @param server
+	 *            Url of the DataBase server
 	 * @param port
+	 *            Port of the DataBase server
 	 * @param user
+	 *            User of the DataBase
 	 * @param pass
+	 *            Password of the user
 	 * @return
 	 */
 	private static Connection getConnection(String driver, String server,

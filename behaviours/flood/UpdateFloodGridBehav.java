@@ -32,16 +32,34 @@ import util.AgentHelper;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.flood.FloodScenario;
+import agents.EnvironmentAgent;
 import behaviours.InterGridBehav;
 
+/**
+ * {@link Behaviour} that moves the water around the simulation area.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class UpdateFloodGridBehav extends Behaviour {
 
 	private FloodHexagonalGrid grid;
 	private FloodScenario scen;
+	/**
+	 * Contains the {@link EnvironmentAgent}'s {@link AID}
+	 */
 	private Map<String, Object> envs = new Hashtable<String, Object>();
 	private Agent agt;
 
+	/**
+	 * {@link UpdateFloodGridBehav} constructor
+	 * 
+	 * @param args
+	 *            The array must contain an {@link Agent} (owner of this
+	 *            behaviour, usually a {@link EnvironmentAgent}), a
+	 *            {@link FloodScenario} and a {@link FloodHexagonalGrid}.
+	 */
 	public UpdateFloodGridBehav(Object[] args) {
 		// Agent a, FloodScenario scen, FloodHexagonalGrid grid
 		super((Agent) args[0]);
@@ -118,7 +136,7 @@ public class UpdateFloodGridBehav extends Behaviour {
 	}
 
 	/**
-	 * Decrease the water level of a tile. If the tile is part of other
+	 * Decreases the water level of a tile. If the tile is part of other
 	 * enviroment it does nothing.
 	 * 
 	 * @param col
@@ -141,7 +159,7 @@ public class UpdateFloodGridBehav extends Behaviour {
 	}
 
 	/**
-	 * Increase the water level of a tile. If the tile is part of other
+	 * Increases the water level of a tile. If the tile is part of other
 	 * enviroment, then it tells that enviroment to update the tile.
 	 * 
 	 * @param col
