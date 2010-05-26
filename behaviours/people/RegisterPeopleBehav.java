@@ -18,6 +18,7 @@ package behaviours.people;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
@@ -30,14 +31,36 @@ import util.AgentHelper;
 import util.Pedestrian;
 import util.Point;
 import util.Scenario;
+import agents.EnvironmentAgent;
+import agents.people.PedestrianAgent;
 import behaviours.InterGridBehav;
 
+/**
+ * {@link Behaviour} to keep tracking the {@link PedestrianAgent}
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class RegisterPeopleBehav extends CyclicBehaviour {
 
+	/**
+	 * Pedestrians registered. Key: Identifier. Value: {@link Pedestrian}
+	 */
 	private Map<String, Pedestrian> people;
 	private Scenario scen;
 
+	/**
+	 * {@link RegisterPeopleBehav} constructor
+	 * 
+	 * @param agt
+	 *            Usually an {@link EnvironmentAgent}
+	 * @param scen
+	 *            {@link Scenario}
+	 * @param people
+	 *            {@link Map}<{@link String},{@link Pedestrian}> Pedestrians of
+	 *            the {@link EnvironmentAgent}
+	 */
 	public RegisterPeopleBehav(Agent agt, Scenario scen,
 			Map<String, Pedestrian> people) {
 		super(agt);
@@ -115,6 +138,15 @@ public class RegisterPeopleBehav extends CyclicBehaviour {
 		}
 	}
 
+	/**
+	 * Returns the number of the {@link EnvironmentAgent} that owns the
+	 * {@link Point}. -1 if it's the same {@link EnvironmentAgent} that owns
+	 * this {@link Behaviour}.
+	 * 
+	 * @param p
+	 *            {@link Point}
+	 * @return
+	 */
 	private int isOutsideArea(Point p) {
 		int env = scen.getEnviromentByPosition(p.getCol(), p.getRow());
 		String name = myAgent.getLocalName();

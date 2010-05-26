@@ -16,24 +16,59 @@
 
 package behaviours.people.flood;
 
+import jade.core.AID;
+import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
+
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
 import util.HexagonalGrid;
 import util.Point;
+import util.Scenario;
+import agents.people.PedestrianAgent;
 import behaviours.people.PedestrianBehav;
 import behaviours.people.PedestrianUtils;
 import behaviours.people.YouAreDeadException;
 import behaviours.people.YouAreSafeException;
 
+/**
+ * {@link Behaviour} that extends {@link PedestrianBehav} and chooses the
+ * {@link Point} from adjacents that is farthest from water.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class FarFromWaterPedestrianBehav extends PedestrianBehav {
 
+	/**
+	 * {@link FarFromWaterPedestrianBehav} constructor
+	 * 
+	 * @param args
+	 *            The array must contain an {@link Agent} (owner of the
+	 *            behaviour, usually a {@link PedestrianAgent}), an Environment
+	 *            {@link AID} (initial environment), a {@link Scenario}, a
+	 *            {@link Double} (latitude), a {@link Double} (longitude), a
+	 *            {@link Integer} (distance of vison in tiles) and a
+	 *            {@link Integer} (speed in tiles).
+	 */
 	public FarFromWaterPedestrianBehav(Object[] args) {
 		super(args);
 	}
 
+	/**
+	 * It chooses where to move from a {@link Set} of adjacents {@link Point}.
+	 * 
+	 * @param adjacents
+	 *            {@link Set}<{@link Point}>
+	 * @return
+	 * @throws YouAreDeadException
+	 *             When the agent dies
+	 * @throws YouAreSafeException
+	 *             When the agent reaches a safepoint
+	 */
 	@Override
 	protected Point choose(Set<Point> adjacents) throws YouAreDeadException,
 			YouAreSafeException {
@@ -84,8 +119,15 @@ public class FarFromWaterPedestrianBehav extends PedestrianBehav {
 		return result;
 	}
 
+	/**
+	 * It's used for setting extra arguments for the choose method.
+	 * 
+	 * @param args
+	 *            {@link Object}[]
+	 */
 	@Override
 	public void chooseArgs(Object[] args) {
+		// Empty
 	}
 
 }

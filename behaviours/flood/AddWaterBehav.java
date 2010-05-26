@@ -17,6 +17,7 @@
 package behaviours.flood;
 
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -25,16 +26,38 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 
+import agents.EnvironmentAgent;
+import agents.flood.WaterSourceAgent;
+
+import util.HexagonalGrid;
 import util.Point;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
 
+/**
+ * {@link Behaviour} that receives water from {@link WaterSourceAgent} and adds
+ * it to a {@link HexagonalGrid}.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 @SuppressWarnings("serial")
 public class AddWaterBehav extends CyclicBehaviour {
 
 	private FloodHexagonalGrid grid;
-	private Map<String, int[]> indexes = new Hashtable<String, int[]>();
+	/**
+	 * Grid coordinates of the {@link WaterSourceAgent}
+	 */
+	private Map<String, int[]> tiles = new Hashtable<String, int[]>();
 
+	/**
+	 * {@link AddWaterBehav} constructor
+	 * 
+	 * @param agt
+	 *            Usually a {@link EnvironmentAgent}
+	 * @param grid
+	 *            {@link HexagonalGrid}
+	 */
 	public AddWaterBehav(Agent agt, FloodHexagonalGrid grid) {
 		super(agt);
 		this.grid = grid;
@@ -55,11 +78,11 @@ public class AddWaterBehav extends CyclicBehaviour {
 
 			// Calcular posición
 			LatLng coord = new LatLng(lat, lng);
-			int[] gridCoord = indexes.get(coord.toString());
+			int[] gridCoord = tiles.get(coord.toString());
 			if (gridCoord == null) {
 				Point p = grid.coordToTile(coord);
 				gridCoord = new int[] { p.getCol(), p.getRow() };
-				indexes.put(coord.toString(), gridCoord);
+				tiles.put(coord.toString(), gridCoord);
 			}
 			int x = gridCoord[0];
 			int y = gridCoord[1];
