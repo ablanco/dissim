@@ -25,6 +25,7 @@ import java.util.TreeSet;
 
 import util.Point;
 
+
 public class ModifiedTilesSet implements Set<Point>, Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -42,6 +43,7 @@ public class ModifiedTilesSet implements Set<Point>, Serializable {
 		initialCapacity = x * y;
 		newData();
 	}
+
 
 	private void newData() {
 		data = new ArrayList<Point>(initialCapacity);

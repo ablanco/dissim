@@ -18,6 +18,15 @@ package util.java;
 
 import java.io.File;
 
+/**
+ * For the simulation sometimes we need some information to be stored but with
+ * no need of saving, like OSM files, because they may be updated, thats why we
+ * stored in a temporary file, so can be downloaded a new version without having
+ * all versions stored
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class TempFiles {
 
 	/**
@@ -28,7 +37,7 @@ public class TempFiles {
 	/**
 	 * Gets machine Temp Directory
 	 * 
-	 * @return
+	 * @return temp Path
 	 */
 	public static String getTempPath() {
 		String path = null;
@@ -52,7 +61,7 @@ public class TempFiles {
 	/**
 	 * Gets/create Default temp directory
 	 * 
-	 * @return
+	 * @return temp File
 	 */
 	public static File getDefaultTempDir() {
 		String path = getTempPath();

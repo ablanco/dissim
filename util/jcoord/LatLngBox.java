@@ -22,18 +22,53 @@ import osm.OsmEdge;
 import osm.OsmNode;
 import osm.OsmWay;
 
+/**
+ * Scenarios and items must be geolocated to be a real simulation in real
+ * places, so we need some box for geolocalize big things, like scenarios,
+ * roads, seas, rivers ...
+ * 
+ * @author Manuel Gomar Acosta
+ * 
+ */
 public class LatLngBox implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Position relative to the box, is In
+	 */
 	public static final int IN = 0;
+	/**
+	 * Position relative to the box, is Above
+	 */
 	public static final int ABOVE = 1;
+	/**
+	 * Position relative to the box, is Above Right
+	 */
 	public static final int ABOVE_RIGHT = 2;
+	/**
+	 * Position relative to the box, is Right
+	 */
 	public static final int RIGHT = 3;
+	/**
+	 * Position relative to the box, is Below Right
+	 */
 	public static final int BELOW_RIGHT = 4;
+	/**
+	 * Position relative to the box, is Below
+	 */
 	public static final int BELOW = 5;
+	/**
+	 * Position relative to the box, is Below Left
+	 */
 	public static final int BELOW_LEFT = 6;
+	/**
+	 * Position relative to the box, is Left
+	 */
 	public static final int LEFT = 7;
+	/**
+	 * Position relative to the box, is Above Left
+	 */
 	public static final int ABOVE_LEFT = 8;
 
 	/**
@@ -50,9 +85,22 @@ public class LatLngBox implements Serializable {
 
 	private int tileSize;
 
+	/**
+	 * New empty Box
+	 */
 	public LatLngBox() {
 	}
 
+	/**
+	 * New box, initializes with
+	 * 
+	 * @param NW
+	 *            Upper Left corner
+	 * @param SE
+	 *            Lower Right corner
+	 * @param tileSize
+	 *            size of the tile
+	 */
 	public LatLngBox(LatLng NW, LatLng SE, int tileSize) {
 		nW = new LatLng(NW.getLat(), NW.getLng());
 		sE = new LatLng(SE.getLat(), SE.getLng());
@@ -75,6 +123,11 @@ public class LatLngBox implements Serializable {
 
 	}
 
+	/**
+	 * Get the tile size of the box
+	 * 
+	 * @return tile size
+	 */
 	public int getTileSize() {
 		return tileSize;
 	}
@@ -84,7 +137,8 @@ public class LatLngBox implements Serializable {
 	 * BELOW, BELOW_LEFT, LEFT, ABOVE_LEFT
 	 * 
 	 * @param n
-	 * @return
+	 *            OsmNode we want to know which is its position
+	 * @return position relative to us
 	 */
 	public int absoluteBoxPosition(OsmNode n) {
 		return absoluteBoxPosition(n.getCoord());
@@ -95,7 +149,8 @@ public class LatLngBox implements Serializable {
 	 * BELOW_LEFT, LEFT, ABOVE_LEFT
 	 * 
 	 * @param c
-	 * @return
+	 *            Coordinate we want to know which is its position
+	 * @return position relative to us
 	 */
 	public int absoluteBoxPosition(LatLng c) {
 		if (c.getLat() > nW.getLat()) {
@@ -127,23 +182,54 @@ public class LatLngBox implements Serializable {
 		}
 	}
 
+	/**
+	 * Returns true if a coordinate a is near coordinate b attending to box
+	 * parameters, Math.abs(a.getLat() - b.getLat()) < ilat) &&
+	 * (Math.abs(a.getLng() - b.getLng()) < ilng
+	 * 
+	 * @param a
+	 *            coordinate
+	 * @param b
+	 *            coordinate
+	 * @return true if they are near according to the box parameters.
+	 */
 	public boolean closeTo(LatLng a, LatLng b) {
 		return (Math.abs(a.getLat() - b.getLat()) < ilat)
 				&& (Math.abs(a.getLng() - b.getLng()) < ilng);
 	}
 
+	/**
+	 * Set tile size
+	 * 
+	 * @param tileSize
+	 *            new
+	 */
 	public void setTileSize(int tileSize) {
 		this.tileSize = tileSize;
 	}
 
+	/**
+	 * Gets latitude increment for the box
+	 * 
+	 * @return latitude increment
+	 */
 	public double getIlat() {
 		return ilat;
 	}
 
+	/**
+	 * Gets longitude increment for the box
+	 * 
+	 * @return longitude increment
+	 */
 	public double getIlng() {
 		return ilng;
 	}
 
+	/**
+	 * Get important info from the box
+	 * @return info
+	 */
 	public String getInf() {
 		// return
 		// "Nw: "+nW.getLat()+","+nW.getLng()+", tam:("+cols+","+rows+") offset:("+offCol+","+offRow+")";
