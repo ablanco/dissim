@@ -21,8 +21,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 /**
- * Custom date, because GoogleEart, OpenOffice, and Java uses diferents ways to
- * show time, so this is a facade
+ * Custom date, because KML, OpenOffice, and Java uses diferents ways to show
+ * time, so this is a facade
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -31,8 +31,19 @@ public class DateAndTime implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Actual date and time object
+	 */
 	private GregorianCalendar g;
 
+	/**
+	 * Uses {@link GregorianCalendar} constructor
+	 * 
+	 * @param date
+	 *            With format DD/MM/AAAA
+	 * @param hour
+	 *            With format HH:MM:SS
+	 */
 	public DateAndTime(String date, String hour) {
 		String[] d = date.split("/");
 		String[] h = hour.split(":");
@@ -43,7 +54,8 @@ public class DateAndTime implements Serializable {
 	}
 
 	/**
-	 * Uses GregorianCalendar constructor
+	 * Uses {@link GregorianCalendar} constructor
+	 * 
 	 * @param year
 	 * @param month
 	 * @param dayOfMonth
@@ -56,22 +68,24 @@ public class DateAndTime implements Serializable {
 	}
 
 	/**
-	 * Parses a date like (AAAA-MM-DDThh:mm:ss) and call GregorianCalendar constructor
-	 * @param dateAndTime
+	 * Uses {@link GregorianCalendar} constructor
+	 * 
+	 * @param dateTime
+	 *            With format AAAA-MM-DDThh:mm:ss
 	 */
-	public DateAndTime(String dateAndTime) {
+	public DateAndTime(String dateTime) {
 		g = new GregorianCalendar();
-		parseAndSetTime(dateAndTime);
+		parseAndSetTime(dateTime);
 	}
 
 	/**
-	 * Parse the parameter dateTime and change the date and time of object to
-	 * the one parsed. dateTime must have this format: AAAA-MM-DDThh:mm:ss
+	 * Parses the parameter dateTime and change the date and time of the object
+	 * to the one parsed. dateTime must have this format: AAAA-MM-DDThh:mm:ss
 	 * 
 	 * @param dateTime
+	 *            With format AAAA-MM-DDThh:mm:ss
 	 */
 	public void parseAndSetTime(String dateTime) {
-		// dateTime (AAAA-MM-DDThh:mm:ss)
 		String[] data = dateTime.split("T");
 		String[] date = data[0].split("-");
 		String[] hour = data[1].split(":");
@@ -95,10 +109,11 @@ public class DateAndTime implements Serializable {
 	}
 
 	/**
-	 * dateTime must have this format: AAAA-MM-DDThh:mm:ss
+	 * Convert from KML string to Open Office Calc string
 	 * 
 	 * @param dateTime
-	 * @return formato DD/MM/AAAA HH:MM
+	 *            With format AAAA-MM-DDThh:mm:ss
+	 * @return {@link String} with this format: DD/MM/AAAA HH:MM
 	 */
 	public static String toOooDate(String dateTime) {
 		String[] dates = dateTime.split("T");
@@ -110,10 +125,9 @@ public class DateAndTime implements Serializable {
 
 	@Override
 	/**
-	 * Google Earth Style
+	 * String representation of this object with KML format: AAAA-MM-DDThh:mm:ss
 	 */
 	public String toString() {
-		// dateTime (AAAA-MM-DDThh:mm:ss)
 		String month = "";
 		String day = "";
 		String hour = "";

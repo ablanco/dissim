@@ -27,8 +27,8 @@ import util.jcoord.LatLngBox;
 import elevation.Elevation;
 
 /**
- * To simulate the scenario we need to use a discretization of the real world,
- * we decided to use an hexagonal map discretization, this class has method for
+ * To simulate the {@link Scenario} we need to discretize the real world, we
+ * decided to use an hexagonal map discretization, this class has methods for
  * managing easily an hexagonal world
  * 
  * @author Manuel Gomar, Alejandro Blanco
@@ -48,46 +48,76 @@ public class HexagonalGrid implements Serializable {
 	 */
 	protected LatLng SE = null;
 	/**
-	 * Increment in degrees between hexagons
+	 * Increment in latitude in degrees between hexagons
 	 */
 	protected double ilat;
+	/**
+	 * Increment in longitude in degrees between hexagons
+	 */
 	protected double ilng;
 	/**
 	 * Diameter of the circunflex circle of the hexagon in meters
 	 */
 	private int tileSize;
-	/**
-	 * Grid data
-	 */
 	protected int columns;
 	protected int rows;
-	protected int offCol; // Index of the 0,0 tile
+	/**
+	 * Global column of the 0,0 tile
+	 */
+	protected int offCol;
+	/**
+	 * Global row of the 0,0 tile
+	 */
 	protected int offRow;
+	/**
+	 * Terrain data
+	 */
 	protected short[][] gridTerrain;
 	/**
-	 * External border
+	 * North external border
 	 */
 	protected short[] northTerrain;
+	/**
+	 * South external border
+	 */
 	protected short[] southTerrain;
+	/**
+	 * East external border
+	 */
 	protected short[] eastTerrain;
+	/**
+	 * West external border
+	 */
 	protected short[] westTerrain;
 	/**
 	 * Streets data
 	 */
 	protected short[][] gridStreets;
+	/**
+	 * North external border
+	 */
 	private short[] northStreets;
+	/**
+	 * South external border
+	 */
 	private short[] southStreets;
+	/**
+	 * East external border
+	 */
 	private short[] eastStreets;
+	/**
+	 * West external border
+	 */
 	private short[] westStreets;
 	/**
-	 * 1 altitude unit means (1/precision) meters
+	 * 1 elevation unit means (1/precision) meters
 	 */
 	private short precision = -1;
 
 	/**
 	 * New hexagonal grid given Upper Left (NW) and Lower Right (SE) corners of
-	 * the map, offsets if there are more than one environment and tile size for
-	 * the simulation
+	 * the map, offsets distinct from 0 if there are more than one environment
+	 * and tile size for the simulation
 	 * 
 	 * @param NW
 	 *            Upper Left corner
@@ -98,7 +128,7 @@ public class HexagonalGrid implements Serializable {
 	 * @param offRow
 	 *            offset
 	 * @param tileSize
-	 *            size
+	 *            size of hexagons
 	 */
 	public HexagonalGrid(LatLng NW, LatLng SE, int offCol, int offRow,
 			int tileSize) {
@@ -137,16 +167,16 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Estimates aproximate size in tiles from NW to SE, be careful, could give
-	 * negative values
+	 * Estimates aproximate size in tiles from NW to SE, use carefully, could
+	 * returns negative values
 	 * 
 	 * @param NW
 	 *            Upper Left corner
 	 * @param SE
 	 *            Lower Right corner
 	 * @param tileSize
-	 *            size for the tile for the simulation
-	 * @return
+	 *            size of the tile for the simulation
+	 * @return size in tiles of the simulation area
 	 */
 	public static int[] calculateSize(LatLng NW, LatLng SE, int tileSize) {
 		double ts = (double) tileSize;
@@ -157,13 +187,15 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Sets a altitude value for a position in the grid. Also updates the
-	 * surrounding crown. Watch out the offsets
+	 * Sets an elevation value for a position in the grid
 	 * 
 	 * @param col
+	 *            Absolute position column
 	 * @param row
-	 * @param value new terrain 
-	 * @return previous terrain value
+	 *            Absolute position row
+	 * @param value
+	 *            new terrain elevation
+	 * @return previous terrain elevation
 	 */
 	public short setTerrainValue(int col, int row, short value) {
 		col -= offCol;
@@ -189,9 +221,12 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Get terrain value from the grid. Watch out the offsets
+	 * Gets terrain value from the grid
+	 * 
 	 * @param col
+	 *            Absolute position column
 	 * @param row
+	 *            Absolute position row
 	 * @return terrain value
 	 */
 	public short getTerrainValue(int col, int row) {
@@ -213,11 +248,14 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Sets a street value for a position in the grid. Also updates the
-	 * surrounding crown. Watch out the offsets
+	 * Sets a street value for a position in the grid
+	 * 
 	 * @param col
+	 *            Absolute position column
 	 * @param row
-	 * @param value new street value
+	 *            Absolute position row
+	 * @param value
+	 *            new street value
 	 * @return previous street value
 	 */
 	public short setStreetValue(int col, int row, short value) {
@@ -246,8 +284,11 @@ public class HexagonalGrid implements Serializable {
 	/**
 	 * Sets a street value for a position in the grid. Also updates the
 	 * surrounding crown. Watch out the offsets
-	 * @param p point
-	 * @param value new street value
+	 * 
+	 * @param p
+	 *            point
+	 * @param value
+	 *            new street value
 	 * @return previous street value
 	 */
 	public short setStreetValue(Point p, short value) {
@@ -255,7 +296,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Get street value from the grid. Watch out the offsets
+	 * Gets street value from the grid. Watch out the offsets
+	 * 
 	 * @param col
 	 * @param row
 	 * @return street value
@@ -279,8 +321,10 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Get street value from the grid. Watch out the offsets
-	 * @param p point
+	 * Gets street value from the grid
+	 * 
+	 * @param p
+	 *            Absolute {@link Point}
 	 * @return street value
 	 */
 	public short getStreetValue(Point p) {
@@ -288,10 +332,14 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Increase value to the current value point(x,y)
-	 * @param x column
-	 * @param y row
-	 * @param increment for current value
+	 * Increase current terrain elevation of given position
+	 * 
+	 * @param x
+	 *            Absolute position column
+	 * @param y
+	 *            Absolute position row
+	 * @param increment
+	 *            for current value
 	 */
 	public void increaseValue(int x, int y, short increment) {
 		short old = getTerrainValue(x, y);
@@ -299,10 +347,14 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Decrease value to the current value point(x,y)
-	 * @param x column
-	 * @param y row
-	 * @param decrement for current value
+	 * Decrease current terrain elevation of given position
+	 * 
+	 * @param x
+	 *            Absolute position column
+	 * @param y
+	 *            Absolute position row
+	 * @param decrement
+	 *            for current value
 	 * @return previous value
 	 */
 	public short decreaseValue(int x, int y, short decrement) {
@@ -312,17 +364,21 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Gets current terrain value from
-	 * @param x column
-	 * @param y row
-	 * @return terrain value
+	 * Gets current terrain elevation
+	 * 
+	 * @param x
+	 *            Absolute position column
+	 * @param y
+	 *            Absolute position row
+	 * @return terrain elevation
 	 */
 	public short getValue(int x, int y) {
 		return getTerrainValue(x, y);
 	}
 
 	/**
-	 * Get the box of coodinates
+	 * Gets the box of coodinates
+	 * 
 	 * @return box
 	 */
 	public LatLngBox getBox() {
@@ -330,7 +386,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Get the columns size of the grid 
+	 * Gets the number of columns of the grid
+	 * 
 	 * @return columns
 	 */
 	public int getColumns() {
@@ -338,7 +395,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Get the row size of the grid 
+	 * Gets the number of row of the grid
+	 * 
 	 * @return rows
 	 */
 	public int getRows() {
@@ -346,7 +404,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Get the columns offset for the grid
+	 * Gets the columns offset of the grid
+	 * 
 	 * @return offset
 	 */
 	public int getOffCol() {
@@ -354,7 +413,8 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Get the rows offset for the grid
+	 * Gets the rows offset of the grid
+	 * 
 	 * @return offset
 	 */
 	public int getOffRow() {
@@ -362,11 +422,13 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Returns adjacent all indexes  
+	 * Returns the indexes of the adjacent tiles of the given one
 	 * 
-	 * @param col column
-	 * @param row row
-	 * @return adjacent matrix
+	 * @param col
+	 *            Absolute position column
+	 * @param row
+	 *            Absolute position row
+	 * @return adjacents indexes array
 	 */
 	public int[][] getAdjacentsIndexes(int col, int row) {
 		col -= offCol;
@@ -414,11 +476,13 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Returns adjacent all indexes  
+	 * Returns the indexes of the adjacent tiles of the given one
 	 * 
-	 * @param col column
-	 * @param row row
-	 * @return adjacent list
+	 * @param col
+	 *            Absolute position column
+	 * @param row
+	 *            Absolute position row
+	 * @return adjacents indexes list
 	 */
 	public ArrayList<int[]> getAdjacents(int col, int row) {
 		ArrayList<int[]> result = new ArrayList<int[]>(6);
@@ -435,12 +499,11 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Returns a set of adjacents points
+	 * Returns the adjacents {@link Point}s of the given one
 	 * 
 	 * @param p
-	 *            Point
-	 * 
-	 * @return HashSet<Point> adjacents to p
+	 *            Absolute {@link Point}
+	 * @return adjacents {@link Point}s set
 	 */
 	public HashSet<Point> getAdjacents(Point p) {
 		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
@@ -452,22 +515,33 @@ public class HexagonalGrid implements Serializable {
 		return result;
 	}
 
+	/**
+	 * Gets simulation geographical area
+	 * 
+	 * @return simulation geographical area
+	 */
 	public LatLng[] getArea() {
 		return new LatLng[] { NW, SE };
 	}
 
+	/**
+	 * Gets the size of tiles in meters
+	 * 
+	 * @return the size of tiles in meters
+	 */
 	public int getTileSize() {
 		return tileSize;
 	}
 
 	/**
-	 * Convert [x,y] to the corresponding LatLng Coordinate (with altitude)
+	 * Convert grid coordinates to the corresponding geographical coordinates
+	 * (with elevation data)
 	 * 
 	 * @param col
-	 *            lat
+	 *            Aboslute position column
 	 * @param row
-	 *            lng
-	 * @return LatLng
+	 *            Aboslute position row
+	 * @return {@link LatLng} geographical coordinate
 	 */
 	public LatLng tileToCoord(int col, int row) {
 		if (NW == null || SE == null)
@@ -494,18 +568,22 @@ public class HexagonalGrid implements Serializable {
 
 	/**
 	 * Convert a point in the grid into a coordinate in the real world
-	 * @param p grid point
-	 * @return real coordinate
+	 * 
+	 * @param p
+	 *            Abosulte grid {@link Point}
+	 * @return {@link LatLng} geographical coordinate
 	 */
 	public LatLng tileToCoord(Point p) {
 		return tileToCoord(p.getCol(), p.getRow());
 	}
 
 	/**
-	 * Convert from a coordinate to the position in the grid
+	 * Convert geographical coordinates to the corresponding grid coordinates
+	 * (with elevation data)
 	 * 
 	 * @param coord
-	 * @return
+	 *            Geographical coordinate
+	 * @return grid coordinate
 	 */
 	public Point coordToTile(LatLng coord) {
 		if (tileSize < 0)
@@ -538,45 +616,22 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Given an outside coord from the BOX: NW,SE, returns an aproximate Point
-	 * inside the box
-	 * 
-	 * @param coord
-	 * @return
-	 */
-	public Point aproxCoordToTile(LatLng coord) {
-		int[] aprox = calculateSize(NW, coord, tileSize);
-		int x = aprox[0];
-		int y = aprox[1];
-		x += offCol;
-		y += offRow;
-		return new Point(x, y);
-	}
-
-	/**
-	 * Look for differents values of the adjacents values, if different, is
-	 * border.
-	 * 
-	 * @return true is border, false if not
-	 */
-	public boolean isBorderPoint(Point p) {
-		for (int[] a : getAdjacents(p.getCol(), p.getRow())) {
-			if (p.getZ() != getValue(a[0], a[1])) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
 	 * Obtains (or generates a random one) the elevation data for this grid
 	 * 
 	 * @param random
+	 *            Generate random terrain elevation or not
 	 * @param server
+	 *            Url of the DataBase server
 	 * @param port
+	 *            DataBase port
+	 * @param db
+	 *            Name of the DataBase
 	 * @param user
+	 *            DataBase user
 	 * @param pass
+	 *            DataBase password of the user
 	 * @param driver
+	 *            JDBC driver to use
 	 * @throws IllegalStateException
 	 */
 	public void obtainTerrainElevation(boolean random, String server, int port,
@@ -603,16 +658,16 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Sets osmMapinfo into the grid
+	 * Obtains street data from Open Street Maps
 	 */
 	public void obtainStreetInfo() {
 		Osm.setOsmMapInfo(this);
 	}
 
 	/**
-	 * Returns degree increments lat, long
+	 * Returns degree increments in latitude and longitude
 	 * 
-	 * @return
+	 * @return degree increments in latitude and longitude
 	 */
 	public double[] getIncs() {
 		return new double[] { ilat, ilng };
@@ -632,16 +687,18 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Sets precision for units the grid.
-	 * @param precision units
+	 * Sets elevation precision, 1 elevation unit means (1/precision) meters
+	 * 
+	 * @param precision
 	 */
 	public void setPrecision(short precision) {
 		this.precision = precision;
 	}
 
 	/**
-	 * Get precision for the units in the grid
-	 * @return precicios unit
+	 * Gets elevation precision, 1 elevation unit means (1/precision) meters
+	 * 
+	 * @return precision
 	 */
 	public short getPrecision() {
 		return precision;
@@ -650,6 +707,7 @@ public class HexagonalGrid implements Serializable {
 	// STATIC DATA AND METHODS
 
 	// Relative positions from point
+
 	/**
 	 * Environment is positioned left of this
 	 */
@@ -680,7 +738,7 @@ public class HexagonalGrid implements Serializable {
 	 * 
 	 * @param a
 	 * @param b
-	 * @return
+	 * @return adjacent hexagon to a that is in b direction
 	 */
 	public static Point nearestHexagon(Point a, Point b) {
 		if (a.equals(b))
@@ -691,9 +749,12 @@ public class HexagonalGrid implements Serializable {
 	}
 
 	/**
-	 * Returns the move to point b, from point a 
-	 * @param a where we start
-	 * @param b where we want to get
+	 * Returns the move to point b, from point a
+	 * 
+	 * @param a
+	 *            where we start
+	 * @param b
+	 *            where we want to get
 	 * @return nearest point
 	 */
 	public static int whichHexagonalMove(Point a, Point b) {
@@ -768,9 +829,12 @@ public class HexagonalGrid implements Serializable {
 
 	/**
 	 * Returns the adyacent hexagon to a in key direction
-	 * @param a point
-	 * @param key direction
-	 * @return point
+	 * 
+	 * @param a
+	 *            point
+	 * @param key
+	 *            direction
+	 * @return the adyacent hexagon to a in key direction
 	 */
 	public static Point hexagonalMoveTo(Point a, int key) {
 		int col = a.getCol();
@@ -836,11 +900,12 @@ public class HexagonalGrid implements Serializable {
 
 	/**
 	 * Hexagonal distance between two points in a grid
+	 * 
 	 * @param col1
 	 * @param row1
 	 * @param col2
 	 * @param row2
-	 * @return distance
+	 * @return distance in tiles
 	 */
 	public static int distance(int col1, int row1, int col2, int row2) {
 		int dist = 0;
@@ -872,9 +937,10 @@ public class HexagonalGrid implements Serializable {
 
 	/**
 	 * Hexagonal distance between two points in a grid
+	 * 
 	 * @param p1
 	 * @param p2
-	 * @return
+	 * @return distance in tiles
 	 */
 	public static int distance(Point p1, Point p2) {
 		return distance(p1.getCol(), p1.getRow(), p2.getCol(), p2.getRow());

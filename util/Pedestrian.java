@@ -20,6 +20,10 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import behaviours.people.PedestrianBehav;
+
+import agents.people.PedestrianAgent;
+
 import util.jcoord.LatLng;
 
 /**
@@ -53,6 +57,7 @@ public class Pedestrian implements Serializable {
 	private int status = HEALTHY;
 	private String id = null;
 	private Point point = null;
+	// TODO - Q se elija en el .scen
 	private String behaviour = "behaviours.people.flood.KnownSafepointPedestrianBehav";
 	private int vision = -1;
 	private int speed = -1;
@@ -70,7 +75,7 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Creates a pedestrian on a coordinate
+	 * Creates a pedestrian on a geographical coordinate
 	 * 
 	 * @param pos
 	 *            coordinate
@@ -80,7 +85,8 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Creates a pedestrian on a coordinate, also gives an id and status
+	 * Creates a pedestrian on a geographical coordinate, also gives him an id
+	 * and status
 	 * 
 	 * @param pos
 	 *            coordinate
@@ -96,7 +102,7 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Creates a pedestrian into a point, also gives an id and status
+	 * Creates a pedestrian into a point, also gives him an id and status
 	 * 
 	 * @param point
 	 *            tile of a scenario
@@ -112,13 +118,13 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Empty constructor, must be inicializated by sets
+	 * Empty constructor, must be inicializated by setters
 	 */
 	public Pedestrian() {
 	};
 
 	/**
-	 * Get coordinate
+	 * Gets coordinate
 	 * 
 	 * @return coordinate
 	 */
@@ -127,16 +133,16 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Get status
+	 * Gets status
 	 * 
-	 * @return status, see static values of <Pedestrian>
+	 * @return status, see static values of {@link Pedestrian}
 	 */
 	public int getStatus() {
 		return status;
 	}
 
 	/**
-	 * Get id
+	 * Gets id
 	 * 
 	 * @return id
 	 */
@@ -145,7 +151,7 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Get point
+	 * Gets point
 	 * 
 	 * @return point
 	 */
@@ -174,7 +180,7 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Set coordinate
+	 * Sets geographical coordinate
 	 * 
 	 * @param pos
 	 *            coordinate of pedestrian
@@ -184,7 +190,7 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Set status
+	 * Sets status
 	 * 
 	 * @param status
 	 *            of pedestrian
@@ -194,26 +200,27 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Set behaviors so we can choose between them
+	 * Sets behaviour of the {@link PedestrianAgent} associated to this
+	 * {@link Pedestrian}
 	 * 
 	 * @param behaviour
-	 *            we want to manage pedestrian
+	 *            Usually a son of {@link PedestrianBehav}
 	 */
 	public void setBehaviourClass(String behaviour) {
 		this.behaviour = behaviour;
 	}
 
 	/**
-	 * Gets behaviors of pedestrian
+	 * Gets behaviour of pedestrian
 	 * 
-	 * @return behaviors
+	 * @return behaviour
 	 */
 	public String getBehaviourClass() {
 		return behaviour;
 	}
 
 	/**
-	 * Get range of vision, in tiles
+	 * Gets range of vision, in tiles
 	 * 
 	 * @return range vision
 	 */
@@ -222,16 +229,16 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Get speed of pedestrian in tiles
+	 * Gets speed of pedestrian in tiles
 	 * 
-	 * @return
+	 * @return speed of pedestrian in tiles
 	 */
 	public int getSpeed() {
 		return speed;
 	}
 
 	/**
-	 * Get number of clones of this pedestrian
+	 * Gets number of clones of this pedestrian
 	 * 
 	 * @return number of clones
 	 */
@@ -240,7 +247,7 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Initializes some pedestrian parameters to the scenario configuration
+	 * Initializes some pedestrian parameters with the scenario configuration
 	 * values
 	 * 
 	 * @param vision
@@ -248,7 +255,7 @@ public class Pedestrian implements Serializable {
 	 * @param speed
 	 *            in tiles
 	 * @param clones
-	 *            of the same pedestrian
+	 *            of the pedestrian
 	 */
 	public void setScenData(int vision, int speed, int clones) {
 		this.vision = vision;
@@ -257,11 +264,11 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Adds a new objective where the pedestrian would try to get there
+	 * Adds a new objective that the pedestrian will try to reach
 	 * 
 	 * @param coord
-	 *            of the new objective
-	 * @return true if added
+	 *            Geographical coordinate of the new objective
+	 * @return true if the pedestrian did not already contain the objective
 	 */
 	public boolean addObjective(LatLng coord) {
 		if (objectives == null)
@@ -271,16 +278,16 @@ public class Pedestrian implements Serializable {
 	}
 
 	/**
-	 * Get a list of pedestrian objectives
+	 * Gets a set of pedestrian objectives
 	 * 
-	 * @return list of objectives
+	 * @return set of objectives
 	 */
 	public Set<LatLng> getObjectives() {
 		return objectives;
 	}
 
 	/**
-	 * Get args
+	 * Gets the extra arguments for the choose method of {@link PedestrianBehav}
 	 * 
 	 * @return args
 	 */

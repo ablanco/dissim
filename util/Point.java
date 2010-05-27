@@ -18,8 +18,11 @@ package util;
 
 import java.io.Serializable;
 
+import osm.Osm;
+
 /**
- * Point implementation for Hexagonal Grid, contains x, y and altitude
+ * Point implementation for {@link HexagonalGrid}, contains column, row and
+ * elevation
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -30,7 +33,7 @@ public class Point implements Comparable<Point>, Serializable {
 
 	private int col;
 	private int row;
-	private short altitude;
+	private short elevation;
 	/**
 	 * water value
 	 */
@@ -43,30 +46,35 @@ public class Point implements Comparable<Point>, Serializable {
 
 	/**
 	 * New point from parameters
+	 * 
 	 * @param col
 	 * @param row
 	 */
 	public Point(int col, int row) {
 		this(col, row, (short) 0);
 	}
+
 	/**
 	 * New point from parameters
+	 * 
 	 * @param col
 	 * @param row
-	 * @param altitude altitude
+	 * @param elevation
 	 */
 
-	public Point(int col, int row, short altitude) {
+	public Point(int col, int row, short elevation) {
 		this.col = col;
 		this.row = row;
-		this.altitude = altitude;
+		this.elevation = elevation;
 		String s = col + "," + row;
 		hash = s.hashCode();
 	}
 
 	/**
-	 * New Point from array [Col, Row, Altitude]
-	 * @param xyz [Col, Row, Altitude]
+	 * New Point from array [Col, Row, Elevation]
+	 * 
+	 * @param xyz
+	 *            [Col, Row, Elevation]
 	 */
 	public Point(int[] xyz) {
 		this(xyz[0], xyz[1], (short) xyz[2]);
@@ -74,22 +82,27 @@ public class Point implements Comparable<Point>, Serializable {
 
 	/**
 	 * New point from parameters
+	 * 
 	 * @param col
 	 * @param row
-	 * @param altitude
-	 * @param w water value
-	 * @param s street value
+	 * @param elevation
+	 * @param w
+	 *            water value
+	 * @param s
+	 *            street value
 	 */
-	public Point(int col, int row, short altitude, short w, short s) {
-		this(col, row, altitude);
+	public Point(int col, int row, short elevation, short w, short s) {
+		this(col, row, elevation);
 		this.w = w;
 		this.s = s;
 	}
 
 	/**
-	 * Check is p is adyacent
-	 * @param p we want to know if is adyacent to this
-	 * @return true is p is adyacent
+	 * Check if p is adyacent to this {@link Point}
+	 * 
+	 * @param p
+	 *            Other {@link Point}
+	 * @return true is p is adyacent to this {@link Point}
 	 */
 	public boolean isAdyacent(Point p) {
 		return Math.abs(col - p.getCol()) < 2 && Math.abs(row - p.getRow()) < 2
@@ -122,7 +135,7 @@ public class Point implements Comparable<Point>, Serializable {
 
 	@Override
 	public String toString() {
-		return "[(" + col + "," + row + ") " + altitude + "]";
+		return "[(" + col + "," + row + ") " + elevation + "]";
 	}
 
 	@Override
@@ -131,31 +144,35 @@ public class Point implements Comparable<Point>, Serializable {
 	}
 
 	/**
-	 * Get column number
-	 * @return
+	 * Gets column
+	 * 
+	 * @return column
 	 */
 	public int getCol() {
 		return col;
 	}
 
 	/**
-	 * Get row number
-	 * @return
+	 * Gets row
+	 * 
+	 * @return row
 	 */
 	public int getRow() {
 		return row;
 	}
 
 	/**
-	 * Gets altitude of the point
-	 * @return altitude
+	 * Gets elevation of the point
+	 * 
+	 * @return elevation
 	 */
 	public short getZ() {
-		return altitude;
+		return elevation;
 	}
 
 	/**
 	 * Get water value of the point
+	 * 
 	 * @return water value
 	 */
 	public short getW() {
@@ -163,8 +180,9 @@ public class Point implements Comparable<Point>, Serializable {
 	}
 
 	/**
-	 * Get street value of the point <Osm>
-	 * @return
+	 * Get street value of the point as defined on {@link Osm}
+	 * 
+	 * @return street value
 	 */
 	public short getS() {
 		return s;

@@ -38,7 +38,6 @@ import javax.swing.JPanel;
 import agents.EnvironmentAgent;
 
 import osm.Osm;
-import util.Hexagon2D;
 import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Point;

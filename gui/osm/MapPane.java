@@ -1,6 +1,8 @@
 //    Flood and evacuation simulator using multi-agent technology
 
-package gui.Map;
+package gui.osm;
+
+import gui.Hexagon2D;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,7 +19,6 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 
 import osm.Osm;
-import util.Hexagon2D;
 import util.HexagonalGrid;
 
 public class MapPane extends JPanel implements Scrollable {
