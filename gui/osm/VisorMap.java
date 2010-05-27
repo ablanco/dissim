@@ -31,11 +31,18 @@ import util.Snapshot;
 import util.Updateable;
 
 @SuppressWarnings("serial")
+/**
+ * This is a version from VisorFrame for but using of MapPane
+ * @author Manuel Gomar, Alejandro Blanco
+ */
 public class VisorMap extends JFrame implements Updateable {
 
 	private MapPane mapPane = null;
 	private JLabel gridLbl = new JLabel();
 
+	/**
+	 * New Visor
+	 */
 	public VisorMap() {
 		setSize(new Dimension(800, 600));
 		Container c = getContentPane();
