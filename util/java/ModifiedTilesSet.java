@@ -19,32 +19,56 @@ package util.java;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeSet;
 
 import util.Point;
+import util.flood.FloodHexagonalGrid;
+import behaviours.flood.UpdateFloodGridBehav;
 
-
+/**
+ * {@link Set} of {@link Point}s optimized for handling the modified tiles on
+ * {@link FloodHexagonalGrid} by {@link UpdateFloodGridBehav}. It depends on the
+ * parameters of the {@link FloodHexagonalGrid} that use this
+ * {@link ModifiedTilesSet}.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 public class ModifiedTilesSet implements Set<Point>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private int x;
-	private int offX;
-	private int offY;
+	private int columns;
+	private int offCol;
+	private int offRow;
 	private int initialCapacity;
 	private ArrayList<Point> data;
 
-	public ModifiedTilesSet(int x, int y, int offX, int offY) {
-		this.x = x;
-		this.offX = offX;
-		this.offY = offY;
-		initialCapacity = x * y;
+	/**
+	 * {@link ModifiedTilesSet} constructor
+	 * 
+	 * @param columns
+	 *            of the grid
+	 * @param rows
+	 *            of the grid
+	 * @param offCol
+	 *            offset of columns of the grid
+	 * @param offRow
+	 *            offset of rows of the grid
+	 */
+	public ModifiedTilesSet(int columns, int rows, int offCol, int offRow) {
+		this.columns = columns;
+		this.offCol = offCol;
+		this.offRow = offRow;
+		initialCapacity = columns * rows;
 		newData();
 	}
 
-
+	/**
+	 * Drops the data and cleans the set
+	 */
 	private void newData() {
 		data = new ArrayList<Point>(initialCapacity);
 		for (int i = 0; i < initialCapacity; i++) {
@@ -52,12 +76,24 @@ public class ModifiedTilesSet implements Set<Point>, Serializable {
 		}
 	}
 
+	/**
+	 * Return the index on data of the specified {@link Point}
+	 * 
+	 * @param p
+	 * @return
+	 */
 	private int idx(Point p) {
-		return ((p.getRow() + 1 - offY) * x) + (p.getCol() + 1 - offX);
+		return ((p.getRow() + 1 - offRow) * columns)
+				+ (p.getCol() + 1 - offCol);
 	}
 
-	public Set<Point> withoutNulls() {
-		TreeSet<Point> result = new TreeSet<Point>();
+	/**
+	 * Returns a {@link HashSet}<{@link Point}> without null elements
+	 * 
+	 * @return a {@link HashSet}<{@link Point}> without null elements
+	 */
+	public HashSet<Point> withoutNulls() {
+		HashSet<Point> result = new HashSet<Point>();
 		for (Point p : data) {
 			if (p != null)
 				result.add(p);

@@ -18,6 +18,12 @@ package util.jcoord;
 
 import java.util.Comparator;
 
+/**
+ * {@link LatLng} {@link Comparator}
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 public class LatLngComparator implements Comparator<LatLng> {
 
 	@Override

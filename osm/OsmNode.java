@@ -157,7 +157,7 @@ public class OsmNode implements Comparable<OsmNode>, Cloneable {
 	protected OsmNode clone() {
 		OsmNode n = new OsmNode(id);
 		n.setCoord(new LatLng(coord.getLat(), coord.getLng(), coord
-				.getAltitude()));
+				.getElevation()));
 		n.setType(type);
 		for (OsmTag t : tags) {
 			n.addTag(t);

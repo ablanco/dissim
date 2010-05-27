@@ -187,7 +187,7 @@ public class Kpolygon {
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		for (int i = 0; i < f.length; i = i + 2) {
 			Coordinate c = new Coordinate(f[i + 1] * ilng + lng, f[i] * ilat
-					+ lat, centre.getAltitude());
+					+ lat, centre.getElevation());
 			coordinates.add(c);
 		}
 		return coordinates;

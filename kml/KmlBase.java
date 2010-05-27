@@ -201,7 +201,7 @@ public class KmlBase implements Updateable {
 					LatLng c = g.tileToCoord(p.getPoint());
 					// Supongo que la persona tiene 5 metros de altura, para que
 					// se vea bien
-					c.setAltitude(Scenario.innerToDouble(precision, (short) (p
+					c.setElevation(Scenario.innerToDouble(precision, (short) (p
 							.getPoint().getZ())) + 5.0);
 					p.setPos(c);
 				}

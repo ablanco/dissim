@@ -37,11 +37,6 @@ public class UTMRef {
 	private int lngZone;
 
 	/**
-	 * Altitude
-	 */
-	private short altitude;
-
-	/**
 	 * Create a new UTM reference object.
 	 * 
 	 * @param easting
@@ -59,25 +54,6 @@ public class UTMRef {
 		this.northing = northing;
 		this.latZone = latZone;
 		this.lngZone = lngZone;
-	}
-
-	/**
-	 * Create a new UTM reference object.
-	 * 
-	 * @author Manuel Gomar
-	 * @param easting
-	 * @param northing
-	 * @param latZone
-	 * @param lngZone
-	 * @param altitude
-	 */
-	public UTMRef(double easting, double northing, char latZone, int lngZone,
-			short altitude) {
-		this.easting = easting;
-		this.northing = northing;
-		this.latZone = latZone;
-		this.lngZone = lngZone;
-		this.setAltitude(altitude);
 	}
 
 	/**
@@ -254,23 +230,4 @@ public class UTMRef {
 		return lngZone;
 	}
 
-	/**
-	 * Set the altitude
-	 * 
-	 * @author Manuel Gomar
-	 * @param altitude
-	 */
-	public void setAltitude(short altitude) {
-		this.altitude = altitude;
-	}
-
-	/**
-	 * Get the altitude
-	 * 
-	 * @author Manuel Gomar
-	 * @return
-	 */
-	public short getAltitude() {
-		return altitude;
-	}
 }
