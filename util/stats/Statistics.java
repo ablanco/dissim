@@ -31,9 +31,9 @@ import util.Snapshot;
 import util.Updateable;
 
 /**
- * This is for obtaining and storing statics for the disaster, now only collect
- * info of time and pedestrian status, but could be upgraded to collect much
- * more info.
+ * This is for obtaining and storing statistics for the disaster. Collects info
+ * of time and pedestrian status, but it could be upgraded to collect much more
+ * info.
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -47,32 +47,32 @@ public class Statistics implements Updateable {
 	private Agent myAgent = null;
 
 	/**
-	 * Orden de Columnas
+	 * Column order
 	 */
 	private final String[] colums = new String[] { "Current Time", "Alive",
 			"Dead", "Safe" };
 
-	@Override
 	/**
 	 * Close files
 	 */
+	@Override
 	public void finish() {
 		if (csv != null)
 			csv.close();
 	}
 
-	@Override
 	/**
 	 * Agent Type, statistics
 	 */
+	@Override
 	public String getType() {
 		return "statistics";
 	}
 
-	@Override
 	/**
-	 * Create, or replace existing files where to save statistics
+	 * Creates, or replaces existing files where to save statistics
 	 */
+	@Override
 	public void init() {
 		JFileChooser fc = new JFileChooser();
 		int returnVal = fc.showSaveDialog(null);
@@ -96,10 +96,11 @@ public class Statistics implements Updateable {
 		}
 	}
 
-	@Override
 	/**
-	 * Insert a new row for the cvs file containin info statistical info form the simulation step, uses Ooo standart.
+	 * Inserts a new row in the cvs file with the new data of this simulation
+	 * step ({@link Snapshot})
 	 */
+	@Override
 	public void update(Object obj, AID sender) throws IllegalArgumentException {
 		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(
