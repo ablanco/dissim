@@ -30,6 +30,14 @@ import util.Pedestrian;
 import util.Snapshot;
 import util.Updateable;
 
+/**
+ * This is for obtaining and storing statics for the disaster, now only collect
+ * info of time and pedestrian status, but could be upgraded to collect much
+ * more info.
+ * 
+ * @author Manuel Gomar, Alejandro Blanco
+ * 
+ */
 public class Statistics implements Updateable {
 
 	private CsvWriter csv = null;
@@ -45,17 +53,26 @@ public class Statistics implements Updateable {
 			"Dead", "Safe" };
 
 	@Override
+	/**
+	 * Close files
+	 */
 	public void finish() {
 		if (csv != null)
 			csv.close();
 	}
 
 	@Override
+	/**
+	 * Agent Type, statistics
+	 */
 	public String getType() {
 		return "statistics";
 	}
 
 	@Override
+	/**
+	 * Create, or replace existing files where to save statistics
+	 */
 	public void init() {
 		JFileChooser fc = new JFileChooser();
 		int returnVal = fc.showSaveDialog(null);
@@ -80,6 +97,9 @@ public class Statistics implements Updateable {
 	}
 
 	@Override
+	/**
+	 * Insert a new row for the cvs file containin info statistical info form the simulation step, uses Ooo standart.
+	 */
 	public void update(Object obj, AID sender) throws IllegalArgumentException {
 		if (!(obj instanceof Snapshot))
 			throw new IllegalArgumentException(

@@ -267,7 +267,10 @@ public class Osm {
 	 *            {@link HexagonalGrid}
 	 */
 	public static void setOsmMapInfo(HexagonalGrid grid) {
-		OsmMap osmMap = OsmMap.getMap(grid);
+		OsmMap osmMap = null;
+		try{
+			osmMap = OsmMap.getMap(grid);
+		
 		for (OsmRelation r : osmMap.getRelations()) {
 			if (r.getType() > Undefined) {
 				// System.err.println("**Escribiendo Relations " + r);
@@ -292,7 +295,9 @@ public class Osm {
 				setStreetValue(n, grid);
 			}
 		}
-
+		}catch (NullPointerException e) {
+			System.err.println("OSM file corrupted, please delete and download again, usually at /tmp/DisSim");
+		}
 	}
 
 	/**
