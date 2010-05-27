@@ -36,9 +36,21 @@ import util.Point;
  */
 public class PedestrianUtils {
 
+	/**
+	 * North direction
+	 */
 	public static final int NORTH = 0;
+	/**
+	 * South direction
+	 */
 	public static final int SOUTH = 1;
+	/**
+	 * East direction
+	 */
 	public static final int EAST = 2;
+	/**
+	 * West direction
+	 */
 	public static final int WEST = 3;
 	private static final int NUM_DIR = 4;
 

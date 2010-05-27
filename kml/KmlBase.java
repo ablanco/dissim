@@ -55,7 +55,7 @@ import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
  * 
  */
 public class KmlBase implements Updateable {
-	public final static String folderName = "Kml";
+
 	protected Kml kml;
 	protected Folder folder;
 
@@ -275,6 +275,8 @@ public class KmlBase implements Updateable {
 	/**
 	 * New kmz file of the current kml
 	 * 
+	 * @param kml
+	 *            KML object
 	 * @param fileName
 	 */
 	public static void createKmzFile(Kml kml, String fileName) {
@@ -323,6 +325,8 @@ public class KmlBase implements Updateable {
 	/**
 	 * A placemark to geolocate things with
 	 * 
+	 * @param folder
+	 *            {@link Folder}
 	 * @param name
 	 *            of the placemark
 	 * @return New {@link Placemark} to geolocate things with

@@ -332,6 +332,8 @@ public class OsmWay implements Comparable<OsmWay> {
 	/**
 	 * Check if the first node and last node are the same. If true it's a
 	 * polygon, if false, it's just a way
+	 * 
+	 * @return True if it's a polygon, false if it's just a way
 	 */
 	public boolean isClosedLine() {
 		OsmNode a = getNode(0);

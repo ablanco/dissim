@@ -43,10 +43,25 @@ import util.flood.FloodHexagonalGrid;
 @SuppressWarnings("serial")
 public class InterGridBehav extends CyclicBehaviour {
 
+	/**
+	 * The message is water related
+	 */
 	public static final String WATER = "w";
+	/**
+	 * The message is for setting the water level of a tile
+	 */
 	public static final String WATER_SET = "wset";
+	/**
+	 * The message is for increasing the water level of a tile
+	 */
 	public static final String WATER_INCREASE = "winc";
+	/**
+	 * The message is people related
+	 */
 	public static final String PEOPLE = "p";
+	/**
+	 * The message is for setting a pedestrian on a tile
+	 */
 	public static final String PEOPLE_SET = "pset";
 
 	private MessageTemplate mt = MessageTemplate

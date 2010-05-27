@@ -98,6 +98,7 @@ public class DateAndTime implements Serializable {
 	 * Increase the date and time in given minutes
 	 * 
 	 * @param minutes
+	 * @return previous {@link DateAndTime}
 	 */
 	public DateAndTime updateTime(int minutes) {
 		GregorianCalendar previous = (GregorianCalendar) g.clone();

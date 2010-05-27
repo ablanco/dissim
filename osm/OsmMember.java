@@ -58,6 +58,11 @@ public class OsmMember {
 		return way.getWay().isEmpty();
 	}
 
+	/**
+	 * Sets this member's way as the specified one
+	 * 
+	 * @param way
+	 */
 	public void setWay(OsmWay way) {
 		this.way = way;
 	}

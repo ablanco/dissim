@@ -50,7 +50,14 @@ import util.jcoord.LatLng;
 @SuppressWarnings("serial")
 public class AdjacentsGridBehav extends CyclicBehaviour {
 
+	/**
+	 * Means that the specified position on the message is on geographical
+	 * coordinates
+	 */
 	public static final String LAT_LNG = "latlng";
+	/**
+	 * Means that the specified position on the message is on grid coordinates
+	 */
 	public static final String POSITION = "pos";
 	private static final String OTHER_ENV = "other";
 

@@ -18,14 +18,59 @@ import java.io.Serializable;
  */
 public class LatLng implements Comparable<LatLng>, Serializable {
 
+	/**
+	 * Position relative to this coordinate is the same
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
 	public static final int SAME = 0;
-	public static final int ABOVE = 1; // Están repetidos?? en latlngbox
+	/**
+	 * Position relative to this coordinate is above
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
+	public static final int ABOVE = 1;
+	/**
+	 * Position relative to this coordinate is above right
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
 	public static final int ABOVE_RIGHT = 2;
+	/**
+	 * Position relative to this coordinate is right
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
 	public static final int RIGHT = 3;
+	/**
+	 * Position relative to this coordinate is below right
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
 	public static final int BELOW_RIGHT = 4;
+	/**
+	 * Position relative to this coordinate is below
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
 	public static final int BELOW = 5;
+	/**
+	 * Position relative to this coordinate is below left
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
 	public static final int BELOW_LEFT = 6;
+	/**
+	 * Position relative to this coordinate is left
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
 	public static final int LEFT = 7;
+	/**
+	 * Position relative to this coordinate is above left
+	 * 
+	 * @author Alejandro Blanco, Manuel Gomar
+	 */
 	public static final int ABOVE_LEFT = 8;
 
 	private static final long serialVersionUID = 1L;

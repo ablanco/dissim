@@ -32,8 +32,17 @@ import de.micromata.opengis.kml.v_2_2_0.Placemark;
  */
 public class KmlPeople {
 
+	/**
+	 * Means the pedestrian is alive
+	 */
 	public final static String RUNNING = "running";
+	/**
+	 * Means the pedestrian is at a safepoint
+	 */
 	public final static String SAFE = "safe";
+	/**
+	 * Means the pedestrian is dead
+	 */
 	public final static String DEAD = "dead";
 	private Folder container;
 	private Folder folder;

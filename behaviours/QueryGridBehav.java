@@ -38,8 +38,19 @@ import util.jcoord.LatLng;
 @SuppressWarnings("serial")
 public class QueryGridBehav extends CyclicBehaviour {
 
+	/**
+	 * Means the other agent is asking for the elevation of a tile
+	 */
 	public static final String ELEVATION = "elev";
+	/**
+	 * Means the other agent is asking for converting a geographical coordinate
+	 * into a grid coordinate
+	 */
 	public static final String COORD_TO_TILE = "ctt";
+	/**
+	 * Means the other agent is asking for converting a grid coordinate into a
+	 * geographical coordinate
+	 */
 	public static final String TILE_TO_COORD = "ttc";
 
 	private HexagonalGrid grid;
