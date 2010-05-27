@@ -19,10 +19,9 @@ package util.java;
 import java.io.File;
 
 /**
- * For the simulation sometimes we need some information to be stored but with
- * no need of saving, like OSM files, because they may be updated, thats why we
- * stored in a temporary file, so can be downloaded a new version without having
- * all versions stored
+ * For the simulation sometimes we need some information to be stored, but
+ * without permanent saving, like OSM files, so we store them in temporal files.
+ * This class is a helper for doing that.
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -32,12 +31,12 @@ public class TempFiles {
 	/**
 	 * Default Temp Directory
 	 */
-	public static String defaultName = "PFC-Catastrofes";
+	public static String defaultName = "DisSim";
 
 	/**
 	 * Gets machine Temp Directory
 	 * 
-	 * @return temp Path
+	 * @return temp Path of temporal directory
 	 */
 	public static String getTempPath() {
 		String path = null;
@@ -52,16 +51,16 @@ public class TempFiles {
 			f.delete();
 		} catch (Exception e) {
 			System.err
-					.println("No se ha podido crear un fichero en el directorio temporal ");
+					.println("I wasn't able to create a file inside temp directory");
 			e.printStackTrace();
 		}
 		return path;
 	}
 
 	/**
-	 * Gets/create Default temp directory
+	 * Gets/creates Default temp directory
 	 * 
-	 * @return temp File
+	 * @return temp {@link File} (directory)
 	 */
 	public static File getDefaultTempDir() {
 		String path = getTempPath();
