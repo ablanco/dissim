@@ -27,11 +27,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import agents.ClockAgent;
+import agents.EnvironmentAgent;
+
 import util.jcoord.LatLng;
 
 /**
- * This is one of the largest class in dissim, it contains all the info from the
- * simulation area and parameters,
+ * Contains all the information of needed to start a simulation
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -52,11 +54,11 @@ public class Scenario implements Serializable {
 	 */
 	private short precision = 10;
 	/**
-	 * Periodo de actualización de los visores
+	 * Visors update period
 	 */
 	private long updateVisor = 1000L;
 	/**
-	 * Periodo de actualización de los generadores de KML
+	 * KML generators update period
 	 */
 	private long updateKML = 3000L;
 	/**
@@ -72,7 +74,7 @@ public class Scenario implements Serializable {
 	 */
 	private int tileSize = -1;
 	/**
-	 * Number of enviroment agents
+	 * Number of environment agents
 	 */
 	private int numEnv = 1;
 	private ArrayList<LatLng[]> envAreas = null;
@@ -93,26 +95,41 @@ public class Scenario implements Serializable {
 	 * Elevation data base connection information
 	 */
 	private String dbServer = null;
+	/**
+	 * Elevation data base connection information
+	 */
 	private int dbPort = -1;
+	/**
+	 * Elevation data base connection information
+	 */
 	private String dbUser = null;
+	/**
+	 * Elevation data base connection information
+	 */
 	private String dbPass = null;
+	/**
+	 * Elevation data base connection information
+	 */
 	private String dbDriver = null;
+	/**
+	 * Elevation data base connection information
+	 */
 	private String dbDb = null;
 
 	/**
 	 * This class shouldn't be used directly, that's why the constructor is
 	 * protected
 	 */
-
 	protected Scenario() {
 		// Usar clases hijas
 	}
 
 	/**
-	 * Loads a Scenario form a text file and returns an instance
+	 * Loads a {@link Scenario} from a text file and returns an instance
 	 * 
 	 * @param path
-	 * @return
+	 *            Text file
+	 * @return A {@link Scenario} instance
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
@@ -168,11 +185,11 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Decode scenario array info from a string
+	 * Decodes a string and generates an array
 	 * 
 	 * @param s
-	 *            Containing scenario info
-	 * @return parameters
+	 *            With format [a,b,c...]
+	 * @return An array of {@link String}
 	 */
 	protected String[] decodeScenArray(String s) {
 		s = s.substring(1, s.length() - 1);
@@ -204,10 +221,10 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Initializes the scenario form an array of parameters
+	 * Initializes the scenario from the data of a text file
 	 * 
 	 * @param data
-	 *            array of parameters
+	 *            content of the text file
 	 */
 	protected void loadScenarioData(ArrayList<String> data) {
 		LatLng NW = null;
@@ -303,7 +320,7 @@ public class Scenario implements Serializable {
 	 * @param SE
 	 *            Lower right corner
 	 * @param tileSize
-	 *            size of the tile terrain
+	 *            size of hexagons
 	 */
 	public void setGeoData(LatLng NW, LatLng SE, int tileSize) {
 		globalNW = NW;
@@ -312,16 +329,17 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Get upper left and lower right coordinate corners of the simulation area
+	 * Gets upper left and lower right coordinates corners of the simulation
+	 * area
 	 * 
-	 * @return
+	 * @return coordinates of simulation area
 	 */
 	public LatLng[] getSimulationArea() {
 		return new LatLng[] { globalNW, globalSE };
 	}
 
 	/**
-	 * Set a description to describe the scenario
+	 * Sets a description of the scenario
 	 * 
 	 * @param description
 	 */
@@ -332,24 +350,24 @@ public class Scenario implements Serializable {
 	/**
 	 * Gets description
 	 * 
-	 * @return
+	 * @return description
 	 */
 	public String getDescription() {
 		return description;
 	}
 
 	/**
-	 * check if scenario have all the necessary (minumun) values correctly
+	 * Checks if {@link Scenario} have all the mandatory values correctly
 	 * configured to run a simulation
 	 * 
-	 * @return true if is complete
+	 * @return true if it's complete
 	 */
 	public boolean isComplete() {
 		return complete;
 	}
 
 	/**
-	 * Sets complete a true if globalNW or globalSe or simTime are not null
+	 * Sets this {@link Scenario} as complete
 	 * 
 	 * @throws IllegalStateException
 	 *             if globalNW or globalSe or simTime are null
@@ -373,7 +391,8 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Sets precision in the discretization of values
+	 * Sets precision in the discretization of elevation values, 1 elevation
+	 * unit means (1/precision) meters
 	 * 
 	 * @param precision
 	 */
@@ -382,16 +401,17 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Gets scenario precision in data
+	 * Gets scenario precision in elevation data, 1 elevation unit means
+	 * (1/precision) meters
 	 * 
-	 * @return
+	 * @return elevation precision
 	 */
 	public short getPrecision() {
 		return precision;
 	}
 
 	/**
-	 * Convert double units to short applying precision
+	 * Converts double to short applying precision
 	 * 
 	 * @param d
 	 *            unit to convert
@@ -402,7 +422,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Convert double units to short applying precision
+	 * Converts double to short applying precision
 	 * 
 	 * @param precision
 	 *            of the metric
@@ -415,7 +435,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Convert short to double unapplying precision
+	 * Converts short to double applying precision
 	 * 
 	 * @param s
 	 *            value
@@ -426,7 +446,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Convert short yo double unapplying precision
+	 * Converts short to double applying precision
 	 * 
 	 * @param precision
 	 *            units
@@ -439,7 +459,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Set name for the scenario
+	 * Sets name for the scenario
 	 * 
 	 * @param name
 	 */
@@ -450,62 +470,61 @@ public class Scenario implements Serializable {
 	/**
 	 * Gets scenario name
 	 * 
-	 * @return
+	 * @return name
 	 */
 	public String getName() {
 		return name;
 	}
 
 	/**
-	 * Gets the period of time that between simulation steps for the visor
+	 * Gets the visors updating period
 	 * 
-	 * @return time between simulation steps
+	 * @return milliseconds
 	 */
 	public long getUpdateVisorPeriod() {
 		return updateVisor;
 	}
 
 	/**
-	 * Sets the period of time that between simulation steps for the visor
+	 * Sets the visors updating period
 	 * 
 	 * @param updateVisor
-	 *            time between simulation steps
+	 *            milliseconds
 	 */
 	public void setUpdateVisorPeriod(long updateVisor) {
 		this.updateVisor = updateVisor;
 	}
 
 	/**
-	 * Gets the period of time that between simulation steps for the kml
+	 * Gets the kml generators updating period
 	 * 
-	 * @param updateVisor
-	 *            time between simulation steps
+	 * @return milliseconds
 	 */
 	public long getUpdateKMLPeriod() {
 		return updateKML;
 	}
 
 	/**
-	 * Sets the period of time that between simulation steps for the kml
+	 * Sets the kml generators updating period
 	 * 
 	 * @param updateKML
-	 *            time between simulation steps
+	 *            milliseconds
 	 */
 	public void setUpdateKMLPeriod(long updateKML) {
 		this.updateKML = updateKML;
 	}
 
 	/**
-	 * Get the numbers of environments for the simulation
+	 * Gets the number of environments for the simulation
 	 * 
-	 * @return number of environment
+	 * @return number of environments
 	 */
 	public int getNumEnv() {
 		return numEnv;
 	}
 
 	/**
-	 * Sets the number of environmets for the simulation
+	 * Sets the number of environments for the simulation
 	 * 
 	 * @param numEnv
 	 * @throws IllegalArgumentException
@@ -521,6 +540,15 @@ public class Scenario implements Serializable {
 		this.numEnv = numEnv;
 	}
 
+	/**
+	 * Returns the geographical simulation area of specified
+	 * {@link EnvironmentAgent}
+	 * 
+	 * @param index
+	 *            {@link EnvironmentAgent} index
+	 * @return the geographical simulation area of specified
+	 *         {@link EnvironmentAgent}
+	 */
 	public LatLng[] getEnvArea(int index) {
 		if (globalNW == null || globalSE == null || tileSize < 0)
 			throw new IllegalStateException(
@@ -530,6 +558,14 @@ public class Scenario implements Serializable {
 		return envAreas.get(index);
 	}
 
+	/**
+	 * Returns the grid simulation area of specified {@link EnvironmentAgent}
+	 * 
+	 * @param index
+	 *            {@link EnvironmentAgent} index
+	 * @return the grid simulation area (in tiles) of specified
+	 *         {@link EnvironmentAgent}
+	 */
 	public int[] getEnvSize(int index) {
 		if (globalNW == null || globalSE == null || tileSize < 0)
 			throw new IllegalStateException(
@@ -539,6 +575,10 @@ public class Scenario implements Serializable {
 		return envSizes.get(index);
 	}
 
+	/**
+	 * Divides the simulation area in chunks so every {@link EnvironmentAgent}
+	 * simulates one
+	 */
 	private void divideAreaBetweenEnvs() {
 		envAreas = new ArrayList<LatLng[]>(numEnv);
 		envSizes = new ArrayList<int[]>(numEnv);
@@ -594,11 +634,11 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Get the envioronment that cotains the coord
+	 * Gets the environment that contains the specified geographical coordinate
 	 * 
 	 * @param coord
-	 *            we want to place into an environment
-	 * @return envioronment that cotains the coord
+	 *            geographical coordinate
+	 * @return environment that contains the specified geographical coordinate
 	 */
 	public int getEnviromentByCoord(LatLng coord) {
 		if (envAreas == null)
@@ -615,13 +655,13 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Get a environment that correspond to the point
+	 * Gets the environment that contains the specified tile
 	 * 
 	 * @param x
-	 *            col
+	 *            column
 	 * @param y
 	 *            row
-	 * @return envioronment that cotains the point
+	 * @return environment that contains the specified tile
 	 */
 	public int getEnviromentByPosition(int x, int y) {
 		if (envSizes == null)
@@ -656,7 +696,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Get an iterator over pedestrians
+	 * Gets an iterator over pedestrians
 	 * 
 	 * @return pedestrian iterator
 	 */
@@ -665,7 +705,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Set start date for the simulation
+	 * Sets start date and time for the simulation
 	 * 
 	 * @param year
 	 * @param month
@@ -679,17 +719,16 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Get start date and time of the simulation
+	 * Gets start date and time of the simulation
 	 * 
-	 * @return date and time of the simulation
+	 * @return start date and time of the simulation
 	 */
 	public DateAndTime getStartTime() {
 		return simTime;
 	}
 
 	/**
-	 * Set a random altitude for the environmets of the simulation. This is
-	 * useful when you dont have real altitudes
+	 * Defines if the terrain elevation must be random or real
 	 * 
 	 * @param randomAltitudes
 	 *            true if random
@@ -699,7 +738,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Get if we wanto to use random altitudes for the simulation
+	 * Gets if the terrain elevation must be random
 	 * 
 	 * @return true if random
 	 */
@@ -708,7 +747,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Get the data base server
+	 * Gets the data base server
 	 * 
 	 * @return dbserver
 	 */
@@ -717,7 +756,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Set the data base server
+	 * Sets the data base server
 	 * 
 	 * @param dbServer
 	 * @throws IllegalArgumentException
@@ -740,7 +779,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Gets the port for the data base
+	 * Sets the port for the data base
 	 * 
 	 * @param dbPort
 	 *            port number
@@ -765,7 +804,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * sets user for the data base
+	 * Sets user for the data base
 	 * 
 	 * @param dbUser
 	 *            user
@@ -775,7 +814,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Gets password for the data base
+	 * Gets password for the data base user
 	 * 
 	 * @return password
 	 */
@@ -784,7 +823,7 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Sets password for the data base
+	 * Sets password for the data base user
 	 * 
 	 * @param dbPass
 	 *            password
@@ -815,33 +854,38 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Gets data base path
+	 * Gets data base name
 	 * 
-	 * @return path to db
+	 * @return name of DataBase
 	 */
 	public String getDbDb() {
 		return dbDb;
 	}
 
 	/**
-	 * Sets data base path
+	 * Sets data base name
 	 * 
 	 * @param dbDb
-	 *            path
+	 *            name
 	 */
 	public void setDbDb(String dbDb) {
 		this.dbDb = dbDb;
 	}
 
+	/**
+	 * Returns time between {@link ClockAgent} ticks
+	 * 
+	 * @return milliseconds
+	 */
 	public Object getSimulationTick() {
 		return simulationTick;
 	}
 
 	/**
-	 * Set time in miliseconds for the time limit computation of agents
+	 * Sets time in milliseconds between {@link ClockAgent} ticks
 	 * 
 	 * @param simulationTick
-	 *            miliseconts
+	 *            milliseconts
 	 */
 	public void setSimulationTick(long simulationTick) {
 		if (simulationTick <= 0)
@@ -852,7 +896,8 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Returns the amount of real time in minutes that a tick represents
+	 * Returns the quantity of real time in minutes that a {@link ClockAgent}
+	 * tick represents
 	 * 
 	 * @return minutes
 	 */
@@ -861,10 +906,10 @@ public class Scenario implements Serializable {
 	}
 
 	/**
-	 * Sets real time tha corresponds to the simulationTick
+	 * Sets real time that corresponds to {@link ClockAgent} ticks
 	 * 
 	 * @param realTimeTick
-	 *            time
+	 *            time in minutes
 	 * @throws IllegalArgumentException
 	 *             Real tick time must be positive
 	 */
