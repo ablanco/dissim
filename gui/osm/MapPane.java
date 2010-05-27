@@ -22,6 +22,10 @@ import osm.Osm;
 import util.HexagonalGrid;
 
 @SuppressWarnings("serial")
+/**
+ * This is a version of <HexagonalGridPane> but with some modifications, first it shows a hexagonal grid but with a more variety of colors, and uses scrolleable, it was meant to show OSM map into the hexagoanl grid
+ * @author Manuel Gomar, Alejandro Blanco
+ */
 public class MapPane extends JPanel implements Scrollable {
 
 	private HexagonalGrid grid = null;
@@ -31,6 +35,15 @@ public class MapPane extends JPanel implements Scrollable {
 	private Dimension size;
 	private int maxUnitIncrement = 1;
 
+	/**
+	 * New Pane for a representation of the streets of an <Hexagonalgrid> and
+	 * 
+	 * @param grid
+	 *            where the streets are
+	 * @param dim
+	 *            dimensions of the grid
+	 * @return size for the Pane
+	 */
 	public Dimension updateGrid(HexagonalGrid grid, Dimension dim) {
 		size = dim;
 		this.grid = grid;
@@ -61,6 +74,10 @@ public class MapPane extends JPanel implements Scrollable {
 	}
 
 	@Override
+	/**
+	 * This is the implementation of the paint method, here iterates over all the points and paint the correspondant hexagonal in the correspondent site of the pane
+	 * @param g Container for the graphic 
+	 */
 	public void paint(Graphics g) {
 		if (grid != null) {
 			Graphics2D g2 = (Graphics2D) g;
@@ -111,18 +128,43 @@ public class MapPane extends JPanel implements Scrollable {
 		}
 	}
 
+	/**
+	 * Sets the grid we want to paint, for painting streets we only need one one
+	 * grid
+	 * 
+	 * @param grid
+	 *            containing the grid
+	 */
 	public void setGrid(HexagonalGrid grid) {
 		this.grid = grid;
 	}
 
+	/**
+	 * Gets default size
+	 * 
+	 * @return default size
+	 */
 	public Dimension getPreferredSize() {
 		return size;
 	}
 
+	/**
+	 * Get dimensions, these are form <Scrollable>
+	 * 
+	 * @return dimensions
+	 */
 	public Dimension getPreferredScrollableViewportSize() {
 		return getPreferredSize();
 	}
 
+	/**
+	 * Get scrolleable increments, this are from <Scrollable>
+	 * 
+	 * @param visibleRect
+	 * @param orientation
+	 * @param direction
+	 * @return increment units
+	 */
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
 		// Get the current position.
@@ -145,6 +187,14 @@ public class MapPane extends JPanel implements Scrollable {
 		}
 	}
 
+	/**
+	 * Get scrolleable block increments, this are from <Scrollable>
+	 * 
+	 * @param visibleRect
+	 * @param orientation
+	 * @param direction
+	 * @return block increment units
+	 */
 	public int getScrollableBlockIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
 		if (orientation == SwingConstants.HORIZONTAL) {
@@ -154,14 +204,26 @@ public class MapPane extends JPanel implements Scrollable {
 		}
 	}
 
+	/**
+	 * Get scrolleable track view port width, this are from <Scrollable>
+	 */
 	public boolean getScrollableTracksViewportWidth() {
 		return false;
 	}
 
+	/**
+	 * Get scrolleable track view port height, this are from <Scrollable>
+	 */
 	public boolean getScrollableTracksViewportHeight() {
 		return false;
 	}
 
+	/**
+	 * Sets maximun units increment
+	 * 
+	 * @param pixels
+	 *            increment in pixels
+	 */
 	public void setMaxUnitIncrement(int pixels) {
 		maxUnitIncrement = pixels;
 	}
