@@ -21,7 +21,7 @@ import java.io.Serializable;
 import util.jcoord.LatLng;
 
 /**
- * Represents an outcoming of water
+ * Represents an outcoming source of water
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -32,17 +32,18 @@ public class WaterSource implements Serializable {
 
 	private LatLng coord;
 	/**
-	 * Cantidad de agua que entra en ese punto
+	 * Quantity of water that enters at this coordinate
 	 */
 	private short water;
 
 	/**
-	 * New water source in a coord, thar produces an amount of water every turn
+	 * New water source in a coordinate, that produces a quantity of water every
+	 * tick
 	 * 
 	 * @param coord
 	 *            to place the water outcome
 	 * @param water
-	 *            amount of water per turn
+	 *            quantity of water per tick
 	 */
 	public WaterSource(LatLng coord, short water) {
 		this.coord = coord;
@@ -50,7 +51,7 @@ public class WaterSource implements Serializable {
 	}
 
 	/**
-	 * Get geolocalization of the water source
+	 * Gets geolocalization of the water source
 	 * 
 	 * @return coordinate
 	 */
@@ -59,7 +60,7 @@ public class WaterSource implements Serializable {
 	}
 
 	/**
-	 * Get amount of water per turn
+	 * Gets quantity of water per tick
 	 * 
 	 * @return water
 	 */

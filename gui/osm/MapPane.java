@@ -21,12 +21,9 @@ import javax.swing.SwingConstants;
 import osm.Osm;
 import util.HexagonalGrid;
 
+@SuppressWarnings("serial")
 public class MapPane extends JPanel implements Scrollable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8509235099644365808L;
 	private HexagonalGrid grid = null;
 	private int radius = -1;
 	private int hexWidth;

@@ -22,10 +22,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import agents.EnvironmentAgent;
+import agents.UpdateAgent;
+
 /**
- * Contains all the changing info between two steps, agents will transfer this
- * to communicate and update the simulation, each snapshot is a view of a
- * simulation step
+ * Contains state of the simulation at some time. {@link UpdateAgent}s consumes
+ * these.
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -41,18 +43,19 @@ public class Snapshot implements Serializable {
 	private String description;
 
 	/**
-	 * New snapshot of the step simulation
+	 * New snapshot of simulation's state on one {@link EnvironmentAgent}
 	 * 
 	 * @param name
 	 *            of simulation
 	 * @param description
 	 *            of simulation
 	 * @param grid
-	 *            for the simulation
+	 *            of the {@link EnvironmentAgent}
 	 * @param dateTime
-	 *            and time of the simulation
+	 *            date and time of the simulation
 	 * @param people
-	 *            involved in the simulation
+	 *            involved in the simulation area of the
+	 *            {@link EnvironmentAgent}
 	 */
 	public Snapshot(String name, String description, HexagonalGrid grid,
 			String dateTime, Map<String, Pedestrian> people) {
@@ -70,7 +73,7 @@ public class Snapshot implements Serializable {
 	}
 
 	/**
-	 * Get the Hexagonal grid, contains elevations, and streets
+	 * Gets the {@link HexagonalGrid}, contains elevations and streets
 	 * 
 	 * @return grid
 	 */
@@ -79,7 +82,7 @@ public class Snapshot implements Serializable {
 	}
 
 	/**
-	 * Get date and time of the simulation
+	 * Gets date and time of the simulation
 	 * 
 	 * @return date and time
 	 */
@@ -88,7 +91,7 @@ public class Snapshot implements Serializable {
 	}
 
 	/**
-	 * Get pedestrians in the scenario
+	 * Gets pedestrians in the simulation area
 	 * 
 	 * @return pedestrians
 	 */
@@ -97,7 +100,7 @@ public class Snapshot implements Serializable {
 	}
 
 	/**
-	 * Get name of the simulation
+	 * Gets name of the simulation
 	 * 
 	 * @return name
 	 */
@@ -106,7 +109,7 @@ public class Snapshot implements Serializable {
 	}
 
 	/**
-	 * Get description of the simulation
+	 * Gets description of the simulation
 	 * 
 	 * @return description
 	 */

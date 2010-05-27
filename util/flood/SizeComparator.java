@@ -21,10 +21,11 @@ import java.util.List;
 
 /**
  * Comparator that order incremental by size
+ * 
  * @author Manuel Gomar, Alejandro Blanco
- *
+ * 
  */
-public class SizeComparator implements Comparator<List<Edge>>  {
+public class SizeComparator implements Comparator<List<Edge>> {
 
 	@Override
 	public int compare(List<Edge> edges0, List<Edge> edges1) {

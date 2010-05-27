@@ -30,12 +30,9 @@ import javax.swing.JScrollPane;
 import util.Snapshot;
 import util.Updateable;
 
+@SuppressWarnings("serial")
 public class VisorMap extends JFrame implements Updateable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 6824786165438558551L;
 	private MapPane mapPane = null;
 	private JLabel gridLbl = new JLabel();
 

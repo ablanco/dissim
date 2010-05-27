@@ -27,7 +27,8 @@ import util.java.ModifiedTilesSet;
 import util.jcoord.LatLng;
 
 /**
- * Flood version of hexagonal grid, has specific methods for managing the flood
+ * Flood version of {@link HexagonalGrid}, has specific methods for managing the
+ * flood
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -36,6 +37,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Water levels
+	 */
 	private short[][] gridWater; // Nivel de agua en la casilla
 	private short[] northWater;
 	private short[] southWater;
@@ -45,41 +49,40 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	private ModifiedTilesSet modTiles = null;
 
 	/**
-	 * New Flood hexagonal grid, like Hexagonal grid but this is better for a
-	 * flooding
+	 * New {@link FloodHexagonalGrid}
 	 * 
 	 * @param NW
 	 *            Upper Left corner
 	 * @param SE
 	 *            Lower Right corner
-	 * @param offX
+	 * @param offCol
 	 *            column offset
-	 * @param offY
+	 * @param offRow
 	 *            row offset
 	 * @param tileSize
 	 *            tile size
 	 */
-	public FloodHexagonalGrid(LatLng NW, LatLng SE, int offX, int offY,
+	public FloodHexagonalGrid(LatLng NW, LatLng SE, int offCol, int offRow,
 			int tileSize) {
-		super(NW, SE, offX, offY, tileSize);
+		super(NW, SE, offCol, offRow, tileSize);
 		gridWater = new short[columns][rows];
 		northWater = new short[columns + 2];
 		southWater = new short[columns + 2];
 		eastWater = new short[rows];
 		westWater = new short[rows];
-		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offX, offY);
+		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offCol, offRow);
 	}
 
 	/**
-	 * Sets a water value in a concrete position, also updates the crown if any
-	 * environment needs to update is water value
+	 * Sets a water value in the specified position, also updates the external
+	 * border
 	 * 
 	 * @param col
-	 *            column
+	 *            Absolute position column
 	 * @param row
-	 *            row
+	 *            Absolute position row
 	 * @param value
-	 *            amount of water
+	 *            quantity of water
 	 * @return previous value
 	 */
 	public short setWaterValue(int col, int row, short value) {
@@ -106,12 +109,12 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	/**
-	 * Gets water value of a concrete position of the grid, also gives values of
-	 * the crown
+	 * Gets water value of a specified position of the grid
 	 * 
 	 * @param col
-	 *            column
+	 *            Absolute position column
 	 * @param row
+	 *            Absolute position row
 	 * @return value
 	 */
 	public short getWaterValue(int col, int row) {
@@ -133,7 +136,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	/**
-	 * Get the short[][] water matriz
+	 * Gets the short[][] water matrix
 	 * 
 	 * @return water matrix
 	 */
@@ -141,29 +144,11 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		return gridWater;
 	}
 
-	/**
-	 * Is a flood border
-	 * 
-	 * @param col
-	 * @param row
-	 * @return true if adjacent has different values
-	 */
-	public boolean isFloodBorder(int col, int row) {
-		short z = getValue(col, row);
-		for (int[] a : getAdjacents(col, row)) {
-			// Si está inundado y al mismo nivel de inundación
-			if (getWaterValue(a[0], a[1]) != 0 && getValue(a[0], a[1]) != z) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	@Override
 	/**
-	 * Increase the water value by increment
-	 * @param col
-	 * @param row
+	 * Increases the water value
+	 * @param col Absolute position column
+	 * @param row Absolute position row
 	 * @param increment
 	 */
 	public void increaseValue(int x, int y, short increment) {
@@ -174,11 +159,11 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	@Override
 	/**
-	 * Decrease the water value by decrement
-	 * @param col
-	 * @param row
+	 * Decreases the water value
+	 * @param col Absolute position column 
+	 * @param row Absolute position row
 	 * @param decrement
-	 * @return previous value 
+	 * @return actual decrement
 	 */
 	public short decreaseValue(int x, int y, short decrement) {
 		short result;
@@ -198,9 +183,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	@Override
 	/**
-	 * Get water+terrain value
-	 * @param x column
-	 * @param y row
+	 * Gets water+terrain value
+	 * @param x Absolute position column
+	 * @param y Absolute position row
 	 * @return water+terrain value
 	 */
 	public short getValue(int x, int y) {
@@ -209,9 +194,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 
 	@Override
 	/**
-	 * Get adjacents of the grid, adjacents contains values of water+terrain
-	 * @param p point we want to know the adjacents
-	 * @return list of adjacents
+	 * Gets adjacents of the grid, adjacents contains values of water+terrain
+	 * @param p point we want to know the adjacents of
+	 * @return set of adjacents
 	 */
 	public HashSet<Point> getAdjacents(Point p) {
 		int[][] indexes = getAdjacentsIndexes(p.getCol(), p.getRow());
@@ -226,10 +211,11 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		return result;
 	}
 
-	@Override
 	/**
-	 * Updates grid with osm info
+	 * Obtains street data from Open Street Maps, and sets as regular water
+	 * rivers, lakes, etc.
 	 */
+	@Override
 	public void obtainStreetInfo() {
 		super.obtainStreetInfo();
 
@@ -255,9 +241,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	}
 
 	/**
-	 * Gets tiles that have been modified during simulation step
+	 * Gets the tiles that have been modified during simulation step
 	 * 
-	 * @return modified points
+	 * @return set of modified {@link Point}s
 	 */
 	public Set<Point> getModCoordAndReset() {
 		ModifiedTilesSet result = modTiles;

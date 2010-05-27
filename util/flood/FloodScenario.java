@@ -17,6 +17,7 @@
 package util.flood;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
@@ -24,7 +25,8 @@ import util.Scenario;
 import util.jcoord.LatLng;
 
 /**
- * Flood version of scenario, contains methods for easily manage the flooding
+ * Flood version of {@link Scenario}, contains methods for easily manage the
+ * flooding
  * 
  * @author Manuel Gomar, Alejandro Blanco
  * 
@@ -39,18 +41,20 @@ public class FloodScenario extends Scenario {
 	private LinkedList<WaterSource> waterSources;
 
 	/**
-	 * New Flood scenario, calls scenario constructor and
+	 * New {@link FloodScenario}
 	 */
 	public FloodScenario() {
 		super();
 		waterSources = new LinkedList<WaterSource>();
 	}
 
-	@Override
 	/**
-	 * Same that scenario version, but only for flood parameters
-	 * @param data list of parameters 
+	 * Loads the {@link FloodScenario} data from a text file
+	 * 
+	 * @param content
+	 *            of the text file
 	 */
+	@Override
 	protected void loadScenarioData(ArrayList<String> data) {
 		super.loadScenarioData(data);
 		for (String s : data) {
@@ -67,13 +71,13 @@ public class FloodScenario extends Scenario {
 	}
 
 	/**
-	 * Add a new water source into the scenario
+	 * Add a new water source into the {@link FloodScenario}
 	 * 
 	 * @param ws
 	 *            water source
-	 * @return true in is contained in the box
+	 * @return true if is contained in the simulation area
 	 * @throws IllegalStateException
-	 *             Geographical scenario data hasn't been initialized
+	 *             If geographical scenario data hasn't been initialized
 	 */
 	public boolean addWaterSource(WaterSource ws) {
 		if (globalNW == null || globalSE == null)
@@ -90,7 +94,7 @@ public class FloodScenario extends Scenario {
 	}
 
 	/**
-	 * Get an iterator over water sources in the scenario
+	 * Get an {@link Iterator} over water sources in the {@link FloodScenario}
 	 * 
 	 * @return water source iterator
 	 */
@@ -99,7 +103,7 @@ public class FloodScenario extends Scenario {
 	}
 
 	/**
-	 * Get the number of water sources contained into the scenario
+	 * Get the number of water sources contained in the {@link FloodScenario}
 	 * 
 	 * @return number of water sources
 	 */

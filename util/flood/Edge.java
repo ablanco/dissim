@@ -54,7 +54,7 @@ public class Edge {
 	/**
 	 * Gets a coordinate
 	 * 
-	 * @return a
+	 * @return a {@link Coordinate}
 	 */
 	public Coordinate getA() {
 		return a;
@@ -63,16 +63,16 @@ public class Edge {
 	/**
 	 * Gets b coordinate
 	 * 
-	 * @return
+	 * @return b {@link Coordinate}
 	 */
 	public Coordinate getB() {
 		return b;
 	}
 
 	/**
-	 * Gets an array list of the edge, [a,b]
+	 * Gets an array list of the edge coordinates
 	 * 
-	 * @return [a,b]
+	 * @return list of coordinates
 	 */
 	public ArrayList<Coordinate> getEdge() {
 		ArrayList<Coordinate> edge = new ArrayList<Coordinate>();
@@ -82,9 +82,9 @@ public class Edge {
 	}
 
 	/**
-	 * Obtiene el signo de la Coordenada (si es al derecho o al reves)
+	 * Obtains next
 	 * 
-	 * @return
+	 * @return next
 	 */
 	public int getSig() {
 		return sig;
@@ -97,21 +97,24 @@ public class Edge {
 	}
 
 	/**
-	 * Es adyacente si un vertice pertenece a las dos aristas
+	 * Check if the edge is adjacent to this one
 	 * 
 	 * @param e
-	 * @return
+	 *            {@link Edge}
+	 * @return true if e has a vertex in common with this {@link Edge}
 	 */
 	public boolean isAdyacent(Edge e) {
 		return almostEqual(b, e.getA()) || almostEqual(a, e.getB());
 	}
 
 	/**
-	 * Returns true if the edge is the next adyacent edge this[a,b], e[a,b] si
+	 * Returns true if the edge is the next adyacent edge this[a,b], e[a,b] if
 	 * this.b==e.a
 	 * 
 	 * @param e
-	 * @return
+	 *            {@link Edge}
+	 * @return true if the edge is the next adyacent edge this[a,b], e[a,b] if
+	 *         this.b==e.a
 	 */
 	public boolean isNextOf(Edge e) {
 		return almostEqual(b, e.getA());
@@ -119,30 +122,31 @@ public class Edge {
 
 	/**
 	 * Returns true if the edge is the previous adyacent edge this[a,b], e[a,b]
-	 * si this.a==e.b
+	 * if this.a==e.b
 	 * 
 	 * @param e
-	 * @return
+	 *            {@link Edge}
+	 * @return true if the edge is the previous adyacent edge this[a,b], e[a,b]
+	 *         if this.a==e.b
 	 */
 	public boolean isPreviousOf(Edge e) {
 		return almostEqual(a, e.getB());
 	}
 
 	/**
-	 * Return true if e is the opposite (A,B) == (B,A)
+	 * Returns true if e is the opposite (A,B) == (B,A)
 	 * 
 	 * @param e
-	 * @return
+	 * @return true if e is the opposite (A,B) == (B,A)
 	 */
 	public boolean isOposite(Edge e) {
 		return almostEqual(a, e.getB()) && almostEqual(b, e.getA());
 	}
 
 	/**
-	 * Reuturns the opposite edge from this
+	 * Returns the opposite edge from this
 	 * 
-	 * @param e
-	 * @return
+	 * @return the opposite edge from this
 	 */
 	public Edge opposite() {
 		return new Edge(sig, b, a);
@@ -156,7 +160,7 @@ public class Edge {
 	}
 
 	/**
-	 * Returns a friednly view of the edge
+	 * Returns a unique view of the edge
 	 * 
 	 * @param c
 	 * @return
@@ -170,25 +174,21 @@ public class Edge {
 
 		return String.valueOf(Integer.toHexString(Integer.valueOf(slat)
 				+ Integer.valueOf(slng)));
-		// return "["+slat+","+slng+"]";
-		// return
-		// "["+Integer.toHexString(Integer.valueOf(slat))+","+Integer.toHexString(Integer.valueOf(slng))+"]";
 	}
 
 	/**
-	 * Epic Method, returns true if two coordinates looks like nearly the same,
-	 * due to java double shitty implemenation
+	 * Returns true if two coordinates looks like nearly the same, due to java
+	 * double precision errors
 	 * 
 	 * @param a
 	 * @param b
-	 * @return true if differs in +-0.0000003
+	 * @return true if differs in less than +-0.0000003
 	 */
 	private boolean almostEqual(Coordinate a, Coordinate b) {
 		long alat = (long) Math.abs((a.getLatitude() * Math.pow(10, 6)));
 		long alng = (long) Math.abs((a.getLongitude() * Math.pow(10, 6)));
 		long blat = (long) Math.abs((b.getLatitude() * Math.pow(10, 6)));
 		long blng = (long) Math.abs((b.getLongitude() * Math.pow(10, 6)));
-		// System.err.println("A: "+a+", B:"+b+" resultado "+alat+"-"+blat+" vs "+alng+"-"+blng);
 		return Math.abs(alat - blat) < 3 && Math.abs(alng - blng) < 3;
 
 	}
