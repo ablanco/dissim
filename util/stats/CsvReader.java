@@ -101,8 +101,7 @@ public class CsvReader {
 	public static final int ESCAPE_MODE_BACKSLASH = 2;
 
 	/**
-	 * Creates a {@link com.csvreader.CsvReader CsvReader} object using a file
-	 * as the data source.
+	 * Creates a {@link CsvReader} object using a file as the data source.
 	 * 
 	 * @param fileName
 	 *            The path to the file to use as the data source.
@@ -137,9 +136,9 @@ public class CsvReader {
 	}
 
 	/**
-	 * Creates a {@link com.csvreader.CsvReader CsvReader} object using a file
-	 * as the data source.&nbsp;Uses ISO-8859-1 as the
-	 * {@link java.nio.charset.Charset Charset}.
+	 * Creates a {@link CsvReader} object using a file as the data
+	 * source.&nbsp;Uses ISO-8859-1 as the {@link java.nio.charset.Charset
+	 * Charset}.
 	 * 
 	 * @param fileName
 	 *            The path to the file to use as the data source.
@@ -152,9 +151,9 @@ public class CsvReader {
 	}
 
 	/**
-	 * Creates a {@link com.csvreader.CsvReader CsvReader} object using a file
-	 * as the data source.&nbsp;Uses a comma as the column delimiter and
-	 * ISO-8859-1 as the {@link java.nio.charset.Charset Charset}.
+	 * Creates a {@link CsvReader} object using a file as the data
+	 * source.&nbsp;Uses a comma as the column delimiter and ISO-8859-1 as the
+	 * {@link java.nio.charset.Charset Charset}.
 	 * 
 	 * @param fileName
 	 *            The path to the file to use as the data source.
@@ -164,8 +163,8 @@ public class CsvReader {
 	}
 
 	/**
-	 * Constructs a {@link com.csvreader.CsvReader CsvReader} object using a
-	 * {@link java.io.Reader Reader} object as the data source.
+	 * Constructs a {@link CsvReader} object using a {@link java.io.Reader
+	 * Reader} object as the data source.
 	 * 
 	 * @param inputStream
 	 *            The stream to use as the data source.
@@ -186,9 +185,9 @@ public class CsvReader {
 	}
 
 	/**
-	 * Constructs a {@link com.csvreader.CsvReader CsvReader} object using a
-	 * {@link java.io.Reader Reader} object as the data source.&nbsp;Uses a
-	 * comma as the column delimiter.
+	 * Constructs a {@link CsvReader} object using a {@link java.io.Reader
+	 * Reader} object as the data source.&nbsp;Uses a comma as the column
+	 * delimiter.
 	 * 
 	 * @param inputStream
 	 *            The stream to use as the data source.
@@ -198,7 +197,7 @@ public class CsvReader {
 	}
 
 	/**
-	 * Constructs a {@link com.csvreader.CsvReader CsvReader} object using an
+	 * Constructs a {@link CsvReader} object using an
 	 * {@link java.io.InputStream InputStream} object as the data source.
 	 * 
 	 * @param inputStream
@@ -214,7 +213,7 @@ public class CsvReader {
 	}
 
 	/**
-	 * Constructs a {@link com.csvreader.CsvReader CsvReader} object using an
+	 * Constructs a {@link CsvReader} object using an
 	 * {@link java.io.InputStream InputStream} object as the data
 	 * source.&nbsp;Uses a comma as the column delimiter.
 	 * 
@@ -463,10 +462,10 @@ public class CsvReader {
 
 	/**
 	 * Gets the count of headers read in by a previous call to
-	 * {@link com.csvreader.CsvReader#readHeaders readHeaders()}.
+	 * {@link CsvReader#readHeaders readHeaders()}.
 	 * 
 	 * @return The count of headers read in by a previous call to
-	 *         {@link com.csvreader.CsvReader#readHeaders readHeaders()}.
+	 *         {@link CsvReader#readHeaders readHeaders()}.
 	 */
 	public int getHeaderCount() {
 		return headersHolder.Length;
@@ -558,14 +557,14 @@ public class CsvReader {
 	}
 
 	/**
-	 * Creates a {@link com.csvreader.CsvReader CsvReader} object using a string
-	 * of data as the source.&nbsp;Uses ISO-8859-1 as the
-	 * {@link java.nio.charset.Charset Charset}.
+	 * Creates a {@link CsvReader} object using a string of data as the
+	 * source.&nbsp;Uses ISO-8859-1 as the {@link java.nio.charset.Charset
+	 * Charset}.
 	 * 
 	 * @param data
 	 *            The String of data to use as the source.
-	 * @return A {@link com.csvreader.CsvReader CsvReader} object using the
-	 *         String of data as the source.
+	 * @return A {@link CsvReader} object using the String of data as the
+	 *         source.
 	 */
 	public static CsvReader parse(String data) {
 		if (data == null) {
@@ -1459,8 +1458,7 @@ public class CsvReader {
 
 	/**
 	 * Skips the next record of data by parsing each column.&nbsp;Does not
-	 * increment
-	 * {@link com.csvreader.CsvReader#getCurrentRecord getCurrentRecord()}.
+	 * increment {@link CsvReader#getCurrentRecord getCurrentRecord()}.
 	 * 
 	 * @return Whether another record was successfully skipped or not.
 	 * @exception IOException

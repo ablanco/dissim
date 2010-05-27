@@ -21,11 +21,12 @@ import javax.swing.SwingConstants;
 import osm.Osm;
 import util.HexagonalGrid;
 
-@SuppressWarnings("serial")
 /**
- * This is a version of <HexagonalGridPane> but with some modifications, first it shows a hexagonal grid but with a more variety of colors, and uses scrolleable, it was meant to show OSM map into the hexagoanl grid
+ * It shows the street data of an {@link HexagonalGrid}
+ * 
  * @author Manuel Gomar, Alejandro Blanco
  */
+@SuppressWarnings("serial")
 public class MapPane extends JPanel implements Scrollable {
 
 	private HexagonalGrid grid = null;
@@ -36,12 +37,12 @@ public class MapPane extends JPanel implements Scrollable {
 	private int maxUnitIncrement = 1;
 
 	/**
-	 * New Pane for a representation of the streets of an <Hexagonalgrid> and
+	 * New Pane for a representation of the streets of an {@link HexagonalGrid}
 	 * 
 	 * @param grid
 	 *            where the streets are
 	 * @param dim
-	 *            dimensions of the grid
+	 *            dimensions of the swing controller that owns this pane
 	 * @return size for the Pane
 	 */
 	public Dimension updateGrid(HexagonalGrid grid, Dimension dim) {
@@ -73,11 +74,14 @@ public class MapPane extends JPanel implements Scrollable {
 		// repaint();
 	}
 
-	@Override
 	/**
-	 * This is the implementation of the paint method, here iterates over all the points and paint the correspondant hexagonal in the correspondent site of the pane
-	 * @param g Container for the graphic 
+	 * This is the implementation of the paint method, here iterates over all
+	 * the points and paint the correspondent hexagon in the correspondent
+	 * position of the pane
+	 * 
+	 * @param g
 	 */
+	@Override
 	public void paint(Graphics g) {
 		if (grid != null) {
 			Graphics2D g2 = (Graphics2D) g;
@@ -129,8 +133,7 @@ public class MapPane extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * Sets the grid we want to paint, for painting streets we only need one one
-	 * grid
+	 * Updates the grid
 	 * 
 	 * @param grid
 	 *            containing the grid
@@ -149,7 +152,7 @@ public class MapPane extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * Get dimensions, these are form <Scrollable>
+	 * Gets dimensions, these are from {@link Scrollable}
 	 * 
 	 * @return dimensions
 	 */
@@ -158,7 +161,7 @@ public class MapPane extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * Get scrolleable increments, this are from <Scrollable>
+	 * Gets scrollable increments, this are from {@link Scrollable}
 	 * 
 	 * @param visibleRect
 	 * @param orientation
@@ -188,7 +191,7 @@ public class MapPane extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * Get scrolleable block increments, this are from <Scrollable>
+	 * Gets scrollable block increments, this are from {@link Scrollable}
 	 * 
 	 * @param visibleRect
 	 * @param orientation
@@ -205,14 +208,14 @@ public class MapPane extends JPanel implements Scrollable {
 	}
 
 	/**
-	 * Get scrolleable track view port width, this are from <Scrollable>
+	 * Gets scrollable track viewport width, this are from {@link Scrollable}
 	 */
 	public boolean getScrollableTracksViewportWidth() {
 		return false;
 	}
 
 	/**
-	 * Get scrolleable track view port height, this are from <Scrollable>
+	 * Gets scrollable track viewport height, this are from {@link Scrollable}
 	 */
 	public boolean getScrollableTracksViewportHeight() {
 		return false;
