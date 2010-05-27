@@ -23,11 +23,11 @@ import osm.OsmNode;
 import osm.OsmWay;
 
 /**
- * Scenarios and items must be geolocated to be a real simulation in real
- * places, so we need some box for geolocalize big things, like scenarios,
- * roads, seas, rivers ...
+ * Scenarios and items must be geolocated to be a realistic simulation, so we
+ * need some box for geolocalize big things, like scenarios, roads, seas,
+ * rivers...
  * 
- * @author Manuel Gomar Acosta
+ * @author Alejandro Blanco, Manuel Gomar
  * 
  */
 public class LatLngBox implements Serializable {
@@ -124,7 +124,7 @@ public class LatLngBox implements Serializable {
 	}
 
 	/**
-	 * Get the tile size of the box
+	 * Get the tile size
 	 * 
 	 * @return tile size
 	 */
@@ -133,11 +133,11 @@ public class LatLngBox implements Serializable {
 	}
 
 	/**
-	 * Given a OsmNode Returns IN, ABOVE, ABOVE_RIGHT, RIGHT, BELOW_RIGHT,
-	 * BELOW, BELOW_LEFT, LEFT, ABOVE_LEFT
+	 * Given a {@link OsmNode} Returns IN, ABOVE, ABOVE_RIGHT, RIGHT,
+	 * BELOW_RIGHT, BELOW, BELOW_LEFT, LEFT, ABOVE_LEFT
 	 * 
 	 * @param n
-	 *            OsmNode we want to know which is its position
+	 *            OsmNode from which we want to know position
 	 * @return position relative to us
 	 */
 	public int absoluteBoxPosition(OsmNode n) {
@@ -149,8 +149,8 @@ public class LatLngBox implements Serializable {
 	 * BELOW_LEFT, LEFT, ABOVE_LEFT
 	 * 
 	 * @param c
-	 *            Coordinate we want to know which is its position
-	 * @return position relative to us
+	 *            Coordinate from which we want to know position
+	 * @return position relative to the box
 	 */
 	public int absoluteBoxPosition(LatLng c) {
 		if (c.getLat() > nW.getLat()) {
@@ -183,7 +183,7 @@ public class LatLngBox implements Serializable {
 	}
 
 	/**
-	 * Returns true if a coordinate a is near coordinate b attending to box
+	 * Returns true if the coordinate a is near coordinate b attending to box
 	 * parameters, Math.abs(a.getLat() - b.getLat()) < ilat) &&
 	 * (Math.abs(a.getLng() - b.getLng()) < ilng
 	 * 
@@ -202,7 +202,7 @@ public class LatLngBox implements Serializable {
 	 * Set tile size
 	 * 
 	 * @param tileSize
-	 *            new
+	 *            new tile size
 	 */
 	public void setTileSize(int tileSize) {
 		this.tileSize = tileSize;
@@ -227,20 +227,20 @@ public class LatLngBox implements Serializable {
 	}
 
 	/**
-	 * Get important info from the box
+	 * Gets important info from the box as a {@link String}
+	 * 
 	 * @return info
 	 */
 	public String getInf() {
-		// return
-		// "Nw: "+nW.getLat()+","+nW.getLng()+", tam:("+cols+","+rows+") offset:("+offCol+","+offRow+")";
 		return "Nw: " + nW + "Se: " + sE;
 	}
 
 	/**
-	 * Añade una coordenada a la caja y amplia sus limites si es necesario
+	 * Adds a coordinate to the box, and makes the box bigger if needed
 	 * 
 	 * @param c
-	 * @return
+	 * @return true if an already contained coordinate has changed as result of
+	 *         this
 	 */
 	public boolean addToBox(LatLng c) {
 		boolean change = false;
@@ -264,47 +264,91 @@ public class LatLngBox implements Serializable {
 		return change;
 	}
 
+	/**
+	 * Adds the {@link OsmWay} coordinates to this box
+	 * 
+	 * @param way
+	 */
 	public void addToBox(OsmWay way) {
 		LatLngBox box = way.getBox();
 		addToBox(box.getNw());
 		addToBox(box.getSe());
 	}
 
+	/**
+	 * Gets the NW coordinate
+	 * 
+	 * @return the NW coordinate
+	 */
 	public LatLng getNw() {
 		return nW;
 	}
 
+	/**
+	 * Gets the SE coordinate
+	 * 
+	 * @return the SE coordinate
+	 */
 	public LatLng getSe() {
 		return sE;
 	}
 
+	/**
+	 * Returns true if this box contains the specified one
+	 * 
+	 * @param box
+	 * @return true if this box contains the specified one
+	 */
 	public boolean contains(LatLngBox box) {
 		return contains(box.getNw()) && contains(box.getSe());
 	}
 
 	/**
-	 * Return true if Latlng is in the box NW, SE
+	 * Returns true if the specified coordinate is contained in the box
 	 * 
 	 * @param c
-	 * @return
+	 * @return true if the specified coordinate is contained in the box
 	 */
 	public boolean contains(LatLng c) {
 		return c.isContainedIn(nW, sE);
 	}
 
+	/**
+	 * Returns true if the specified {@link OsmNode} is contained in the box
+	 * 
+	 * @param n
+	 * @return true if the specified {@link OsmNode} is contained in the box
+	 */
 	public boolean contains(OsmNode n) {
 		return contains(n.getCoord());
 	}
 
+	/**
+	 * Returns true if the specified {@link OsmEdge} is contained in the box
+	 * 
+	 * @param e
+	 * @return true if the specified {@link OsmEdge} is contained in the box
+	 */
 	public boolean contains(OsmEdge e) {
 		return contains(e.getNodeA()) || contains(e.getNodeB());
 	}
 
+	/**
+	 * Returns true if the specified {@link OsmEdge} cuts the border of this box
+	 * 
+	 * @param e
+	 * @return true if the specified {@link OsmEdge} cuts the border of this box
+	 */
 	public boolean cutsBox(OsmEdge e) {
 		return contains(e)
 				&& !(contains(e.getNodeA()) && contains(e.getNodeB()));
 	}
 
+	/**
+	 * Returns true if the box parameters are initialized
+	 * 
+	 * @return true if the box parameters are initialized
+	 */
 	public boolean isDefined() {
 		return nW != null && sE != null && ilat != 0 && ilng != 0
 				&& tileSize != 0;
@@ -331,12 +375,24 @@ public class LatLngBox implements Serializable {
 		return s.toString();
 	}
 
+	/**
+	 * Returns the minor of the specified doubles
+	 * 
+	 * @param a
+	 * @param b
+	 * @return the minor of the specified doubles
+	 */
 	private double smallest(double a, double b) {
 		if (a > 0)
 			return Math.min(a, b);
 		return Math.max(a, b);
 	}
 
+	/**
+	 * Set this box as the intersection of this box and the specified one
+	 * 
+	 * @param box
+	 */
 	public void intersection(LatLngBox box) {
 		nW = new LatLng(smallest(nW.getLat(), box.getNw().getLat()), smallest(
 				nW.getLng(), box.getNw().getLng()));

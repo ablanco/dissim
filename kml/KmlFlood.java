@@ -169,7 +169,7 @@ public class KmlFlood {
 					double altitude = Scenario.innerToDouble(precision, p
 							.getZ());
 					deep += altitude;
-					c.setAltitude(altitude);
+					c.setElevation(altitude);
 					vertices.add(c);
 				}
 				// La media de las alturas, esto es para la opacidad

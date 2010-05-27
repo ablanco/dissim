@@ -40,7 +40,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 */
 	private double lng;
 
-	private double altitude = 0;
+	private double elevation = 0;
 
 	/**
 	 * Create a new LatLng object to represent a latitude/longitude pair.
@@ -58,20 +58,20 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 
 	/**
 	 * Create a new LatLng object to represent a latitude/longitude pair. Now
-	 * supporting altitude in decimeters
+	 * supporting elevation in decimeters
 	 * 
 	 * @param lat
 	 *            the latitude in degrees
 	 * @param lng
 	 *            the longitude in degrees
-	 * @param altitude
-	 *            the altitude in decimeters
+	 * @param elevation
+	 *            the elevation in decimeters
 	 * @author Manuel Gomar Acosta
 	 */
-	public LatLng(double lat, double lng, double altitude) {
+	public LatLng(double lat, double lng, double elevation) {
 		this.lat = round(lat);
 		this.lng = round(lng);
-		this.altitude = altitude;
+		this.elevation = elevation;
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @return a String KML friendly representation of this LatLng object
 	 */
 	public String toKmlString() {
-		return lng + ", " + lat + ", " + altitude;
+		return lng + ", " + lat + ", " + elevation;
 	}
 
 	/**
@@ -340,23 +340,24 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	/**
-	 * Returns the altitude
+	 * Returns the elevation
 	 * 
-	 * @return
+	 * @return elevation of terrain
 	 * @author Manuel Gomar Acosta
 	 */
-	public double getAltitude() {
-		return altitude;
+	public double getElevation() {
+		return elevation;
 	}
 
 	/**
-	 * Set altitude
+	 * Sets elevation
 	 * 
-	 * @param altitude
+	 * @param elevation
+	 *            of terrain
 	 * @author Manuel Gomar Acosta
 	 */
-	public void setAltitude(double altitude) {
-		this.altitude = altitude;
+	public void setElevation(double elevation) {
+		this.elevation = elevation;
 	}
 
 	/**
@@ -385,7 +386,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	public boolean equals(Object coord) {
 		if (coord instanceof LatLng) {
 			LatLng c = (LatLng) coord;
-			return (c.getAltitude() == altitude) && (c.getLat() == lat)
+			return (c.getElevation() == elevation) && (c.getLat() == lat)
 					&& (c.getLng() == lng);
 		} else {
 			return false;
@@ -399,7 +400,7 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	 * @author Alejandro Blanco
 	 * @param NW
 	 * @param SE
-	 * @return
+	 * @return true if this coordinate is inside the specified area
 	 */
 	public boolean isContainedIn(LatLng NW, LatLng SE) {
 		boolean blat = false;
@@ -415,12 +416,13 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	/**
-	 * Posición absoluta de la coordenada c, respecto a mi posción, mirar
-	 * variables estáticas
+	 * Absolute position of the specified coordinate from this one. It uses the
+	 * defined static variables.
 	 * 
 	 * @author Manuel Gomar Acosta
 	 * @param c
-	 * @return
+	 * @return Absolute position of the specified coordinate from this one. It
+	 *         uses the defined static variables.
 	 */
 	public int absolutePosition(LatLng c) {
 		if (lat == c.getLat()) {
@@ -451,56 +453,66 @@ public class LatLng implements Comparable<LatLng>, Serializable {
 	}
 
 	/**
-	 * Por encima o al mismo nivel
+	 * Returns if the specified coordinate is at the same level or above (on
+	 * latitude)
 	 * 
 	 * @author Manuel Gomar Acosta
 	 * @param c
-	 * @return
+	 * @return true if the specified coordinate is at the same level or above
+	 *         (on latitude)
 	 */
 	public boolean isAboveOf(LatLng c) {
 		return lat > c.getLat();
 	}
 
 	/**
-	 * Por debajo o igual
+	 * Returns if the specified coordinate is at the same level or below (on
+	 * latitude)
 	 * 
 	 * @author Manuel Gomar Acosta
 	 * @param c
-	 * @return
+	 * @return true if the specified coordinate is at the same level or below
+	 *         (on latitude)
 	 */
 	public boolean isBelowOf(LatLng c) {
 		return lat < c.getLat();
 	}
 
 	/**
-	 * A la derecha o igual
+	 * Returns if the specified coordinate is at the same level or on the right
+	 * (on longitude)
 	 * 
 	 * @author Manuel Gomar Acosta
 	 * @param c
-	 * @return
+	 * @return true if the specified coordinate is at the same level or on the
+	 *         right (on longitude)
 	 */
 	public boolean isRigthOf(LatLng c) {
 		return lng > c.getLng();
 	}
 
 	/**
-	 * A la izquierda o igual
+	 * Returns if the specified coordinate is at the same level or on the left
+	 * (on longitude)
 	 * 
 	 * @author Manuel Gomar Acosta
 	 * @param c
-	 * @return
+	 * @return true if the specified coordinate is at the same level or on the
+	 *         left (on longitude)
 	 */
 	public boolean isLeftOf(LatLng c) {
 		return lng < c.getLng();
 	}
 
 	/**
+	 * Rounds a double to 6 decimals
+	 * 
 	 * @author Manuel Gomar Acosta
-	 * @param c
-	 * @return
+	 * @param d
+	 * @return c rounded to 6 decimals
 	 */
-	public static double round(double c) {
-		long l = (long) (c * Math.pow(10, 6));
+	public static double round(double d) {
+		long l = (long) (d * Math.pow(10, 6));
 		return l / Math.pow(10, 6);
 	}
 }
