@@ -34,7 +34,7 @@ import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Scenario;
 import util.Snapshot;
-import util.Updateable;
+import util.Updatable;
 import util.flood.FloodHexagonalGrid;
 import util.jcoord.LatLng;
 import de.micromata.opengis.kml.v_2_2_0.AltitudeMode;
@@ -54,7 +54,7 @@ import de.micromata.opengis.kml.v_2_2_0.TimeSpan;
  * @author Manuel Gomar, Alejandro Blanco
  * 
  */
-public class KmlBase implements Updateable {
+public class KmlBase implements Updatable {
 
 	protected Kml kml;
 	protected Folder folder;

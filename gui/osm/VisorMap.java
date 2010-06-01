@@ -30,7 +30,7 @@ import javax.swing.JScrollPane;
 import agents.UpdateAgent;
 
 import util.Snapshot;
-import util.Updateable;
+import util.Updatable;
 
 /**
  * Window to show a {@link MapPane}. It's a client for an {@link UpdateAgent}.
@@ -38,7 +38,7 @@ import util.Updateable;
  * @author Manuel Gomar, Alejandro Blanco
  */
 @SuppressWarnings("serial")
-public class VisorMap extends JFrame implements Updateable {
+public class VisorMap extends JFrame implements Updatable {
 
 	private MapPane mapPane = null;
 	private JLabel gridLbl = new JLabel();

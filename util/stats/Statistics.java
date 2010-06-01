@@ -28,7 +28,7 @@ import javax.swing.JFileChooser;
 import util.DateAndTime;
 import util.Pedestrian;
 import util.Snapshot;
-import util.Updateable;
+import util.Updatable;
 
 /**
  * This is for obtaining and storing statistics for the disaster. Collects info
@@ -38,7 +38,7 @@ import util.Updateable;
  * @author Manuel Gomar, Alejandro Blanco
  * 
  */
-public class Statistics implements Updateable {
+public class Statistics implements Updatable {
 
 	private CsvWriter csv = null;
 	private int lastAlive = 0;

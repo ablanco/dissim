@@ -26,7 +26,7 @@ import jade.core.Agent;
  * @author Manuel Gomar, Alejandro Blanco
  * 
  */
-public interface Updateable {
+public interface Updatable {
 
 	/**
 	 * Sets an agent to the client, this agent will receive the updates

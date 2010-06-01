@@ -30,7 +30,7 @@ import agents.EnvironmentAgent;
 import agents.UpdateAgent;
 
 import util.Snapshot;
-import util.Updateable;
+import util.Updatable;
 
 /**
  * Visor in 2D of the simulation, embedded in a window. It should be used
@@ -40,7 +40,7 @@ import util.Updateable;
  * 
  */
 @SuppressWarnings("serial")
-public class VisorFrame extends JFrame implements Updateable {
+public class VisorFrame extends JFrame implements Updatable {
 
 	/**
 	 * Actual visor

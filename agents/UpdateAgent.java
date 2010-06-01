@@ -24,13 +24,13 @@ import jade.lang.acl.ACLMessage;
 import java.lang.reflect.Constructor;
 
 import util.Snapshot;
-import util.Updateable;
+import util.Updatable;
 import behaviours.ReceiveUpdateBehav;
 
 /**
  * {@link Agent} that subcribes to an {@link EnvironmentAgent} and receives a
  * {@link Snapshot} on a regular period, and passes it to a client that must
- * implement the {@link Updateable} interface.
+ * implement the {@link Updatable} interface.
  * 
  * @author Alejandro Blanco, Manuel Gomar
  * 
@@ -42,9 +42,9 @@ public class UpdateAgent extends Agent {
 
 	/**
 	 * Object that processes the {@link Snapshot}, it must implement the
-	 * {@link Updateable} interface
+	 * {@link Updatable} interface
 	 */
-	private Updateable client = null;
+	private Updatable client = null;
 
 	@Override
 	protected void setup() {
@@ -56,7 +56,7 @@ public class UpdateAgent extends Agent {
 				// Carga, y crea un objeto de la clase pasada, por reflexión
 				Class<?> cls = Class.forName((String) args[0]);
 				Constructor<?> ct = cls.getConstructor(new Class[0]);
-				client = (Updateable) ct.newInstance(new Object[0]);
+				client = (Updatable) ct.newInstance(new Object[0]);
 
 				envs = ((String) args[1]).split(",");
 			} catch (Throwable e) {

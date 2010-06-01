@@ -27,11 +27,11 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import jade.lang.acl.UnreadableException;
 import util.Snapshot;
-import util.Updateable;
+import util.Updatable;
 
 /**
  * {@link Behaviour} that receives a {@link Snapshot} and calls the method
- * update of an {@link Updateable} object. It parallelizes the receiving and the
+ * update of an {@link Updatable} object. It parallelizes the receiving and the
  * processing.
  * 
  * @author Alejandro Blanco, Manuel Gomar
@@ -43,7 +43,7 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 	/**
 	 * Object that processes the {@link Snapshot}
 	 */
-	private Updateable client;
+	private Updatable client;
 
 	/**
 	 * {@link ReceiveUpdateBehav} constructor
@@ -51,9 +51,9 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 	 * @param a
 	 *            Usually an {@link UpdateAgent}
 	 * @param client
-	 *            {@link Updateable}
+	 *            {@link Updatable}
 	 */
-	public ReceiveUpdateBehav(Agent a, Updateable client) {
+	public ReceiveUpdateBehav(Agent a, Updatable client) {
 		super(a, ParallelBehaviour.WHEN_ALL);
 		this.client = client;
 		addSubBehaviour(new ReceiveBehav(a, this));
@@ -103,7 +103,7 @@ public class ReceiveUpdateBehav extends ParallelBehaviour {
 
 	/**
 	 * {@link Behaviour} that actually calls the update method of the
-	 * {@link Updateable} object.
+	 * {@link Updatable} object.
 	 * 
 	 * @author Alejandro Blanco, Manuel Gomar
 	 * 
