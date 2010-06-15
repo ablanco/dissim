@@ -268,35 +268,38 @@ public class Osm {
 	 */
 	public static void setOsmMapInfo(HexagonalGrid grid) {
 		OsmMap osmMap = null;
-		try{
+		try {
 			osmMap = OsmMap.getMap(grid);
-		
-		for (OsmRelation r : osmMap.getRelations()) {
-			if (r.getType() > Undefined) {
-				// System.err.println("**Escribiendo Relations " + r);
-				setStreetValue(r, grid);
-			} else {
-				// System.err.println("No se ha escrito: " + r);
-			}
-		}
 
-		for (OsmWay w : osmMap.getWays().values()) {
-			if (w.getType() > Undefined) {
-				setStreetValue(w, grid);
-			} else {
-				// System.err.println("No se ha escrito: " + w);
+			for (OsmRelation r : osmMap.getRelations()) {
+				if (r.getType() > Undefined) {
+					// System.err.println("**Escribiendo Relations " + r);
+					setStreetValue(r, grid);
+				} else {
+					// System.err.println("No se ha escrito: " + r);
+				}
 			}
-		}
 
-		for (OsmNode n : osmMap.getNodes().values()) {
-			// Solo safePoints, lo demas no me interesa
-			if (getGenericType(n.getType()) == SafePoint) {
-				// System.err.println("Escribiendo Nodes: " + n);
-				setStreetValue(n, grid);
+			for (OsmWay w : osmMap.getWays().values()) {
+				if (w.getType() > Undefined) {
+					setStreetValue(w, grid);
+				} else {
+					// System.err.println("No se ha escrito: " + w);
+				}
 			}
-		}
-		}catch (NullPointerException e) {
-			System.err.println("OSM file corrupted, please delete and download again, usually at /tmp/DisSim");
+
+			for (OsmNode n : osmMap.getNodes().values()) {
+				// Solo safePoints, lo demas no me interesa
+				if (getGenericType(n.getType()) == SafePoint) {
+					// System.err.println("Escribiendo Nodes: " + n);
+					setStreetValue(n, grid);
+				}
+			}
+		} catch (NullPointerException e) {
+			System.err
+					.println("OSM file may be corrupted or missing. Check if "
+							+ "OSM is avaible and delete the downloaded file if"
+							+ " any, usually at /tmp/DisSim.");
 		}
 	}
 

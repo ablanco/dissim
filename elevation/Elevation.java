@@ -93,8 +93,8 @@ public class Elevation {
 
 		int endCol = grid.getOffCol() + grid.getColumns();
 		int endRow = grid.getOffRow() + grid.getRows();
-		for (int col = grid.getOffCol(); col < endCol; col++) {
-			for (int row = grid.getOffRow(); row < endRow; row++) {
+		for (int col = grid.getOffCol() - 1; col < endCol; col++) {
+			for (int row = grid.getOffRow() - 1; row < endRow; row++) {
 				LatLng coord = grid.tileToCoord(new Point(col, row));
 				PreparedStatement stmt = getNearPoints(con, coord, ilat, ilng);
 

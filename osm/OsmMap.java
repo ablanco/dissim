@@ -194,9 +194,9 @@ public class OsmMap {
 				+ NW.getLat();
 		String fileName = "map?bbox=" + mBox;
 		url += mBox;
-		System.err.println("Obtaining info from :" + url);
+		System.out.println("Obtaining info from :" + url);
 		File xmlFile = Osm.getOSMXmlFromURL(url, fileName);
-		System.err.println("Reading file: " + xmlFile.getAbsolutePath());
+		System.out.println("Reading file: " + xmlFile.getAbsolutePath());
 		// parse XML file -> XML document will be build
 		Document doc = null;
 		Node node = null;
@@ -205,12 +205,12 @@ public class OsmMap {
 			// get root node of xml tree structure
 			node = doc.getDocumentElement();
 			// write node and its child nodes into System.out
-
 		} catch (NullPointerException e) {
 			// A ocurrido un error al obtener el xml, abortado calles
 			System.err.println("Error obtaining Streets, no map generated");
 			return null;
 		}
+
 		OsmMap osmMap = new OsmMap();
 		// <?xml version="1.0" encoding="UTF-8"?>
 		// <osm version="0.6" generator="CGImap 0.0.2">
