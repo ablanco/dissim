@@ -47,6 +47,7 @@ public class GridSizeCalculator {
 				+ columns * rows);
 		System.out.println("Tamaño del grid con corona: " + (columns + 2) + "x"
 				+ (rows + 2) + " -> " + (columns + 2) * (rows + 2));
+		// + " [" + ((columns + 2) * (rows + 2)) / (60 * 60 * 24) + " días]");
 	}
 
 }
