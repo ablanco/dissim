@@ -21,24 +21,28 @@ import util.jcoord.LatLng;
 public class GridSizeCalculator {
 
 	public static void main(String[] args) {
-		if (args.length != 6)
-			System.out.println("Usage: " + args[0]
-					+ " NorthWestLatitude NorthWestLongitude "
-					+ "SouthEastLatitude SouthEastLongitude TileSize");
+		if (args.length != 5) {
+			System.out.println("Usage: GridSizeCalculator NorthWestLatitude "
+					+ "NorthWestLongitude SouthEastLatitude "
+					+ "SouthEastLongitude TileSize");
+			return;
+		}
 
-		double lat = Double.parseDouble(args[1]);
-		double lng = Double.parseDouble(args[2]);
+		double lat = Double.parseDouble(args[0]);
+		double lng = Double.parseDouble(args[1]);
 		LatLng NW = new LatLng(lat, lng);
 
-		lat = Double.parseDouble(args[3]);
-		lng = Double.parseDouble(args[4]);
+		lat = Double.parseDouble(args[2]);
+		lng = Double.parseDouble(args[3]);
 		LatLng SE = new LatLng(lat, lng);
 
 		int size[] = HexagonalGrid.calculateSize(NW, SE, Integer
-				.parseInt(args[5]));
+				.parseInt(args[4]));
 		int columns = size[0];
-		int rows = size[0];
+		int rows = size[1];
 
+		System.out.println("Área: NW" + NW.toString() + " SE" + SE.toString());
+		System.out.println("Tamaño de los hexágonos: " + args[4]);
 		System.out.println("Tamaño del grid: " + columns + "x" + rows + " -> "
 				+ columns * rows);
 		System.out.println("Tamaño del grid con corona: " + (columns + 2) + "x"
