@@ -98,13 +98,15 @@ public class ElevationWS {
 	 */
 	public static double getElevation(LatLng coord) throws WebServiceException {
 		// -1.79769313486231E+308 means no valid values were found at that point
-		double altitude = Double.MIN_VALUE;
+		double elevation = Double.MIN_VALUE;
 
 		String result = getElevation(coord, "-1", "METERS", true);
-		result = result.substring(8, result.length() - 9);
-		altitude = Double.parseDouble(result);
+		if (!result.contains("null")) {
+			result = result.substring(8, result.length() - 9);
+			elevation = Double.parseDouble(result);
+		}
 
-		return altitude;
+		return elevation;
 	}
 
 	/**
