@@ -152,7 +152,6 @@ public class KmlBase implements Updatable {
 			setDescription(snap.getDescription());
 			// Le damos un nombre al Contenedor Principal del KML
 			folder = newFolder(kml, snap.getName(), snap.getDescription());
-
 			kFlood = new KmlFlood(addFolder(folder, "Flood", "Flooded Sectors"));
 
 			kPeople = new KmlPeople(addFolder(folder, "People",
@@ -284,7 +283,7 @@ public class KmlBase implements Updatable {
 			File f = new File(fileName + ".kmz");
 			kml.marshalAsKmz(f.getPath());
 			// For debug
-			kml.marshal(new File(fileName + ".kml"));
+//			kml.marshal(new File(fileName + ".kml"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
