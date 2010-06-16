@@ -18,11 +18,24 @@ package util;
 
 import util.jcoord.LatLng;
 
+/**
+ * It calculates and shows the size of the grid that results of the given
+ * coordinates and tile size.
+ * 
+ * @author Alejandro Blanco, Manuel Gomar
+ * 
+ */
 public class GridSizeCalculator {
 
+	/**
+	 * 
+	 * @param args
+	 *            NorthWestLatitude NorthWestLongitude SouthEastLatitude
+	 *            SouthEastLongitude TileSize
+	 */
 	public static void main(String[] args) {
 		if (args.length != 5) {
-			System.out.println("Usage: GridSizeCalculator NorthWestLatitude "
+			System.out.println("Parameters: NorthWestLatitude "
 					+ "NorthWestLongitude SouthEastLatitude "
 					+ "SouthEastLongitude TileSize");
 			return;
@@ -41,13 +54,14 @@ public class GridSizeCalculator {
 		int columns = size[0];
 		int rows = size[1];
 
-		System.out.println("Área: NW" + NW.toString() + " SE" + SE.toString());
-		System.out.println("Tamaño de los hexágonos: " + args[4]);
-		System.out.println("Tamaño del grid: " + columns + "x" + rows + " -> "
+		System.out.println("Area: NW" + NW.toString() + " SE" + SE.toString());
+		System.out.println("Hexagon size: " + args[4]);
+		System.out.println("Grid size: " + columns + "x" + rows + " -> "
 				+ columns * rows);
-		System.out.println("Tamaño del grid con corona: " + (columns + 2) + "x"
-				+ (rows + 2) + " -> " + (columns + 2) * (rows + 2));
-		// + " [" + ((columns + 2) * (rows + 2)) / (60 * 60 * 24) + " días]");
+		System.out.println("Grid size with the extra border: " + (columns + 2)
+				+ "x" + (rows + 2) + " -> " + (columns + 2) * (rows + 2));
+		// + " [" + (((columns + 2) * (rows + 2)) * 0.3) / (60 * 60 * 24) +
+		// " días]");
 	}
 
 }
