@@ -21,6 +21,8 @@ import jade.core.Agent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,6 +34,7 @@ import agents.UpdateAgent;
 
 import util.HexagonalGrid;
 import util.Pedestrian;
+import util.Point;
 import util.Scenario;
 import util.Snapshot;
 import util.Updatable;
@@ -152,7 +155,6 @@ public class KmlBase implements Updatable {
 			setDescription(snap.getDescription());
 			// Le damos un nombre al Contenedor Principal del KML
 			folder = newFolder(kml, snap.getName(), snap.getDescription());
-
 			kFlood = new KmlFlood(addFolder(folder, "Flood", "Flooded Sectors"));
 
 			kPeople = new KmlPeople(addFolder(folder, "People",
@@ -195,17 +197,24 @@ public class KmlBase implements Updatable {
 				// Si hay personas
 				short precision = snap.getGrid().getPrecision();
 				HexagonalGrid g = snap.getGrid();
-				for (Pedestrian p : pedestrians) {
-					// Por cada persona averiguamos su status y su posicion
-					// Tenemos que pasar a alura real
-					LatLng c = g.tileToCoord(p.getPoint());
-					// Supongo que la persona tiene 5 metros de altura, para que
-					// se vea bien
-					c.setElevation(Scenario.innerToDouble(precision, (short) (p
-							.getPoint().getZ())) + 5.0);
-					p.setPos(c);
+				Map<Point, Pedestrians> pedestrianMap = new HashMap<Point, Pedestrians>();
+				for (Pedestrian pedestrian : pedestrians) {
+					//Por cada persona
+					Point key = pedestrian.getPoint();					
+					//obtengo su posicion y la busco
+					Pedestrians ppt  = pedestrianMap.get(key);
+					if (ppt==null){
+						//Primera persona en esta posicion 
+						pedestrianMap.put(key, new Pedestrians(0, pedestrian.getStatus(), g.tileToCoord(key)));
+					}else{
+						//Ya habia personas, añado una mas.
+						ppt.inc();
+						//Incremento la altura en 1
+						short elev = (short) (ppt.pos.getElevation() + Scenario.innerToDouble(precision, (short) 1));
+						ppt.setElevation(elev);
+					}			
 				}
-				kPeople.update(pedestrians, currentEnv.getName(), currentEnv
+				kPeople.update(pedestrianMap.values(), currentEnv.getName(), currentEnv
 						.getBegin(), currentEnv.getEnd(), currentEnv.getIncs());
 			}
 		}
@@ -284,7 +293,7 @@ public class KmlBase implements Updatable {
 			File f = new File(fileName + ".kmz");
 			kml.marshalAsKmz(f.getPath());
 			// For debug
-			kml.marshal(new File(fileName + ".kml"));
+//			kml.marshal(new File(fileName + ".kml"));
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -377,6 +386,32 @@ public class KmlBase implements Updatable {
 		}
 		if (endTime != null) {
 			t.setEnd(endTime);
+		}
+	}
+	
+	protected class Pedestrians {
+		public int amount;
+		public int status;
+		public LatLng pos;
+
+		public Pedestrians(int contador, int status, LatLng pos) {
+			this.amount = contador;
+			this.status = status;
+			this.pos = new LatLng(pos.getLat(), pos.getLng());
+		}
+
+		public void inc() {
+			amount++;
+		}
+		
+		public void setElevation(short elevation){
+			pos.setElevation(elevation);
+		}
+
+		public ArrayList<LatLng> getList(){
+			ArrayList<LatLng> l = new ArrayList<LatLng>();
+			l.add(pos);
+			return l;
 		}
 	}
 
