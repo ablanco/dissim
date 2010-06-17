@@ -38,7 +38,7 @@ import util.jcoord.LatLng;
  * form of static methods. It queries a DataBase for the data, and if it doesn't
  * find it there the uses a webservice to obatin it, and updates the DataBase.
  * 
- * @see ElevationWS
+ * @see USAWS
  * 
  * @author Manuel Gomar, Alejandro Blanco
  */
@@ -117,7 +117,7 @@ public class Elevation {
 					} else {
 						// Quiere decir que no tenemos ningun resultado, lo
 						// preguntamos en el servicio web
-						double elev = ElevationWS.getElevation(coord);
+						double elev = getService(coord).getElevation(coord);
 						insertNewElevation(con, coord, elev);
 						value = Scenario.doubleToInner(grid.getPrecision(),
 								elev);
@@ -243,6 +243,11 @@ public class Elevation {
 			e.printStackTrace();
 		}
 		return con;
+	}
+
+	private static ElevationService getService(LatLng coord) {
+		// TODO
+		return new USAWS();
 	}
 
 }

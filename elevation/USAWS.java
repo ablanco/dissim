@@ -31,22 +31,19 @@ import util.jcoord.LatLng;
 
 /**
  * Webservice client to the USGS elevation services.
- * http://gisdata.usgs.gov/XMLWebServices/TNM_Elevation_Service.php
+ * http://gisdata.usgs.gov/XMLWebServices/TNM_Elevation_Service.php The best
+ * spatial resolution is 10 square meters but it isn't always available.
  * 
  * @author Manuel Gomar, Alejandro Blanco
  */
-public class ElevationWS {
+public class USAWS implements elevation.ElevationService {
 
-	private static ElevationServiceSoap service = null;
-
-	private ElevationWS() {
-		// Inaccesible - Clase no instanciable
-	}
+	private ElevationServiceSoap service = null;
 
 	/**
 	 * Initializes the client
 	 */
-	private static void init() {
+	private void init() {
 		ElevationService serv = new ElevationService();
 		service = serv.getElevationServiceSoap();
 	}
@@ -65,7 +62,7 @@ public class ElevationWS {
 	 * @return Webservice's string response
 	 * @throws WebServiceException
 	 */
-	public static String getElevation(LatLng coord, String sourceLayer,
+	public String getElevation(LatLng coord, String sourceLayer,
 			String elevationUnits, boolean elevationOnly)
 			throws WebServiceException {
 		if (service == null)
@@ -96,7 +93,8 @@ public class ElevationWS {
 	 * @return Elevation of the terrain
 	 * @throws WebServiceException
 	 */
-	public static double getElevation(LatLng coord) throws WebServiceException {
+	@Override
+	public double getElevation(LatLng coord) throws WebServiceException {
 		// -1.79769313486231E+308 means no valid values were found at that point
 		double elevation = Double.MIN_VALUE;
 
@@ -120,7 +118,7 @@ public class ElevationWS {
 	 * @return Webservice's string response
 	 * @throws WebServiceException
 	 */
-	public static String getAllElevations(LatLng coord, String elevationUnits)
+	public String getAllElevations(LatLng coord, String elevationUnits)
 			throws WebServiceException {
 		if (service == null)
 			init();
@@ -146,8 +144,16 @@ public class ElevationWS {
 	 * @return Webservice's string response
 	 * @throws WebServiceException
 	 */
-	public static String getAllElevations(LatLng coord)
-			throws WebServiceException {
+	public String getAllElevations(LatLng coord) throws WebServiceException {
 		return getAllElevations(coord, "METERS");
+	}
+
+	/**
+	 * Not supported by the webservice
+	 */
+	@Override
+	public double[][] getAllElevations(LatLng NW, LatLng SE, int TileSize)
+			throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
 	}
 }
