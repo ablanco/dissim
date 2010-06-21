@@ -220,7 +220,7 @@ public class SpainGet implements ElevationService {
 		// throw new IllegalArgumentException("The coordinate "
 		// + coord.toString() + " is outside the supported area");
 		int zone = utm.getLngZone();
-		if (zone != 28 && zone != 30 && zone != 31)
+		if (zone != 28 && zone != 29 && zone != 30 && zone != 31)
 			throw new IllegalArgumentException("The coordinate "
 					+ coord.toString() + " is outside the supported area");
 		return "UTM" + zone + "N";
@@ -238,7 +238,7 @@ public class SpainGet implements ElevationService {
 					+ NW.toString() + " and " + SE.toString()
 					+ " are in differents zones");
 		int zone = utmNW.getLngZone();
-		if (zone != 28 && zone != 30 && zone != 31)
+		if (zone != 28 && zone != 29 && zone != 30 && zone != 31)
 			throw new IllegalArgumentException("The coordinates "
 					+ NW.toString() + " and " + SE.toString()
 					+ " are outside the supported area");
