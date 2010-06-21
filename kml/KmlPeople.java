@@ -94,19 +94,18 @@ public class KmlPeople {
 	 * @param incs
 	 *            of the enviroment
 	 */
-	@SuppressWarnings("unchecked")
-	public void update(Collection<Pedestrians> people, String name, String beginTime,
-			String endTime, double[] incs) {
+	public void update(Collection<Pedestrians> people, String name,
+			String beginTime, String endTime, double[] incs) {
 		folder = container.createAndAddFolder().withName(name).withDescription(
 				"From: " + beginTime + " To :" + endTime);
 		this.begin = beginTime;
 		this.end = endTime;
 		double ilat = incs[0] * 4 / 6;
 		double ilng = incs[1] / 2;
-		for (Pedestrians p : people){
-			//Por cada uno de ellos, creamos un poligono
-		drawPedestrian(new Kpolygon(Kpolygon.Pedestrian, p.getList(), ilat,
-				ilng), p.status, p.amount);
+		for (Pedestrians p : people) {
+			// Por cada uno de ellos, creamos un poligono
+			drawPedestrian(new Kpolygon(Kpolygon.Pedestrian, p.getList(), ilat,
+					ilng), p.status, p.amount);
 		}
 	}
 
@@ -117,7 +116,7 @@ public class KmlPeople {
 	 *            Polygon that represents the pedestrian at position
 	 * @param status
 	 *            of the pedestrian
-	 * @param contador 
+	 * @param contador
 	 * @throws IllegalArgumentException
 	 *             if the polygon is null
 	 */
@@ -125,14 +124,15 @@ public class KmlPeople {
 		if (kp == null) {
 			throw new IllegalArgumentException("El polygono no puede ser nulo");
 		}
-		//Notese que la altura depende de la gente que haya
+		// Notese que la altura depende de la gente que haya
 		Placemark placeMark = KmlBase.newPlaceMark(folder, String.valueOf(kp
 				.getDeep()));
-		//Le damos un intervalo de tiempo
+		// Le damos un intervalo de tiempo
 		KmlBase.setTimeSpan(placeMark, begin, end);
-		//Le añadimos informacion extra
-		placeMark.createAndSetExtendedData().createAndAddData("Hay "+contador+" personas en esta casilla");
-		//Le añadimos un estado
+		// Le añadimos informacion extra
+		placeMark.createAndSetExtendedData().createAndAddData(
+				"Hay " + contador + " personas en esta casilla");
+		// Le añadimos un estado
 		switch (status) {
 		case Pedestrian.DEAD:
 			placeMark.setStyleUrl(DEAD);
@@ -146,7 +146,7 @@ public class KmlPeople {
 		default:
 			break;
 		}
-		//Dibujamos el poligono
+		// Dibujamos el poligono
 		KmlBase.drawPolygon(placeMark, kp);
 	}
 }
