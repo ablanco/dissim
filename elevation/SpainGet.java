@@ -72,8 +72,7 @@ public class SpainGet implements ElevationService {
 			url += getHusoUTM(NW, SE)
 					+ "/wcsServlet?SERVICE=WCS&REQUEST=GetCoverage&VERSION=1.0.0&CRS=EPSG:4326";
 		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			return result;
+			throw new UnsupportedOperationException();
 		}
 		// -5.927247,37.403450,-5.92724,37.40346 Este BB da una única celda
 		url += "&BBOX=" + NW.getLng() + "," + SE.getLat() + "," + SE.getLng()
@@ -235,7 +234,8 @@ public class SpainGet implements ElevationService {
 		// + " are outside the supported area");
 		if (utmNW.getLngZone() != utmSE.getLngZone())
 			throw new IllegalArgumentException("The coordinates "
-					+ NW.toString() + " and " + SE.toString()
+					+ NW.toString() + "[" + utmNW.getLngZone() + "]" + " and "
+					+ SE.toString() + "[" + utmSE.getLngZone() + "]"
 					+ " are in differents zones");
 		int zone = utmNW.getLngZone();
 		if (zone != 28 && zone != 29 && zone != 30 && zone != 31)
