@@ -85,6 +85,8 @@ public class Elevation {
 			return;
 		}
 		Connection con = getConnection(driver, server, port, db, user, pass);
+		if (con == null)
+			return;
 
 		// Ahora recorremos toda la matriz y buscamos/insertamos los valores de
 		// las alturas

@@ -16,7 +16,10 @@
 
 package elevation;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 
 import util.java.TempFiles;
 import util.java.Wget;
@@ -43,11 +46,15 @@ public class SpainGet implements ElevationService {
 			e.printStackTrace();
 			return result;
 		}
-		// TODO terminar url BBOX
+		double lat = coord.getLat();
+		double lng = coord.getLng();
+		// -5.927247,37.403450,-5.92724,37.40346 Este BB da una única celda
+		url += "&BBOX=" + lng + "," + lat + "," + (lng + 0.00001) + ","
+				+ (lat + 0.00001);
 		url += "&COVERAGE=MDT25_peninsula_ZIP&RESX=25&RESY=25&FORMAT=AsciiGrid&EXCEPTIONS=XML";
 		File f = downloadFile(url);
-		double[][] data = parseFile(f);
 		try {
+			double[][] data = parseFile(f);
 			result = data[0][0];
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -58,13 +65,102 @@ public class SpainGet implements ElevationService {
 	@Override
 	public double[][] getAllElevations(LatLng NW, LatLng SE, int TileSize)
 			throws UnsupportedOperationException {
-		// TODO implementar
-		throw new UnsupportedOperationException();
+		double[][] result = new double[0][0];
+		String url = "http://www.idee.es/wcs/IDEE-WCS-";
+		try {
+			url += getHusoUTM(NW, SE)
+					+ "/wcsServlet?SERVICE=WCS&REQUEST=GetCoverage&VERSION=1.0.0&CRS=EPSG:4326";
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			return result;
+		}
+		// -5.927247,37.403450,-5.92724,37.40346 Este BB da una única celda
+		url += "&BBOX=" + NW.getLng() + "," + SE.getLat() + "," + SE.getLng()
+				+ "," + NW.getLat();
+		url += "&COVERAGE=MDT25_peninsula_ZIP&RESX=25&RESY=25&FORMAT=AsciiGrid&EXCEPTIONS=XML";
+		File f = downloadFile(url);
+		try {
+			result = parseFile(f);
+			// TODO adaptar al tilesize
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
-	private double[][] parseFile(File f) {
+	private double[][] parseFile(File f) throws ParseException {
 		double[][] result = null;
-		// TODO implementar
+
+		ArrayList<String> data = new ArrayList<String>();
+		try {
+			if (f.exists()) {
+				BufferedReader br = new BufferedReader(new FileReader(f));
+				String line;
+
+				try {
+					// Cargamos el fichero completo
+					while ((line = br.readLine()) != null)
+						data.add(line);
+				} finally {
+					br.close();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return result;
+		}
+
+		// ncols 8
+		// nrows 6
+		// xllcorner -5.927493693907544
+		// yllcorner 37.40339928898948
+		// cellsize 2.2486059E-4
+		// NODATA_value -999.0
+		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
+		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
+		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
+		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
+		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
+		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
+
+		int cont = 0;
+		double no_data = -999.0;
+		int cols = -1;
+		int rows = -1;
+		String[] aux;
+		for (String s : data) {
+			cont++;
+			if (cont > 6) {
+				// Datos
+				if (cols == -1 || rows == -1)
+					throw new ParseException("File " + f.getAbsolutePath()
+							+ " has wrong data. The number of columns "
+							+ "and rows hasen't been defined.");
+				if (result == null)
+					result = new double[cols][rows];
+
+				aux = s.split(" ");
+				for (int i = 0; i < cols; i++) {
+					double value = Double.parseDouble(aux[i]);
+					if (value == no_data)
+						value = Double.MIN_VALUE;
+					result[i][cont - 7] = value;
+				}
+			} else {
+				// Metadatos
+				if (s.startsWith("ncols")) {
+					aux = s.split(" ");
+					cols = Integer.parseInt(aux[1]);
+				} else if (s.startsWith("nrows")) {
+					aux = s.split(" ");
+					rows = Integer.parseInt(aux[1]);
+				} else if (s.startsWith("NODATA")) {
+					aux = s.split(" ");
+					no_data = Double.parseDouble(aux[1]);
+				}
+			}
+		}
+
 		return result;
 	}
 
@@ -123,6 +219,16 @@ public class SpainGet implements ElevationService {
 					+ NW.toString() + " and " + SE.toString()
 					+ " are outside the supported area");
 		return "UTM" + zone + "N";
+	}
+
+	public class ParseException extends Exception {
+
+		private static final long serialVersionUID = 1L;
+
+		public ParseException(String msg) {
+			super(msg);
+		}
+
 	}
 
 }
