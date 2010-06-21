@@ -181,9 +181,9 @@ public class HexagonalGrid implements Serializable {
 	public static int[] calculateSize(LatLng NW, LatLng SE, int tileSize) {
 		double ts = (double) tileSize;
 		double hexWidth = ((ts / 2.0) * Math.cos(Math.PI / 6.0)) * 2.0;
-		int x = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) / hexWidth);
-		int y = (int) (NW.distance(new LatLng(SE.getLat(), NW.getLng())) / ((ts * 3.0) / 4.0));
-		return new int[] { x, y };
+		int cols = (int) (NW.distance(new LatLng(NW.getLat(), SE.getLng())) / hexWidth);
+		int rows = (int) (NW.distance(new LatLng(SE.getLat(), NW.getLng())) / ((ts * 3.0) / 4.0));
+		return new int[] { cols, rows };
 	}
 
 	/**

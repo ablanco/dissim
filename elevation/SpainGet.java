@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import util.HexagonalGrid;
 import util.java.TempFiles;
 import util.java.Wget;
 import util.jcoord.LatLng;
@@ -63,7 +64,7 @@ public class SpainGet implements ElevationService {
 	}
 
 	@Override
-	public double[][] getAllElevations(LatLng NW, LatLng SE, int TileSize)
+	public double[][] getAllElevations(LatLng NW, LatLng SE, int tileSize)
 			throws UnsupportedOperationException {
 		double[][] result = new double[0][0];
 		String url = "http://www.idee.es/wcs/IDEE-WCS-";
@@ -80,8 +81,31 @@ public class SpainGet implements ElevationService {
 		url += "&COVERAGE=MDT25_peninsula_ZIP&RESX=25&RESY=25&FORMAT=AsciiGrid&EXCEPTIONS=XML";
 		File f = downloadFile(url);
 		try {
-			result = parseFile(f);
-			// TODO adaptar al tilesize
+			double[][] data = parseFile(f);
+			int dcols = data.length;
+			int drows = data[0].length;
+			// result está en tiles cuadradas? de 25m
+			// hay que adaptarlo a la maya hexagonal
+			int[] size = HexagonalGrid.calculateSize(NW, SE, tileSize);
+			result = new double[size[0] + 2][size[1] + 2];
+			// el +2 es de la corona
+
+			for (int col = 0; col < result.length; col++) {
+				for (int row = 0; row < result[0].length; row++) {
+					int dcol = ((col - 1) * tileSize) / 25;
+					int drow = ((row - 1) * tileSize) / 25;
+					if (dcol < 0)
+						dcol = 0;
+					if (drow < 0)
+						drow = 0;
+					if (dcol >= dcols)
+						dcol = dcols - 1;
+					if (drow >= drows)
+						drow = drows - 1;
+
+					result[col][row] = data[dcol][drow];
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -22,7 +22,7 @@ public interface ElevationService {
 
 	public double getElevation(LatLng coord);
 
-	public double[][] getAllElevations(LatLng NW, LatLng SE, int TileSize)
+	public double[][] getAllElevations(LatLng NW, LatLng SE, int tileSize)
 			throws UnsupportedOperationException;
 
 }

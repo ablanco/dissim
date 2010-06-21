@@ -88,50 +88,77 @@ public class Elevation {
 		if (con == null)
 			return;
 
-		// Ahora recorremos toda la matriz y buscamos/insertamos los valores de
-		// las alturas
 		double ilat = grid.getIncs()[0];
 		double ilng = grid.getIncs()[1];
-
+		LatLng[] area = grid.getArea();
+		// Asumimos mismo servicio de alturas para todo el área, puede dar
+		// problemas en las zonas fronterizas
+		ElevationService service = getService(area[0]);
 		int endCol = grid.getOffCol() + grid.getColumns();
 		int endRow = grid.getOffRow() + grid.getRows();
-		for (int col = grid.getOffCol() - 1; col < endCol; col++) {
-			for (int row = grid.getOffRow() - 1; row < endRow; row++) {
-				LatLng coord = grid.tileToCoord(new Point(col, row));
-				PreparedStatement stmt = getNearPoints(con, coord, ilat, ilng);
 
-				short value = Short.MIN_VALUE;
-
-				try {
-					double acum = 0;
-					int counter = 0;
-					ResultSet rs = stmt.getResultSet();
-					while (rs.next()) {
-						acum += rs.getDouble(1);
-						counter++;
-					}
-
-					if (counter != 0) {
-						// Quiere decir que tenemos mas de un resultado, hacemos
-						// la media
-						value = Scenario.doubleToInner(grid.getPrecision(),
-								(acum / counter));
-					} else {
-						// Quiere decir que no tenemos ningun resultado, lo
-						// preguntamos en el servicio web
-						double elev = getService(coord).getElevation(coord);
-						insertNewElevation(con, coord, elev);
-						value = Scenario.doubleToInner(grid.getPrecision(),
-								elev);
-					}
-
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+		try {
+			// Intentamos traer del servicio todas las alturas de golpe
+			double[][] data = service.getAllElevations(area[0], area[1], grid
+					.getTileSize());
+			int dcol = 0;
+			int drow;
+			for (int col = grid.getOffCol() - 1; col <= endCol; col++) {
+				drow = 0;
+				for (int row = grid.getOffRow() - 1; row <= endRow; row++) {
+					grid.setTerrainValue(col, row, Scenario.doubleToInner(grid
+							.getPrecision(), data[dcol][drow]));
+					drow++;
 				}
+				dcol++;
+			}
+			// TODO este método no utiliza la BD, quizás debería
+		} catch (Exception e) {
+			if (!(e instanceof UnsupportedOperationException))
+				e.printStackTrace();
 
-				grid.setTerrainValue(col, row, value);
+			// Ahora recorremos toda la matriz y buscamos/insertamos los valores
+			// de las alturas uno a uno
+			for (int col = grid.getOffCol() - 1; col <= endCol; col++) {
+				for (int row = grid.getOffRow() - 1; row <= endRow; row++) {
+					LatLng coord = grid.tileToCoord(new Point(col, row));
+					PreparedStatement stmt = getNearPoints(con, coord, ilat,
+							ilng);
+
+					short value = Short.MIN_VALUE;
+
+					try {
+						double acum = 0;
+						int counter = 0;
+						ResultSet rs = stmt.getResultSet();
+						while (rs.next()) {
+							acum += rs.getDouble(1);
+							counter++;
+						}
+
+						if (counter != 0) {
+							// Quiere decir que tenemos más de un resultado,
+							// hacemos la media
+							value = Scenario.doubleToInner(grid.getPrecision(),
+									(acum / counter));
+						} else {
+							// Quiere decir que no tenemos ningún resultado, lo
+							// preguntamos en el servicio web
+							double elev = service.getElevation(coord);
+							insertNewElevation(con, coord, elev);
+							value = Scenario.doubleToInner(grid.getPrecision(),
+									elev);
+						}
+
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+
+					grid.setTerrainValue(col, row, value);
+				}
 			}
 		}
+
 		closeConnection(con);
 	}
 
@@ -247,9 +274,19 @@ public class Elevation {
 		return con;
 	}
 
+	/**
+	 * Returns the right elevation service based on the given coordinate
+	 * 
+	 * @param coord
+	 * @return The right elevation service based on the given coordinate
+	 */
 	private static ElevationService getService(LatLng coord) {
-		// TODO
-		return new USAWS();
+		ElevationService service = null;
+		if (coord.getLng() < -40)
+			service = new USAWS();
+		else
+			service = new SpainGet();
+		return service;
 	}
 
 }
