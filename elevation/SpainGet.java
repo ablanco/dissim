@@ -106,7 +106,7 @@ public class SpainGet implements ElevationService {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new UnsupportedOperationException();
 		}
 		return result;
 	}
@@ -127,24 +127,15 @@ public class SpainGet implements ElevationService {
 				} finally {
 					br.close();
 				}
+			} else {
+				System.err.println("The file " + f.getName()
+						+ " doesn't exists");
+				return result;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			return result;
 		}
-
-		// ncols 8
-		// nrows 6
-		// xllcorner -5.927493693907544
-		// yllcorner 37.40339928898948
-		// cellsize 2.2486059E-4
-		// NODATA_value -999.0
-		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
-		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
-		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
-		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
-		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
-		// 27.0 27.0 27.0 27.0 27.0 27.0 27.0 27.0
 
 		int cont = 0;
 		double no_data = -999.0;
@@ -173,13 +164,13 @@ public class SpainGet implements ElevationService {
 				// Metadatos
 				if (s.startsWith("ncols")) {
 					aux = s.split(" ");
-					cols = Integer.parseInt(aux[1]);
+					cols = Integer.parseInt(aux[aux.length - 1]);
 				} else if (s.startsWith("nrows")) {
 					aux = s.split(" ");
-					rows = Integer.parseInt(aux[1]);
+					rows = Integer.parseInt(aux[aux.length - 1]);
 				} else if (s.startsWith("NODATA")) {
 					aux = s.split(" ");
-					no_data = Double.parseDouble(aux[1]);
+					no_data = Double.parseDouble(aux[aux.length - 1]);
 				}
 			}
 		}
@@ -191,16 +182,14 @@ public class SpainGet implements ElevationService {
 		File result = null;
 		try {
 			File dir = TempFiles.getDefaultTempDir();
-			String fileName = url.substring(url.lastIndexOf('/'));
-			File file = new File(dir, fileName);
-			if (!file.exists()) { // Si existe no se baja de nuevo
+			result = new File(dir, url.substring(url.lastIndexOf('/')));
+			if (!result.exists()) { // Si existe no se baja de nuevo
 				if (!Wget.wget(dir.getPath(), url)) {
 					System.err.println("I couldn't download the data from "
 							+ url);
 					return null;
 				}
 			}
-			result = new File(dir, fileName); // TODO hace falta el new?
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -222,7 +211,7 @@ public class SpainGet implements ElevationService {
 		if (zone != 28 && zone != 29 && zone != 30 && zone != 31)
 			throw new IllegalArgumentException("The coordinate "
 					+ coord.toString() + " is outside the supported area");
-		return "UTM" + zone + "N";
+		return "UTM" + zone + "N"; // TODO zone parece estar mal calculado
 	}
 
 	private String getHusoUTM(LatLng NW, LatLng SE) {
@@ -242,7 +231,7 @@ public class SpainGet implements ElevationService {
 			throw new IllegalArgumentException("The coordinates "
 					+ NW.toString() + " and " + SE.toString()
 					+ " are outside the supported area");
-		return "UTM" + zone + "N";
+		return "UTM" + zone + "N"; // TODO zone parece estar mal calculado
 	}
 
 	public class ParseException extends Exception {
