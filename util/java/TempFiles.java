@@ -40,7 +40,7 @@ public class TempFiles {
 	 */
 	public static String getTempPath() {
 		String path = null;
-		/*try {
+		try {
 			File f = File.createTempFile("Chanicidad", null); // TODO mejorar
 
 			path = f.getAbsolutePath();
@@ -53,23 +53,7 @@ public class TempFiles {
 			System.err
 					.println("I wasn't able to create a file inside temp directory");
 			e.printStackTrace();
-		}*/
-		
-		try{
-			String route = ".."+File.pathSeparator+".dissim"+File.pathSeparator+"scen"+File.pathSeparator+"Mapas";
-			System.out.println("accediendo a la ruta "+route);
-			File f = new File(route);
-			if (!f.isDirectory()){
-				f.mkdir();
-			}
-			path = f.getAbsolutePath();
-		}catch (Exception e) {
-			// TODO: handle exception
-			System.err
-			.println("I wasn't able to create a file inside temp directory");
-	e.printStackTrace();
-		}
-		return path;
+		}		return path;
 	}
 
 	/**
