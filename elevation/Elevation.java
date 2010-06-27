@@ -249,6 +249,8 @@ public class Elevation {
 		try {
 			stmt = con.prepareStatement(query);
 			stmt.execute();
+			stmt.clearBatch();
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
