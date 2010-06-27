@@ -127,14 +127,18 @@ public class OsmMember {
 	 */
 	public static OsmMember getMember(Node node, Hashtable<Long, OsmWay> ways) {
 		NamedNodeMap attributes = node.getAttributes();
-		long ref = Long.parseLong(attributes.item(1).getNodeValue());
-		String role = attributes.item(2).getNodeValue();
-		OsmWay osmWay = ways.get(ref);
-		if (osmWay != null) {
-			return new OsmMember(osmWay.getType(), ref, osmWay, role);
-		} else {
+		if (attributes.getNamedItem("ref") != null) {
+			long ref = Long.parseLong(attributes.getNamedItem("ref")
+					.getNodeValue());
+			String role = attributes.getNamedItem("role")
+			.getNodeValue();
+			OsmWay osmWay = ways.get(ref);
+			if (osmWay != null) {
+				return new OsmMember(osmWay.getType(), ref, osmWay, role);
+			}
 			return null;
 		}
+		return null;
 	}
 
 }

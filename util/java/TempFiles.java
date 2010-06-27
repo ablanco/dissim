@@ -32,28 +32,31 @@ public class TempFiles {
 	 * Default Temp Directory
 	 */
 	public static String defaultName = "DisSim";
+	private static String tmpDir = null;
 
 	/**
 	 * Gets machine Temp Directory
 	 * 
 	 * @return temp Path of temporal directory
 	 */
-	public static String getTempPath() {
-		String path = null;
-		try {
-			File f = File.createTempFile("Chanicidad", null); // TODO mejorar
-
-			path = f.getAbsolutePath();
-			path = (String) path.subSequence(0, path.length()
-					- f.getName().length());
-			// Tenemos el path al directorio tmp
-			f.deleteOnExit();
-			f.delete();
-		} catch (Exception e) {
-			System.err
-					.println("I wasn't able to create a file inside temp directory");
-			e.printStackTrace();
-		}		return path;
+	public static String getTempDirPath() {
+		if (tmpDir == null) {
+			try {
+				File f = File.createTempFile("Auxiliar", null);
+				tmpDir = f.getAbsolutePath();
+				tmpDir = (String) tmpDir.subSequence(0, tmpDir.length()
+						- f.getName().length());
+				// Tenemos el path al directorio tmp
+				f.deleteOnExit();
+				f.delete();
+			} catch (Exception e) {
+				System.err
+						.println("I wasn't able to create a file inside temp directory");
+				e.printStackTrace();
+				return "ERROR";
+			}
+		}
+		return tmpDir;
 	}
 
 	/**
@@ -62,7 +65,7 @@ public class TempFiles {
 	 * @return temp {@link File} (directory)
 	 */
 	public static File getDefaultTempDir() {
-		String path = getTempPath();
+		String path = getTempDirPath();
 		File f = new File(path + defaultName);
 		if (!f.exists() && !f.isDirectory()) {
 			f.mkdir();
