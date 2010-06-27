@@ -306,6 +306,7 @@ public class HexagonalGrid implements Serializable {
 		col -= offCol;
 		row -= offRow;
 		short value;
+		try{
 		if (row == -1) {
 			value = northStreets[col + 1];
 		} else if (row == rows) {
@@ -318,6 +319,11 @@ public class HexagonalGrid implements Serializable {
 			value = gridStreets[col][row];
 		}
 		return value;
+		}catch (IndexOutOfBoundsException e) {
+//			e.printStackTrace();
+			System.err.println("Se ha intentado acceder a : ["+col+","+row+"]");
+			return 0;
+		}
 	}
 
 	/**

@@ -28,6 +28,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import elevation.Elevation;
+
+import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Scenario;
 import util.flood.FloodScenario;
@@ -53,13 +56,32 @@ public class CreatorAgent extends Agent {
 
 	@Override
 	protected void setup() {
-		// Obtener argumentos
+//		// Obtener argumentos
+//		//29.94687
+//		LatLng nw = new LatLng(30.0816010,-90.149);
+////		LatLng nw = new LatLng(29.94687,-90.149);
+//		LatLng se = new LatLng(29.8990,-89.880490);
+//		HexagonalGrid grid = new HexagonalGrid(nw, se, 0, 0, 30);
+//		String server="//localhost";
+//		int	port=3306;
+//		String user="root";
+//		String pass="adicto";
+//		String driver="mysql";
+//		String	db="dissim";
+//		int size[] = HexagonalGrid.calculateSize(nw, se, 29);
+//		int col = size[0];
+//		int row = size[1];
+//		double ilat = LatLng.round(Math.abs(nw.getLat() - se.getLat()) / row);
+//		double ilng = LatLng.round(Math.abs(nw.getLng() - se.getLng()) / col);
+////		Elevation.getOnlyElevations(nw, se, ilat, ilng, server, port, db, user, pass, driver);
+//		Elevation.getElevations(grid, server, port, db, user, pass, driver);
+		
 		Object[] args = getArguments();
 		if (args.length != 1)
 			throw new IllegalArgumentException("Wrong number of arguments");
 
 		// Cargar el escenario
-		try {
+		try {			
 			scen = Scenario.loadScenario((String) args[0]);
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -21,6 +21,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.Format;
+import java.util.Timer;
 
 import util.HexagonalGrid;
 import util.Point;
@@ -96,7 +98,8 @@ public class Elevation {
 		ElevationService service = getService(area[0]);
 		int endCol = grid.getOffCol() + grid.getColumns();
 		int endRow = grid.getOffRow() + grid.getRows();
-
+		double time = System.currentTimeMillis();
+		
 		try {
 			// Intentamos traer del servicio todas las alturas de golpe
 			double[][] data = service.getAllElevations(area[0], area[1], grid
@@ -109,24 +112,32 @@ public class Elevation {
 					grid.setTerrainValue(col, row, Scenario.doubleToInner(grid
 							.getPrecision(), data[dcol][drow]));
 					drow++;
+					System.out.println();
+					if (drow % 500 == 0){
+						System.gc();
+					}
 				}
 				dcol++;
+				System.gc();
 			}
 			// TODO este método no utiliza la BD, quizás debería
 		} catch (Exception e) {
 			if (!(e instanceof UnsupportedOperationException))
 				e.printStackTrace();
-
+			System.out.println("No se pueden obtener todas de golpe, una por una");
 			// Ahora recorremos toda la matriz y buscamos/insertamos los valores
 			// de las alturas uno a uno
 			for (int col = grid.getOffCol() - 1; col <= endCol; col++) {
+				
+//				double currtime =(System.currentTimeMillis()-time)/(1000 * 60);
+//				System.out.println("Col: "+col+" Elapsed Time: "+currtime+" min");
 				for (int row = grid.getOffRow() - 1; row <= endRow; row++) {
 					LatLng coord = grid.tileToCoord(new Point(col, row));
 					PreparedStatement stmt = getNearPoints(con, coord, ilat,
 							ilng);
 
 					short value = Short.MIN_VALUE;
-
+					
 					try {
 						double acum = 0;
 						int counter = 0;
@@ -149,6 +160,9 @@ public class Elevation {
 							value = Scenario.doubleToInner(grid.getPrecision(),
 									elev);
 						}
+						stmt.clearBatch();
+						stmt.close();
+						rs.close();
 
 					} catch (SQLException e1) {
 						e1.printStackTrace();
@@ -158,7 +172,8 @@ public class Elevation {
 				}
 			}
 		}
-
+		double currtime =(System.currentTimeMillis()-time)/(1000 * 60);
+		System.out.println("Se han terminado de obtener las alturas en "+currtime+" min");
 		closeConnection(con);
 	}
 

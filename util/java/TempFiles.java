@@ -43,7 +43,6 @@ public class TempFiles {
 		if (tmpDir == null) {
 			try {
 				File f = File.createTempFile("Auxiliar", null);
-
 				tmpDir = f.getAbsolutePath();
 				tmpDir = (String) tmpDir.subSequence(0, tmpDir.length()
 						- f.getName().length());
