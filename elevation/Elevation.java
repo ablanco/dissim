@@ -21,8 +21,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.Format;
-import java.util.Timer;
 
 import util.HexagonalGrid;
 import util.Point;

@@ -28,9 +28,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.ListIterator;
 
-import elevation.Elevation;
-
-import util.HexagonalGrid;
 import util.Pedestrian;
 import util.Scenario;
 import util.flood.FloodScenario;
