@@ -109,7 +109,7 @@ public class CreatorAgent extends Agent {
 						Double.toString(area[1].getLng()),
 						Integer.toString(scen.getTileSize()),
 						Integer.toString(size[2]), Integer.toString(size[3]) };
-				addBehaviour(new CreateAgentBehav(this, "Enviroment-" + i,
+				addBehaviour(new CreateAgentBehav(this, "Environment-" + i,
 						"agents.EnvironmentAgent", 1, arguments, clockReceivers));
 			}
 
