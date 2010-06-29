@@ -20,10 +20,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import osm.Osm;
-
 import util.HexagonalGrid;
 import util.Point;
-import util.java.ModifiedTilesSet;
 import util.jcoord.LatLng;
 
 /**
@@ -46,7 +44,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	private short[] eastWater;
 	private short[] westWater;
 
-	private ModifiedTilesSet modTiles = null;
+	private HashSet<Point> modTiles = null;
 
 	/**
 	 * New {@link FloodHexagonalGrid}
@@ -70,7 +68,7 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 		southWater = new short[columns + 2];
 		eastWater = new short[rows];
 		westWater = new short[rows];
-		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offCol, offRow);
+		modTiles = new HashSet<Point>();
 	}
 
 	/**
@@ -246,9 +244,9 @@ public class FloodHexagonalGrid extends HexagonalGrid {
 	 * @return set of modified {@link Point}s
 	 */
 	public Set<Point> getModCoordAndReset() {
-		ModifiedTilesSet result = modTiles;
-		modTiles = new ModifiedTilesSet(columns + 2, rows + 2, offCol, offRow);
-		return result.withoutNulls();
+		Set<Point> result = modTiles;
+		modTiles = new HashSet<Point>();
+		return result;
 	}
 
 }

@@ -155,8 +155,8 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 					if (water.size() != 0)
 						wasser /= water.size();
 
-					int score = score(pt, distPos, objective, wasser, position
-							.getZ(), (int) pt.getZ());
+					int score = score(pt, distPos, objective, wasser,
+							position.getZ(), (int) pt.getZ());
 
 					LinkedList<Point> aux = PedestrianUtils.accessible(
 							adjacents, position, pt, s);
@@ -308,7 +308,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		 * {@link Set}<{@link Point}> with the grid coordinates
 		 */
 		private Set<Point> posObj;
-		private int step = 0;
+		private int stepGtP = 0;
 		/**
 		 * {@link Iterator}<{@link LatLng}> of the geographical coordinates to
 		 * convert
@@ -334,7 +334,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 		@Override
 		public void action() {
-			switch (step) {
+			switch (stepGtP) {
 			case 0:
 				if (it.hasNext()) {
 					LatLng obj = it.next();
@@ -347,8 +347,8 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 					AID envAID = null;
 					for (DFAgentDescription df : envs) {
 						String name = df.getName().getLocalName();
-						name = name.substring(name.indexOf("-") + 1, name
-								.lastIndexOf("-"));
+						name = name.substring(name.indexOf("-") + 1,
+								name.lastIndexOf("-"));
 						if (name.equals(env)) {
 							envAID = df.getName();
 							break;
@@ -357,13 +357,13 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 					String content = QueryGridBehav.COORD_TO_TILE + " "
 							+ obj.getLat() + " " + obj.getLng();
-					mtGtP = AgentUtils.send(myAgent, envAID, ACLMessage.REQUEST,
-							"query-grid", content);
-					step = 1;
+					mtGtP = AgentUtils.send(myAgent, envAID,
+							ACLMessage.REQUEST, "query-grid", content);
+					stepGtP = 1;
 				} else {
 					// Hemos terminado!
 					setPosObjective(posObj, this);
-					step = -1;
+					stepGtP = -1;
 					return;
 				}
 				break;
@@ -371,10 +371,10 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 				ACLMessage msg = myAgent.receive(mtGtP);
 				if (msg != null) {
 					String[] data = msg.getContent().split(" ");
-					Point p = new Point(Integer.parseInt(data[0]), Integer
-							.parseInt(data[1]));
+					Point p = new Point(Integer.parseInt(data[0]),
+							Integer.parseInt(data[1]));
 					posObj.add(p);
-					step = 0;
+					stepGtP = 0;
 				} else {
 					block();
 				}

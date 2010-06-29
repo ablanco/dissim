@@ -168,9 +168,8 @@ public class AgentUtils {
 			int performative, String convId, Object content) {
 		ACLMessage msg = new ACLMessage(performative);
 		for (AID aid : receivers) {
-			if (aid == null)
-				return null;
-			msg.addReceiver(aid);
+			if (aid != null)
+				msg.addReceiver(aid);
 		}
 		if (convId != null)
 			msg.setConversationId(convId);
@@ -185,10 +184,11 @@ public class AgentUtils {
 				}
 			}
 		}
-		msg.setReplyWith(convId + " - reply - "
-				+ Long.toString(System.currentTimeMillis()));
+		String reply = convId + " - reply to " + sender.getLocalName() + " - "
+				+ Long.toString(System.currentTimeMillis());
+		msg.setReplyWith(reply);
 		sender.send(msg);
-		return MessageTemplate.MatchInReplyTo(msg.getReplyWith());
+		return MessageTemplate.MatchInReplyTo(reply);
 	}
 
 }
