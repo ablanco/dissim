@@ -314,7 +314,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		 * convert
 		 */
 		private Iterator<LatLng> it;
-		private MessageTemplate mt;
+		private MessageTemplate mtGtP;
 		private DFAgentDescription[] envs = null;
 
 		/**
@@ -357,7 +357,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 
 					String content = QueryGridBehav.COORD_TO_TILE + " "
 							+ obj.getLat() + " " + obj.getLng();
-					mt = AgentUtils.send(myAgent, envAID, ACLMessage.REQUEST,
+					mtGtP = AgentUtils.send(myAgent, envAID, ACLMessage.REQUEST,
 							"query-grid", content);
 					step = 1;
 				} else {
@@ -368,7 +368,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 				}
 				break;
 			case 1:
-				ACLMessage msg = myAgent.receive(mt);
+				ACLMessage msg = myAgent.receive(mtGtP);
 				if (msg != null) {
 					String[] data = msg.getContent().split(" ");
 					Point p = new Point(Integer.parseInt(data[0]), Integer

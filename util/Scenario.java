@@ -133,7 +133,6 @@ public class Scenario implements Serializable {
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	@SuppressWarnings("unchecked")
 	public static Scenario loadScenario(String path) throws IOException,
 			ClassNotFoundException {
 		Scenario scen = null;
@@ -157,8 +156,8 @@ public class Scenario implements Serializable {
 					String[] pair = s.split("=");
 					// Carga, y crea un objeto de la clase pasada, por reflexión
 					try {
-						Class cls = Class.forName(pair[1]);
-						Constructor ct = cls.getConstructor(new Class[0]);
+						Class<?> cls = Class.forName(pair[1]);
+						Constructor<?> ct = cls.getConstructor(new Class[0]);
 						scen = (Scenario) ct.newInstance(new Object[0]);
 					} catch (Exception e) {
 						throw new IOException(
