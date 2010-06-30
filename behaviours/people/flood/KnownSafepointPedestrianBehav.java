@@ -307,15 +307,15 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		/**
 		 * {@link Set}<{@link Point}> with the grid coordinates
 		 */
-		private Set<Point> posObj;
+		private Set<Point> posObjGtP;
 		private int stepGtP = 0;
 		/**
 		 * {@link Iterator}<{@link LatLng}> of the geographical coordinates to
 		 * convert
 		 */
-		private Iterator<LatLng> it;
+		private Iterator<LatLng> itGtP;
 		private MessageTemplate mtGtP;
-		private DFAgentDescription[] envs = null;
+		private DFAgentDescription[] envsGtP = null;
 
 		/**
 		 * {@link GeoToPosBehav} constructor
@@ -328,24 +328,24 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 		 */
 		public GeoToPosBehav(Agent agt, Set<LatLng> geoObj) {
 			super(agt);
-			posObj = new HashSet<Point>(geoObj.size());
-			it = geoObj.iterator();
+			posObjGtP = new HashSet<Point>(geoObj.size());
+			itGtP = geoObj.iterator();
 		}
 
 		@Override
 		public void action() {
 			switch (stepGtP) {
 			case 0:
-				if (it.hasNext()) {
-					LatLng obj = it.next();
+				if (itGtP.hasNext()) {
+					LatLng obj = itGtP.next();
 
 					String env = Integer.toString(scen
 							.getEnviromentByCoord(obj));
 					// Obtener agente entorno
-					if (envs == null)
-						envs = AgentUtils.search(myAgent, "grid-querying");
+					if (envsGtP == null)
+						envsGtP = AgentUtils.search(myAgent, "grid-querying");
 					AID envAID = null;
-					for (DFAgentDescription df : envs) {
+					for (DFAgentDescription df : envsGtP) {
 						String name = df.getName().getLocalName();
 						name = name.substring(name.indexOf("-") + 1,
 								name.lastIndexOf("-"));
@@ -362,7 +362,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 					stepGtP = 1;
 				} else {
 					// Hemos terminado!
-					setPosObjective(posObj, this);
+					setPosObjective(posObjGtP, this);
 					stepGtP = -1;
 					return;
 				}
@@ -373,7 +373,7 @@ public class KnownSafepointPedestrianBehav extends PedestrianBehav {
 					String[] data = msg.getContent().split(" ");
 					Point p = new Point(Integer.parseInt(data[0]),
 							Integer.parseInt(data[1]));
-					posObj.add(p);
+					posObjGtP.add(p);
 					stepGtP = 0;
 				} else {
 					block();
