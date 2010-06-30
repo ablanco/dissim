@@ -174,7 +174,7 @@ if len(sys.argv) > 1:
         if not(scen.endswith('.scen')):
             scen = scen + '.scen'
         # nos pasan el nombre del fichero con el escenario por parámetros
-        if scen.find('/') > 0:
+        if scen.find('/') >= 0:
             # es una ruta completa
             launch(scen)
         else:
