@@ -96,7 +96,6 @@ public class Elevation {
 		ElevationService service = getService(area[0]);
 		int endCol = grid.getOffCol() + grid.getColumns();
 		int endRow = grid.getOffRow() + grid.getRows();
-		double time = System.currentTimeMillis();
 		
 		try {
 			// Intentamos traer del servicio todas las alturas de golpe
@@ -122,13 +121,9 @@ public class Elevation {
 		} catch (Exception e) {
 			if (!(e instanceof UnsupportedOperationException))
 				e.printStackTrace();
-			System.out.println("No se pueden obtener todas de golpe, una por una");
 			// Ahora recorremos toda la matriz y buscamos/insertamos los valores
 			// de las alturas uno a uno
 			for (int col = grid.getOffCol() - 1; col <= endCol; col++) {
-				
-//				double currtime =(System.currentTimeMillis()-time)/(1000 * 60);
-//				System.out.println("Col: "+col+" Elapsed Time: "+currtime+" min");
 				for (int row = grid.getOffRow() - 1; row <= endRow; row++) {
 					LatLng coord = grid.tileToCoord(new Point(col, row));
 					PreparedStatement stmt = getNearPoints(con, coord, ilat,
@@ -170,8 +165,6 @@ public class Elevation {
 				}
 			}
 		}
-		double currtime =(System.currentTimeMillis()-time)/(1000 * 60);
-		System.out.println("Se han terminado de obtener las alturas en "+currtime+" min");
 		closeConnection(con);
 	}
 

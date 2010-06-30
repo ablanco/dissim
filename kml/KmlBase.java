@@ -163,11 +163,10 @@ public class KmlBase implements Updatable {
 
 		// Aqui iremos almacenando la informacion que cambia para cada escenario
 		// al que estemos subscritos
-		// System.err.println(sender.getLocalName()+" "+snap.getDateTime().toString());
 		KmlInf currentEnv = inf.get(sender.getLocalName());
 
 		if (currentEnv == null) {
-			// No tenemos informacion para este enviorement
+			// No tenemos informacion para este environment
 			currentEnv = new KmlInf(sender.getLocalName(), null, snap
 					.getDateTime().toString(), snap.getGrid().getIncs());
 			if (snap.getGrid() instanceof FloodHexagonalGrid) {
