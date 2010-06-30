@@ -21,6 +21,7 @@ import jade.core.Agent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -45,6 +46,7 @@ public class Statistics implements Updatable {
 	private int lastDead = 0;
 	private int lastSafe = 0;
 	private Agent myAgent = null;
+	private Hashtable<String, Integer> pedestrians = null;
 
 	/**
 	 * Column order
@@ -90,6 +92,7 @@ public class Statistics implements Updatable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			pedestrians = new Hashtable<String, Integer>();
 		} else {
 			if (myAgent != null)
 				myAgent.doDelete();
@@ -106,18 +109,24 @@ public class Statistics implements Updatable {
 			throw new IllegalArgumentException(
 					"The argument isn't a Snapshot instance");
 
-		if (obj == null || csv == null)
+		if (obj == null || csv == null || pedestrians == null)
 			return; // Nada que procesar
 
 		Snapshot snap = (Snapshot) obj;
 		List<Pedestrian> people = snap.getPeople();
+
+		for (Pedestrian p : people) {
+			// Actualizamos los estados guardados
+			pedestrians.put(p.getId(), p.getStatus());
+		}
+
 		int alive = 0;
 		int dead = 0;
 		int safe = 0;
 
-		for (Pedestrian p : people) {
+		for (Integer s : pedestrians.values()) {
 			// Por cada pedestrian averiguamos su estado
-			switch (p.getStatus()) {
+			switch (s) {
 			case Pedestrian.DEAD:
 				dead++;
 				break;
