@@ -876,7 +876,7 @@ public class Scenario implements Serializable {
 	 * 
 	 * @return milliseconds
 	 */
-	public Object getSimulationTick() {
+	public long getSimulationTick() {
 		return simulationTick;
 	}
 

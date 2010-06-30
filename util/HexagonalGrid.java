@@ -114,6 +114,8 @@ public class HexagonalGrid implements Serializable {
 	 */
 	private short precision = -1;
 
+	private static int contador=0;
+
 	/**
 	 * New hexagonal grid given Upper Left (NW) and Lower Right (SE) corners of
 	 * the map, offsets distinct from 0 if there are more than one environment
@@ -668,6 +670,7 @@ public class HexagonalGrid implements Serializable {
 	 */
 	public void obtainStreetInfo() {
 		Osm.setOsmMapInfo(this);
+		System.out.println("Saliendo "+contador++);
 	}
 
 	/**
