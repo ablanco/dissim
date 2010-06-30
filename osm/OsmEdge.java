@@ -353,12 +353,21 @@ public class OsmEdge {
 		LatLng curr = nodeA.getCoord();
 		LatLng b = nodeB.getCoord();
 		// System.err.println("Linea de " + this);
+		int cont=0;
 		while (!box.closeTo(curr, b)) {
 			// System.err.println("osmEdge "+curr+"->"+b);
 			if (box.contains(curr)) {
 				list.add(curr);
 			}
 			curr = next(curr, box);
+			cont++;
+			if (cont>100){
+				//No se va a encontrar nada, abortamos
+				list.clear();
+				list.add(nodeA.getCoord());
+				list.add(nodeB.getCoord());
+				return list;
+			}
 		}
 		// El ultimo puede escaparseme
 		if (box.contains(curr)) {

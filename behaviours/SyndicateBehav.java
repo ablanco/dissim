@@ -48,7 +48,7 @@ import util.Snapshot;
 @SuppressWarnings("serial")
 public class SyndicateBehav extends CyclicBehaviour {
 
-	private long defaultPeriod = 500;
+	private long defaultPeriod = -1;
 	private Scenario scen;
 	/**
 	 * The key of the map is the type of {@link UpdateAgent}. The Object[]
@@ -76,6 +76,7 @@ public class SyndicateBehav extends CyclicBehaviour {
 	public SyndicateBehav(Agent a, HexagonalGrid grid, DateAndTime dateTime,
 			Scenario scen, Map<String, Pedestrian> people) {
 		super(a);
+		defaultPeriod = scen.getSimulationTick();		
 		this.grid = grid;
 		this.dateTime = dateTime;
 		this.scen = scen;
