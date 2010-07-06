@@ -33,11 +33,11 @@ public class SpainGet implements ElevationService {
 
 	// http://www.idee.es/wcs/IDEE-WCS-UTM30N/wcsServlet?SERVICE=WCS
 	// &REQUEST=GetCoverage&VERSION=1.0.0&CRS=EPSG:4326
-	// &BBOX=470000,4130300,470200,4130500&COVERAGE=MDT25_peninsula_ZIP&RESX=25
+	// &BBOX=-5.99678,37.38264,-5.99135,37.385972&COVERAGE=MDT25_peninsula_ZIP&RESX=25
 	// &RESY=25&FORMAT=AsciiGrid&EXCEPTIONS=XML
 
 	@Override
-	public double getElevation(LatLng coord) {
+	public double getElevation(LatLng coord) throws ElevationException {
 		double result = Double.MIN_VALUE;
 		String url = "http://www.idee.es/wcs/IDEE-WCS-";
 		try {
@@ -58,6 +58,8 @@ public class SpainGet implements ElevationService {
 			double[][] data = parseFile(f);
 			result = data[0][0];
 		} catch (Exception e) {
+			if (e instanceof ElevationException)
+				throw (ElevationException) e;
 			e.printStackTrace();
 		}
 		return result;
@@ -74,10 +76,11 @@ public class SpainGet implements ElevationService {
 		} catch (IllegalArgumentException e) {
 			throw new UnsupportedOperationException();
 		}
-		// -5.927247,37.403450,-5.92724,37.40346 Este BB da una única celda
+		// BBOX = SWlng,SWlat,NElng,NElat
 		url += "&BBOX=" + NW.getLng() + "," + SE.getLat() + "," + SE.getLng()
 				+ "," + NW.getLat();
 		url += "&COVERAGE=MDT25_peninsula_ZIP&RESX=25&RESY=25&FORMAT=AsciiGrid&EXCEPTIONS=XML";
+		System.out.println(url);
 		File f = downloadFile(url);
 		try {
 			double[][] data = parseFile(f);
@@ -111,7 +114,8 @@ public class SpainGet implements ElevationService {
 		return result;
 	}
 
-	private double[][] parseFile(File f) throws ParseException {
+	private double[][] parseFile(File f) throws ParseException,
+			ElevationException {
 		double[][] result = null;
 
 		ArrayList<String> data = new ArrayList<String>();
@@ -135,6 +139,16 @@ public class SpainGet implements ElevationService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			return result;
+		}
+
+		// Buscamos el código de excepción por si acaso
+		for (String s : data) {
+			if (s.contains("ServiceExceptionReport")) {
+				String aux = "";
+				for (String s2 : data)
+					aux += s2 + "\n";
+				throw new ElevationException(null, aux);
+			}
 		}
 
 		int cont = 0;
@@ -211,7 +225,7 @@ public class SpainGet implements ElevationService {
 		if (zone != 28 && zone != 29 && zone != 30 && zone != 31)
 			throw new IllegalArgumentException("The coordinate "
 					+ coord.toString() + " is outside the supported area");
-		return "UTM" + zone + "N"; // TODO zone parece estar mal calculado
+		return "UTM" + 30 + "N"; // TODO zone parece estar mal calculado
 	}
 
 	private String getHusoUTM(LatLng NW, LatLng SE) {
@@ -231,7 +245,7 @@ public class SpainGet implements ElevationService {
 			throw new IllegalArgumentException("The coordinates "
 					+ NW.toString() + " and " + SE.toString()
 					+ " are outside the supported area");
-		return "UTM" + zone + "N"; // TODO zone parece estar mal calculado
+		return "UTM" + 30 + "N"; // TODO zone parece estar mal calculado
 	}
 
 	public class ParseException extends Exception {

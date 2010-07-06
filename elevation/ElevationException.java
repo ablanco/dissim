@@ -16,13 +16,39 @@
 
 package elevation;
 
-import util.jcoord.LatLng;
+public class ElevationException extends Exception {
 
-public interface ElevationService {
+	private static final long serialVersionUID = 1L;
 
-	public double getElevation(LatLng coord) throws ElevationException;
+	private String url = null;
+	private String data = null;
 
-	public double[][] getAllElevations(LatLng NW, LatLng SE, int tileSize)
-			throws UnsupportedOperationException, ElevationException;
+	public ElevationException(String msg) {
+		super(msg);
+	}
+
+	public ElevationException(String msg, String url, String data) {
+		super(msg);
+		this.url = url;
+		this.data = data;
+	}
+
+	public ElevationException() {
+		super();
+	}
+
+	public ElevationException(String url, String data) {
+		super();
+		this.url = url;
+		this.data = data;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public String getData() {
+		return data;
+	}
 
 }

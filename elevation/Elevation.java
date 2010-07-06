@@ -96,21 +96,21 @@ public class Elevation {
 		ElevationService service = getService(area[0]);
 		int endCol = grid.getOffCol() + grid.getColumns();
 		int endRow = grid.getOffRow() + grid.getRows();
-		
+
 		try {
 			// Intentamos traer del servicio todas las alturas de golpe
-			double[][] data = service.getAllElevations(area[0], area[1], grid
-					.getTileSize());
+			double[][] data = service.getAllElevations(area[0], area[1],
+					grid.getTileSize());
 			int dcol = 0;
 			int drow;
 			for (int col = grid.getOffCol() - 1; col <= endCol; col++) {
 				drow = 0;
 				for (int row = grid.getOffRow() - 1; row <= endRow; row++) {
-					grid.setTerrainValue(col, row, Scenario.doubleToInner(grid
-							.getPrecision(), data[dcol][drow]));
+					grid.setTerrainValue(col, row, Scenario.doubleToInner(
+							grid.getPrecision(), data[dcol][drow]));
 					drow++;
 					System.out.println();
-					if (drow % 500 == 0){
+					if (drow % 500 == 0) {
 						System.gc();
 					}
 				}
@@ -119,7 +119,15 @@ public class Elevation {
 			}
 			// TODO este método no utiliza la BD, quizás debería
 		} catch (Exception e) {
-			if (!(e instanceof UnsupportedOperationException))
+			if (e instanceof ElevationException) {
+				System.out.println("*********\nEXCEPTION\n*********");
+				System.out.println("Area: NW" + area[0].toString() + " SE"
+						+ area[1].toString());
+				ElevationException eaux = (ElevationException) e;
+				System.out.println("Message: " + e.getMessage());
+				System.out.println("Url: " + eaux.getUrl());
+				System.out.println("Content: " + eaux.getData() + "\n");
+			} else if (!(e instanceof UnsupportedOperationException))
 				e.printStackTrace();
 			// Ahora recorremos toda la matriz y buscamos/insertamos los valores
 			// de las alturas uno a uno
@@ -130,7 +138,7 @@ public class Elevation {
 							ilng);
 
 					short value = Short.MIN_VALUE;
-					
+
 					try {
 						double acum = 0;
 						int counter = 0;
@@ -148,10 +156,23 @@ public class Elevation {
 						} else {
 							// Quiere decir que no tenemos ningún resultado, lo
 							// preguntamos en el servicio web
-							double elev = service.getElevation(coord);
-							insertNewElevation(con, coord, elev);
-							value = Scenario.doubleToInner(grid.getPrecision(),
-									elev);
+							double elev;
+							try {
+								elev = service.getElevation(coord);
+								insertNewElevation(con, coord, elev);
+								value = Scenario.doubleToInner(
+										grid.getPrecision(), elev);
+							} catch (ElevationException e1) {
+								System.out
+										.println("*********\nEXCEPTION\n*********");
+								System.out.println("Coordinates: "
+										+ coord.toString());
+								System.out.println("Message: "
+										+ e1.getMessage());
+								System.out.println("Url: " + e1.getUrl());
+								System.out.println("Content: " + e1.getData()
+										+ "\n");
+							}
 						}
 						stmt.clearBatch();
 						stmt.close();
@@ -195,15 +216,15 @@ public class Elevation {
 	 */
 	private static PreparedStatement getNearPoints(Connection con,
 			LatLng coord, double ilat, double ilng) {
-		double maxLat = Math.max(LatLng.round(coord.getLat() - ilat), LatLng
-				.round(coord.getLat() + ilat));
-		double minLat = Math.min(LatLng.round(coord.getLat() - ilat), LatLng
-				.round(coord.getLat() + ilat));
+		double maxLat = Math.max(LatLng.round(coord.getLat() - ilat),
+				LatLng.round(coord.getLat() + ilat));
+		double minLat = Math.min(LatLng.round(coord.getLat() - ilat),
+				LatLng.round(coord.getLat() + ilat));
 
-		double maxLng = Math.max(LatLng.round(coord.getLng() - ilng), LatLng
-				.round(coord.getLng() + ilng));
-		double minLng = Math.min(LatLng.round(coord.getLng() - ilng), LatLng
-				.round(coord.getLng() + ilng));
+		double maxLng = Math.max(LatLng.round(coord.getLng() - ilng),
+				LatLng.round(coord.getLng() + ilng));
+		double minLng = Math.min(LatLng.round(coord.getLng() - ilng),
+				LatLng.round(coord.getLng() + ilng));
 
 		String sql = "SELECT Elev FROM Elevations WHERE Lat BETWEEN ";
 		sql += Double.toString(minLat) + " AND " + Double.toString(maxLat);
