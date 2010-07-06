@@ -55,7 +55,7 @@ public class SpainGet implements ElevationService {
 		url += "&COVERAGE=MDT25_peninsula_ZIP&RESX=25&RESY=25&FORMAT=AsciiGrid&EXCEPTIONS=XML";
 		File f = downloadFile(url);
 		try {
-			double[][] data = parseFile(f);
+			double[][] data = parseFile(f, url);
 			result = data[0][0];
 		} catch (Exception e) {
 			if (e instanceof ElevationException)
@@ -83,7 +83,7 @@ public class SpainGet implements ElevationService {
 		System.out.println(url);
 		File f = downloadFile(url);
 		try {
-			double[][] data = parseFile(f);
+			double[][] data = parseFile(f, url);
 			int dcols = data.length;
 			int drows = data[0].length;
 			// result está en tiles cuadradas? de 25m
@@ -114,7 +114,7 @@ public class SpainGet implements ElevationService {
 		return result;
 	}
 
-	private double[][] parseFile(File f) throws ParseException,
+	private double[][] parseFile(File f, String url) throws ParseException,
 			ElevationException {
 		double[][] result = null;
 
@@ -147,7 +147,7 @@ public class SpainGet implements ElevationService {
 				String aux = "";
 				for (String s2 : data)
 					aux += s2 + "\n";
-				throw new ElevationException(null, aux);
+				throw new ElevationException(url, aux);
 			}
 		}
 
@@ -225,7 +225,7 @@ public class SpainGet implements ElevationService {
 		if (zone != 28 && zone != 29 && zone != 30 && zone != 31)
 			throw new IllegalArgumentException("The coordinate "
 					+ coord.toString() + " is outside the supported area");
-		return "UTM" + 30 + "N"; // TODO zone parece estar mal calculado
+		return "UTM" + zone + "N"; // TODO zone parece estar mal calculado
 	}
 
 	private String getHusoUTM(LatLng NW, LatLng SE) {
@@ -245,7 +245,7 @@ public class SpainGet implements ElevationService {
 			throw new IllegalArgumentException("The coordinates "
 					+ NW.toString() + " and " + SE.toString()
 					+ " are outside the supported area");
-		return "UTM" + 30 + "N"; // TODO zone parece estar mal calculado
+		return "UTM" + zone + "N"; // TODO zone parece estar mal calculado
 	}
 
 	public class ParseException extends Exception {
