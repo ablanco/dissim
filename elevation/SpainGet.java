@@ -25,7 +25,6 @@ import util.HexagonalGrid;
 import util.java.TempFiles;
 import util.java.Wget;
 import util.jcoord.LatLng;
-import util.jcoord.UTMRef;
 
 //http://www.idee.es/show.do?to=pideep_desarrollador_wcs.ES
 
@@ -210,42 +209,29 @@ public class SpainGet implements ElevationService {
 		return result;
 	}
 
+	// http://www.idee.es/wcs/IDEE-WCS-UTM30N/wcsServlet?service=WCS&request=GetCapabilities&version=1.1.0
+
 	// 3 posibles valores
 	// UTM28N Canarias
-	// UTM29N Portugal
-	// UTM30N Mitad Oeste
-	// UTM31N Mitad Este
+	// UTM30N Península
+	// UTM31N Baleares
 
 	private String getHusoUTM(LatLng coord) {
-		UTMRef utm = coord.toUTMRef();
-		// if (utm.getLatZone() != 'N')
-		// throw new IllegalArgumentException("The coordinate "
-		// + coord.toString() + " is outside the supported area");
-		int zone = utm.getLngZone();
-		if (zone != 28 && zone != 29 && zone != 30 && zone != 31)
-			throw new IllegalArgumentException("The coordinate "
-					+ coord.toString() + " is outside the supported area");
-		return "UTM" + zone + "N"; // TODO zone parece estar mal calculado
+		int zone = 30;
+		if (coord.getLng() < -8.88817)
+			zone = 28;
+		if (coord.getLng() > 1.1527817653)
+			zone = 31;
+		return "UTM" + zone + "N";
 	}
 
 	private String getHusoUTM(LatLng NW, LatLng SE) {
-		UTMRef utmNW = NW.toUTMRef();
-		UTMRef utmSE = SE.toUTMRef();
-		// if (utmNW.getLatZone() != 'N' || utmSE.getLatZone() != 'N')
-		// throw new IllegalArgumentException("The coordinates "
-		// + NW.toString() + " and " + SE.toString()
-		// + " are outside the supported area");
-		if (utmNW.getLngZone() != utmSE.getLngZone())
-			throw new IllegalArgumentException("The coordinates "
-					+ NW.toString() + "[" + utmNW.getLngZone() + "]" + " and "
-					+ SE.toString() + "[" + utmSE.getLngZone() + "]"
-					+ " are in differents zones");
-		int zone = utmNW.getLngZone();
-		if (zone != 28 && zone != 29 && zone != 30 && zone != 31)
-			throw new IllegalArgumentException("The coordinates "
-					+ NW.toString() + " and " + SE.toString()
-					+ " are outside the supported area");
-		return "UTM" + zone + "N"; // TODO zone parece estar mal calculado
+		int zone = 30;
+		if (NW.getLng() < -8.88817 && SE.getLng() < -8.88817)
+			zone = 28;
+		if (NW.getLng() > 1.1527817653 && SE.getLng() > 1.1527817653)
+			zone = 31;
+		return "UTM" + zone + "N";
 	}
 
 	public class ParseException extends Exception {
