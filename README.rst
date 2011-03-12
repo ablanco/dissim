@@ -1,3 +1,11 @@
+Disaster Simulator
+##################
+
+Disaster Simulator is a multi-agent system based on JADE technology.
+It simulates floods and it can be easily extended to others disasters.
+It generates kml files as a result of the simulation, but it would
+be easy to develop new agents to generate different output files.
+
 Usage
 #####
 
