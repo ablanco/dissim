@@ -1,11 +1,28 @@
-#########
-# LEGAL #
-#########
+Usage
+#####
+
+Help::
+
+    ./run.py --help
+
+Websites
+########
+
+Blog: http://pfc.mensab.com
+
+Forge: http://gitorious.org/dissim
+
+Source Code::
+
+    git clone git@gitorious.org:dissim/dissim.git
+
+Legal
+#####
 
 This software is under a GPLv3 license.
 
     Flood and evacuation simulator using multi-agent technology
-    Copyright (C) 2010 Alejandro Blanco and Manuel Gomar
+    Copyright (C) 2010-2011 Alejandro Blanco and Manuel Gomar
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -59,22 +76,3 @@ This software uses code from OpenWFE project (http://sourceforge.net/projects/op
 This software uses code from Java CSV project (http://sourceforge.net/projects/javacsv/), which is under a LGPLv2 license.
 
     Copyright (C) Bruce Dunwiddie bruce@csvreader.com
-
-############
-# WEBSITES #
-############
-
-Blog
-    http://pfc.mensab.com
-
-Forge
-    http://gitorious.org/dissim
-
-Source Code
-    svn checkout https://forja.rediris.es/svn/cusl4-catastrof dissim
-
-#########
-# USAGE #
-#########
-
-./run.py --help
