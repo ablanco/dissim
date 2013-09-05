@@ -9,20 +9,47 @@ be easy to develop new agents to generate different output files.
 Usage
 #####
 
-Help::
+Help (*./run.py --help*):
 
-    ./run.py --help
+..code-block::
 
-Websites
-########
+    Modo de empleo: run.py [OPCIONES] [FICHERO]
 
-Blog: http://pfc.mensab.com
+    Opciones:
+            --help                          Muestra esta ayuda
+            -h
 
-Forge: http://gitorious.org/dissim
+            --add NOMBRE:CLASE PARAMETRO+   Añade un nuevo agente a una plataforma
+            -a NOMBRE:CLASE PARAMETRO+
 
-Source Code::
+            --gui                           Lanza también la interfaz gráfica de JADE
+            -g
 
-    git clone git@gitorious.org:dissim/dissim.git
+            --name NOMBRE                   Permite establecer el nombre de la plataforma JADE (por defecto DisSim)
+            -n NOMBRE
+
+            --host HOST                     Permite establecer el host del contenedor principal
+            -H HOST
+
+            --port PUERTO                   Permite establecer el puerto a través del cual conectarse al contenedor principal
+            -p PUERTO
+
+            --local-host HOST               Permite establecer el host del contenedor
+            -lh HOST
+
+            --local-port PUERTO             Permite establecer el puerto a través del cual conectarse al contenedor
+            -lp PUERTO
+
+            --container                     Especifica que esta instancia de JADE es un contenedor
+            -c
+
+    Si no se le pasa ningún argumento se ejecutará el modo interactivo
+    para la generación de un nuevo escenario de simulación
+
+Final Year Project memory
+#########################
+
+https://github.com/ablanco/dissim-memoria
 
 Legal
 #####
